@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KKT explorer · the fence, the force, and the multiplier</title>
+<style>
+  :root { --accent: #9b1b4b; --learned: #1f6f8b; --ink: #222; --muted: #777; --soft: #f6eef1; }
+  body { margin: 0; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; color: var(--ink); background: #fff; }
+  header { padding: 14px 22px 6px; }
+  header h1 { margin: 0 0 4px; font-size: 22px; color: var(--accent); }
+  header p { margin: 0; color: var(--muted); font-size: 14px; max-width: 900px; }
+  main { display: grid; grid-template-columns: minmax(360px, 600px) minmax(300px, 1fr); gap: 20px; padding: 10px 22px 24px; }
+  svg { width: 100%; height: auto; border: 1px solid #ddd; border-radius: 8px; touch-action: none; background: #fff; }
+  .panel { font-size: 15px; line-height: 1.45; }
+  .panel h2 { font-size: 16px; margin: 14px 0 6px; color: var(--accent); }
+  fieldset { border: 1px solid #ddd; border-radius: 8px; padding: 8px 12px; margin: 0 0 10px; }
+  legend { color: var(--muted); font-size: 13px; padding: 0 4px; }
+  label { display: block; margin: 3px 0; cursor: pointer; }
+  table { border-collapse: collapse; font-size: 14px; margin: 4px 0 10px; }
+  td { padding: 3px 10px 3px 0; vertical-align: top; }
+  td.k { color: var(--muted); white-space: nowrap; }
+  .ok { color: #2a7d2a; font-weight: 600; } .bad { color: #b00; font-weight: 600; }
+  .status { background: var(--soft); border-left: 4px solid var(--accent); padding: 8px 12px; border-radius: 6px; margin: 8px 0; }
+  button { font: inherit; font-size: 13px; padding: 4px 10px; margin: 2px 4px 2px 0; border: 1px solid #bbb; border-radius: 6px; background: #fafafa; cursor: pointer; }
+  button:hover { background: #eee; }
+  .legend span { display: inline-block; margin-right: 14px; font-size: 13px; }
+  .sw { display: inline-block; width: 22px; height: 3px; vertical-align: middle; margin-right: 5px; }
+  code { font-size: 0.92em; background: #f4f4f4; padding: 0 4px; border-radius: 4px; }
+  .small { font-size: 13px; color: var(--muted); }
+</style>
+</head>
+<body>
+<header>
+  <h1>KKT explorer: the fence, the force, and the multiplier</h1>
+  <p>Minimise <b>f(z) = ½‖z − z<sub>t</sub>‖²</b> (be as close as possible to the target) while staying on the allowed side of a fence.
+     <b>Drag the red target.</b> Watch the solution z*, the downhill pull of the cost −∇f (red), and the push of the fence −λ∇g (blue) cancel each other.
+     The multiplier λ switches on exactly when the target crosses the fence.</p>
+</header>
+<main>
+  <div>
+    <svg id="plot" viewBox="0 0 600 600" aria-label="feasible set, target, solution and force arrows"></svg>
+    <div class="legend" style="margin-top:6px">
+      <span><span class="sw" style="background:#c33"></span>−∇f(z*) = z<sub>t</sub> − z* (the cost pulls downhill, toward the target)</span>
+      <span><span class="sw" style="background:#1f6f8b"></span>−λ∇g(z*) (the fence pushes back, normal to the boundary, into the feasible side)</span>
+      <span><span class="sw" style="background:#bbb"></span>level sets of f</span>
+    </div>
+  </div>
+  <div class="panel">
+    <fieldset>
+      <legend>the constraint</legend>
+      <label><input type="radio" name="c" value="disc" checked> <b>Round fence</b> g(z) = ‖z‖ − 1 ≤ 0 (stay inside the unit disc)</label>
+      <label><input type="radio" name="c" value="wall"> <b>Straight fence</b> g(z) = (z₁ + z₂ − 1)/√2 ≤ 0 (stay below the line)</label>
+      <label><input type="radio" name="c" value="rail"> <b>Rail</b> h(z) = (z₁ + z₂ − 1)/√2 = 0 (stay <i>on</i> the line; an equality)</label>
+    </fieldset>
+    <div>
+      <button data-p="1.6,0.6">target outside (active)</button>
+      <button data-p="0.5,0.3">target inside (inactive)</button>
+      <button data-p="1.02,0.0">just across the fence</button>
+      <button data-p="-0.3,-0.4">far on the other side</button>
+      <button data-p="0.9,0.9">(0.9, 0.9), the prediction</button>
+      <label style="display:inline-block; margin-left:8px"><input type="checkbox" id="contours" checked> level sets</label>
+    </div>
+    <div class="status" id="status"></div>
+    <h2>Numbers</h2>
+    <table id="nums"></table>
+    <h2>The four KKT conditions, checked live</h2>
+    <table id="kkt"></table>
+    <p class="small" id="sens"></p>
+    <p class="small">Closed forms used here (no solver): round fence z* = z<sub>t</sub> if ‖z<sub>t</sub>‖ ≤ 1, else z<sub>t</sub>/‖z<sub>t</sub>‖ with λ = ‖z<sub>t</sub>‖ − 1;
+       straight fence z* = z<sub>t</sub> − max(0, g(z<sub>t</sub>)) n with λ = max(0, g(z<sub>t</sub>)); rail z* = z<sub>t</sub> − h(z<sub>t</sub>) n with κ = h(z<sub>t</sub>) of either sign.
+       Companion notes: <code>modules/kkt-explorer/notes.md</code>; lecture: Deck 05, session 4.1.</p>
+  </div>
+</main>
+<script>
+(function () {
+  const svg = document.getElementById('plot');
+  const NS = 'http://www.w3.org/2000/svg';
+  const R = 2.2, S = 600;                       // world [-R, R]^2 -> 600 px
+  const px = z => (z[0] + R) / (2 * R) * S;
+  const py = z => S - (z[1] + R) / (2 * R) * S;
+  const n = [1 / Math.SQRT2, 1 / Math.SQRT2], b = 1 / Math.SQRT2;   // the line z1 + z2 = 1 as n.z = b
+  let zt = [1.6, 0.6], mode = 'disc', showContours = true;
+
+  function solve() {
+    if (mode === 'disc') {
+      const r = Math.hypot(zt[0], zt[1]);
+      if (r <= 1) return { z: zt.slice(), lam: 0, g: r - 1, gradg: r > 1e-9 ? [zt[0] / r, zt[1] / r] : [1, 0], active: false };
+      return { z: [zt[0] / r, zt[1] / r], lam: r - 1, g: 0, gradg: [zt[0] / r, zt[1] / r], active: true };
+    }
+    const gt = n[0] * zt[0] + n[1] * zt[1] - b;   // signed distance to the line
+    if (mode === 'wall') {
+      if (gt <= 0) return { z: zt.slice(), lam: 0, g: gt, gradg: n, active: false };
+      return { z: [zt[0] - gt * n[0], zt[1] - gt * n[1]], lam: gt, g: 0, gradg: n, active: true };
+    }
+    return { z: [zt[0] - gt * n[0], zt[1] - gt * n[1]], lam: gt, g: 0, gradg: n, active: true, rail: true };
+  }
+
+  function el(tag, attrs, parent) {
+    const e = document.createElementNS(NS, tag);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    (parent || svg).appendChild(e); return e;
+  }
+  function arrow(from, to, color, label) {
+    const dx = to[0] - from[0], dy = to[1] - from[1], L = Math.hypot(dx, dy);
+    if (L < 1e-3) return;
+    const a = [px(from), py(from)], c = [px(to), py(to)];
+    el('line', { x1: a[0], y1: a[1], x2: c[0], y2: c[1], stroke: color, 'stroke-width': 3 });
+    const ang = Math.atan2(c[1] - a[1], c[0] - a[0]);
+    const h = 11;
+    const p1 = [c[0] - h * Math.cos(ang - 0.4), c[1] - h * Math.sin(ang - 0.4)];
+    const p2 = [c[0] - h * Math.cos(ang + 0.4), c[1] - h * Math.sin(ang + 0.4)];
+    el('polygon', { points: `${c[0]},${c[1]} ${p1[0]},${p1[1]} ${p2[0]},${p2[1]}`, fill: color });
+    const t = el('text', { x: (a[0] + c[0]) / 2 - 12 * Math.sin(ang) + 4, y: (a[1] + c[1]) / 2 + 12 * Math.cos(ang) + 4, fill: color, 'font-size': 15, 'font-weight': 600 });
+    t.textContent = label;
+  }
+
+  function draw() {
+    svg.innerHTML = '';
+    // feasible region
+    if (mode === 'disc') {
+      el('circle', { cx: px([0, 0]), cy: py([0, 0]), r: S / (2 * R), fill: '#e9f2f5', stroke: '#1f6f8b', 'stroke-width': 2 });
+    } else {
+      // line z1 + z2 = 1 through (1 - R, R)... clip to the box: points (-R, 1+R) and (1+R, -R)
+      const A = [-R, 1 + R], B = [1 + R, -R];
+      if (mode === 'wall') {
+        el('polygon', { points: `${px(A)},${py(A)} ${px(B)},${py(B)} ${px([-R, -R])},${py([-R, -R])}`, fill: '#e9f2f5' });
+      }
+      el('line', { x1: px(A), y1: py(A), x2: px(B), y2: py(B), stroke: '#1f6f8b', 'stroke-width': mode === 'rail' ? 4 : 2 });
+    }
+    // axes
+    el('line', { x1: 0, y1: py([0, 0]), x2: S, y2: py([0, 0]), stroke: '#ddd' });
+    el('line', { x1: px([0, 0]), y1: 0, x2: px([0, 0]), y2: S, stroke: '#ddd' });
+    for (let k = -2; k <= 2; k++) {
+      if (k === 0) continue;
+      const t = el('text', { x: px([k, 0]) - 4, y: py([0, 0]) + 16, 'font-size': 11, fill: '#999' }); t.textContent = k;
+      const u = el('text', { x: px([0, 0]) + 5, y: py([0, k]) + 4, 'font-size': 11, fill: '#999' }); u.textContent = k;
+    }
+    const lx = el('text', { x: S - 18, y: py([0, 0]) - 6, 'font-size': 13, fill: '#777' }); lx.textContent = 'z₁';
+    const ly = el('text', { x: px([0, 0]) + 6, y: 14, 'font-size': 13, fill: '#777' }); ly.textContent = 'z₂';
+    const sol = solve();
+    // level sets of f: circles around the target
+    if (showContours) {
+      const rstar = Math.hypot(sol.z[0] - zt[0], sol.z[1] - zt[1]);
+      for (let r = 0.3; r <= 3.0; r += 0.3) el('circle', { cx: px(zt), cy: py(zt), r: r * S / (2 * R), fill: 'none', stroke: '#ccc', 'stroke-width': 1 });
+      if (rstar > 1e-6) el('circle', { cx: px(zt), cy: py(zt), r: rstar * S / (2 * R), fill: 'none', stroke: '#c33', 'stroke-width': 1.5, 'stroke-dasharray': '6 5' });
+    }
+    // feasible-region label
+    const lab = el('text', { x: 14, y: S - 14, 'font-size': 13, fill: '#1f6f8b' });
+    lab.textContent = mode === 'disc' ? 'feasible: g(z) ≤ 0 inside the disc' : mode === 'wall' ? 'feasible: g(z) ≤ 0 below the line' : 'feasible: only the rail itself, h(z) = 0';
+    // forces at z*
+    const gf = [sol.z[0] - zt[0], sol.z[1] - zt[1]];
+    const push = [sol.lam * sol.gradg[0], sol.lam * sol.gradg[1]];
+    arrow(sol.z, [sol.z[0] - gf[0], sol.z[1] - gf[1]], '#c33', '−∇f');
+    arrow(sol.z, [sol.z[0] - push[0], sol.z[1] - push[1]], '#1f6f8b', sol.rail ? '−κ∇h' : '−λ∇g');
+    // solution and target
+    el('circle', { cx: px(sol.z), cy: py(sol.z), r: 7, fill: '#fff', stroke: '#222', 'stroke-width': 2.5 });
+    const zs = el('text', { x: px(sol.z) + 10, y: py(sol.z) - 10, 'font-size': 15, 'font-weight': 600 }); zs.textContent = 'z*';
+    el('circle', { cx: px(zt), cy: py(zt), r: 9, fill: '#c33', stroke: '#fff', 'stroke-width': 2, id: 'target', style: 'cursor:grab' });
+    const tt = el('text', { x: px(zt) + 12, y: py(zt) + 5, 'font-size': 15, fill: '#c33', 'font-weight': 600 }); tt.textContent = 'z_t (drag)';
+    report(sol, gf, push);
+  }
+
+  const f3 = x => (Math.abs(x) < 5e-4 ? '0.000' : x.toFixed(3));
+  function report(sol, gf, push) {
+    const fstar = 0.5 * (gf[0] * gf[0] + gf[1] * gf[1]);
+    const sum = [gf[0] + push[0], gf[1] + push[1]];
+    const mult = sol.rail ? 'κ' : 'λ';
+    const st = document.getElementById('status');
+    if (sol.rail) st.innerHTML = `<b>Rail (equality).</b> The solution is the projection of the target onto the line. κ = ${f3(sol.lam)} ${sol.lam >= 0 ? 'pulls the point back down onto the rail' : 'pulls it back up onto the rail'}: an equality multiplier has <b>either sign</b>, because a rail can push both ways.`;
+    else if (sol.active) st.innerHTML = `<b>Leaning on the fence.</b> The target is outside, the solution sits on the boundary (g = 0), and the fence pushes with λ = ${f3(sol.lam)} > 0. The push cancels the pull exactly: ∇f + λ∇g = (${f3(sum[0])}, ${f3(sum[1])}).`;
+    else st.innerHTML = `<b>Fence not touched.</b> The target is inside, so the unconstrained minimum z* = z<sub>t</sub> is feasible, ∇f(z*) = 0, and the multiplier is λ = 0 while g(z*) = ${f3(sol.g)} < 0: the constraint is <b>inactive</b>.`;
+    document.getElementById('nums').innerHTML = `
+      <tr><td class="k">target z<sub>t</sub></td><td>(${f3(zt[0])}, ${f3(zt[1])})</td></tr>
+      <tr><td class="k">solution z*</td><td>(${f3(sol.z[0])}, ${f3(sol.z[1])})</td></tr>
+      <tr><td class="k">f* = ½‖z* − z<sub>t</sub>‖²</td><td>${f3(fstar)}</td></tr>
+      <tr><td class="k">${sol.rail ? 'h(z*)' : 'g(z*)'}</td><td>${f3(sol.g)}</td></tr>
+      <tr><td class="k">multiplier ${mult}</td><td><b>${f3(sol.lam)}</b></td></tr>
+      <tr><td class="k">∇f(z*)</td><td>(${f3(gf[0])}, ${f3(gf[1])})</td></tr>
+      <tr><td class="k">${mult}∇${sol.rail ? 'h' : 'g'}(z*)</td><td>(${f3(push[0])}, ${f3(push[1])})</td></tr>`;
+    const ok = s => `<span class="ok">✓</span> ${s}`;
+    const rows = sol.rail ? [
+      ok(`stationarity: ∇f + κ∇h = (${f3(sum[0])}, ${f3(sum[1])})`),
+      ok(`primal feasibility: h(z*) = ${f3(sol.g)}`),
+      `<span class="ok">—</span> dual feasibility: no sign condition on κ (${f3(sol.lam)})`,
+      `<span class="ok">—</span> complementarity: not needed, an equality is always active`] : [
+      ok(`stationarity: ∇f + λ∇g = (${f3(sum[0])}, ${f3(sum[1])})`),
+      ok(`primal feasibility: g(z*) = ${f3(sol.g)} ≤ 0`),
+      ok(`dual feasibility: λ = ${f3(sol.lam)} ≥ 0`),
+      ok(`complementarity: λ·g = ${f3(sol.lam * sol.g)} (${sol.active ? 'λ > 0 and g = 0' : 'λ = 0 and g < 0'})`)];
+    document.getElementById('kkt').innerHTML = rows.map(r => `<tr><td>${r}</td></tr>`).join('');
+    const sens = document.getElementById('sens');
+    if (sol.rail) sens.textContent = `Sensitivity: slide the rail by +0.1 along its normal and f* changes by about −0.1·κ = ${f3(-0.1 * sol.lam)}.`;
+    else if (sol.active) { const drop = 0.5 * sol.lam * sol.lam - 0.5 * Math.max(0, sol.lam - 0.1) ** 2; sens.textContent = `Sensitivity: widen the fence by 0.1 (move the boundary outward) and f* drops by ${f3(drop)}; the price rule 0.1·λ = ${f3(0.1 * sol.lam)} holds while λ > 0.1 (below that the widened fence goes idle and the whole ½λ² disappears). The multiplier is the price of the constraint.`; }
+    else sens.textContent = `Sensitivity: widening the fence changes nothing (λ = 0): the constraint has no price while it is inactive.`;
+  }
+
+  // dragging
+  let dragging = false;
+  function toWorld(evt) {
+    const r = svg.getBoundingClientRect();
+    const x = (evt.clientX - r.left) / r.width * S, y = (evt.clientY - r.top) / r.height * S;
+    return [Math.max(-R, Math.min(R, x / S * 2 * R - R)), Math.max(-R, Math.min(R, (S - y) / S * 2 * R - R))];
+  }
+  svg.addEventListener('pointerdown', e => {
+    const w = toWorld(e);
+    if (Math.hypot(w[0] - zt[0], w[1] - zt[1]) < 0.25 || true) { dragging = true; zt = w; draw(); svg.setPointerCapture(e.pointerId); }
+  });
+  svg.addEventListener('pointermove', e => { if (dragging) { zt = toWorld(e); draw(); } });
+  svg.addEventListener('pointerup', () => { dragging = false; });
+  svg.addEventListener('pointercancel', () => { dragging = false; });
+  document.querySelectorAll('input[name=c]').forEach(r => r.addEventListener('change', e => { mode = e.target.value; draw(); }));
+  document.querySelectorAll('button[data-p]').forEach(b => b.addEventListener('click', () => { zt = b.dataset.p.split(',').map(Number); draw(); }));
+  document.getElementById('contours').addEventListener('change', e => { showContours = e.target.checked; draw(); });
+  // A lecture link can choose the starting state (scripts/demo_server.py serves this page at
+  // http://127.0.0.1:8765/modules/kkt-explorer/): ?mode=disc|wall|rail picks the constraint and
+  // ?target=<z1>,<z2> (each within ±2.2) places the target. Anything else keeps the defaults above.
+  (function fromAddress() {
+    const p = new URLSearchParams(location.search);
+    const m = p.get('mode');
+    if (['disc', 'wall', 'rail'].includes(m)) { mode = m; document.querySelector(`input[name=c][value=${m}]`).checked = true; }
+    const t = (p.get('target') || '').split(',').map(s => /^\s*-?(\d+\.?\d*|\.\d+)\s*$/.test(s) ? Number(s) : NaN);
+    if (t.length === 2 && t.every(v => Number.isFinite(v) && Math.abs(v) <= R)) zt = t;
+  })();
+  draw();
+})();
+</script>
+</body>
+</html>

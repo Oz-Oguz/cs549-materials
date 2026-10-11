@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Optimization for Motion Demo</title>
+    <!--
+      URL parameters (src/linkState.ts): ?tab=trajectory|concepts|constrained; with tab=constrained also problem=<id>, method=log-barrier|penalty|auglag, growth=<1 to 10>, tol=<1e-8 to 1e-1>; with tab=trajectory also preset=between-knot; with tab=concepts also fn=<function id>, preset=<start label in lower case with dashes>, method=gd|newton|bfgs|lm|cg, ls=off|armijo|wolfe|strong-wolfe, alpha=<0.001 to 3.162>, arrows=on|off (the "Show arrows" box). A link only sets the starting state; it never steps or plays. Example: ?tab=concepts&fn=elongated&preset=classic-zig-zag&method=gd&ls=off&alpha=0.05&arrows=off
+    -->
+    <script type="module" crossorigin src="./assets/index-BS-GWFbY.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-wVO9CR8N.css">
+  </head>
+  <body>
+    <div id="root">Loading app…</div>
+    <div id="error-overlay" style="position:fixed;left:12px;right:12px;bottom:12px;padding:12px;background:#fee;border:1px solid #f88;display:none;z-index:9999;max-height:40%;overflow:auto"></div>
+  </body>
+</html>

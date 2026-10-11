@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Two-link arm: forward kinematics, Jacobian, singularities — CS 549 module</title>
+<!--
+  CS 549 · sessions 2.3–2.4 · one file, three parts stacked down the page.
+    part 1  the arm, its Jacobian, the manipulability ellipse and the square differential-IK
+            step for the fixed command ẋ = (0, 0.1) m/s — the view the deck screenshots on p. 25
+    part 2  a commanded tip velocity you can point: the direction of ẋ is a control, and at
+            det J = 0 the readout gives the least-norm rates and the part of ẋ that is lost,
+            instead of refusing to compute
+    part 3  multiply on the wrong side: the same four factors in two wrong orders, drawn as
+            ghost arms beside the right one, with the inverse pose ^E p^W beside ^W p^E
+  Nothing is loaded from the network. Part 1 is deliberately untouched by parts 2 and 3: its
+  drawing and its three readouts are byte-identical to the version the lecture screenshot and
+  the slide numbers were taken from, so the two new parts sit in their own rows below it with
+  their own small drawings.
+  Every number on screen is reproduced by check_numbers.py in this folder, which imports fk()
+  and jacobian() from lectures/02-D2-transforms-fk-jacobian/code/two_link.py, so the module and
+  the lecture code can be compared line by line. Notation follows notation.md: q the
+  configuration, φ(q) the forward kinematics, J = ∂φ/∂q, σ the singular values, J⁺ the
+  pseudo-inverse.
+  URL parameters for screenshots and checks: ?q1=<deg>&q2=<deg> set the joint sliders; ?v=radial|tangential|<deg> sets part 2's commanded direction; ?order=wrong|right shows or hides part 3's ghost arms. With no query string the page is the default view. Examples: ?q2=0&v=radial, ?q2=0&v=tangential, ?order=wrong
+-->
+<style>
+  :root { --maroon:#9b1b4b; --teal:#1f6f8b; --gold:#c9a400; --ink:#222; --muted:#777; --soft:#f6eef1;
+          --ghost:#e08a1e; --ghost2:#6a3fb5; }
+  body { margin:0; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; color:var(--ink); background:#fff; }
+  header { padding:10px 18px; border-bottom:1px solid #ddd; display:flex; gap:18px; align-items:baseline; flex-wrap:wrap; }
+  header h1 { font-size:18px; margin:0; color:var(--maroon); }
+  header span { color:var(--muted); font-size:13px; }
+  main { display:grid; grid-template-columns: minmax(520px, 1fr) 430px; gap:16px; padding:14px 18px; }
+  @media (max-width: 980px) { main { grid-template-columns: 1fr; } }
+  svg { width:100%; height:auto; border:1px solid #ddd; border-radius:6px; background:#fff; }
+  .panel { font-size:14px; line-height:1.4; }
+  .panel h2 { font-size:14px; margin:12px 0 6px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; }
+  .row { display:flex; gap:10px; align-items:center; margin:6px 0; flex-wrap:wrap; }
+  input[type=range] { flex:1; min-width:140px; }
+  button { padding:5px 10px; border:1px solid #aaa; border-radius:6px; background:#fafafa; cursor:pointer; }
+  .read { font-family: "SFMono-Regular", Menlo, Consolas, monospace; font-size:13px; background:var(--soft); border-radius:6px; padding:8px 10px; margin:6px 0; white-space:pre; overflow-x:auto; }
+  .m { color:var(--maroon); } .t { color:var(--teal); } .g { color:#8a7000; }
+  .note { font-size:12.5px; color:var(--muted); }
+  .warn { color:var(--maroon); font-weight:600; }
+  .gh { color:var(--ghost); font-weight:600; } .gh2 { color:var(--ghost2); font-weight:600; }
+  button.on { background:var(--soft); border-color:var(--maroon); color:var(--maroon); }
+  /* The two parts added below the original view. Same two-column grid as main, its own row. */
+  section.part { display:grid; grid-template-columns: 560px minmax(430px, 1fr); gap:16px; padding:6px 18px 14px; border-top:1px solid #ddd; }
+  @media (max-width: 1020px) { section.part { grid-template-columns: 1fr; } }
+  section.part svg { max-width:560px; }
+  section.part h2.title { grid-column:1 / -1; font-size:15px; margin:10px 0 0; color:var(--maroon); }
+</style>
+</head>
+<body>
+<header>
+  <h1>Two-link arm: forward kinematics, the Jacobian, and singularities</h1>
+  <span>CS 549 · sessions 2.3–2.4 · l<sub>1</sub> = 0.4 m, l<sub>2</sub> = 0.3 m · move the joint sliders and watch the ellipse.</span>
+</header>
+<main>
+  <svg id="view" viewBox="0 0 660 560" aria-label="Two-link planar arm with its Jacobian columns and manipulability ellipse"></svg>
+  <div class="panel">
+    <h2>Controls</h2>
+    <div class="row"><label for="q1">q<sub>1</sub></label><input id="q1" type="range" min="-180" max="180" step="1" value="30"><span id="q1v">30°</span></div>
+    <div class="row"><label for="q2">q<sub>2</sub></label><input id="q2" type="range" min="-180" max="180" step="1" value="45"><span id="q2v">45°</span></div>
+    <div class="row">
+      <button data-q="30,45">Worked example (30°, 45°)</button>
+      <button data-q="30,0">Stretched (q₂ = 0)</button>
+      <button data-q="30,180">Folded (q₂ = 180°)</button>
+      <button data-q="30,10">Almost stretched (q₂ = 10°)</button>
+    </div>
+    <div class="row"><label><input id="showws" type="checkbox" checked> show the reachable workspace (annulus)</label>
+      <label><input id="showcols" type="checkbox" checked> show the columns of J as arrows</label></div>
+
+    <h2>Readouts</h2>
+    <div class="read" id="r1"></div>
+    <div class="read" id="r2"></div>
+    <div class="read" id="r3"></div>
+    <p class="note">The ellipse is the set of tip velocities <span class="t">J q̇</span> for all joint-velocity vectors with |q̇| = 1 rad/s; its semi-axes are the singular values of J. The arrows are the columns of J: <span class="m">∂p/∂q₁ = (−y, x)</span>, always perpendicular to the line from the base to the tip, and <span class="g">∂p/∂q₂</span>, always perpendicular to link 2. Where they become parallel, det J = l₁ l₂ sin q₂ = 0 and the ellipse is a line: the tip cannot move along the arm at first order.</p>
+    <p class="note">Default state = the worked example of the 2.3–2.4 notes §5. Companion notes: <code>notes.md</code>.</p>
+  </div>
+</main>
+
+<section class="part" id="part-v">
+  <h2 class="title">A commanded tip velocity you can point: which direction is cheap, and what happens at det J = 0</h2>
+  <svg id="viewv" viewBox="0 0 520 480" aria-label="The same arm with the commanded tip velocity, the part of it the arm can produce, and the part it cannot"></svg>
+  <div class="panel">
+    <h2>Controls</h2>
+    <div class="row"><label for="vang">direction of ẋ</label><input id="vang" type="range" min="-180" max="180" step="1" value="139"><span id="vangv">139.1°</span></div>
+    <div class="row">
+      <button id="brad">radial (along the base-to-tip line)</button>
+      <button id="btan">tangential (perpendicular to it)</button>
+    </div>
+    <p class="note">The magnitude is fixed at |ẋ| = 0.1 m/s; only the direction changes. The two buttons keep following the arm as you move q<sub>1</sub> and q<sub>2</sub> above; dragging the slider switches to a fixed direction in the world frame.</p>
+    <h2>Readouts</h2>
+    <div class="read" id="v1"></div>
+    <div class="read" id="v2"></div>
+    <p class="note">Away from a singularity the square system J q̇ = ẋ has one solution, q̇ = J⁻¹ ẋ, and the arm produces the command exactly; the cost in joint rate is what changes with direction. At det J = 0 the readout does not stop: it prints the least-norm rates q̇ = J⁺ ẋ and splits ẋ into the part the arm can produce and the part it cannot. The joint rates stay small there — it is the task error, not the joint rate, that has gone wrong.</p>
+  </div>
+</section>
+
+<section class="part" id="part-o">
+  <h2 class="title">Multiply on the wrong side: the same four factors in the wrong order</h2>
+  <svg id="viewo" viewBox="0 0 520 480" aria-label="The correct arm and two ghost arms built from the same four transforms multiplied in the wrong order"></svg>
+  <div class="panel">
+    <h2>Controls</h2>
+    <div class="row"><label><input id="showghost" type="checkbox" checked> multiply on the wrong side (draw the two mis-ordered ghost arms)</label></div>
+    <p class="note">Both ghosts use the same four factors as the correct chain, with two of them exchanged. Clear the box to see the correct arm alone.</p>
+    <h2>Readouts</h2>
+    <div class="read" id="o1"></div>
+    <p class="note">The heading is the same in all three chains, and it is the same in all 24 orderings of the four factors: in the plane every rotation block commutes, so the heading is always q<sub>1</sub> + q<sub>2</sub>. A student who checks only the orientation of the end-effector frame never sees the error. This is a planar accident — in 3-D the order changes the orientation too, which is what tab 2 of <code>modules/rotations-3d</code> shows.</p>
+  </div>
+</section>
+
+<script>
+(() => {
+  const L1 = 0.4, L2 = 0.3;
+  const SC = 330, OX = 330, OY = 300;                 // px per metre; pixel position of the base
+  const toPx = (x, y) => [OX + SC * x, OY - SC * y];
+  const rad = d => d * Math.PI / 180;
+  const f4 = x => (Math.abs(x) < 5e-5 ? 0 : x).toFixed(4);
+  const f3 = x => (Math.abs(x) < 5e-4 ? 0 : x).toFixed(3);
+
+  const svg = document.getElementById('view');
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (tag, attrs, parent = svg) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent.appendChild(e); return e; };
+  const defs = el('defs', {});
+  for (const [id, col] of [['aM', '#9b1b4b'], ['aG', '#c9a400'], ['aK', '#222']]) {
+    const mk = el('marker', { id, viewBox: '0 0 10 10', refX: 9, refY: 5, markerWidth: 6, markerHeight: 6, orient: 'auto-start-reverse' }, defs);
+    el('path', { d: 'M0,0 L10,5 L0,10 z', fill: col }, mk);
+  }
+  // static: grid and axes in metres
+  for (let x = -0.8; x <= 0.8001; x += 0.2) { const [px] = toPx(x, 0); el('line', { x1: px, y1: 20, x2: px, y2: 560, stroke: '#eee' });
+    el('text', { x: px, y: 555, 'text-anchor': 'middle', 'font-size': 11, fill: '#666' }).textContent = x.toFixed(1); }
+  for (let y = -0.8; y <= 0.8001; y += 0.2) { const [, py] = toPx(0, y); if (py < 20 || py > 545) continue; el('line', { x1: 30, y1: py, x2: 660, y2: py, stroke: '#eee' });
+    el('text', { x: 26, y: py + 4, 'text-anchor': 'end', 'font-size': 11, fill: '#666' }).textContent = y.toFixed(1); }
+  el('text', { x: 345, y: 22, 'text-anchor': 'middle', 'font-size': 12, fill: '#333' }).textContent = 'x [m] along the bottom, y [m] on the left; arrows and ellipse scaled by 0.5 s (m/s → m)';
+  const dyn = el('g', {});
+
+  // vmode/vang belong to the commanded-velocity part below, ghost to the wrong-order part.
+  const state = { q1: 30, q2: 45, ws: true, cols: true, vmode: 'tangential', vang: 139.1, ghost: true };
+
+  function kin(q1d, q2d) {
+    const q1 = rad(q1d), q2 = rad(q2d);
+    const c1 = Math.cos(q1), s1 = Math.sin(q1), c12 = Math.cos(q1 + q2), s12 = Math.sin(q1 + q2);
+    const p1 = [L1 * c1, L1 * s1];
+    const p = [L1 * c1 + L2 * c12, L1 * s1 + L2 * s12];
+    const J = [[-L1 * s1 - L2 * s12, -L2 * s12], [L1 * c1 + L2 * c12, L2 * c12]];
+    const det = J[0][0] * J[1][1] - J[0][1] * J[1][0];
+    // singular values of a 2x2 via J^T J
+    const a = J[0][0] * J[0][0] + J[1][0] * J[1][0], b = J[0][0] * J[0][1] + J[1][0] * J[1][1], d = J[0][1] * J[0][1] + J[1][1] * J[1][1];
+    const tr = a + d, disc = Math.sqrt(Math.max(0, (a - d) * (a - d) / 4 + b * b));
+    const s_max = Math.sqrt(Math.max(0, tr / 2 + disc)), s_min = Math.sqrt(Math.max(0, tr / 2 - disc));
+    return { p1, p, J, det, s_max, s_min, heading: q1d + q2d, c12, s12 };
+  }
+
+  function draw() {
+    while (dyn.firstChild) dyn.removeChild(dyn.firstChild);
+    const k = kin(state.q1, state.q2);
+    const [bx, by] = toPx(0, 0), [jx, jy] = toPx(...k.p1), [tx, ty] = toPx(...k.p);
+    if (state.ws) {   // reachable workspace: annulus between |l1 - l2| and l1 + l2
+      el('circle', { cx: bx, cy: by, r: SC * (L1 + L2), fill: '#f3ede8', stroke: '#ddd' }, dyn);
+      el('circle', { cx: bx, cy: by, r: SC * Math.abs(L1 - L2), fill: '#fff', stroke: '#ddd' }, dyn);
+    }
+    // links
+    el('line', { x1: bx, y1: by, x2: jx, y2: jy, stroke: '#555', 'stroke-width': 10, 'stroke-linecap': 'round' }, dyn);
+    el('line', { x1: jx, y1: jy, x2: tx, y2: ty, stroke: '#555', 'stroke-width': 10, 'stroke-linecap': 'round' }, dyn);
+    el('circle', { cx: bx, cy: by, r: 7, fill: '#fff', stroke: '#555', 'stroke-width': 2 }, dyn);
+    el('circle', { cx: jx, cy: jy, r: 7, fill: '#fff', stroke: '#555', 'stroke-width': 2 }, dyn);
+    // manipulability ellipse: image of the unit circle of joint velocities, scaled by 0.5
+    const scale = 0.5; let pts = [];
+    for (let i = 0; i <= 90; i++) { const t = 2 * Math.PI * i / 90; const qd = [Math.cos(t), Math.sin(t)];
+      const v = [k.J[0][0] * qd[0] + k.J[0][1] * qd[1], k.J[1][0] * qd[0] + k.J[1][1] * qd[1]];
+      pts.push(toPx(k.p[0] + scale * v[0], k.p[1] + scale * v[1]).join(',')); }
+    el('polyline', { points: pts.join(' '), fill: 'none', stroke: '#1f6f8b', 'stroke-width': 2 }, dyn);
+    if (state.cols) {
+      for (const [i, col, mk] of [[0, '#9b1b4b', 'aM'], [1, '#c9a400', 'aG']]) {
+        const [ex, ey] = toPx(k.p[0] + scale * k.J[0][i], k.p[1] + scale * k.J[1][i]);
+        el('line', { x1: tx, y1: ty, x2: ex, y2: ey, stroke: col, 'stroke-width': 2.5, 'marker-end': `url(#${mk})` }, dyn);
+      }
+    }
+    el('circle', { cx: tx, cy: ty, r: 6, fill: '#1f6f8b' }, dyn);
+    // end-effector frame
+    const hx = Math.cos(rad(k.heading)), hy = Math.sin(rad(k.heading));
+    const [ax, ay] = toPx(k.p[0] + 0.08 * hx, k.p[1] + 0.08 * hy), [yx, yy] = toPx(k.p[0] - 0.08 * hy, k.p[1] + 0.08 * hx);
+    el('line', { x1: tx, y1: ty, x2: ax, y2: ay, stroke: '#1f6f8b', 'stroke-width': 2, 'marker-end': 'url(#aK)' }, dyn);
+    el('line', { x1: tx, y1: ty, x2: yx, y2: yy, stroke: '#1f6f8b', 'stroke-width': 2, 'marker-end': 'url(#aK)' }, dyn);
+    el('text', { x: ax + 8, y: ay + 4, 'font-size': 12, fill: '#1f6f8b' }, dyn).textContent = 'x_E';
+    el('text', { x: bx - 22, y: by + 18, 'font-size': 13, 'font-weight': 700 }, dyn).textContent = 'W';
+    el('text', { x: tx + 10, y: ty - 8, 'font-size': 13, 'font-weight': 700, fill: '#1f6f8b' }, dyn).textContent = 'E';
+
+    const J = k.J;
+    document.getElementById('r1').innerHTML =
+      `<b>Forward kinematics</b>  q = (${state.q1}°, ${state.q2}°)\n^W p^E = (l1 cos q1 + l2 cos(q1+q2),\n          l1 sin q1 + l2 sin(q1+q2))\n       = <span class="t">(${f4(k.p[0])}, ${f4(k.p[1])})</span> m\nheading q1+q2 = ${k.heading}°`;
+    document.getElementById('r2').innerHTML =
+      `<b>Jacobian</b>  J = ∂p/∂q  (rows x, y; columns q1, q2)\n    [ <span class="m">${f4(J[0][0])}</span>  <span class="g">${f4(J[0][1])}</span> ]\n    [ <span class="m">${f4(J[1][0])}</span>  <span class="g">${f4(J[1][1])}</span> ]\ndet J = l1 l2 sin q2 = ${f4(k.det)}\nsingular values ${f3(k.s_max)}, ${f3(k.s_min)}`;
+    const sing = Math.abs(k.s_min) < 1e-3;
+    const near = !sing && k.s_min < 0.03;
+    document.getElementById('r3').innerHTML =
+      `<b>Differential IK, square case</b>\nq̇ = J⁻¹ ẋ  for ẋ = (0, 0.1) m/s (tip straight up)\n` +
+      (sing ? `<span class="warn">det J = 0: J has no inverse. The tip cannot move along the arm at first order;\nthe commanded-velocity section below shows what it can still do.</span>`
+            : (() => { const inv = 1 / k.det; const qd = [inv * (J[1][1] * 0 - J[0][1] * 0.1), inv * (-J[1][0] * 0 + J[0][0] * 0.1)];
+                       return `q̇ = (${f3(qd[0])}, ${f3(qd[1])}) rad/s,  |q̇| = ${f3(Math.hypot(...qd))} rad/s` + (near ? `\n<span class="warn">near-singular: a modest tip speed needs very large joint rates</span>` : ''); })());
+  }
+
+  const q1 = document.getElementById('q1'), q2 = document.getElementById('q2');
+  const sync = () => { state.q1 = +q1.value; state.q2 = +q2.value; document.getElementById('q1v').textContent = `${state.q1}°`; document.getElementById('q2v').textContent = `${state.q2}°`; draw(); };
+  const syncAll = () => { state.q1 = +q1.value; state.q2 = +q2.value; document.getElementById('q1v').textContent = `${state.q1}°`; document.getElementById('q2v').textContent = `${state.q2}°`; redraw(); };
+  q1.addEventListener('input', syncAll); q2.addEventListener('input', syncAll);
+  document.querySelectorAll('button[data-q]').forEach(b => b.addEventListener('click', () => { const [a, c] = b.dataset.q.split(',').map(Number); q1.value = a; q2.value = c; syncAll(); }));
+  document.getElementById('showws').addEventListener('change', e => { state.ws = e.target.checked; draw(); });
+  document.getElementById('showcols').addEventListener('change', e => { state.cols = e.target.checked; draw(); });
+
+  // ===================================================================================
+  //  Shared helpers for the two parts below. They draw their own small pictures at the
+  //  view above, which is left exactly as it was.
+  //  The window is centred on the base and covers a radius of 0.91 m, which is the whole
+  //  reachable annulus (l1 + l2 = 0.7 m) plus the longest velocity arrow part 2 can draw
+  //  (VS * 0.1 m/s = 0.2 m). The joint sliders run over the full turn, so any smaller window
+  //  would let the arm leave its own picture while the readouts kept printing numbers.
+  // ===================================================================================
+  const SC2 = 220, OX2 = 270, OY2 = 250;              // px per metre; pixel position of the base
+  const toPx2 = (x, y) => [OX2 + SC2 * x, OY2 - SC2 * y];
+  const f1 = x => (Math.abs(x) < 5e-2 ? 0 : x).toFixed(1);
+  const wrap180 = a => { let b = a; while (b > 180) b -= 360; while (b <= -180) b += 360; return b; };
+  // Every printed direction is a unit vector; the sign is fixed by asking for a non-negative
+  // y component, so that the same line is always spelled the same way.
+  const upward = u => (u[1] < -1e-12 || (Math.abs(u[1]) <= 1e-12 && u[0] < 0)) ? [-u[0], -u[1]] : [u[0], u[1]];
+
+  // Build one small drawing: its own arrow markers, a grid in metres with labelled axes, and
+  // an empty group for everything that moves. Returns that group.
+  function smallView(id, captions, markers) {
+    const s = document.getElementById(id);
+    const d = el('defs', {}, s);
+    for (const [mid, col] of markers) {
+      const mk = el('marker', { id: mid, viewBox: '0 0 10 10', refX: 9, refY: 5, markerWidth: 6, markerHeight: 6, orient: 'auto-start-reverse' }, d);
+      el('path', { d: 'M0,0 L10,5 L0,10 z', fill: col }, mk);
+    }
+    for (const x of [-0.8, -0.6, -0.4, -0.2, 0, 0.2, 0.4, 0.6, 0.8]) {
+      const [px] = toPx2(x, 0);
+      el('line', { x1: px, y1: 50, x2: px, y2: 450, stroke: '#eee' }, s);
+      el('text', { x: px, y: 466, 'text-anchor': 'middle', 'font-size': 11, fill: '#666' }, s).textContent = x.toFixed(1);
+    }
+    for (const y of [-0.8, -0.6, -0.4, -0.2, 0, 0.2, 0.4, 0.6, 0.8]) {
+      const [, py] = toPx2(0, y);
+      el('line', { x1: 34, y1: py, x2: 508, y2: py, stroke: '#eee' }, s);
+      el('text', { x: 30, y: py + 4, 'text-anchor': 'end', 'font-size': 11, fill: '#666' }, s).textContent = y.toFixed(1);
+    }
+    captions.forEach((line, i) => {
+      el('text', { x: 268, y: 15 + 14 * i, 'text-anchor': 'middle', 'font-size': 11, fill: '#333' }, s).textContent = line;
+    });
+    return el('g', {}, s);
+  }
+
+  // The singular value decomposition of a 2x2 matrix, written out rather than iterated: the
+  // right singular vectors are the eigenvectors of J^T J, and u_k = J v_k / sigma_k.
+  function svd2(J) {
+    const a = J[0][0] * J[0][0] + J[1][0] * J[1][0];
+    const b = J[0][0] * J[0][1] + J[1][0] * J[1][1];
+    const d = J[0][1] * J[0][1] + J[1][1] * J[1][1];
+    const disc = Math.sqrt(Math.max(0, (a - d) * (a - d) / 4 + b * b));
+    const l1 = (a + d) / 2 + disc, l2 = Math.max(0, (a + d) / 2 - disc);
+    let v1 = Math.abs(b) > 1e-14 ? [b, l1 - a] : (a >= d ? [1, 0] : [0, 1]);
+    const n1 = Math.hypot(v1[0], v1[1]); v1 = [v1[0] / n1, v1[1] / n1];
+    const v2 = [-v1[1], v1[0]];
+    const s1 = Math.sqrt(l1), s2 = Math.sqrt(l2);
+    const mul = w => [J[0][0] * w[0] + J[0][1] * w[1], J[1][0] * w[0] + J[1][1] * w[1]];
+    const u1raw = mul(v1), u1 = [u1raw[0] / s1, u1raw[1] / s1];
+    const u2 = s2 > 1e-12 ? (w => [w[0] / s2, w[1] / s2])(mul(v2)) : [-u1[1], u1[0]];
+    return { s: [s1, s2], u: [u1, u2], v: [v1, v2] };
+  }
+
+  // Joint rates for a commanded tip velocity. Away from a singularity this is the ordinary
+  // inverse. At det J = 0 it is the least-norm solution q-dot = J^+ v: the smallest joint-rate
+  // vector whose tip velocity J q-dot is the part of v that lies on the one reachable line.
+  function solveRate(J, v) {
+    const det = J[0][0] * J[1][1] - J[0][1] * J[1][0];
+    const S = svd2(J);
+    if (Math.abs(det) >= 1e-9) {
+      const inv = 1 / det;
+      const qd = [inv * (J[1][1] * v[0] - J[0][1] * v[1]), inv * (-J[1][0] * v[0] + J[0][0] * v[1])];
+      return { qd, reach: [v[0], v[1]], lost: [0, 0], rank: 2, svd: S };
+    }
+    const u1 = S.u[0], v1 = S.v[0], s1 = S.s[0];
+    const c = u1[0] * v[0] + u1[1] * v[1];                  // the component of v on the reachable line
+    const reach = [c * u1[0], c * u1[1]];
+    const qd = [c / s1 * v1[0], c / s1 * v1[1]];
+    return { qd, reach, lost: [v[0] - reach[0], v[1] - reach[1]], rank: 1, svd: S };
+  }
+
+  // ===================================================================================
+  //  Part 2 - a commanded tip velocity you can point
+  // ===================================================================================
+  const VMAG = 0.1;                                   // the commanded tip speed [m/s], fixed
+  const VS = 2.0;                                     // seconds: the scale that turns m/s into m
+  const dynV = smallView('viewv',
+    ['x [m] along the bottom, y [m] on the left',
+     'velocity arrows drawn at 2 s (m/s \u2192 m): the 0.1 m/s command is 0.2 m long'],
+    [['vT', '#1f6f8b'], ['vM', '#9b1b4b'], ['vG', '#c9a400']]);
+
+  // The direction of v in degrees. In the two button modes it follows the arm; in "free" mode
+  // it is whatever the slider was last set to.
+  function vAngle(k) {
+    const r = Math.atan2(k.p[1], k.p[0]) * 180 / Math.PI;
+    if (state.vmode === 'radial') return wrap180(r);
+    if (state.vmode === 'tangential') return wrap180(r + 90);
+    return state.vang;
+  }
+
+  function drawV() {
+    while (dynV.firstChild) dynV.removeChild(dynV.firstChild);
+    const k = kin(state.q1, state.q2);
+    const ang = vAngle(k);
+    const dir = [Math.cos(rad(ang)), Math.sin(rad(ang))];
+    const v = [VMAG * dir[0], VMAG * dir[1]];
+    const sol = solveRate(k.J, v);
+    const lost = Math.hypot(sol.lost[0], sol.lost[1]);
+    const reached = Math.hypot(sol.reach[0], sol.reach[1]);
+
+    document.getElementById('vang').value = Math.round(ang);
+    document.getElementById('vangv').textContent = `${f1(ang)}\u00b0`;
+    document.getElementById('brad').classList.toggle('on', state.vmode === 'radial');
+    document.getElementById('btan').classList.toggle('on', state.vmode === 'tangential');
+
+    const [bx, by] = toPx2(0, 0), [jx, jy] = toPx2(k.p1[0], k.p1[1]), [tx, ty] = toPx2(k.p[0], k.p[1]);
+    el('line', { x1: bx, y1: by, x2: tx, y2: ty, stroke: '#ccc', 'stroke-width': 1, 'stroke-dasharray': '4 4' }, dynV);
+    el('line', { x1: bx, y1: by, x2: jx, y2: jy, stroke: '#bbb', 'stroke-width': 8, 'stroke-linecap': 'round' }, dynV);
+    el('line', { x1: jx, y1: jy, x2: tx, y2: ty, stroke: '#bbb', 'stroke-width': 8, 'stroke-linecap': 'round' }, dynV);
+    el('circle', { cx: bx, cy: by, r: 6, fill: '#fff', stroke: '#888', 'stroke-width': 2 }, dynV);
+    el('circle', { cx: jx, cy: jy, r: 6, fill: '#fff', stroke: '#888', 'stroke-width': 2 }, dynV);
+    if (sol.rank === 1) {                              // the one line of tip velocities that is left
+      const u = upward(sol.svd.u[0]);                  // fixed sign, so the label always lands below
+      const [a1x, a1y] = toPx2(k.p[0] - 0.26 * u[0], k.p[1] - 0.26 * u[1]);
+      const [a2x, a2y] = toPx2(k.p[0] + 0.26 * u[0], k.p[1] + 0.26 * u[1]);
+      el('line', { x1: a1x, y1: a1y, x2: a2x, y2: a2y, stroke: '#1f6f8b', 'stroke-width': 1.5, 'stroke-dasharray': '6 4' }, dynV);
+      el('text', { x: a1x, y: a1y + 15, 'text-anchor': 'middle', 'font-size': 11, fill: '#1f6f8b' }, dynV).textContent = 'the only reachable line';
+    }
+    // One arrow of the velocity picture. The line is drawn at once; the label is only recorded,
+    // because two arrows can end at the same point and their labels would then be typed over
+    // each other. In the partial-loss case they always do: the lost arrow starts at the head of
+    // the reachable one and ends at the head of the commanded one.
+    const labels = [];
+    const arrow = (from, vec, col, mk, dash, label) => {
+      const [x1, y1] = toPx2(from[0], from[1]);
+      const [x2, y2] = toPx2(from[0] + VS * vec[0], from[1] + VS * vec[1]);
+      if (Math.hypot(x2 - x1, y2 - y1) < 1.5) return;
+      const at = { x1, y1, x2, y2, stroke: col, 'stroke-width': 2.5, 'marker-end': `url(#${mk})` };
+      if (dash) at['stroke-dasharray'] = dash;
+      el('line', at, dynV);
+      labels.push({ x: x2, y: y2 - 5, col, label });
+    };
+    if (lost <= 1e-9) {                                // the command is produced exactly
+      arrow(k.p, v, '#1f6f8b', 'vT', null, 'ẋ = J q\u0307');
+    } else if (reached <= 1e-9) {                      // none of it can be produced
+      arrow(k.p, v, '#9b1b4b', 'vM', '6 4', 'ẋ commanded: all of it lost');
+    } else {                                           // part of it can
+      arrow(k.p, v, '#9b1b4b', 'vM', '6 4', 'ẋ commanded');
+      arrow(k.p, sol.reach, '#1f6f8b', 'vT', null, 'J q\u0307 produced');
+      arrow([k.p[0] + VS * sol.reach[0], k.p[1] + VS * sol.reach[1]], sol.lost, '#c9a400', 'vG', null, 'lost');
+    }
+    el('circle', { cx: tx, cy: ty, r: 6, fill: '#1f6f8b' }, dynV);
+    el('text', { x: bx - 22, y: by + 18, 'font-size': 13, 'font-weight': 700 }, dynV).textContent = 'W';
+    el('text', { x: tx + 10, y: ty + 16, 'font-size': 13, 'font-weight': 700, fill: '#1f6f8b' }, dynV).textContent = 'E';
+    // Place the arrow labels last. The label farthest from the tip keeps its place and the
+    // others are pushed out past it, one line apart, in whichever vertical direction leads
+    // away from the tip. However the arrows lie, no two labels overlap and none of them is
+    // pushed back onto the tip marker.
+    const out = labels.reduce((s, L) => s + L.y, 0) / Math.max(1, labels.length) >= ty ? 1 : -1;
+    labels.sort((a, b) => out * (b.y - a.y));
+    for (let i = 1; i < labels.length; i++)
+      labels[i].y = out > 0 ? Math.max(labels[i].y, labels[i - 1].y + 17)
+                            : Math.min(labels[i].y, labels[i - 1].y - 17);
+    if (labels.length) {                               // slide the whole stack back inside the
+      const ys = labels.map(L => L.y);                 // drawing, rigidly, so the spacing above
+      const lo = Math.min(...ys), hi = Math.max(...ys);// survives the clamp
+      const shift = lo < 60 ? 60 - lo : (hi > 446 ? 446 - hi : 0);
+      for (const L of labels) L.y += shift;
+    }
+    for (const L of labels) {
+      // Keep the label inside the 520-unit view: past the middle it is hung to the left.
+      const right = L.x > OX2;
+      el('text', { x: right ? L.x - 7 : L.x + 7, y: L.y, 'text-anchor': right ? 'end' : 'start',
+                   'font-size': 12, fill: L.col, 'font-weight': 600 }, dynV).textContent = L.label;
+    }
+
+    const modeName = { radial: 'radial: along the base-to-tip line', tangential: 'tangential: perpendicular to the base-to-tip line', free: 'set by the slider, fixed in the world frame' }[state.vmode];
+    let body;
+    if (sol.rank === 2) {
+      body = `q\u0307 = J\u207b\u00b9 ẋ = (${f3(sol.qd[0])}, ${f3(sol.qd[1])}) rad/s,  |q\u0307| = ${f3(Math.hypot(sol.qd[0], sol.qd[1]))} rad/s\n` +
+             `J q\u0307 = ẋ exactly: the whole command is produced`;
+    } else {
+      // When nothing is lost the unreachable vector is zero and has no direction of its own,
+      // so name the direction the arm cannot produce at all: the second singular direction.
+      const ld = lost > 1e-9 ? upward([sol.lost[0] / lost, sol.lost[1] / lost]) : upward(sol.svd.u[1]);
+      const rd = upward(sol.svd.u[0]);
+      body = `<span class="warn">det J = 0, so J\u207b\u00b9 does not exist.</span> Least-norm rates q\u0307 = J\u207a ẋ:\n` +
+             `q\u0307 = (${f3(sol.qd[0])}, ${f3(sol.qd[1])}) rad/s,  |q\u0307| = ${f3(Math.hypot(sol.qd[0], sol.qd[1]))} rad/s\n` +
+             `reachable part   (${f4(sol.reach[0])}, ${f4(sol.reach[1])}) m/s = ${f3(reached)} of ${f3(VMAG)} m/s, along (${f3(rd[0])}, ${f3(rd[1])})\n` +
+             `unreachable part (${f4(sol.lost[0])}, ${f4(sol.lost[1])}) m/s = ${f3(lost)} of ${f3(VMAG)} m/s` +
+             (lost > 1e-9 ? `, along (${f3(ld[0])}, ${f3(ld[1])})`
+                          : `; the direction \u00b1(${f3(ld[0])}, ${f3(ld[1])}) that the arm cannot produce\nis not in this command`);
+    }
+    document.getElementById('v1').innerHTML =
+      `<b>Commanded tip velocity</b>  |ẋ| = ${f3(VMAG)} m/s (fixed)\n` +
+      `direction ${f1(ang)}\u00b0  (${modeName})\n` +
+      `ẋ = (${f4(v[0])}, ${f4(v[1])}) m/s\n` + body;
+
+    const S = sol.svd, uA = upward(S.u[0]), uB = upward(S.u[1]);
+    const cheap = VMAG / S.s[0];
+    const dear = S.s[1] > 1e-9
+      ? `dearest  ${f3(VMAG / S.s[1])} rad/s, ẋ along \u00b1(${f3(uB[0])}, ${f3(uB[1])})  (short semi-axis, \u03c3_min = ${f3(S.s[1])})\n` +
+        `ratio    ${f3(S.s[0] / S.s[1])} = \u03c3_max / \u03c3_min`
+      : `<span class="warn">dearest  unreachable: ẋ along \u00b1(${f3(uB[0])}, ${f3(uB[1])}) cannot be produced at all (\u03c3_min = 0)</span>\n` +
+        `ratio    infinite`;
+    document.getElementById('v2').innerHTML =
+      `<b>Over all directions of ẋ, at |ẋ| = ${f3(VMAG)} m/s</b>\n` +
+      `cheapest ${f3(cheap)} rad/s, ẋ along \u00b1(${f3(uA[0])}, ${f3(uA[1])})  (long semi-axis, \u03c3_max = ${f3(S.s[0])})\n` + dear;
+  }
+
+  // ===================================================================================
+  //  Part 3 - multiply on the wrong side
+  // ===================================================================================
+  const dynO = smallView('viewo',
+    ['x [m] along the bottom, y [m] on the left',
+     'the faint circle is |p| = l\u2081 + l\u2082 = 0.7 m, the edge of the reachable workspace'],
+    [['oK', '#1f6f8b'], ['oA', '#e08a1e'], ['oB', '#6a3fb5']]);
+
+  // A planar pose as a heading and a position; composing two poses is one matrix product of the
+  // 3x3 homogeneous transforms written out in coordinates.
+  const Rot = th => ({ th, p: [0, 0] });
+  const Tr = (x, y) => ({ th: 0, p: [x, y] });
+  const compose = (A, B) => ({ th: A.th + B.th,
+    p: [A.p[0] + Math.cos(A.th) * B.p[0] - Math.sin(A.th) * B.p[1],
+        A.p[1] + Math.sin(A.th) * B.p[0] + Math.cos(A.th) * B.p[1]] });
+  function chain(factors) {
+    let X = { th: 0, p: [0, 0] };
+    const run = [X];
+    for (const F of factors) { X = compose(X, F); run.push(X); }
+    return run;                                        // run[2] is the elbow, run[4] the tip
+  }
+  const degOf = th => wrap180(th * 180 / Math.PI);
+  const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
+
+  function drawO() {
+    while (dynO.firstChild) dynO.removeChild(dynO.firstChild);
+    const q1r = rad(state.q1), q2r = rad(state.q2);
+    const R1 = Rot(q1r), T1 = Tr(L1, 0), R2 = Rot(q2r), T2 = Tr(L2, 0);
+    const right = chain([R1, T1, R2, T2]);             // ^W X^E = R(q1) T(l1,0) R(q2) T(l2,0)
+    const wrongA = chain([T1, R1, T2, R2]);            // each link translated before it is rotated
+    const wrongB = chain([R1, T1, T2, R2]);            // the second rotation applied after T(l2,0)
+
+    const [bx, by] = toPx2(0, 0);
+    el('circle', { cx: bx, cy: by, r: SC2 * (L1 + L2), fill: 'none', stroke: '#e6e6e6' }, dynO);
+    const limb = (run, col, width, dash, label) => {
+      const [ex, ey] = toPx2(run[2].p[0], run[2].p[1]);
+      const [tx, ty] = toPx2(run[4].p[0], run[4].p[1]);
+      const at1 = { x1: bx, y1: by, x2: ex, y2: ey, stroke: col, 'stroke-width': width, 'stroke-linecap': 'round' };
+      const at2 = { x1: ex, y1: ey, x2: tx, y2: ty, stroke: col, 'stroke-width': width, 'stroke-linecap': 'round' };
+      if (dash) { at1['stroke-dasharray'] = dash; at2['stroke-dasharray'] = dash; }
+      el('line', at1, dynO); el('line', at2, dynO);
+      el('circle', { cx: ex, cy: ey, r: 5, fill: '#fff', stroke: col, 'stroke-width': 2 }, dynO);
+      el('circle', { cx: tx, cy: ty, r: 5, fill: col }, dynO);
+      // the heading of the end-effector frame, so that all three can be compared on the picture
+      const [hx, hy] = toPx2(run[4].p[0] + 0.07 * Math.cos(run[4].th), run[4].p[1] + 0.07 * Math.sin(run[4].th));
+      el('line', { x1: tx, y1: ty, x2: hx, y2: hy, stroke: col, 'stroke-width': 2, 'marker-end': `url(#${label[1]})` }, dynO);
+      el('text', { x: tx + 9, y: ty + 16, 'font-size': 12, fill: col, 'font-weight': 700 }, dynO).textContent = label[0];
+    };
+    if (state.ghost) {
+      limb(wrongA, '#e08a1e', 7, '7 5', ['A', 'oA']);
+      limb(wrongB, '#6a3fb5', 7, '7 5', ['B', 'oB']);
+    }
+    limb(right, '#1f6f8b', 8, null, ['E', 'oK']);
+    el('text', { x: bx - 22, y: by + 18, 'font-size': 13, 'font-weight': 700 }, dynO).textContent = 'W';
+
+    const row = (run, ref) =>
+      `elbow (${f4(run[2].p[0])}, ${f4(run[2].p[1])}) heading ${f1(degOf(run[2].th))}\u00b0` +
+      (ref ? `,  ${f4(dist(run[2].p, ref[2].p))} m from the correct elbow` : '') + '\n' +
+      `tip   (${f4(run[4].p[0])}, ${f4(run[4].p[1])}) heading ${f1(degOf(run[4].th))}\u00b0` +
+      (ref ? `,  ${f4(dist(run[4].p, ref[4].p))} m from the correct tip` : '');
+    // Both mis-ordered chains end in R(q2), and a rotation about the tip moves no point, so
+    // neither ghost tip depends on q2 at all. When that makes a ghost land exactly on the
+    // correct tip, say so, rather than let a chain labelled "wrong order" print 0.0000 m with
+    // no explanation and leave the reader to conclude the ordering is harmless.
+    const coincide = run => dist(run[4].p, right[4].p) < 1e-6
+      ? `\n<span class="warn">at this configuration the wrong order happens to be right:</span> R(q\u2082) moves no point,\n` +
+        `so with q\u2082 = ${state.q2}\u00b0 the two translations are parallel and this tip is the correct one.\n` +
+        `Move q\u2082 one degree and it separates again.\n`
+      : '';
+    const ghostText =
+      `\n\n<span class="gh">A  T(l\u2081,0) R(q\u2081) T(l\u2082,0) R(q\u2082)</span>  each link translated before it is rotated\n` +
+      row(wrongA, right) + '\n' + coincide(wrongA) +
+      `\n<span class="gh2">B  R(q\u2081) T(l\u2081,0) T(l\u2082,0) R(q\u2082)</span>  the second rotation applied after T(l\u2082,0)\n` +
+      row(wrongB, right) + '\n' + coincide(wrongB) +
+      `|p| = ${f4(Math.hypot(wrongB[4].p[0], wrongB[4].p[1]))} m for B: B lands on the circle |p| = l\u2081 + l\u2082 = ${f4(L1 + L2)} m,\n` +
+      `the outer edge of the reachable workspace and the stretched singular pose\n` +
+      `\nBoth ghost chains end in R(q\u2082), which turns a frame but moves no point, so neither ghost\n` +
+      `tip depends on q\u2082: slide q\u2082 and only the three headings turn, which is why each ghost\n` +
+      `is drawn with an end-effector frame that does not line up with its own forearm.\n` +
+      `\nAll three headings are q\u2081 + q\u2082 = ${f1(wrap180(state.q1 + state.q2))}\u00b0.`;
+    // The inverse pose, which page 6 of the deck asks for: ^E X^W = (^W X^E)^-1, so
+    // ^E p^W = -R(q1+q2)^T ^W p^E. It is not the negative of ^W p^E, which is the guess.
+    const th = right[4].th, ct = Math.cos(th), st = Math.sin(th), pw = right[4].p;
+    const pEW = [-(ct * pw[0] + st * pw[1]), -(-st * pw[0] + ct * pw[1])];
+    document.getElementById('o1').innerHTML =
+      `<b>Correct</b>  ^W X^E = R(q\u2081) T(l\u2081,0) R(q\u2082) T(l\u2082,0)   q = (${state.q1}\u00b0, ${state.q2}\u00b0)\n` +
+      row(right, null) + '\n' +
+      `^E p^W = \u2212R(q\u2081+q\u2082)\u1d40 ^W p^E = (${f4(pEW[0])}, ${f4(pEW[1])}) m,\n` +
+      (Math.abs(wrap180(state.q1 + state.q2)) < 0.5
+        ? `   equal to \u2212(^W p^E) here only because the heading is 0\u00b0 and R is the identity; turn q\u2082 and they differ`
+        : `   not \u2212(^W p^E) = (${f4(-pw[0])}, ${f4(-pw[1])}) m: the inverse rotates as well as negates`) +
+      (state.ghost ? ghostText : `\n\n<span class="g">tick the box to build the same four factors in two wrong orders</span>`);
+  }
+
+  // ===================================================================================
+  //  Wiring: the joint sliders drive all three parts; the parts' own controls drive one each.
+  // ===================================================================================
+  const redraw = () => { draw(); drawV(); drawO(); };
+  document.getElementById('vang').addEventListener('input', e => { state.vmode = 'free'; state.vang = +e.target.value; drawV(); });
+  document.getElementById('brad').addEventListener('click', () => { state.vmode = 'radial'; drawV(); });
+  document.getElementById('btan').addEventListener('click', () => { state.vmode = 'tangential'; drawV(); });
+  document.getElementById('showghost').addEventListener('change', e => { state.ghost = e.target.checked; drawO(); });
+
+  // URL parameters, for screenshots and for the checks in check_numbers.py. With no query
+  // string the page is exactly the default view the lecture screenshot was taken from.
+  const par = new URLSearchParams(location.search);
+  if (par.has('q1')) q1.value = Math.max(-180, Math.min(180, Math.round(+par.get('q1'))));
+  if (par.has('q2')) q2.value = Math.max(-180, Math.min(180, Math.round(+par.get('q2'))));
+  if (par.has('v')) {
+    const raw = par.get('v');
+    if (raw === 'radial' || raw === 'tangential') state.vmode = raw;
+    else if (raw !== '' && isFinite(+raw)) { state.vmode = 'free'; state.vang = wrap180(+raw); }
+  }
+  if (par.get('order') === 'right') { state.ghost = false; document.getElementById('showghost').checked = false; }
+
+  syncAll();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,582 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rotations in 3-D — CS 549 module</title>
+<!--
+  CS 549 · session 2.2 · one file, three tabs.
+    tab 1  what a rotation matrix is: its columns are the body's axes; active vs passive
+    tab 2  order matters (two books, same rotations, opposite order); Euler angles and gimbal lock
+    tab 3  four spellings of one orientation: matrix, axis-angle, quaternion, RAI .g line — and the
+           silent (w,x,y,z) vs (x,y,z,w) bug drawn as a ghost
+  three.js is loaded from jsdelivr (pinned 0.160.0); the module needs a network connection once
+  per session (the browser caches it afterwards). Every number on screen is reproduced by
+  check_numbers.py in this folder; the maths below never calls three.js, so the two can be
+  compared line by line. Notation follows notation.md: θ is the rotation angle, ϑ_p the pitch,
+  R the rotation matrix, r = (w, x, y, z) the unit quaternion.
+  URL parameters for screenshots and checks: ?tab=1|2|3, tab 1: &ap=passive, &mirror=1; tab 2: &mode=order|gimbal; tab 3: &misread=1
+-->
+<style>
+  :root { --maroon:#9b1b4b; --teal:#1f6f8b; --ink:#222; --muted:#777; --soft:#f6eef1;
+          --cx:#c1272d; --cy:#2a9d3a; --cz:#1f5fbf; --ghost:#e08a1e; }
+  body { margin:0; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; color:var(--ink); background:#fff; }
+  header { padding:10px 18px; border-bottom:1px solid #ddd; display:flex; gap:18px; align-items:baseline; flex-wrap:wrap; }
+  header h1 { font-size:18px; margin:0; color:var(--maroon); }
+  header span { color:var(--muted); font-size:13px; }
+  nav { display:flex; gap:6px; padding:8px 18px 0; border-bottom:1px solid #ddd; }
+  nav button { border:1px solid #ccc; border-bottom:none; border-radius:8px 8px 0 0; background:#f4f4f4; padding:7px 14px; cursor:pointer; font-size:14px; color:var(--muted); }
+  nav button.active { background:#fff; color:var(--maroon); font-weight:600; position:relative; top:1px; }
+  main { display:grid; grid-template-columns: minmax(520px, 1fr) 545px; gap:16px; padding:14px 18px; }
+  @media (max-width: 1120px) { main { grid-template-columns: 1fr; } }
+  #stage { position:relative; width:100%; aspect-ratio: 4 / 3; border:1px solid #ddd; border-radius:6px; background:#fff; overflow:hidden; }
+  #stage canvas { display:block; width:100% !important; height:100% !important; }
+  #banner { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; text-align:center; padding:20px; color:var(--muted); font-size:14px; background:#fff; }
+  #hint { position:absolute; left:10px; bottom:8px; font-size:12px; color:var(--muted); pointer-events:none; }
+  .panel { font-size:14px; line-height:1.4; }
+  .panel h2 { font-size:14px; margin:12px 0 6px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; }
+  .row { display:flex; gap:10px; align-items:center; margin:6px 0; flex-wrap:wrap; }
+  .row label { display:flex; gap:6px; align-items:center; }
+  input[type=range] { flex:1; min-width:120px; }
+  button { padding:5px 10px; border:1px solid #aaa; border-radius:6px; background:#fafafa; cursor:pointer; font-size:13px; }
+  button.on { background:var(--soft); border-color:var(--maroon); color:var(--maroon); }
+  .read { font-family: "SFMono-Regular", Menlo, Consolas, monospace; font-size:12.5px; background:var(--soft); border-radius:6px; padding:8px 10px; margin:6px 0; white-space:pre; overflow-x:auto; line-height:1.45; }
+  .read b { font-weight:700; }
+  .m { color:var(--maroon); } .t { color:var(--teal); } .g { color:var(--muted); }
+  .cx { color:var(--cx); font-weight:700; } .cy { color:var(--cy); font-weight:700; } .cz { color:var(--cz); font-weight:700; }
+  .gh { color:var(--ghost); font-weight:700; }
+  .warn { color:var(--cx); font-weight:700; }
+  .note { font-size:12.5px; color:var(--muted); }
+  .tab { display:none; } .tab.active { display:block; }
+  .val { min-width:4.5em; display:inline-block; text-align:right; font-variant-numeric: tabular-nums; }
+  select { font-size:13px; padding:3px 6px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Rotations in 3-D</h1>
+  <span>CS 549 · session 2.2 · a rotation matrix, the order of rotations, and four spellings of one orientation. Drag in the picture to look around. Angles in degrees on the sliders, radians in every formula.</span>
+</header>
+<nav>
+  <button data-tab="1">1 · What a rotation matrix is</button>
+  <button data-tab="2">2 · Order matters; gimbal lock</button>
+  <button data-tab="3">3 · Four spellings of one orientation</button>
+</nav>
+<main>
+  <div id="stage">
+    <div id="banner">loading three.js from cdn.jsdelivr.net …</div>
+    <div id="hint">drag: orbit · wheel: zoom · right-drag: pan</div>
+  </div>
+
+  <div class="panel">
+    <!-- ================= tab 1 ================= -->
+    <div class="tab" id="tab1">
+      <h2>Controls</h2>
+      <div class="row"><span>elementary rotation about</span>
+        <button data-axis="x" class="ax">x</button><button data-axis="y" class="ax">y</button><button data-axis="z" class="ax on">z</button></div>
+      <div class="row"><label for="th1">θ</label><input id="th1" type="range" min="-180" max="180" step="1" value="30"><span class="val" id="th1v">30°</span></div>
+      <div class="row"><span>the same matrix, two questions:</span>
+        <label><input type="radio" name="ap" value="active" checked> active — the body turns</label>
+        <label><input type="radio" name="ap" value="passive"> passive — the frame turns</label></div>
+      <div class="row"><button id="set90">set θ = 90° and read the columns</button><button id="mirror">break it: negate column x</button><button id="reset1">reset</button></div>
+      <h2>Readouts</h2>
+      <div class="read" id="r1a"></div>
+      <div class="read" id="r1b"></div>
+      <div class="read" id="r1c"></div>
+      <p class="note">The columns of <b>R</b> are drawn: <span class="cx">x_B</span>, <span class="cy">y_B</span>, <span class="cz">z_B</span> are the red, green and blue arrows, and the numbers in each column are that arrow's world coordinates. <b>Active</b>: the book turns and its corner <b>p</b> goes somewhere new. <b>Passive</b>: nothing moves but the frame, and the same corner gets new <em>coordinates</em>. One matrix, two questions — say which one you are asking.</p>
+      <p class="note">Default state: <b>R</b><sub>z</sub>(30°), the tray of the worked example (notes §5). Companion notes: <code>notes.md</code>.</p>
+    </div>
+
+    <!-- ================= tab 2 ================= -->
+    <div class="tab" id="tab2">
+      <h2>Mode</h2>
+      <div class="row">
+        <label><input type="radio" name="mode2" value="order" checked> two rotations, both orders</label>
+        <label><input type="radio" name="mode2" value="gimbal"> Euler angles and gimbal lock</label></div>
+
+      <div id="order-ctl">
+        <h2>The two rotations</h2>
+        <div class="row"><span><b>a</b>: about</span><select id="axA"><option>x</option><option>y</option><option>z</option></select>
+          <input id="angA" type="range" min="-180" max="180" step="1" value="90"><span class="val" id="angAv">90°</span></div>
+        <div class="row"><span><b>b</b>: about</span><select id="axB"><option>x</option><option>y</option><option selected>z</option></select>
+          <input id="angB" type="range" min="-180" max="180" step="1" value="90"><span class="val" id="angBv">90°</span></div>
+        <div class="row"><button id="stepBack">⟲ reset both</button><button id="step">step ▸ (both books, one rotation)</button><button id="playAll">apply both</button></div>
+        <h2>Readouts</h2>
+        <div class="read" id="r2a"></div>
+        <div class="read" id="r2b"></div>
+        <p class="note">Left book: <b>a</b> then <b>b</b>, which is the product <b>R</b><sub>b</sub><b>R</b><sub>a</sub>. The rotation applied first is written last because it acts on the vector first. Right book: <b>b</b> then <b>a</b>. Both start aligned with the world. After one step they have received different first turns. After two steps they have received the same two turns in opposite orders. The readouts always describe the books currently shown.</p>
+        <p class="note">Default state: <b>a</b> = 90° about x, <b>b</b> = 90° about z, both already applied: the first columns are (0, 1, 0) and (0, 0, 1) — notes §4.5.</p>
+      </div>
+
+      <div id="gimbal-ctl" style="display:none">
+        <h2>Yaw, pitch, roll: R = R<sub>z</sub>(ψ) R<sub>y</sub>(ϑ<sub>p</sub>) R<sub>x</sub>(ϕ)</h2>
+        <div class="row"><label for="psi"><span class="cz">ψ</span> yaw</label><input id="psi" type="range" min="-180" max="180" step="1" value="10"><span class="val" id="psiv">10°</span></div>
+        <div class="row"><label for="pit"><span class="cy">ϑ<sub>p</sub></span> pitch</label><input id="pit" type="range" min="-180" max="180" step="1" value="90"><span class="val" id="pitv">90°</span></div>
+        <div class="row"><label for="phi"><span class="cx">ϕ</span> roll</label><input id="phi" type="range" min="-180" max="180" step="1" value="0"><span class="val" id="phiv">0°</span></div>
+        <div class="row"><button id="lock">go to pitch 90°</button><button id="unlock">pitch 30° (unlocked)</button></div>
+        <h2>Readouts</h2>
+        <div class="read" id="r2c"></div>
+        <div class="read" id="r2d"></div>
+        <p class="note">The three rings represent the gimbals: the <span class="cz">blue</span> ring turns about world z (yaw), the <span class="cy">green</span> ring about the yaw-turned y axis (pitch), and the <span class="cx">red</span> ring about the yaw-and-pitch-turned x axis (roll). At pitch +90° or −90°, the yaw and roll axes share one line. Their effects have opposite signs at +90° and the same sign at −90°. The angle coordinates lose one independent instantaneous rotation direction. A freely rotating body still has three rotational freedoms. Drag the pitch away from either lock and the axes separate.</p>
+        <p class="note">Default state: ψ = 10°, ϑ<sub>p</sub> = 90°, ϕ = 0° — locked; notes §4.7 and §5 (g).</p>
+      </div>
+    </div>
+
+    <!-- ================= tab 3 ================= -->
+    <div class="tab" id="tab3">
+      <h2>Axis and angle</h2>
+      <div class="row"><span>axis û preset:</span><button class="up" data-u="z">z</button><button class="up" data-u="x">x</button><button class="up" data-u="y">y</button><button class="up" data-u="d">(1,1,1)/√3</button></div>
+      <div class="row"><label for="az">azimuth of û</label><input id="az" type="range" min="-180" max="180" step="any" value="0"><span class="val" id="azv">0°</span></div>
+      <div class="row"><label for="el">elevation of û</label><input id="el" type="range" min="-90" max="90" step="any" value="90"><span class="val" id="elv">90°</span></div>
+      <div class="row"><label for="th3">θ</label><input id="th3" type="range" min="-180" max="180" step="1" value="30"><span class="val" id="th3v">30°</span></div>
+      <div class="row"><label><input id="misread" type="checkbox"> <b>hand this quaternion to a library that expects (x, y, z, w)</b> — draw what it does</label></div>
+      <div class="row"><button id="reset3">reset to the tray: 30° about z</button></div>
+      <h2>Readouts</h2>
+      <div class="read" id="r3a"></div>
+      <div class="read" id="r3b"></div>
+      <div class="read" id="r3c"></div>
+      <div class="read" id="r3d"></div>
+      <p class="note">Four spellings of the <em>same</em> orientation: the matrix from Rodrigues' formula, the axis–angle pair, the unit quaternion <b>r</b> = (w, x, y, z) = (cos θ/2, sin θ/2 û), and the two RAI <code>.g</code> spellings. RAI and Drake put <b>w first</b>; SciPy and ROS put it <b>last</b>. Tick the box: the <span class="gh">orange ghost</span> is what the receiving library draws. No error is raised anywhere.</p>
+      <p class="note">Default state: 30° about z — the tray, <b>r</b> = (0.9659, 0, 0, 0.2588) as on the slide; notes §3.4, §4.6, §5 (f).</p>
+    </div>
+  </div>
+</main>
+
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+               "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }
+</script>
+<script>
+  // if the module script below has not started within 8 s, three.js did not arrive
+  setTimeout(() => { if (!window.__rot3d) document.getElementById('banner').innerHTML =
+    'could not load three.js from cdn.jsdelivr.net.<br>This module needs a network connection the first time it is opened.'; }, 8000);
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+window.__rot3d = true;
+
+// =====================================================================================
+//  Plain 3x3 maths: rows are arrays, R[i][j]. Nothing here touches three.js, so
+//  check_numbers.py can reproduce every readout with NumPy.
+// =====================================================================================
+const D = Math.PI / 180;
+const I3 = () => [[1,0,0],[0,1,0],[0,0,1]];
+const Rx = t => { const c = Math.cos(t), s = Math.sin(t); return [[1,0,0],[0,c,-s],[0,s,c]]; };
+const Ry = t => { const c = Math.cos(t), s = Math.sin(t); return [[c,0,s],[0,1,0],[-s,0,c]]; };
+const Rz = t => { const c = Math.cos(t), s = Math.sin(t); return [[c,-s,0],[s,c,0],[0,0,1]]; };
+const Rel = { x: Rx, y: Ry, z: Rz };
+const mul = (A, B) => A.map((row, i) => [0,1,2].map(j => row[0]*B[0][j] + row[1]*B[1][j] + row[2]*B[2][j]));
+const T = A => [0,1,2].map(i => [0,1,2].map(j => A[j][i]));
+const mv = (A, v) => A.map(row => row[0]*v[0] + row[1]*v[1] + row[2]*v[2]);
+const det = A => A[0][0]*(A[1][1]*A[2][2]-A[1][2]*A[2][1]) - A[0][1]*(A[1][0]*A[2][2]-A[1][2]*A[2][0]) + A[0][2]*(A[1][0]*A[2][1]-A[1][1]*A[2][0]);
+const col = (A, j) => [A[0][j], A[1][j], A[2][j]];
+const maxAbsDiff = (A, B) => Math.max(...A.flat().map((a, k) => Math.abs(a - B.flat()[k])));
+const norm = v => Math.hypot(v[0], v[1], v[2]);
+const skew = u => [[0,-u[2],u[1]],[u[2],0,-u[0]],[-u[1],u[0],0]];
+const add = (A, B) => A.map((r, i) => r.map((a, j) => a + B[i][j]));
+const scale = (A, s) => A.map(r => r.map(a => a * s));
+// Rodrigues (notes eq. 5): R = I + sinθ [û]x + (1 − cosθ) [û]x²
+const rodrigues = (u, t) => { const K = skew(u); return add(add(I3(), scale(K, Math.sin(t))), scale(mul(K, K), 1 - Math.cos(t))); };
+// unit quaternion r = (w, x, y, z) from axis-angle, and back to a matrix (notes §3.4)
+const quatFromAxisAngle = (u, t) => [Math.cos(t/2), Math.sin(t/2)*u[0], Math.sin(t/2)*u[1], Math.sin(t/2)*u[2]];
+const matFromQuat = ([w, x, y, z]) => [
+  [1-2*(y*y+z*z), 2*(x*y-w*z),   2*(x*z+w*y)],
+  [2*(x*y+w*z),   1-2*(x*x+z*z), 2*(y*z-w*x)],
+  [2*(x*z-w*y),   2*(y*z+w*x),   1-2*(x*x+y*y)]];
+const axisAngleFromQuat = ([w, x, y, z]) => { const n = Math.hypot(x, y, z); const t = 2*Math.atan2(n, w); return { u: n > 1e-12 ? [x/n, y/n, z/n] : [0,0,0], t }; };
+
+// ---------- formatting
+const f3 = x => (Math.abs(x) < 5e-4 ? 0 : x).toFixed(3).replace('-', '−').padStart(7);
+const f4 = x => (Math.abs(x) < 5e-5 ? 0 : x).toFixed(4).replace('-', '−');
+const vec = v => '(' + v.map(x => f4(x).padStart(7)).join(', ') + ')';
+const sci = x => x === 0 ? '0' : x.toExponential(1).replace('-', '−');
+const deg = x => (Math.round(x * 10) / 10).toString().replace('-', '−') + '°';
+// a 3x3 matrix with its three columns coloured like the drawn axes
+function fmtMat(A, cls = ['cx','cy','cz'], indent = '    ') {
+  return A.map(row => indent + '[' + row.map((a, j) => `<span class="${cls[j]}">${f3(a)}</span>`).join(' ') + ' ]').join('\n');
+}
+const fmtMatPlain = (A, indent = '    ') => A.map(row => indent + '[' + row.map(f3).join(' ') + ' ]').join('\n');
+
+// =====================================================================================
+//  Scene plumbing
+// =====================================================================================
+const stage = document.getElementById('stage');
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+stage.appendChild(renderer.domElement);
+document.getElementById('banner').style.display = 'none';
+const scene = new THREE.Scene(); scene.background = new THREE.Color(0xffffff);
+const camera = new THREE.PerspectiveCamera(38, 4/3, 0.1, 100);
+camera.up.set(0, 0, 1);                                   // z up, as in every robotics frame of the course
+camera.position.set(3.0, -3.6, 2.3);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(0, 0, 0.25); controls.enableDamping = true; controls.dampingFactor = 0.12;
+scene.add(new THREE.AmbientLight(0xffffff, 0.9));
+const sun = new THREE.DirectionalLight(0xffffff, 1.1); sun.position.set(2, -3, 5); scene.add(sun);
+const fill = new THREE.DirectionalLight(0xffffff, 0.35); fill.position.set(-3, 2, 1); scene.add(fill);
+const grid = new THREE.GridHelper(4, 8, 0xdddddd, 0xeeeeee); grid.rotation.x = Math.PI / 2; grid.position.z = -0.001; scene.add(grid);
+function resize() { const w = stage.clientWidth, h = stage.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+new ResizeObserver(resize).observe(stage); resize();
+
+const M4 = (R, p = [0,0,0]) => new THREE.Matrix4().set(R[0][0],R[0][1],R[0][2],p[0], R[1][0],R[1][1],R[1][2],p[1], R[2][0],R[2][1],R[2][2],p[2], 0,0,0,1);
+function place(obj, R, p) { obj.matrixAutoUpdate = false; obj.matrix.copy(M4(R, p)); obj.matrixWorldNeedsUpdate = true; }
+
+// a text sprite for axis labels: "x" with a small subscript
+function label(main, sub, color, size = 0.22) {
+  const c = document.createElement('canvas'); c.width = 128; c.height = 64; const g = c.getContext('2d');
+  g.fillStyle = color; g.font = 'italic 44px Helvetica, Arial'; g.textBaseline = 'alphabetic'; g.fillText(main, 22, 44);
+  g.font = '26px Helvetica, Arial'; g.fillText(sub, 22 + g.measureText(main).width * 1.7, 56);
+  const tex = new THREE.CanvasTexture(c); tex.minFilter = THREE.LinearFilter;
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, depthTest: false, transparent: true })); s.scale.set(size * 2, size, 1); s.renderOrder = 10; return s;
+}
+const AXC = { x: 0xc1272d, y: 0x2a9d3a, z: 0x1f5fbf };
+// a triad: three arrows + labels, drawn from a frame's origin along its axes
+function triad(sub, len = 1.0, colors = AXC, width = 1, lab = 1.14) {
+  const g = new THREE.Group();
+  [['x',[1,0,0]],['y',[0,1,0]],['z',[0,0,1]]].forEach(([k, d]) => {
+    const dir = new THREE.Vector3(...d);
+    const a = new THREE.ArrowHelper(dir, new THREE.Vector3(), len, colors[k], 0.14 * len, 0.07 * len);
+    a.line.material.linewidth = width; g.add(a);
+    const l = label(k, sub, '#' + colors[k].toString(16).padStart(6, '0')); l.position.copy(dir.clone().multiplyScalar(len * lab)); g.add(l);
+  });
+  return g;
+}
+const GREY = { x: 0x555555, y: 0x555555, z: 0x555555 };
+// the body: a thin book with six distinct faces and a printed cover, so no two orientations look alike
+function book(opacity = 1, tint = null) {
+  const c = document.createElement('canvas'); c.width = 256; c.height = 320; const g = c.getContext('2d');
+  g.fillStyle = tint || '#f6eef1'; g.fillRect(0, 0, 256, 320); g.strokeStyle = '#9b1b4b'; g.lineWidth = 8; g.strokeRect(12, 12, 232, 296);
+  g.fillStyle = '#9b1b4b'; g.font = 'bold 64px Helvetica, Arial'; g.fillText('CS', 40, 120); g.fillText('549', 40, 200);
+  g.font = '28px Helvetica, Arial'; g.fillText('Learning for', 40, 250); g.fillText('Robotics', 40, 284);
+  g.fillStyle = '#1f5fbf'; g.beginPath(); g.moveTo(200, 50); g.lineTo(230, 80); g.lineTo(200, 110); g.fill();   // an arrow: breaks the last symmetry
+  const cover = new THREE.CanvasTexture(c);
+  const mk = (color) => new THREE.MeshLambertMaterial({ color, transparent: opacity < 1, opacity, depthWrite: opacity === 1 });
+  const mats = [mk(tint || 0x9b1b4b), mk(tint || 0x444444), mk(tint || 0xd7c9a3), mk(tint || 0xd7c9a3),
+                new THREE.MeshLambertMaterial({ map: cover, transparent: opacity < 1, opacity, depthWrite: opacity === 1 }), mk(tint || 0x6b4c9a)];
+  // faces: +x spine (maroon), −x pages edge (dark), ±y page edges (cream), +z cover (printed), −z back (violet)
+  const m = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.8, 0.12), mats);
+  const edge = new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry), new THREE.LineBasicMaterial({ color: 0x333333, transparent: opacity < 1, opacity }));
+  const g2 = new THREE.Group(); g2.add(m); g2.add(edge); return g2;
+}
+const sphere = (color, r = 0.035) => new THREE.Mesh(new THREE.SphereGeometry(r, 20, 14), new THREE.MeshLambertMaterial({ color }));
+function ring(radius, color) {
+  return new THREE.Mesh(new THREE.TorusGeometry(radius, 0.022, 12, 96), new THREE.MeshLambertMaterial({ color }));
+}
+function line(a, b, color, dashed = false) {
+  const geo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(...a), new THREE.Vector3(...b)]);
+  const mat = dashed ? new THREE.LineDashedMaterial({ color, dashSize: 0.08, gapSize: 0.05 }) : new THREE.LineBasicMaterial({ color });
+  const l = new THREE.Line(geo, mat); if (dashed) l.computeLineDistances(); return l;
+}
+
+let content = new THREE.Group(); scene.add(content);
+function clearContent() { scene.remove(content); content = new THREE.Group(); scene.add(content); }
+
+// =====================================================================================
+//  State
+// =====================================================================================
+const S = {
+  tab: 1,
+  t1: { axis: 'z', th: 30, mode: 'active', mirror: false },
+  t2: { mode: 'order', axA: 'x', angA: 90, axB: 'z', angB: 90, stage: 2, psi: 10, pit: 90, phi: 0 },
+  t3: { az: 0, el: 90, th: 30, misread: false },
+};
+const q = new URLSearchParams(location.search);
+if (q.get('tab')) S.tab = +q.get('tab');
+if (q.get('mode')) S.t2.mode = q.get('mode');
+if (q.get('misread') === '1') S.t3.misread = true;
+if (q.get('ap') === 'passive') S.t1.mode = 'passive';
+if (q.get('mirror') === '1') S.t1.mirror = true;
+const P_B = [0.30, 0.40, 0.06];                             // a corner of the book, in the book's own frame
+const P_TRAY = [0.40, 0.20, 0.75];                          // the tray's position, for the RAI lines of tab 3
+
+// =====================================================================================
+//  Tab 1 — what a rotation matrix is
+// =====================================================================================
+const T1 = {};
+function build1() {
+  clearContent();
+  content.add(triad('W', 1.0, GREY, 1, 1.36));
+  T1.ghost = book(0.18); content.add(T1.ghost);            // where the body started (active) / stays (passive)
+  T1.body = book(1); content.add(T1.body);
+  T1.frame = triad('B', 1.0); content.add(T1.frame);
+  T1.pt = sphere(0x9b1b4b); content.add(T1.pt);
+  T1.ptGhost = sphere(0x9b1b4b, 0.02); T1.ptGhost.material.transparent = true; T1.ptGhost.material.opacity = 0.35; content.add(T1.ptGhost);
+  T1.trace = null;
+  update1();
+}
+function R1() {
+  const s = S.t1; let R = Rel[s.axis](s.th * D);
+  if (s.mirror) R = R.map(row => [-row[0], row[1], row[2]]);   // negate the first column: a mirror, det = −1; the cover stays up and its text reads backwards
+  return R;
+}
+function update1() {
+  const s = S.t1, R = R1();
+  document.getElementById('th1v').textContent = deg(s.th);
+  document.querySelectorAll('.ax').forEach(b => b.classList.toggle('on', b.dataset.axis === s.axis));
+  document.getElementById('mirror').classList.toggle('on', s.mirror);
+  const RtR = mul(T(R), R), d = det(R);
+  const sub = s.mode === 'active' ? 'B' : 'F';
+  if (s.mode === 'active') {
+    place(T1.body, R, [0,0,0]); place(T1.ghost, I3(), [0,0,0]); T1.ghost.visible = true;
+    place(T1.frame, R, [0,0,0]);
+    const pW = mv(R, P_B); place(T1.pt, I3(), pW); place(T1.ptGhost, I3(), P_B);
+    document.getElementById('r1b').innerHTML =
+      `<b>ACTIVE</b> — the body turns, the frame W stays\n` +
+      `<span class="m">^B p</span> = ${vec(P_B)}\n<span class="g">        a corner of the book, in the book's own frame B (fixed)</span>\n` +
+      `<span class="t">^W p</span> = R <span class="m">^B p</span> = ${vec(pW)}\n<span class="g">        where that corner is now, in W</span>`;
+  } else {
+    place(T1.body, I3(), [0,0,0]); T1.ghost.visible = false;
+    place(T1.frame, R, [0,0,0]);
+    const pF = mv(T(R), P_B); place(T1.pt, I3(), P_B); place(T1.ptGhost, I3(), P_B);
+    document.getElementById('r1b').innerHTML =
+      `<b>PASSIVE</b> — the body stays; a new frame F is turned by R\n` +
+      `<span class="t">^W p</span> = ${vec(P_B)}\n<span class="g">        the same corner, fixed in W</span>\n` +
+      `<span class="m">^F p</span> = Rᵀ <span class="t">^W p</span> = ${vec(pF)}\n<span class="g">        its coordinates in the turned frame F</span>`;
+  }
+  // relabel the drawn frame B / F
+  T1.frame.children.filter(o => o.isSprite).forEach((sp, k) => { const nm = ['x','y','z'][k]; const nw = label(nm, sub, '#' + AXC[nm].toString(16).padStart(6,'0')); nw.position.copy(sp.position); T1.frame.remove(sp); T1.frame.add(nw); });
+  document.getElementById('r1a').innerHTML =
+    `R = R_${s.axis}(${deg(s.th)})${s.mirror ? ' with column x negated' : ''}\n<span class="g">columns = </span><span class="cx">x_${sub}</span> <span class="cy">y_${sub}</span> <span class="cz">z_${sub}</span><span class="g"> written in world coordinates</span>\n` + fmtMat(R);
+  document.getElementById('r1c').innerHTML =
+    `RᵀR − I : max |entry| = ${sci(maxAbsDiff(RtR, I3()))}\ndet R = ${d < 0 ? '<span class="warn">' + f4(d) + '</span>' : '+' + f4(d)}\n` +
+    (s.mirror ? `<span class="warn">det R = −1: a mirror, not a rotation.</span> RᵀR is still I, so\nunit, perpendicular columns are not enough.\nLook at the cover: the text reads backwards.` :
+                `unit, perpendicular columns and det +1:\nR⁻¹ = Rᵀ — undo a rotation by transposing.`);
+}
+document.querySelectorAll('.ax').forEach(b => b.addEventListener('click', () => { S.t1.axis = b.dataset.axis; update1(); }));
+document.getElementById('th1').addEventListener('input', e => { S.t1.th = +e.target.value; update1(); });
+document.querySelectorAll('input[name=ap]').forEach(r => r.addEventListener('change', e => { S.t1.mode = e.target.value; update1(); }));
+document.getElementById('set90').addEventListener('click', () => { S.t1.th = 90; document.getElementById('th1').value = 90; update1(); });
+document.getElementById('mirror').addEventListener('click', () => { S.t1.mirror = !S.t1.mirror; update1(); });
+document.getElementById('reset1').addEventListener('click', () => { Object.assign(S.t1, { axis: 'z', th: 30, mode: 'active', mirror: false }); document.getElementById('th1').value = 30; document.querySelector('input[name=ap][value=active]').checked = true; update1(); });
+
+// =====================================================================================
+//  Tab 2 — order matters; Euler angles and gimbal lock
+// =====================================================================================
+const T2 = { anim: null, timers: new Set(), sequence: 0 };
+function cancelOrderAnimation() {
+  T2.anim = null;
+  T2.sequence++;
+  for (const timer of T2.timers) clearTimeout(timer);
+  T2.timers.clear();
+}
+function scheduleOrderStep(k, delay) {
+  const sequence = T2.sequence;
+  const timer = setTimeout(() => {
+    T2.timers.delete(timer);
+    if (sequence === T2.sequence && S.tab === 2 && S.t2.mode === 'order') setStage(k, true);
+  }, delay);
+  T2.timers.add(timer);
+}
+function build2() {
+  cancelOrderAnimation();
+  clearContent();
+  if (S.t2.mode === 'order') {
+    T2.L = { base: [-1.15, 0, 0] }; T2.R = { base: [1.15, 0, 0] };
+    for (const side of [T2.L, T2.R]) {
+      const g = new THREE.Group(); g.position.set(...side.base); content.add(g);
+      g.add(triad('W', 0.7, GREY, 1, 1.42));
+      side.ghost = book(0.15); g.add(side.ghost);
+      side.body = book(1); g.add(side.body);
+      side.frame = triad('B', 0.85); g.add(side.frame);
+      side.Rshown = I3();
+    }
+    const t = label('a', ' then b', '#222', 0.34); t.position.set(-1.15, 0, 1.25); content.add(t);
+    const t2 = label('b', ' then a', '#222', 0.34); t2.position.set(1.15, 0, 1.25); content.add(t2);
+    controls.target.set(0, 0, 0.25);
+    setStage(S.t2.stage, false);
+  } else {
+    T2.g = {};
+    content.add(triad('W', 1.6, GREY, 1, 1.18));
+    T2.g.r1 = ring(1.3, AXC.z); T2.g.r2 = ring(1.05, AXC.y); T2.g.r3 = ring(0.8, AXC.x);
+    content.add(T2.g.r1, T2.g.r2, T2.g.r3);
+    T2.g.body = book(1); T2.g.body.scale.set(0.75, 0.75, 0.75); content.add(T2.g.body);
+    T2.g.frame = triad('B', 0.7); content.add(T2.g.frame);
+    T2.g.yawAxis = line([0,0,-1.6], [0,0,1.6], AXC.z, true); content.add(T2.g.yawAxis);
+    T2.g.rollAxis = line([-1.6,0,0], [1.6,0,0], AXC.x, true); content.add(T2.g.rollAxis);
+    T2.g.piv = [sphere(AXC.y, 0.04), sphere(AXC.y, 0.04), sphere(AXC.x, 0.04), sphere(AXC.x, 0.04)]; T2.g.piv.forEach(p => content.add(p));
+    controls.target.set(0, 0, 0);
+    updateGimbal();
+  }
+}
+const RA = () => Rel[S.t2.axA](S.t2.angA * D), RB = () => Rel[S.t2.axB](S.t2.angB * D);
+// the orientation of each book after k rotations: left = a then b (R_b R_a), right = b then a (R_a R_b)
+const stageR = (side, k) => k === 0 ? I3() : k === 1 ? (side === 'L' ? RA() : RB()) : (side === 'L' ? mul(RB(), RA()) : mul(RA(), RB()));
+function showSide(side, R) { side.Rshown = R; place(side.body, R, [0,0,0]); place(side.frame, R, [0,0,0]); }
+function setStage(k, animate) {
+  S.t2.stage = k;
+  const targets = { L: stageR('L', k), R: stageR('R', k) };
+  if (!animate) { showSide(T2.L, targets.L); showSide(T2.R, targets.R); updateOrder(); return; }
+  const from = { L: new THREE.Quaternion().setFromRotationMatrix(M4(T2.L.Rshown)), R: new THREE.Quaternion().setFromRotationMatrix(M4(T2.R.Rshown)) };
+  const to = { L: new THREE.Quaternion().setFromRotationMatrix(M4(targets.L)), R: new THREE.Quaternion().setFromRotationMatrix(M4(targets.R)) };
+  const t0 = performance.now(), dur = 700;
+  T2.anim = () => {
+    const u = Math.min(1, (performance.now() - t0) / dur), e = u * u * (3 - 2 * u);
+    for (const s of ['L', 'R']) {
+      const qq = from[s].clone().slerp(to[s], e); const m = new THREE.Matrix4().makeRotationFromQuaternion(qq); const el = m.elements;
+      showSide(T2[s], [[el[0],el[4],el[8]],[el[1],el[5],el[9]],[el[2],el[6],el[10]]]);
+    }
+    if (u >= 1) { showSide(T2.L, targets.L); showSide(T2.R, targets.R); T2.anim = null; }
+    updateOrder();
+  };
+  updateOrder();
+}
+function updateOrder() {
+  const s = S.t2;
+  document.getElementById('angAv').textContent = deg(s.angA); document.getElementById('angBv').textContent = deg(s.angB);
+  const RL = T2.L.Rshown, RR = T2.R.Rshown;
+  const stg = ['both books aligned with the world (nothing applied yet)', 'after each book’s first rotation', 'after both rotations'][s.stage];
+  const nameA = `R_${s.axA}(${deg(s.angA)})`, nameB = `R_${s.axB}(${deg(s.angB)})`;
+  const expressions = T2.anim ? ['current animated orientation', 'current animated orientation'] :
+    s.stage === 0 ? ['I', 'I'] : s.stage === 1 ? [nameA, nameB] : [`${nameB} · ${nameA}`, `${nameA} · ${nameB}`];
+  document.getElementById('r2a').innerHTML =
+    (T2.anim ? `moving toward stage ${s.stage}/2: readouts follow the books\n\n` : `stage ${s.stage}/2: ${stg}\n\n`) +
+    `left book  — a then b:   R = ${expressions[0]}\n` + fmtMat(RL, ['cx','cy','cz'], '  ') + '\n' +
+    `right book — b then a:   R = ${expressions[1]}\n` + fmtMat(RR, ['cx','cy','cz'], '  ');
+  const same = maxAbsDiff(RL, RR) < 1e-12;
+  const conclusion = T2.anim ? 'The rotation is in progress; compare the two orders after both steps.' :
+    s.stage === 0 ? 'Neither rotation has been applied.' :
+    s.stage === 1 ? (same ? 'The first rotations produce the same orientation.' : 'The books have received different first rotations.') + '\nCompare the orders after both steps.' :
+    same ? (s.axA === s.axB ? `<span class="t">the two orders agree</span>: rotations about the same fixed axis commute.` :
+      `<span class="t">the two orders agree for this pair.</span>\nDifferent axes can commute at special angles, such as two perpendicular half turns or an identity rotation.`) :
+      `<span class="m">the two orders do not agree.</span>\nRotation matrices generally do not commute.`;
+  document.getElementById('r2b').innerHTML =
+    `first column = the body's <span class="cx">x</span> axis currently shown:\n` +
+    `  left  ${vec(col(RL, 0))}\n  right ${vec(col(RR, 0))}\n` +
+    `max |R_left − R_right| = ${sci(maxAbsDiff(RL, RR))}\n` +
+    conclusion;
+}
+function eulerR(psi, pit, phi) { return mul(mul(Rz(psi * D), Ry(pit * D)), Rx(phi * D)); }
+function updateGimbal() {
+  const s = S.t2, g = T2.g;
+  document.getElementById('psiv').textContent = deg(s.psi); document.getElementById('pitv').textContent = deg(s.pit); document.getElementById('phiv').textContent = deg(s.phi);
+  const R1_ = Rz(s.psi * D), R12 = mul(R1_, Ry(s.pit * D)), R = mul(R12, Rx(s.phi * D));
+  // ring 1 (yaw) lies in the y–z plane at rest (normal x), and turns with ψ; ring 2 (pitch) lies in the x–y plane at
+  // rest and turns with ψ then ϑ_p; ring 3 (roll) lies in the x–z plane at rest and turns with all three.
+  place(g.r1, mul(R1_, Ry(90 * D)), [0,0,0]);
+  place(g.r2, R12, [0,0,0]);
+  place(g.r3, mul(R, Rx(90 * D)), [0,0,0]);
+  place(g.body, R, [0,0,0]); place(g.frame, R, [0,0,0]);
+  const rollAxis = col(R12, 0);                             // the body x axis after yaw and pitch: the axis roll turns about
+  place(g.rollAxis, R12, [0,0,0]);
+  const yP = col(R1_, 1); g.piv[0].position.set(...yP.map(v => v * 1.3)); g.piv[1].position.set(...yP.map(v => -v * 1.3));
+  g.piv[2].position.set(...rollAxis.map(v => v * 1.05)); g.piv[3].position.set(...rollAxis.map(v => -v * 1.05));
+  const signedDot = rollAxis[2], dot = Math.abs(signedDot);
+  const locked = dot > 1 - 1e-12;
+  // At +90° pitch the roll axis is -z; at -90° it is +z. Oppose the yaw effect in either case.
+  const rollDelta = signedDot > 0 ? -10 : 10;
+  const R2 = eulerR(s.psi + 10, s.pit, s.phi + rollDelta), dR = maxAbsDiff(R, R2);
+  document.getElementById('r2c').innerHTML =
+    `R = R_z(<span class="cz">ψ</span>) R_y(<span class="cy">ϑ_p</span>) R_x(<span class="cx">ϕ</span>)     ψ = ${deg(s.psi)}   ϑ_p = ${deg(s.pit)}   ϕ = ${deg(s.phi)}\n` + fmtMat(R);
+  document.getElementById('r2d').innerHTML =
+    `yaw axis  = world z (blue dashes) = (0.0000, 0.0000, 1.0000)\n` +
+    `roll axis = body x after yaw and pitch (red dashes)\n          = ${vec(rollAxis)}\n` +
+    `angle between the two axis lines = ${deg(Math.acos(Math.min(1, dot)) / D)}` +
+    (locked ? `   <span class="warn">one line (the roll axis points ${signedDot > 0 ? 'up' : 'down'} it): locked</span>` : '') + `\n\n` +
+    `move ψ by +10° and ϕ by ${rollDelta > 0 ? '+' : '−'}10° together: max |ΔR| = ${sci(dR)}\n` +
+    (locked ? `<span class="warn">no change: (ψ, ϕ) = (${deg(s.psi)}, ${deg(s.phi)}) and (${deg(s.psi+10)}, ${deg(s.phi+rollDelta)})\nare the same orientation.</span> The angle-rate map has only two independent directions.\nThe body still has three rotational freedoms.` :
+              `The orientation changes for this paired update. The three angle-rate directions are independent here: no lock.`);
+}
+document.querySelectorAll('input[name=mode2]').forEach(r => r.addEventListener('change', e => { S.t2.mode = e.target.value; modeUI2(); build2(); }));
+function modeUI2() {
+  document.getElementById('order-ctl').style.display = S.t2.mode === 'order' ? '' : 'none';
+  document.getElementById('gimbal-ctl').style.display = S.t2.mode === 'gimbal' ? '' : 'none';
+  document.querySelector(`input[name=mode2][value=${S.t2.mode}]`).checked = true;
+}
+for (const [id, key] of [['axA','axA'],['axB','axB']]) document.getElementById(id).addEventListener('change', e => {
+  cancelOrderAnimation(); S.t2[key] = e.target.value; setStage(S.t2.stage, false);
+});
+for (const [id, key] of [['angA','angA'],['angB','angB']]) document.getElementById(id).addEventListener('input', e => {
+  cancelOrderAnimation(); S.t2[key] = +e.target.value; setStage(S.t2.stage, false);
+});
+document.getElementById('stepBack').addEventListener('click', () => { cancelOrderAnimation(); setStage(0, false); });
+document.getElementById('step').addEventListener('click', () => {
+  if (T2.anim) return;
+  cancelOrderAnimation(); setStage(S.t2.stage >= 2 ? 0 : S.t2.stage + 1, S.t2.stage < 2);
+});
+document.getElementById('playAll').addEventListener('click', () => {
+  cancelOrderAnimation(); setStage(0, false); scheduleOrderStep(1, 50); scheduleOrderStep(2, 900);
+});
+for (const [id, key] of [['psi','psi'],['pit','pit'],['phi','phi']]) document.getElementById(id).addEventListener('input', e => { S.t2[key] = +e.target.value; updateGimbal(); });
+document.getElementById('lock').addEventListener('click', () => { Object.assign(S.t2, { psi: 10, pit: 90, phi: 0 }); syncGimbalSliders(); updateGimbal(); });
+document.getElementById('unlock').addEventListener('click', () => { Object.assign(S.t2, { psi: 10, pit: 30, phi: 0 }); syncGimbalSliders(); updateGimbal(); });
+function syncGimbalSliders() { for (const k of ['psi','pit','phi']) document.getElementById(k).value = S.t2[k]; }
+
+// =====================================================================================
+//  Tab 3 — four spellings of one orientation
+// =====================================================================================
+const T3 = {};
+function build3() {
+  clearContent();
+  content.add(triad('W', 1.0, GREY, 1, 1.36));
+  T3.body = book(1); content.add(T3.body);
+  T3.frame = triad('B', 1.0); content.add(T3.frame);
+  T3.ghost = book(0.45, '#e08a1e'); content.add(T3.ghost);
+  T3.ghostFrame = triad('B′', 1.0, { x: 0xe08a1e, y: 0xe08a1e, z: 0xe08a1e }, 1, 1.52); content.add(T3.ghostFrame);
+  T3.axis = line([0,0,0], [0,0,1], 0x9b1b4b, true); content.add(T3.axis);
+  T3.axisTip = label('û', '', '#9b1b4b', 0.22); content.add(T3.axisTip);
+  controls.target.set(0, 0, 0.25);
+  update3();
+}
+const uOf = (az, el) => [Math.cos(el * D) * Math.cos(az * D), Math.cos(el * D) * Math.sin(az * D), Math.sin(el * D)];
+function update3() {
+  const s = S.t3;
+  document.getElementById('azv').textContent = deg(s.az); document.getElementById('elv').textContent = deg(s.el); document.getElementById('th3v').textContent = deg(s.th);
+  document.getElementById('misread').checked = s.misread;
+  const u = uOf(s.az, s.el), t = s.th * D, K = skew(u);
+  const R = rodrigues(u, t), r = quatFromAxisAngle(u, t);
+  place(T3.body, R, [0,0,0]); place(T3.frame, R, [0,0,0]);
+  // the axis line: a unit line along û, drawn from −1.4 û to +1.4 û
+  T3.axis.geometry.setFromPoints([new THREE.Vector3(...u.map(v => -1.4 * v)), new THREE.Vector3(...u.map(v => 1.4 * v))]); T3.axis.computeLineDistances();
+  T3.axisTip.position.set(...u.map(v => 1.55 * v));
+  // the elementary formula, when û is a coordinate axis
+  const ax = ['x','y','z'].find((k, i) => Math.abs(Math.abs(u[i]) - 1) < 1e-9);
+  let elem = '';
+  if (ax) { const sign = u[['x','y','z'].indexOf(ax)] > 0 ? 1 : -1; const Re = Rel[ax](sign * t); elem = `\nelementary R_${ax}(${deg(sign * s.th)}) for comparison: max |difference| = ${sci(maxAbsDiff(R, Re))}`; }
+  document.getElementById('r3a').innerHTML =
+    `û = ${vec(u)}   |û| = ${f4(norm(u))}\nθ = ${deg(s.th)} = ${f4(t)} rad\n` +
+    `Rodrigues: R = I + sin θ [û]_× + (1 − cos θ) [û]_×²\n` +
+    `[û]_× =\n${fmtMatPlain(K)}\n` +
+    `R =\n${fmtMat(R)}` + elem;
+  document.getElementById('r3b').innerHTML =
+    `axis–angle   (û, θ) = (${vec(u)}, ${deg(s.th)})\n` +
+    `quaternion   <span class="m">r = (w, x, y, z)</span> = (cos θ/2, sin θ/2 û)\n             = ${vec(r)}   |r| = ${f4(Math.hypot(...r))}\n` +
+    `matrix from r: max |difference to Rodrigues| = ${sci(maxAbsDiff(matFromQuat(r), R))}`;
+  const rai = `X: "t(${P_TRAY.map(x => x.toFixed(2)).join(' ')}) d(${f4(s.th).replace(/\.?0+$/, '')} ${u.map(v => f4(v).replace(/\.?0+$/, '').replace('−','-')).join(' ')})"\n` +
+              `X: [${P_TRAY.map(x => x.toFixed(2)).join(' ')} ${r.map(v => f4(v).replace('−','-')).join(' ')}]`;
+  document.getElementById('r3c').innerHTML = `RAI .g, the same orientation twice; w first in the\n7-number spelling (Drake: w first as well):\n${rai}`;
+  // the bug: the receiving library reads (a, b, c, d) as (x, y, z, w)
+  const rm = [r[3], r[0], r[1], r[2]];                      // w' = z, x' = w, y' = x, z' = y
+  const Rm = matFromQuat(rm), aa = axisAngleFromQuat(rm);
+  T3.ghost.visible = s.misread; T3.ghostFrame.visible = s.misread;
+  place(T3.ghost, Rm, [0,0,0]); place(T3.ghostFrame, Rm, [0,0,0]);
+  document.getElementById('r3d').innerHTML = s.misread ?
+    `<span class="gh">handed to SciPy / ROS as (x, y, z, w)</span>, the library reads\n  w = ${f4(rm[0])},  (x, y, z) = ${vec(rm.slice(1))}\n` +
+    `and builds <span class="warn">${deg(aa.t / D)} about û′ = ${vec(aa.u)}</span>\n(the orange ghost).  max |R_ghost − R| = ${f4(maxAbsDiff(Rm, R))}\n<span class="warn">No error is raised.</span>` :
+    `<span class="g">tick the box to see what a library expecting (x, y, z, w) makes of this quaternion</span>`;
+}
+document.querySelectorAll('.up').forEach(b => b.addEventListener('click', () => {
+  const p = { z: [0, 90], x: [0, 0], y: [90, 0], d: [45, Math.atan(1 / Math.SQRT2) / D] }[b.dataset.u];
+  S.t3.az = p[0]; S.t3.el = p[1]; document.getElementById('az').value = p[0]; document.getElementById('el').value = p[1]; update3(); }));
+document.getElementById('az').addEventListener('input', e => { S.t3.az = +e.target.value; update3(); });
+document.getElementById('el').addEventListener('input', e => { S.t3.el = +e.target.value; update3(); });
+document.getElementById('th3').addEventListener('input', e => { S.t3.th = +e.target.value; update3(); });
+document.getElementById('misread').addEventListener('change', e => { S.t3.misread = e.target.checked; update3(); });
+document.getElementById('reset3').addEventListener('click', () => { Object.assign(S.t3, { az: 0, el: 90, th: 30, misread: false }); document.getElementById('az').value = 0; document.getElementById('el').value = 90; document.getElementById('th3').value = 30; update3(); });
+
+// =====================================================================================
+//  Tabs and the render loop
+// =====================================================================================
+function showTab(n) {
+  cancelOrderAnimation();
+  S.tab = n;
+  document.querySelectorAll('nav button').forEach(b => b.classList.toggle('active', +b.dataset.tab === n));
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.id === 'tab' + n));
+  if (n === 1) build1(); else if (n === 2) { modeUI2(); build2(); } else build3();
+}
+document.querySelectorAll('nav button').forEach(b => b.addEventListener('click', () => showTab(+b.dataset.tab)));
+showTab(S.tab);
+(function loop() { requestAnimationFrame(loop); if (T2.anim) T2.anim(); controls.update(); renderer.render(scene, camera); })();
+</script>
+</body>
+</html>
