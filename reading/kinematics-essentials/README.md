@@ -1,6 +1,6 @@
 # Kinematic foundations: the reading and its companion files
 
-Extract the whole zip file first, then open `essentials.pdf` from the extracted folder. The links
+Extract the whole zip file first, then open `chapter-01.pdf` from the extracted folder. The links
 in the PDF open files from this folder, so a copy of the PDF alone has no working links, and a
 PDF opened from inside the zip has none either. Keep the folder together.
 
@@ -29,7 +29,7 @@ below adds two packages to the same environment.
 
 ## What is inside
 
-- `essentials.pdf` is the reading.
+- `chapter-01.pdf` is the reading.
 - `code/reading_example.py` is the runnable NumPy example that follows §10 of the reading. Run it
   from this folder with `python code/reading_example.py`. It prints the values of the reading's
   table of printed lines.
