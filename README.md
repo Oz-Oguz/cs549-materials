@@ -11,8 +11,9 @@ Everything else about the course (assignments, announcements, grades) is on Mood
 - `slides/03-D1-optimization-1.pdf`
 - `slides/04-D1-constraints-and-komo.pdf`
 
-The slides carry "run it live" buttons that work only on the lecturer's computer during the lecture;
-the demonstrations behind them are the modules below.
+The slides' "run it live" buttons open the demonstrations. A button for a browser module opens that module on
+the published site, already set to the slide's example. A button for a Drake demonstration opens the guide in
+`demos/`, which says how to install and run it on your own computer.
 
 ## The kinematics reading
 
@@ -22,7 +23,7 @@ Open `chapter-01.pdf` from that folder, because its links open files beside it, 
 
 ## Interactive modules
 
-Each folder under `modules/` holds one browser demonstration, `index.html`, and its guide, `notes.md`.
+Each folder under `modules/` holds one browser demonstration, `index.html`, which explains its controls on screen.
 The easiest way to use them is the published site, https://oz-oguz.github.io/cs549-materials/ , where every module and PDF of this
 repository opens in the browser (for example https://oz-oguz.github.io/cs549-materials/modules/two-link-arm/ or
 https://oz-oguz.github.io/cs549-materials/modules/opt-explorer/). From a downloaded copy, open a module's `index.html` in any current
@@ -30,4 +31,10 @@ browser; the rotations module needs WebGL and an internet connection the first t
 optimization explorer needs a local web server: run `python3 -m http.server` in this repository's
 folder and open `http://localhost:8000/modules/opt-explorer/`.
 
-Updated 2026-10-11. © 2026 Özgür S. Öğüz, Bilkent University. Licensed under CC BY 4.0: use and adapt these materials freely, but credit the source as described in `LICENSE.md`. The FR3 robot model inside the reading package keeps its own Apache 2.0 license and notice.
+## Drake demonstrations
+
+`demos/` holds the ten demonstrations that run a seven-joint robot arm in the Drake robotics toolbox, with
+`demos/README.md` as their setup guide (also at https://oz-oguz.github.io/cs549-materials/demos/). They run in Python on Linux, on Apple-silicon
+Macs and under WSL on Windows, and they are optional: the slides carry their results.
+
+Updated 2026-10-19. © 2026 Özgür S. Öğüz, Bilkent University. Licensed under CC BY 4.0: use and adapt these materials freely, but credit the source as described in `LICENSE.md`. The FR3 robot model inside the reading package keeps its own Apache 2.0 license and notice.

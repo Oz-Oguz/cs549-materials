@@ -191,7 +191,7 @@
     document.getElementById('kkt').innerHTML = rows.map(r => `<tr><td>${r}</td></tr>`).join('');
     const sens = document.getElementById('sens');
     if (sol.rail) sens.textContent = `Sensitivity: slide the rail by +0.1 along its normal and f* changes by about −0.1·κ = ${f3(-0.1 * sol.lam)}.`;
-    else if (sol.active) { const drop = 0.5 * sol.lam * sol.lam - 0.5 * Math.max(0, sol.lam - 0.1) ** 2; sens.textContent = `Sensitivity: widen the fence by 0.1 (move the boundary outward) and f* drops by ${f3(drop)}; the price rule 0.1·λ = ${f3(0.1 * sol.lam)} holds while λ > 0.1 (below that the widened fence goes idle and the whole ½λ² disappears). The multiplier is the price of the constraint.`; }
+    else if (sol.active) { const drop = 0.5 * sol.lam * sol.lam - 0.5 * Math.max(0, sol.lam - 0.1) ** 2; sens.textContent = `Sensitivity: widen the fence by 0.1 (move the boundary outward) and f* drops by ${f3(drop)}. The first-order prediction is 0.1·λ = ${f3(0.1 * sol.lam)}. While λ > 0.1, the constraint stays active and the exact finite drop is 0.1·λ − 0.005. At λ ≤ 0.1, the widened fence reaches or passes the target, and the whole ½λ² disappears. The multiplier gives the local cost change per unit of relaxation.`; }
     else sens.textContent = `Sensitivity: widening the fence changes nothing (λ = 0): the constraint has no price while it is inactive.`;
   }
 

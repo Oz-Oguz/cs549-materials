@@ -1,0 +1,3 @@
+# The Drake demonstrations of CS 549. The course tested Drake 1.46.0, which brings numpy and matplotlib.
+drake==1.46.0
+scipy

@@ -1,0 +1,48 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CS 549: running the lecture demonstrations</title>
+<style>body{font-family:Charter,Georgia,serif;max-width:46em;margin:2em auto;padding:0 1em;line-height:1.5;color:#222}
+h1,h2,h3{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;color:#9b1b4b}h3{margin-top:1.6em}a{color:#1f6f8b}
+pre{background:#f4f2f0;padding:.7em;border-radius:6px;overflow-x:auto}code{font-size:.92em}
+table{border-collapse:collapse}td{border:1px solid #ddd;padding:.3em .6em}section:target{background:#fff6d6;outline:6px solid #fff6d6}</style></head>
+<body><p><a href="../">Course materials</a></p>
+<h1>Running the lecture demonstrations</h1>
+<p>Most &quot;run it live&quot; buttons in the slides open a browser module on the course site and need no setup. Ten buttons belong to demonstrations that run a seven-joint robot arm in the Drake robotics toolbox. These run in Python on your own computer and show the robot in your browser. They are optional: every number they show is also in the slides&#x27; tables and figures. In the slide PDFs, those ten buttons open this page.</p>
+<h2>One-time setup</h2>
+<p>Drake installs from PyPI on these systems only:</p>
+<table><tr><td>Your computer</td><td>Python</td></tr><tr><td>Linux on x86_64 (Ubuntu 22.04 or newer)</td><td>3.10 to 3.13</td></tr><tr><td>Mac with Apple silicon (M1 or newer), macOS 15 or newer</td><td>3.12 or 3.13</td></tr><tr><td>Windows</td><td>use WSL 2 with Ubuntu 22.04 or newer, then follow the Linux steps</td></tr></table>
+<p>An Intel Mac, or a Mac on macOS 14 or older, has no Drake package; use the browser modules instead.</p>
+<p>Download this repository (the green &quot;Code&quot; button on GitHub, then &quot;Download ZIP&quot;, or <code>git clone</code>). In a terminal, from the repository&#x27;s <code>demos</code> folder:</p>
+<pre><code>python3 --version                      # must be one of the versions above
+python3 -m venv .venv                  # a private Python environment for the demos
+source .venv/bin/activate              # run this again in every new terminal
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+python drake/smoke_test.py             # prints the arm&#x27;s position and Jacobian, then exits</code></pre>
+<p>The first Drake run downloads Drake&#x27;s robot models once, about 240 MB, which took under a minute on a fast connection; later runs work offline. <code>python drake/smoke_test.py --hold</code> also starts the viewer: open the address it prints in a browser and press Enter in the terminal to quit.</p>
+<h2>Running a demonstration</h2>
+<p>Activate the environment, then run the command listed below from the <code>demos</code> folder. Each command prints an address such as <code>http://localhost:7000</code> or <code>http://127.0.0.1:52341/</code>; open it in a browser. The demo waits for you and never moves by itself. End it with its &quot;Stop&quot; button, or press Ctrl+C in the terminal. After Ctrl+C, Python prints a few lines ending in <code>KeyboardInterrupt</code>; that is how it reports the stop, not an error. Running a script without its flag prints the numbers that appear on the slide, then exits.</p>
+<h2>The demonstrations, by slide</h2>
+<section id="contact"><h3>Contact changes the map</h3>
+<p>Slides: <code>slides/02-D1-learning-overlay-and-frames.pdf</code>, page 8 (Computed: how much the mug moves per joint).</p><pre><code>python drake/00-contact-changes-the-map/contact_demo.py --meshcat</code></pre><p>Seven joint sliders and a &quot;Grasp / release&quot; button in the browser. Before the grasp, moving the joints leaves the mug where it is; after the grasp, the mug moves with the hand. The terminal prints the rank of the mug&#x27;s Jacobian after each press.</p></section>
+<section id="map-error"><h3>When the map is wrong</h3>
+<p>Slides: <code>slides/02-D1-learning-overlay-and-frames.pdf</code>, page 9 (Challenge 2: state estimation).</p><pre><code>python drake/00b-when-the-map-is-wrong/map_error_demo.py --meshcat</code></pre><p>Sliders set the error of the estimated mug position in centimetres. &quot;Plan on the estimate, execute on the truth&quot; plans for the orange ghost mug and executes against the real teal mug, so a small error lands a finger on the rim. &quot;Back to the ready pose&quot; resets the arm.</p></section>
+<section id="fr3-chain"><h3>The FR3 transform chain</h3>
+<p>Slides: <code>slides/02-D2-transforms-fk-jacobian.pdf</code>, page 19 (The FR3 uses the same transform chain).</p><pre><code>python drake/01c-fr3-grasp-chain/fr3_grasp_chain.py --meshcat</code></pre><p>The Franka Research 3 model in its ready pose. Buttons step through the chain from the base to the flange, the tool center and the mug grasp; sliders change the link and mug opacity and nudge each joint.</p></section>
+<section id="fk-jacobian"><h3>Forward kinematics and the Jacobian on the Panda</h3>
+<p>Slides: <code>slides/02-D2-transforms-fk-jacobian.pdf</code>, page 25 (Live demo: the Panda&#x27;s 7-joint arm in Drake); <code>slides/02-D2-transforms-fk-jacobian.pdf</code>, page 57 (Backup: the Panda&#x27;s zero configuration is singular).</p><pre><code>python drake/01-fk-jacobian/fk_jacobian_demo.py --meshcat</code></pre><p>The Panda with seven joint sliders. The terminal prints the end-effector position, the rank of the Jacobian and its smallest singular value as you move them. Three buttons set a spread pose, a near-singular pose and the singular zero configuration.</p></section>
+<section id="self-motion"><h3>Redundancy: the elbow swings, the hand stays</h3>
+<p>Slides: <code>slides/02-D2-transforms-fk-jacobian.pdf</code>, page 42 (Live demo: redundancy, the elbow swings, the hand stays).</p><pre><code>python drake/01b-redundancy-self-motion/self_motion_panda.py --meshcat</code></pre><p>The gripper stays on the mug while one slider moves the elbow along the curve of configurations that keep the hand still. Buttons jump to elbow up and the two elbow-down poses, and play a sweep.</p></section>
+<section id="tip-only-app"><h3>Only the fingertip position fixed</h3>
+<p>Slides: <code>slides/02-D2-transforms-fk-jacobian.pdf</code>, page 43 (Same demo, only the fingertip position fixed).</p><pre><code>python drake/01b-redundancy-self-motion/tip_only_panda.py --app</code></pre><p>A web page with the scene and a readable panel. Only the fingertip position is fixed, so the seven joint sliders (in the scene&#x27;s Open Controls menu) move the arm in four free directions.</p></section>
+<section id="gn-ik-replay"><h3>Gauss-Newton inverse kinematics, step by step</h3>
+<p>Slides: <code>slides/03-D1-optimization-1.pdf</code>, page 31 (A real arm: the Panda in Drake).</p><pre><code>python drake/02-gauss-newton-ik/gn_ik_panda.py --replay --app</code></pre><p>A web page, paused at the start. Step, Back and the slider walk through the Gauss-Newton iterates; the predicted and the actual flange positions are drawn at each step, and four runs can be selected.</p></section>
+<section id="ik-nlp"><h3>Inverse kinematics as a nonlinear program</h3>
+<p>Slides: <code>slides/04-D1-constraints-and-komo.pdf</code>, page 18 (Live demo: IK as a nonlinear program on the Panda).</p><pre><code>python drake/03-ik-as-nlp/ik_nlp_panda.py --meshcat</code></pre><p>Target sliders in the browser. After each move, the arm re-solves inverse kinematics as a nonlinear program, and the terminal prints which constraints are active.</p></section>
+<section id="constrained-ik-replay"><h3>Constrained inverse kinematics: the multiplier is learned</h3>
+<p>Slides: <code>slides/04-D1-constraints-and-komo.pdf</code>, page 24 (The augmented Lagrangian learns the multiplier).</p><pre><code>python drake/04-constrained-ik-al/constrained_ik_panda.py --replay --app</code></pre><p>A web page, paused at the start. Step through the augmented-Lagrangian loop with one elbow stop: joint updates move the arm, and multiplier updates change the multiplier with the arm fixed.</p></section>
+<section id="ik-nlp-al-replay"><h3>The target is a constraint; posture is the cost</h3>
+<p>Slides: <code>slides/04-D1-constraints-and-komo.pdf</code>, page 27 (The target is a constraint; posture is the cost).</p><pre><code>python drake/05-ik-nlp-al/ik_nlp_al_panda.py --replay --app</code></pre><p>A web page, paused at the start. The target is a constraint and the posture is the cost; step through joint updates and multiplier updates for two targets, and watch a joint bound become active in the second.</p></section>
+<h2>If something does not work</h2>
+<ul><li><b><code>pip</code> finds no matching distribution for <code>drake</code>.</b> Your Python version or system is not in the table above. Check <code>python --version</code> inside the activated environment.</li><li><b>The address does not open.</b> Copy it exactly from the terminal, including the port number. Try <code>127.0.0.1</code> in place of <code>localhost</code>. Under WSL, open it in your Windows browser.</li><li><b>A demo says the address is already in use.</b> An earlier demo is still running. Stop it, or close its terminal.</li><li><b>The first run stops while downloading.</b> The model download needs the internet once. Run the command again.</li></ul>
+<p>The course tested these steps on macOS 26 with Python 3.12 and Drake 1.46.0. Linux and WSL follow Drake&#x27;s own packages, which the course did not test separately.</p>
+</body></html>

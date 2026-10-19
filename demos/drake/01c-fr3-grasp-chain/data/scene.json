@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "units": {"length": "m", "angle": "rad"},
+  "robot_type": "fr3",
+  "base_frame": "fr3_link0",
+  "flange_frame": "fr3_link8",
+  "grasp_frame": "fr3_hand_tcp",
+  "world_to_base": {"xyz": [0, 0, 0], "rpy": [0, 0, 0]},
+  "q_ready_pi_fractions": [0, -0.25, 0, -0.75, 0, 0.5, 0.25],
+  "finger_opening_each_m": 0.04,
+  "world_to_mug": {"xyz": [0.5, 0.1, 0.1], "rpy_pi_fractions": [0, 0, 0.16666666666666666]},
+  "mug_to_grasp_target": {"xyz": [0, 0, 0], "rpy_pi_fractions": [1, 0, 0]},
+  "grasp_to_approach": {"xyz": [0, 0, -0.1], "rpy": [0, 0, 0]},
+  "mug": {"radius_m": 0.035, "height_m": 0.08, "handle_direction": "+x_M"},
+  "table": {"top_z_m": 0.06, "center_xy_m": [0.52, 0.10], "size_xyz_m": [0.6, 0.5, 0.04]},
+  "assumptions": [
+    "The base is fixed and the links are rigid. This model uses nominal manufacturer geometry, not calibration of a particular lab arm.",
+    "The upright mug pose is supplied exactly. Perception does not estimate it in this lesson.",
+    "G is the manufacturer's hand TCP between the fingers. The current pose is computed from q.",
+    "G* is a chosen grasp target at the mug center, with its z axis pointing down and x axis following the mug handle direction.",
+    "The approach target is 0.10 m behind G* along its local z axis. Its position is therefore 0.10 m above G* in world z.",
+    "The targets are pose requests. This lesson performs no IK, collision check, contact simulation, grasp-stability test, or hardware execution.",
+    "Official collision shapes are used as low-detail visual geometry. Fingers are held symmetrically open."
+  ]
+}

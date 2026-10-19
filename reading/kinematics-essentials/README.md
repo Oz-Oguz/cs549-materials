@@ -8,7 +8,7 @@ Some PDF viewers do not follow links to local files. Some viewers drop the part 
 the question mark, and then a module opens in its default state instead of the state the reading
 describes. In both cases open `README.html` in a browser and use the same link in its table below.
 
-This package was built on 2026-10-11.
+This package was built on 2026-10-18.
 
 ## Python for the scripts
 
@@ -91,30 +91,15 @@ ignores; they are expected, and its guide explains them.
 
 ## About the guides
 
-The guides in `modules/` and `drake/` are copies of files written for the course repository, and
-some of their sentences assume it. Where a guide says to run `.venv/bin/python some/script.py`
-from the repository root, run `python some/script.py` from this folder in your environment.
-A guide may name files and tools that this folder does not hold and that the demonstrations the
-reading links do not need: for example the repository's `uv`, `requirements/`, `scripts/`,
-`planning/`, `lectures/`, `SETUP.md`, `notation.md`, `modules/ROADMAP.md`, `smoke_test.py`,
-`check_meshcat.mjs`, `gauss_newton_ik.py`, Node.js, a headless Chrome, and the Drake examples
-numbered 00, 00b, 02, 03 and 04. `drake/README.md` was written for the course's development
-track, and its status line refers to that track. In this folder the four linked scripts are
-optional enrichment, and the other Python files in `drake/` are helpers and model tools.
-The module guides end with notes written for the instructor. Comments and some printed lines in
-the scripts use repository paths. In `code/kinematics_note.py`, "notes.md" means the long
-reading. In `code/two_link.py` and the Drake scripts, "notes" means Deck 03's lecture notes, and
-in `modules/rotations-3d/check_numbers.py` it means Deck 02's notes. None of these notes is in
-this folder. An address on `http://127.0.0.1:8765` in a guide needs the course checkout and its
-running launcher, which this folder does not include. A browser may show a Markdown guide as
-plain text or download it.
+Each `notes.md` file under `modules/` and `drake/` is a short guide that says how to open its demonstration.
+The scripts in `drake/` are the same as in the course materials' `demos/` folder, whose guide
+(https://oz-oguz.github.io/cs549-materials/demos/) explains the one-time Drake setup. Comments and usage lines in the scripts mention files of the
+course repository, such as Deck 03's lecture notes, that are not in this folder; the scripts do not need them.
 
-## Launcher routes
+## Addresses that start with /run/
 
-The reading mentions launcher routes such as `/run/self-motion`. They are addresses on
-`http://127.0.0.1:8765` that the course repository's launcher, `scripts/demo_server.py`, serves
-during lectures. They work only on a computer that holds the course checkout and runs that
-launcher. This folder does not include the launcher. Run the scripts directly instead, as above.
+The reading mentions addresses such as `/run/self-motion`. The lecturer uses them to start a demonstration
+during the lecture. Run the scripts directly instead, as above.
 
 ## Files the reading names that are not in this folder, and paths that differ
 
@@ -154,4 +139,3 @@ kinematics, and "FR3" is the Franka Research 3 arm.
 | `code/reading_example.py` and `code/fk_chain_walkthrough.py` | Python 3 with NumPy |
 | `code/kinematics_note.py` and `code/make_figures.py` | Python 3 with NumPy; Matplotlib for the figures; Drake for the Panda section of `kinematics_note.py` |
 | the Drake demonstrations (optional enrichment) | Drake 1.46.0 with NumPy and SciPy on a system and Python version from the list above, a browser for Meshcat, and an internet connection for the first run |
-| the launcher routes | the course checkout and its running launcher, which this folder does not include |

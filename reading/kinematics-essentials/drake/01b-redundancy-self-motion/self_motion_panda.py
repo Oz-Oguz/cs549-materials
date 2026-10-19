@@ -227,7 +227,7 @@ def meshcat_mode():
     meshcat.AddButton("Play / pause sweep")
     meshcat.AddButton("Show / hide elbow path")
     meshcat.AddButton("Stop")
-    # Seven text readouts of the joint angles in degrees (the instructor's request of 2026-10-07 for
+    # Seven text readouts of the joint angles in degrees (2026-10-07, for
     # Deck 03 slide 42: see the joints move together while the hand stays). Meshcat has no text widget,
     # but a button's label is text and a button can be deleted and re-added, as tip_only_panda.py does
     # for its joint table. The seven are re-added together so they keep their order, at most a few times

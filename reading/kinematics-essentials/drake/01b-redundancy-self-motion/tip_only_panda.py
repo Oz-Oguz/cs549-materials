@@ -364,7 +364,7 @@ def meshcat_mode(app=False, app_port=0, seed=None):
     arm = TipArm(diagram, plant, panda)
     p_star = arm.tip(Q_UP)
     rng = np.random.default_rng(seed)
-    # The joint sliders read in degrees (the instructor's request, 2026-10-07); the arm and every
+    # The joint sliders read in degrees (2026-10-07); the arm and every
     # computation stay in radians, so the values are converted at the slider boundary.
     SLIDERS = [f"{n} [deg]" for n in JOINT_NAMES]
     for n, lo_j, hi_j, v in zip(SLIDERS, arm.lo, arm.hi, Q_UP):

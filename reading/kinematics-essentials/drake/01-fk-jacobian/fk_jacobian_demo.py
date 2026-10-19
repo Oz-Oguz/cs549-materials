@@ -40,7 +40,7 @@ Run:  python fk_jacobian_demo.py            prints everything (notes §5 (i) and
                                             fallback picture for the deck's slide "A real arm: the Panda's zero configuration is singular"; --wrist gives its close-up
 
 Tested 2026-09-05 with drake 1.46.0 on macOS; the presets, the joint axes and the figure mode added
-2026-09-20 (plan planning/demos-deck03-2026-09-20.md §3.1 and §3.4). Runtime of the print mode: a few seconds.
+2026-09-20. Runtime of the print mode: a few seconds.
 """
 import sys
 import time
@@ -381,8 +381,8 @@ def print_mode():
     print(f"\n--- the ready pose as the browser's sliders can hold it: q = {q_grid} ---")
     print(f"  rank J = {rank_grid} of 6,  sigma_min = {smin_grid:.6f}, which the live console rounds to "
           f"{smin_grid:.4f}")
-    print(f"  The exact ready pose above gives {smin_exact:.6f}, or {smin_exact:.4f} on screen. A slide or a")
-    print("  presenter note that quotes one of these two numbers should say which of the two poses it means.")
+    print(f"  The exact ready pose above gives {smin_exact:.6f}, or {smin_exact:.4f} on screen. A quote of either")
+    print("  number should say which of the two poses it means.")
 
     print("\n=== Part 3: the near-singular preset — rank still 6, and only sigma_min says so ===")
     p, J, rank, smin = Panda_numbers(plant, pc, Panda, ee, Q_NEAR)
