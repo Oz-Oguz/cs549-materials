@@ -8,7 +8,7 @@ Some PDF viewers do not follow links to local files. Some viewers drop the part 
 the question mark, and then a module opens in its default state instead of the state the reading
 describes. In both cases open `README.html` in a browser and use the same link in its table below.
 
-This package was built on 2026-10-18.
+This package was built on 2026-10-19.
 
 ## Python for the scripts
 

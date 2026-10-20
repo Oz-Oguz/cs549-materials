@@ -37,4 +37,4 @@ folder and open `http://localhost:8000/modules/opt-explorer/`.
 `demos/README.md` as their setup guide (also at https://oz-oguz.github.io/cs549-materials/demos/). They run in Python on Linux, on Apple-silicon
 Macs and under WSL on Windows, and they are optional: the slides carry their results.
 
-Updated 2026-10-19. © 2026 Özgür S. Öğüz, Bilkent University. Licensed under CC BY 4.0: use and adapt these materials freely, but credit the source as described in `LICENSE.md`. The FR3 robot model inside the reading package keeps its own Apache 2.0 license and notice.
+Updated 2026-10-20. © 2026 Özgür S. Öğüz, Bilkent University. Licensed under CC BY 4.0: use and adapt these materials freely, but credit the source as described in `LICENSE.md`. The FR3 robot model inside the reading package keeps its own Apache 2.0 license and notice.
