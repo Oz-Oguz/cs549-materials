@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 2 companion</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>body{font-family:Charter,Georgia,serif;max-width:46em;margin:2em auto;padding:0 1em;line-height:1.5;color:#222}h1,h2,h3{font-family:Helvetica,Arial,sans-serif}img{max-width:100%}table{border-collapse:collapse;width:100%}td,th{border:1px solid #ddd;padding:.4em}pre{overflow:auto;background:#f6eef1;padding:1em}.katex-display{overflow-x:auto}.keep{break-inside:avoid}a{color:#1f6f8b}</style>
+  <script defer="" src="assets/katex/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <link rel="stylesheet" href="assets/katex/katex.min.css" />
+</head>
+<body>
+<h1 id="selected-chapter-1-prerequisites">Selected Chapter 1
+prerequisites</h1>
+<p>These sections are reproduced from the kinematics reading.</p>
+<h3 id="how-many-answers-the-planar-geometry">5.2 How many answers: the
+planar geometry</h3>
+<p><strong>Geometry.</strong> For the two-link arm the set of reachable
+tip positions, the <strong>workspace</strong>, is the ring between radii
+<span class="math inline">l_{1} - l_{2} = 0.1\,\mathrm{m}</span> and
+<span class="math inline">l_{1} + l_{2} = 0.7\,\mathrm{m}</span> (Figure
+3). This ideal workspace ignores joint limits and obstacles and
+identifies angles differing by a full turn. A target outside the ring,
+including its central hole, has <strong>no</strong> solution. A target
+on its outer circle has exactly <strong>one</strong>, the arm stretched
+straight. A target strictly between the two circles has
+<strong>two</strong>, the elbow bent one way or the other: for <span
+class="math inline">\mathbf{y}^{*} = (0.5, 0.2)</span> they are <span
+class="math inline">\mathbf{q} = (-11.52^{\circ}, +80.41^{\circ})</span>
+and <span class="math inline">(55.12^{\circ}, -80.41^{\circ})</span>.
+For a reachable target away from singularities and active joint limits,
+an arm with more joints than independent task constraints (<span
+class="math inline">n&gt;m</span>) can have a <strong>continuum</strong>
+of solutions: a Panda (<span class="math inline">n = 7</span>) holding
+its gripper fixed (<span class="math inline">m = 6</span>) can still
+swing its elbow along a one-dimensional curve of configurations. This is
+<strong>redundancy relative to a task</strong>. The same Panda with only
+its fingertip position fixed has three constraints and, at full task
+rank, four local freedoms remaining. The two-link arm’s two-position
+task has <span class="math inline">n=m=2</span>: its two discrete
+solutions are not redundancy. (The Drake demo
+<code>drake/01b-redundancy-self-motion</code> shows it: one slider moves
+a Panda along that curve while its gripper stays on a mug.)</p>
+<figure>
+<img
+src="lectures/02-reading-kinematic-foundations/fig/workspace_ik.png"
+alt="Figure 3. The reachable ring of the two-link arm and three targets: inside, two solutions (teal and gold, distinguished by the sign of q_2); on the outer circle, one solution, the stretched arm; outside, none." />
+<figcaption aria-hidden="true">Figure 3. The reachable ring of the
+two-link arm and three targets: inside, two solutions (teal and gold,
+distinguished by the sign of <span class="math inline">q_2</span>); on
+the outer circle, one solution, the stretched arm; outside,
+none.</figcaption>
+</figure>
+<h3 id="use-a-local-model-to-propose-a-joint-position-update">7.6 Use a
+local model to propose a joint-position update</h3>
+<p>Return to the two-link inverse problem of §5 and to its target <span
+class="math inline">\mathbf{y}^{*}=(0.5,0.2)</span> m, which lies inside
+the reachable ring. The two-link arm is at the worked configuration
+<span class="math inline">\mathbf{q}=(30^{\circ},45^{\circ})</span>, and
+the task is the tip position. Unlike the two previous paragraphs,
+nothing here is a rate and there is no control period. The unknown is a
+change of the configuration guess, in radians, and the right-hand side
+is a displacement, in meters.</p>
+<ol type="1">
+<li><p>The current tip follows from (7): <span
+class="math inline">\varphi(\mathbf{q})\approx(0.424056,0.489778)</span>
+m.</p></li>
+<li><p>The remaining displacement is the target minus the current
+tip:</p>
+<p><span
+class="math display">\mathbf{e}=\mathbf{y}^{*}-\varphi(\mathbf{q})\approx
+\begin{bmatrix}0.075944\\-0.289778\end{bmatrix}\ \mathrm{m},\qquad
+\lVert\mathbf{e}\rVert\approx0.2996\ \mathrm{m}.</span></p></li>
+<li><p>The local equation comes from §6’s model of a small joint change.
+Asking the predicted displacement to equal the remaining one gives a
+linear equation for the unknown update:</p>
+<p><span
+class="math display">\mathbf{J}(\mathbf{q})\,\Delta\mathbf{q}=\mathbf{e},\qquad
+\det\mathbf{J}=l_1l_2\sin q_2\approx0.0849.</span></p>
+<p>Here <span class="math inline">\mathbf{J}</span> is the <span
+class="math inline">2\times2</span> matrix (9). Its determinant is
+nonzero, so it is invertible and the inverse of (11) applies with a
+displacement in place of a velocity.</p></li>
+<li><p>The proposed update solves that equation:</p>
+<p><span class="math display">\begin{aligned}
+\Delta\mathbf{q}&amp;=\mathbf{J}^{-1}(\mathbf{q})\,\mathbf{e}\approx
+\begin{bmatrix}-0.920116\\1.293088\end{bmatrix}\ \mathrm{rad}
+=\begin{bmatrix}-52.72^{\circ}\\74.09^{\circ}\end{bmatrix},\\[4pt]
+\mathbf{q}+\Delta\mathbf{q}&amp;\approx(-22.72^{\circ},\,119.09^{\circ}).
+\end{aligned}</span></p></li>
+<li><p>Forward kinematics at the updated configuration, (7) again,
+gives</p>
+<p><span
+class="math display">\varphi(\mathbf{q}+\Delta\mathbf{q})\approx
+\begin{bmatrix}0.335682\\0.143665\end{bmatrix}\
+\mathrm{m}.</span></p></li>
+<li><p>The remaining displacement at the updated configuration, with the
+same target-minus-tip convention as step 2, is</p>
+<p><span class="math display">\begin{aligned}
+\mathbf{e}_{\mathrm{new}}&amp;=\mathbf{y}^{*}-\varphi(\mathbf{q}+\Delta\mathbf{q})\approx
+\begin{bmatrix}0.164318\\0.056335\end{bmatrix}\ \mathrm{m},\\[4pt]
+\lVert\mathbf{e}_{\mathrm{new}}\rVert&amp;\approx0.1737\ \mathrm{m}.
+\end{aligned}</span></p></li>
+</ol>
+<p>The linear model predicted that the tip would land on the target,
+because <span
+class="math inline">\mathbf{J}\Delta\mathbf{q}=\mathbf{e}</span> holds
+exactly. The arm lands <span class="math inline">0.17</span> m away. The
+target is reachable and the equation was solved correctly, but the
+linear model is accurate only for small joint changes, as §6 showed, and
+this update turns the elbow by <span
+class="math inline">74^{\circ}</span>. For comparison, the integration
+step above moved the joints by at most <span
+class="math inline">0.33^{\circ}</span>, and forward kinematics after it
+differs from the predicted <span class="math inline">1</span> mm rise by
+about <span class="math inline">3\,\mu\mathrm{m}</span>; the runnable
+example at the end of this reading prints that actual tip increment. The
+update did reduce the error, from <span class="math inline">0.30</span>
+m to <span class="math inline">0.17</span> m, but nothing in the
+calculation guaranteed that. A proposed update is checked by evaluating
+the forward kinematics, as step 5 did. Figure 4 shows the start, the
+target and the arm after the update. All values are computed from
+unrounded inputs; this reading’s <code>code/kinematics_note.py</code>,
+the NumPy example after §10 and Deck 03’s <code>code/two_link.py</code>
+(part (k)) print them.</p>
+<figure>
+<img src="lectures/02-D2-transforms-fk-jacobian/fig/two_link_bridge.png"
+alt="Figure 4. One joint-position update from the local model. The dark arm is at (30^{\circ},45^{\circ}) with its tip at (0.4241,0.4898) m; the star is the target (0.5,0.2) m and the arrow is the remaining displacement \mathbf{e}. The gray arm is the configuration after the update \Delta\mathbf{q}=\mathbf{J}^{-1}\mathbf{e}; its tip is at (0.336,0.144) m, still 0.17 m from the target. Deck 03 calls this update the square step and draws the result as a ghost arm. (Deck 03, fig/two_link_bridge.png.)" />
+<figcaption aria-hidden="true">Figure 4. One joint-position update from
+the local model. The dark arm is at <span
+class="math inline">(30^{\circ},45^{\circ})</span> with its tip at <span
+class="math inline">(0.4241,0.4898)</span> m; the star is the target
+<span class="math inline">(0.5,0.2)</span> m and the arrow is the
+remaining displacement <span class="math inline">\mathbf{e}</span>. The
+gray arm is the configuration after the update <span
+class="math inline">\Delta\mathbf{q}=\mathbf{J}^{-1}\mathbf{e}</span>;
+its tip is at <span class="math inline">(0.336,0.144)</span> m, still
+<span class="math inline">0.17</span> m from the target. Deck 03 calls
+this update the square step and draws the result as a ghost arm. (Deck
+03, <code>fig/two_link_bridge.png</code>.)</figcaption>
+</figure>
+<p>Optimization I (Deck 04) starts from this calculation and answers the
+questions it leaves open: how far to trust one update, how to repeat it
+with a fresh Jacobian, how to measure the remaining error and when to
+stop. It writes the same problem with two conventions that are worth
+knowing now:</p>
+<p><span
+class="math display">\mathbf{r}=\varphi(\mathbf{q})-\mathbf{y}^{*}=-\mathbf{e},\qquad
+\mathbf{J}\,\boldsymbol{\delta}=-\mathbf{r},\qquad
+f(\mathbf{q})=\tfrac12\lVert\mathbf{r}\rVert^{2},\qquad
+\nabla f=\mathbf{J}^{\top}\mathbf{r}.</span></p>
+<p>The residual <span class="math inline">\mathbf{r}</span> is the
+current tip minus the target, the opposite sign of <span
+class="math inline">\mathbf{e}</span>, and the step is written <span
+class="math inline">\boldsymbol{\delta}</span>, so the local equation
+<span class="math inline">\mathbf{J}\Delta\mathbf{q}=\mathbf{e}</span>
+of step 3 is the same equation with the sign moved to the other side.
+The objective <span class="math inline">f</span> is (8) with a factor
+one half in front. The half leaves the minimizer unchanged and makes the
+gradient <span class="math inline">\mathbf{J}^{\top}\mathbf{r}</span>
+free of a factor of two. Appendix C.3 shows what repeating the update
+does on this example, as an illustration only.</p>
+<p><strong>Why it appears in robot learning.</strong> The calculations
+of §§7.1–7.6, from the velocity request to the joint-position update,
+appear in a learning system as follows. An end-effector velocity action
+becomes a joint command through this robot-specific calculation. The
+policy’s training data may or may not cover configurations where it
+behaves poorly. The same task-space command can be passed to different
+arms, each using its own Jacobian, but their joint rates, reachable
+motions and limits differ. A common action format helps define a shared
+interface; it does not by itself guarantee transfer.</p>
+<blockquote>
+<p><strong>Must understand:</strong> requested versus achieved task
+velocity; the square case; the loss of an instantaneous direction at the
+stretched arm and the large joint rates a request can demand near it;
+several valid answers to one request; the pseudo-inverse’s two decisions
+(least squares, then minimum norm), including that an unreachable
+component is dropped; null-space motion as the difference of two valid
+answers, defined relative to the stated task; integration as rate times
+time; one joint-position update proposed from the local model, checked
+by forward kinematics, and why its remaining error can be large.</p>
+<p><strong>Recognize:</strong> damping as a tradeoff between tracking
+and joint speed (Appendix C.2 has the step and its derivation); the
+null-space projector; geometric pose errors expressed in the Jacobian’s
+frame; the singular value decomposition (SVD) as the construction behind
+<span class="math inline">\mathbf{J}^{+}</span>; Optimization I’s
+residual sign and half factor. Appendices B and C hold the derivations,
+and §8 describes the SVD.</p>
+<p><strong>Deferred:</strong> the SVD derivation of the pseudo-inverse
+(long reading §9.2); the control and convergence of the repeated step
+(Optimization I; Appendix C only illustrates it); general
+orientation-residual derivatives (Appendix B.2 states only the rule near
+agreement); constrained differential IK (the optimization block).</p>
+</blockquote>
+<hr />
+</body>
+</html>

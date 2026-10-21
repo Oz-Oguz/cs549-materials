@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 2 companion</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <style>body{font-family:Charter,Georgia,serif;max-width:46em;margin:2em auto;padding:0 1em;line-height:1.5;color:#222}h1,h2,h3{font-family:Helvetica,Arial,sans-serif}img{max-width:100%}table{border-collapse:collapse;width:100%}td,th{border:1px solid #ddd;padding:.4em}pre{overflow:auto;background:#f6eef1;padding:1em}.katex-display{overflow-x:auto}.keep{break-inside:avoid}a{color:#1f6f8b}</style>
+</head>
+<body>
+<h1
+id="chapter-2-optimization-and-constrained-inverse-kinematics">Chapter
+2: optimization and constrained inverse kinematics</h1>
+<p>Extract the complete zip into a folder, then open
+<code>README.html</code>. Keep the folder together. The reading retains
+all three appendices. A PDF copied out of this folder does not carry its
+companion files.</p>
+<ul>
+<li><a href="chapter-02-essentials.pdf">Read the essentials
+PDF</a>.</li>
+<li><a href="chapter-02-essentials.html">Read the same essentials in a
+browser</a>.</li>
+<li><a href="chapter-02-detailed.html">Read the full detailed
+reference</a>.</li>
+<li><a href="prerequisites.html">Review the Chapter 1
+prerequisites</a>.</li>
+<li><a href="demos.html">Open the demonstration guide</a>.</li>
+</ul>
+<p>Some PDF viewers block local links or drop query parameters. Use the
+matching links below in <code>README.html</code> when that happens. The
+browser readings include their mathematical renderer and fonts, so they
+do not need an internet connection.</p>
+<h2 id="start-the-browser-apps">Start the browser apps</h2>
+<p>From this extracted folder run:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> launch.py</span></code></pre></div>
+<p>On Windows use <code>py launch.py</code>. Open the address printed by
+the command if a browser does not open. This serves only this extracted
+folder on your computer. It needs Python 3 and no Python packages. Keep
+the terminal open while using the apps. Stop it with Ctrl+C. Use
+<code>--port 8766</code> if port 8765 is already in use.</p>
+<p>The two-link and constraint apps also open directly as local HTML
+files. The optimization explorer uses JavaScript modules and needs the
+local server. It is already built; students do not need Node.js or npm.
+The server is also a convenient way to open all the readings and
+preserve their app query strings.</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Reading</th>
+<th>Companion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Essentials</td>
+<td><a href="chapter-02-detailed.html">detailed reference</a></td>
+</tr>
+<tr>
+<td>Essentials</td>
+<td><a
+href="chapter-02-detailed.html#penalize-a-large-proposed-step">detailed
+reference</a></td>
+</tr>
+<tr>
+<td>Essentials</td>
+<td><a href="README.html#python">environment guide</a></td>
+</tr>
+<tr>
+<td>Essentials</td>
+<td><a
+href="lectures/03-reading-optimization-planning-and-control/code/local_step.py">local_step.py</a></td>
+</tr>
+<tr>
+<td>Essentials</td>
+<td><a
+href="lectures/03-reading-optimization-planning-and-control/code/jacobian_transpose.py">jacobian_transpose.py</a></td>
+</tr>
+<tr>
+<td>Essentials</td>
+<td><a
+href="lectures/03-D1-optimization-1/code/gauss_newton_ik.py">two-link IK
+calculation</a></td>
+</tr>
+<tr>
+<td>Essentials</td>
+<td><a
+href="lectures/03-D1-optimization-1/code/history_directions.py">history-direction
+calculation</a></td>
+</tr>
+<tr>
+<td>Essentials</td>
+<td><a
+href="lectures/03-D1-optimization-1/code/make_solver_overview.py">line-search
+figure script</a></td>
+</tr>
+<tr>
+<td>Essentials</td>
+<td><a
+href="lectures/04-D1-constraints-and-komo/code/constrained_ik.py">constrained_ik.py</a></td>
+</tr>
+<tr>
+<td>Essentials</td>
+<td><a
+href="lectures/04-D1-constraints-and-komo/code/check_solvers.py">solver
+checks</a></td>
+</tr>
+<tr>
+<td>Essentials</td>
+<td><a href="drake/02-gauss-newton-ik/gn_ik_panda.py">first
+program</a></td>
+</tr>
+<tr>
+<td>Essentials</td>
+<td><a
+href="lectures/03-reading-optimization-planning-and-control/code/panda_runs_figure.py">figure
+script</a></td>
+</tr>
+<tr>
+<td>Essentials</td>
+<td><a href="drake/03-ik-as-nlp/ik_nlp_panda.py">second</a></td>
+</tr>
+<tr>
+<td>Essentials</td>
+<td><a href="drake/05-ik-nlp-al/ik_nlp_al_panda.py">third</a></td>
+</tr>
+<tr>
+<td>Essentials</td>
+<td><a href="demos.html">demonstration guide</a></td>
+</tr>
+<tr>
+<td>Essentials</td>
+<td><a
+href="modules/gauss-newton-ik/index.html?view=local-step">position-update
+view</a></td>
+</tr>
+<tr>
+<td>Essentials</td>
+<td><a
+href="modules/gauss-newton-ik/index.html?y=0.5,0.2&amp;method=gd">gradient-descent
+view</a></td>
+</tr>
+<tr>
+<td>Essentials</td>
+<td><a
+href="modules/opt-explorer/index.html?tab=concepts&amp;fn=elongated&amp;preset=classic-zig-zag&amp;method=gd&amp;ls=off&amp;alpha=0.08&amp;arrows=off">step-size
+view</a></td>
+</tr>
+<tr>
+<td>Essentials</td>
+<td><a
+href="modules/opt-explorer/index.html?tab=concepts&amp;fn=elongated&amp;preset=classic-zig-zag&amp;method=gd&amp;ls=armijo&amp;alpha=1&amp;arrows=on">Armijo
+view</a></td>
+</tr>
+<tr>
+<td>Essentials</td>
+<td><a
+href="modules/opt-explorer/index.html?tab=concepts&amp;fn=quartic-saddle&amp;preset=near-the-maximum&amp;method=newton&amp;ls=off&amp;arrows=off">Newton
+view</a></td>
+</tr>
+<tr>
+<td>Essentials</td>
+<td><a
+href="modules/opt-explorer/index.html?tab=trajectory&amp;preset=ik">lecture-arm
+view</a></td>
+</tr>
+<tr>
+<td>Essentials</td>
+<td><a
+href="modules/opt-explorer/index.html?tab=trajectory&amp;preset=ik&amp;y=0.7,0">reach-boundary
+view</a></td>
+</tr>
+<tr>
+<td>Essentials</td>
+<td><a
+href="modules/opt-explorer/index.html?tab=trajectory&amp;preset=ik&amp;elbow=60">elbow-clipping
+view</a></td>
+</tr>
+<tr>
+<td>Essentials</td>
+<td><a
+href="modules/opt-explorer/index.html?tab=concepts&amp;fn=rosenbrock&amp;preset=classic-start&amp;method=lbfgs&amp;ls=exact&amp;arrows=off">L-BFGS
+view</a></td>
+</tr>
+<tr>
+<td>Essentials</td>
+<td><a
+href="modules/opt-explorer/index.html?tab=concepts&amp;fn=rosenbrock&amp;preset=classic-start&amp;method=bfgs&amp;ls=strong-wolfe&amp;arrows=off">BFGS
+view</a></td>
+</tr>
+<tr>
+<td>Essentials</td>
+<td><a
+href="modules/opt-explorer/index.html?tab=concepts&amp;fn=armijo-wolfe&amp;preset=start-x-2&amp;method=gd&amp;ls=strong-wolfe&amp;arrows=off">line-search
+view</a></td>
+</tr>
+<tr>
+<td>Essentials</td>
+<td><a
+href="modules/kkt-explorer/index.html?mode=disc&amp;target=0.5,0.3">disc
+view</a></td>
+</tr>
+<tr>
+<td>Essentials</td>
+<td><a
+href="modules/kkt-explorer/index.html?mode=wall&amp;target=1.6,0.6">line
+view</a></td>
+</tr>
+<tr>
+<td>Essentials</td>
+<td><a
+href="chapter-02-detailed.html#appendix-b-demonstrations">detailed
+reference’s demonstration appendix</a></td>
+</tr>
+<tr>
+<td>Essentials</td>
+<td><a href="https://msp.org/pjm/1966/16-1/pjm-v16-n1-p01-p.pdf">1966
+paper</a></td>
+</tr>
+<tr>
+<td>Detailed reference</td>
+<td><a
+href="prerequisites.html#how-many-answers-the-planar-geometry">Chapter
+01 §5.2</a></td>
+</tr>
+<tr>
+<td>Detailed reference</td>
+<td><a
+href="lectures/03-reading-optimization-planning-and-control/code/bowl_derivatives.py">bowl_derivatives.py</a></td>
+</tr>
+<tr>
+<td>Detailed reference</td>
+<td><a
+href="lectures/03-D1-optimization-1/code/descent.py">descent.py</a></td>
+</tr>
+<tr>
+<td>Detailed reference</td>
+<td><a
+href="lectures/03-D1-optimization-1/code/make_vocabulary_figures.py">make_vocabulary_figures.py</a></td>
+</tr>
+<tr>
+<td>Detailed reference</td>
+<td><a
+href="lectures/03-reading-optimization-planning-and-control/code/gradient_descent.py">gradient_descent.py</a></td>
+</tr>
+<tr>
+<td>Detailed reference</td>
+<td><a
+href="lectures/03-reading-optimization-planning-and-control/code/armijo.py">armijo.py</a></td>
+</tr>
+<tr>
+<td>Detailed reference</td>
+<td><a
+href="lectures/03-reading-optimization-planning-and-control/fig/local_prediction_vs_fk.png">opening
+prediction figure</a></td>
+</tr>
+<tr>
+<td>Detailed reference</td>
+<td><a href="README.html#drake">Drake guide</a></td>
+</tr>
+<tr>
+<td>Detailed reference</td>
+<td><a
+href="drake/04-constrained-ik-al/constrained_ik_panda.py">constrained_ik_panda.py</a></td>
+</tr>
+<tr>
+<td>Detailed reference</td>
+<td><a
+href="modules/gauss-newton-ik/index.html?y=0.5,0.2&amp;method=gn">two-link
+Gauss–Newton module</a></td>
+</tr>
+<tr>
+<td>Detailed reference</td>
+<td><a href="demos.html#gn-ik-replay">paused Panda replay</a></td>
+</tr>
+<tr>
+<td>Detailed reference</td>
+<td><a
+href="lectures/03-D1-optimization-1/fig/drake-gn-replay.png">existing
+replay plots</a></td>
+</tr>
+<tr>
+<td>Detailed reference</td>
+<td><a href="demos.html#ik-nlp">Panda constrained-IK
+demonstration</a></td>
+</tr>
+<tr>
+<td>Detailed reference</td>
+<td><a href="demos.html#constrained-ik-replay">one-limit Panda
+replay</a></td>
+</tr>
+<tr>
+<td>Detailed reference</td>
+<td><a href="demos.html#ik-nlp-al-replay">hard-target Panda
+replay</a></td>
+</tr>
+<tr>
+<td>Detailed reference</td>
+<td><a
+href="prerequisites.html#use-a-local-model-to-propose-a-joint-position-update">kinematics
+essentials</a></td>
+</tr>
+<tr>
+<td>Detailed reference</td>
+<td><a href="chapter-02-detailed.html#optimization-fundamentals">the
+corresponding detailed derivations</a></td>
+</tr>
+<tr>
+<td>Detailed reference</td>
+<td><a
+href="chapter-02-detailed.html#constraints-and-constrained-inverse-kinematics">the
+corresponding detailed derivations</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="python">Python for the numerical examples</h2>
+<p>The commands in Appendix B run from this folder. The supplied
+<code>lectures/</code> and <code>drake/</code> paths are part of the
+package. Create its environment on macOS/Linux:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> <span class="at">-m</span> venv .venv</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .venv/bin/activate</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> <span class="at">-m</span> pip install <span class="at">-r</span> requirements.txt</span></code></pre></div>
+<p>On Windows use <code>py -m venv .venv</code>, then
+<code>.venv\Scripts\activate</code>. After activation, use
+<code>python</code> in place of <code>.venv/bin/python</code> in the
+appendix’s Bash examples. Set <code>PYTHONUTF8=1</code> if a Windows
+terminal cannot print a mathematical character. The small numerical
+scripts need NumPy; figure generators also need Matplotlib. No robotics
+package is needed for the two-link calculations.</p>
+<p>Each Bash block in the detailed reference is a separate example. Run
+each from this folder; a block that changes directories does not change
+the starting directory of the next example. Script outputs may use
+lecture or source-file names to identify the shared calculations.</p>
+<h2 id="drake">Panda demonstrations with Drake</h2>
+<p>The Panda scripts are optional. Their static observations remain in
+the reading. They need a Python environment in which Drake can be
+installed. The course’s tested environment uses Python 3.12 and Drake
+1.46.0. To match it:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3.12</span> <span class="at">-m</span> venv .venv</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .venv/bin/activate</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> <span class="at">-m</span> pip install <span class="at">-r</span> requirements-drake.txt</span></code></pre></div>
+<p>If you already created <code>.venv</code>, install the Drake
+requirements in that environment only if its Python supports the pinned
+Drake release. The package does not include Python, Drake or the Panda
+model. Drake’s first model load may need an internet connection and a
+model download. Browser readings and the bundled browser apps work
+without those downloads.</p>
+<p>Use the commands in Appendix B.5 for print modes. For the paused web
+replays, activate the environment and run one command from the
+demonstration guide. Open the replay address printed in that terminal.
+Those scripts provide their own Meshcat viewer and controls; the course
+checkout and its classroom launcher are not needed. Run one replay at a
+time, and stop it with Ctrl+C before starting another.</p>
+<p>The code keeps the source solvers and numerical parameters. The rail
+replay’s reference helper and saved reference events are included under
+<code>support/</code>. Its provenance/reference paths are adapted during
+packaging; its numerical functions are unchanged. The package includes
+the neighboring helper modules, HTML panels and regression baselines
+required by the linked scripts. Comments and usage lines in some scripts
+name files of the course repository, such as its planning records, that
+are not in this folder; the scripts do not need them.</p>
+<h2 id="what-the-detailed-reference-adds">What the detailed reference
+adds</h2>
+<p>The detailed browser reading retains its full derivations and
+appendices. Its course-launcher links lead to the portable demonstration
+guide. The two Chapter 1 references lead to included extracts of those
+sections. References to the two lecture-note discussions lead to the
+corresponding derivations in this detailed reading. These delivery
+adaptations preserve the mathematical content while keeping the package
+independent of the course checkout.</p>
+<p>The examples solve local numerical problems. Feasible waypoints do
+not certify safe motion between them. No physical robot execution or
+realistic contact simulation is included in this package.</p>
+<h2 id="license">License</h2>
+<p>See <a href="LICENSE.md">LICENSE.md</a> for the course-material
+license and <code>licenses/</code> for the notices of bundled
+third-party browser dependencies. Drake and its downloaded robot models
+keep their own licenses and are not redistributed here.</p>
+</body>
+</html>

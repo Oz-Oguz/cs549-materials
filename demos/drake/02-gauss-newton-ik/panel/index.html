@@ -29,11 +29,13 @@
   .slider { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
   .slider input { flex: 1; }
   .toggles label { display: inline-block; margin-right: 14px; }
+  .markers { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 12px; }
+  .markers label { margin-right: 0; white-space: nowrap; }
+  .markers .swatch { margin-left: 3px; }
   table.readouts { width: 100%; border-collapse: collapse; font-size: 17px; }
   table.readouts td { padding: 4px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
   table.readouts td:first-child { color: var(--muted); width: 46%; }
   table.readouts td.big { font-size: 22px; font-weight: 600; }
-  .legend span { display: inline-block; margin: 2px 12px 2px 0; }
   .swatch { display: inline-block; width: 14px; height: 14px; border-radius: 50%; vertical-align: -2px; margin-right: 5px; border: 1px solid #999; }
   table.eq { width: 100%; border-collapse: collapse; font-family: "Charter", Georgia, serif; font-size: 18px; background: #fff; border: 1px solid var(--line); border-radius: 6px; margin: 6px 0; }
   .eq td { padding: 4px 8px; vertical-align: top; border-bottom: 1px solid #eee; }
@@ -75,10 +77,18 @@
       <div class="slider"><label for="iterate">iterate i</label><input id="iterate" type="range" min="0" max="18" step="1" value="0"><span id="iterate-max">of 18</span></div>
       <div class="runs" id="runs"></div>
       <div class="toggles" style="margin-top: 8px">
-        <label><input type="checkbox" id="trials"> show rejected Armijo trials (selected update only)</label>
+        <label><input type="checkbox" id="trials"> show rejected Armijo trials<span class="swatch" style="background: var(--grey); margin-left: 5px"></span>(selected update only)</label>
         <label><input type="checkbox" id="closeup"> flange close-up camera</label>
       </div>
-      <p class="note">Drag rotates, right-drag pans, scroll zooms; Step keeps your view. Selecting a run resets its wide view. Showing the rejected trials widens the view to include the selected update's candidates at each Step; the close-up follows the flange.</p>
+      <div class="slider"><label for="arm-opacity">arm opacity</label><input id="arm-opacity" type="range" min="0" max="1" step="0.05" value="1"><span id="arm-opacity-value">1.00</span></div>
+      <div class="toggles markers" id="markers">
+        <span class="note">show:</span>
+        <label><input type="checkbox" data-show="target" checked><span class="swatch" style="background: var(--gold)"></span>target</label>
+        <label title="The line between the predicted and FK tips is drawn only while both are shown"><input type="checkbox" data-show="predicted" checked><span class="swatch" style="background: var(--teal)"></span>predicted tip<span class="note" id="predicted-none" hidden> (for update 1)</span></label>
+        <label title="The line between the predicted and FK tips is drawn only while both are shown"><input type="checkbox" data-show="actual" checked><span class="swatch" style="background: var(--maroon)"></span>FK tip</label>
+        <label><input type="checkbox" data-show="beads" checked><span class="swatch" style="background: var(--gold); width: 9px; height: 9px"></span>past tips</label>
+        <label><input type="checkbox" data-show="ghost" checked><span class="swatch" style="background: #ccc; opacity: .6"></span>ghost</label>
+      </div>
       <p class="warn" id="connection" hidden>Waiting for the demo…</p>
     </section>
     <section>
@@ -94,11 +104,10 @@
         <tr><td>damping ρ · iteration budget</td><td id="rho">—</td></tr>
         <tr><td>outcome at the end</td><td id="outcome">—</td></tr>
       </table>
-      <p class="legend"><span><span class="swatch" style="background: var(--teal)"></span>predicted tip</span><span><span class="swatch" style="background: var(--maroon)"></span>FK tip (current flange)</span><span><span class="swatch" style="background: var(--gold)"></span>target and past tips</span><span><span class="swatch" style="background: #ccc; opacity: .6"></span>ghost = q<sup>(i−1)</sup></span><span><span class="swatch" style="background: var(--grey)"></span>rejected trials</span></p>
     </section>
     <section>
       <h2>What one Step shows</h2>
-      <p>At iterate <em>i</em> the solid arm is at <b>q<sup>(i)</sup></b> and the faded ghost at <b>q<sup>(i−1)</sup></b>. The linear model built at q<sup>(i−1)</sup> promised the flange at the <span class="swatch" style="background: var(--teal)"></span><b>teal</b> point; forward kinematics put it at the <span class="swatch" style="background: var(--maroon)"></span><b>maroon</b> point, the current flange. Their distance is the <b>prediction gap</b>: the local model's error for this update. The <span class="swatch" style="background: var(--gold)"></span><b>gold</b> sphere is the target; small gold beads mark every past flange position.</p>
+      <p>At iterate <em>i</em> the solid arm is at <b>q<sup>(i)</sup></b> and the faded ghost at <b>q<sup>(i−1)</sup></b>. The linear model built at q<sup>(i−1)</sup> promised the flange at the <span class="swatch" style="background: var(--teal)"></span><b>teal</b> point; forward kinematics put it at the <span class="swatch" style="background: var(--maroon)"></span><b>maroon</b> point, the current flange. Their distance is the <b>prediction gap</b>: the local model's error for this update. The <span class="swatch" style="background: var(--gold)"></span><b>gold</b> sphere is the target; small gold beads mark every past flange position. At iterate 0 the teal sphere is already the model's promise for update 1, computed from J at the start; Step once to see where FK puts the flange. In run 3b that promise uses the step length Armijo accepted.</p>
       <table class="eq">
         <tr><td>objective</td><td>f(q) = ½ ‖φ(q) − y*‖²</td></tr>
         <tr><td>step</td><td>Δq<sup>(i−1)</sup> = α (J<sup>⊤</sup>J + ρ I)<sup>−1</sup> J<sup>⊤</sup> (y* − φ(q<sup>(i−1)</sup>))</td></tr>
@@ -156,6 +165,18 @@
   window.addEventListener('blur', releaseSlider);
   byId('trials').addEventListener('change', e => act('trials:' + (e.target.checked ? 1 : 0)));
   byId('closeup').addEventListener('change', e => act('closeup:' + (e.target.checked ? 1 : 0)));
+  // The opacity slider sends its value at most every 100 ms while dragging, and once more on release.
+  let opacityActive = false, opacityTimer = null;
+  const sendOpacity = () => { opacityTimer = null; act('opacity:' + byId('arm-opacity').value); };
+  byId('arm-opacity').addEventListener('pointerdown', () => { opacityActive = true; });
+  window.addEventListener('pointerup', () => { opacityActive = false; });
+  byId('arm-opacity').addEventListener('input', e => {
+    byId('arm-opacity-value').textContent = Number(e.target.value).toFixed(2);
+    if (!opacityTimer) opacityTimer = setTimeout(sendOpacity, 100);
+  });
+  byId('arm-opacity').addEventListener('change', () => { if (opacityTimer) clearTimeout(opacityTimer); sendOpacity(); });
+  document.querySelectorAll('#markers input[data-show]').forEach(box =>
+    box.addEventListener('change', e => act('show:' + e.target.dataset.show + ':' + (e.target.checked ? 1 : 0))));
   byId('panel-toggle').addEventListener('click', () => {
     const panel = byId('panel'), hidden = !panel.hidden;
     panel.hidden = hidden; byId('workspace').dataset.panelHidden = String(hidden);
@@ -192,6 +213,11 @@
       byId('iterate').value = i;
     }
     byId('trials').checked = !!state.trials; byId('closeup').checked = !!state.closeup;
+    byId('predicted-none').hidden = state.i !== 0;
+    if (!opacityActive && !opacityTimer && !pending(state) && typeof state.arm_opacity === 'number') {
+      byId('arm-opacity').value = state.arm_opacity; byId('arm-opacity-value').textContent = state.arm_opacity.toFixed(2);
+    }
+    if (state.show && !pending(state)) document.querySelectorAll('#markers input[data-show]').forEach(box => { box.checked = !!state.show[box.dataset.show]; });
     byId('run-label').textContent = run.label;
     byId('iterate-label').textContent = `i = ${i} of ${n}`;
     byId('task-error').textContent = fmtE(its[i].residual) + ' m';

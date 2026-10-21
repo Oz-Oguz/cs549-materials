@@ -1,0 +1,2859 @@
+{
+  "package": "optimization-essentials",
+  "documents": {
+    "chapter-02-essentials.html": {
+      "source": "lectures/03-reading-optimization-planning-and-control/chapter-02-essentials.md",
+      "sha256": "d96cc7ca5dff7c08efb00cec4ced5665d2299ab991bee83923bb428c2264119d"
+    },
+    "chapter-02-detailed.html": {
+      "source": "lectures/03-reading-optimization-planning-and-control/chapter-02.md",
+      "sha256": "371066ab1294aa40f28ad902e5bc8ec4f922428e23f07ca0adc22fe339daa752"
+    },
+    "prerequisites.html": {
+      "source": "lectures/02-reading-kinematic-foundations/chapter-01.md",
+      "sha256": "96316784756aeeabefb35b70a4d5e91805547ad6f40c7ae63362f39eb18e2f20"
+    }
+  },
+  "sources": {
+    "lectures/03-reading-optimization-planning-and-control/code/local_step.py": {
+      "source": "lectures/03-reading-optimization-planning-and-control/code/local_step.py",
+      "source_sha256": "d640f5372a0a98fdeb7ef80b78f90ba0f95f96ded8a6c38d0fce7c17ab436aa0"
+    },
+    "lectures/03-reading-optimization-planning-and-control/code/bowl_derivatives.py": {
+      "source": "lectures/03-reading-optimization-planning-and-control/code/bowl_derivatives.py",
+      "source_sha256": "ea99c944b0a9f80fcafe4bb9a163e663e291b555d39afdc82d3c15597da518f2"
+    },
+    "lectures/03-reading-optimization-planning-and-control/code/gradient_descent.py": {
+      "source": "lectures/03-reading-optimization-planning-and-control/code/gradient_descent.py",
+      "source_sha256": "c2c9ddc1a3b601a26f62ca18741cd999907fef302379e426d98a7cb72cd15416"
+    },
+    "lectures/03-reading-optimization-planning-and-control/code/armijo.py": {
+      "source": "lectures/03-reading-optimization-planning-and-control/code/armijo.py",
+      "source_sha256": "4de2b8033fbc797c00462139a79ea7fbef49d904a3cb5674222eb331bb113350"
+    },
+    "lectures/03-reading-optimization-planning-and-control/code/jacobian_transpose.py": {
+      "source": "lectures/03-reading-optimization-planning-and-control/code/jacobian_transpose.py",
+      "source_sha256": "404d56bfe52551b753834299bc6a82b30ace92293f56e57a0742f9ec53cf0c8e"
+    },
+    "lectures/03-reading-optimization-planning-and-control/code/make_figures.py": {
+      "source": "lectures/03-reading-optimization-planning-and-control/code/make_figures.py",
+      "source_sha256": "48f783f2987e36757c3493b81f56abff8b8d124c6427436436e57c5637de0914"
+    },
+    "lectures/03-reading-optimization-planning-and-control/code/panda_runs_figure.py": {
+      "source": "lectures/03-reading-optimization-planning-and-control/code/panda_runs_figure.py",
+      "source_sha256": "951fdddd8f58e93cfea6605280bddde7d98d6e18b3c1efca425de6a03d02884f"
+    },
+    "lectures/03-D1-optimization-1/code/descent.py": {
+      "source": "lectures/03-D1-optimization-1/code/descent.py",
+      "source_sha256": "743e02de1720ec28372ee78f05af936361873a85f7bdca3761985ff5324fd082"
+    },
+    "lectures/03-D1-optimization-1/code/gauss_newton_ik.py": {
+      "source": "lectures/03-D1-optimization-1/code/gauss_newton_ik.py",
+      "source_sha256": "4c632e5a4346c8b86eab13234056eff6c22837beed3885a0ef1ef493b02749d2"
+    },
+    "lectures/03-D1-optimization-1/code/make_vocabulary_figures.py": {
+      "source": "lectures/03-D1-optimization-1/code/make_vocabulary_figures.py",
+      "source_sha256": "c05dd0eeb06ea2462ca563c1cfb2ef40c5ba66425bfad70b06fc563c1d274696"
+    },
+    "lectures/03-D1-optimization-1/code/history_directions.py": {
+      "source": "lectures/03-D1-optimization-1/code/history_directions.py",
+      "source_sha256": "39b7d3d6e83b1753d0edadb0be3053dd9088aa08636c6b997dd9d2fcdf040794"
+    },
+    "lectures/03-D1-optimization-1/code/make_solver_overview.py": {
+      "source": "lectures/03-D1-optimization-1/code/make_solver_overview.py",
+      "source_sha256": "358e752f9b82bf43d6825669f7077afb6d042b558055d6bcc839644fc91afb60"
+    },
+    "lectures/03-D1-optimization-1/code/make_figures.py": {
+      "source": "lectures/03-D1-optimization-1/code/make_figures.py",
+      "source_sha256": "48b73c6f64d271ef744db672500179c38e406b53a2d9ddc458cdb51e1af48890"
+    },
+    "lectures/04-D1-constraints-and-komo/code/constrained_ik.py": {
+      "source": "lectures/04-D1-constraints-and-komo/code/constrained_ik.py",
+      "source_sha256": "ffae9098c58b9961b0e7bdcf2b8cd380fb98a34c22b253bb219b2d250241d624"
+    },
+    "lectures/04-D1-constraints-and-komo/code/check_solvers.py": {
+      "source": "lectures/04-D1-constraints-and-komo/code/check_solvers.py",
+      "source_sha256": "7feedf8ca0c4bbba4dda0c8a99bee8f1ebb0b62bab0eed2ddf95e7080bf1242c"
+    },
+    "lectures/04-D1-constraints-and-komo/code/komo_two_link.py": {
+      "source": "lectures/04-D1-constraints-and-komo/code/komo_two_link.py",
+      "source_sha256": "88702f1acef812f519700fcef050ffaf4faf9498ee67a47bdacfedaae1f92b73"
+    },
+    "drake/02-gauss-newton-ik/gn_ik_panda.py": {
+      "source": "drake/02-gauss-newton-ik/gn_ik_panda.py",
+      "source_sha256": "1ec56f0d14336b63776dfc5d2f82f9485bfe579003c4d9ad03c01a24baf8a4cd"
+    },
+    "drake/02-gauss-newton-ik/replay_panel.py": {
+      "source": "drake/02-gauss-newton-ik/replay_panel.py",
+      "source_sha256": "0488e0a6c8e7df0eb8cb55dcc614ba4f24aa9cdf024a356a76c67dd97b163735"
+    },
+    "drake/02-gauss-newton-ik/panel/index.html": {
+      "source": "drake/02-gauss-newton-ik/panel/index.html",
+      "source_sha256": "d6bb46fd19c16b0673d6c1d1c064aa16160e0c56f6af33d48aa67a489b936463"
+    },
+    "drake/02-gauss-newton-ik/iterates-baseline.json": {
+      "source": "drake/02-gauss-newton-ik/iterates-baseline.json",
+      "source_sha256": "4b8af1130bbc75c62d60c551b22671d1b9e0b7b2b7696cf6a24190ae6f3ff7ae"
+    },
+    "drake/03-ik-as-nlp/ik_nlp_panda.py": {
+      "source": "drake/03-ik-as-nlp/ik_nlp_panda.py",
+      "source_sha256": "9adf0a8a8f0fda94353bad5a8b09ae6d0a88ca3f8e99397b0d3fbfade25381b6"
+    },
+    "drake/04-constrained-ik-al/constrained_ik_panda.py": {
+      "source": "drake/04-constrained-ik-al/constrained_ik_panda.py",
+      "source_sha256": "5ccc6cd5c207de7a8f7a56eb22d99e45eaf94f749aa072c18d19322e7c1443b6"
+    },
+    "drake/04-constrained-ik-al/panel.html": {
+      "source": "drake/04-constrained-ik-al/panel.html",
+      "source_sha256": "5db3c1984a6578a27775c39863188e4103b5e7a7a2f0b4cb86228f54aa88e2a5"
+    },
+    "drake/04-constrained-ik-al/iterates-baseline.json": {
+      "source": "drake/04-constrained-ik-al/iterates-baseline.json",
+      "source_sha256": "5af5c05ca3be20ff4db38da1d6dbbf4bc427cf8af54f519622e0acd1d71c9370"
+    },
+    "drake/05-ik-nlp-al/ik_nlp_al_panda.py": {
+      "source": "drake/05-ik-nlp-al/ik_nlp_al_panda.py",
+      "source_sha256": "806ed43fad5e0346acdb015ad1e0ac68f0367242d9d254038079e9f8982c22db"
+    },
+    "drake/05-ik-nlp-al/panel.html": {
+      "source": "drake/05-ik-nlp-al/panel.html",
+      "source_sha256": "bd7502674ed26e28dc04b575801782017b40cbb71466c0f0347706e57eb467e3"
+    },
+    "drake/05-ik-nlp-al/iterates-baseline.json": {
+      "source": "drake/05-ik-nlp-al/iterates-baseline.json",
+      "source_sha256": "1d77492a37926edc61f59a1e5d80de7e9924d90877d9d22612186a6ce2cc3898"
+    },
+    "support/reference_al_eq.py": {
+      "source": "planning/optimization-step-visuals-2026-10-14/increment3/reference_al_eq.py",
+      "source_sha256": "5fe9d56bb5fed2d386c06e25606304e72001172179a94418d33d15209f614644"
+    },
+    "support/reference-iterates.json": {
+      "source": "planning/optimization-step-visuals-2026-10-14/increment3/reference-iterates.json",
+      "source_sha256": "1d77492a37926edc61f59a1e5d80de7e9924d90877d9d22612186a6ce2cc3898"
+    },
+    "modules/gauss-newton-ik/index.html": {
+      "source": "modules/gauss-newton-ik/index.html",
+      "source_sha256": "9579d2d55d630e1980091808de3c52025c2eff0faafd687711ac62b2e040bd0e"
+    },
+    "modules/kkt-explorer/index.html": {
+      "source": "modules/kkt-explorer/index.html",
+      "source_sha256": "0249c576dfa00cf0d97590f59335525a8458fe8b47a082347d711abf6f2d1d8f"
+    },
+    "modules/opt-explorer/assets/Surface3D-Dk5SUa24.js": {
+      "source": "modules/opt-explorer/dist/assets/Surface3D-Dk5SUa24.js",
+      "source_sha256": "8bf132bc938a69baf7f2fa985c478aab35782483e7820d4f776edb94899e0991"
+    },
+    "modules/opt-explorer/assets/index-Co7bIwmt.js": {
+      "source": "modules/opt-explorer/dist/assets/index-Co7bIwmt.js",
+      "source_sha256": "2484957f1a9dbc665afcb0b5a74a2e0834b2f7a797d08cdaef2d2ea6b37f463f"
+    },
+    "modules/opt-explorer/assets/index-rz-agBXp.css": {
+      "source": "modules/opt-explorer/dist/assets/index-rz-agBXp.css",
+      "source_sha256": "409f4187cded5b30172f827e391f8e26217ef238e1a9b665781d64f898b5c738"
+    },
+    "modules/opt-explorer/index.html": {
+      "source": "modules/opt-explorer/dist/index.html",
+      "source_sha256": "4d86f194ab62d27a9227b332793987fbdc7cf0f0dd1b1eb5421977f35b5d0648"
+    },
+    "assets/katex/katex.min.js": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/katex.min.js",
+      "source_sha256": "a29d2961d3146de5949d78ac7c1a9d93ae54955bad22a6db4fbe836e88e8bf48"
+    },
+    "assets/katex/katex.min.css": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/katex.min.css",
+      "source_sha256": "0289a02cf451a44dd73add683a09644252363871ac11713a647b732cee8b1ee3"
+    },
+    "assets/katex/fonts/KaTeX_Typewriter-Regular.woff2": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Typewriter-Regular.woff2",
+      "source_sha256": "71d517d67827787cfabdf186914cc3358eda539e37931941f2b2fd4a21f68c0b"
+    },
+    "assets/katex/fonts/KaTeX_Main-Regular.woff": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Main-Regular.woff",
+      "source_sha256": "c6368d87e8a1a3a5d337623d83d8dc4b868f242a9ad476237d6f8d1e0f168cdc"
+    },
+    "assets/katex/fonts/KaTeX_AMS-Regular.ttf": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_AMS-Regular.ttf",
+      "source_sha256": "68534840bcfdd2bffb6f0e8deb48684dd01e7f04ea2813267577afb906de1d13"
+    },
+    "assets/katex/fonts/KaTeX_Main-BoldItalic.woff": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Main-BoldItalic.woff",
+      "source_sha256": "a6f7ec0d846ac7ad975adb8959c37ed49b94acbc4ae436db9ce9e20287e4a64c"
+    },
+    "assets/katex/fonts/KaTeX_AMS-Regular.woff2": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_AMS-Regular.woff2",
+      "source_sha256": "0cdd387c9590a1a9f9794560022dbb59654a7d86f187aa0c81495ad42d3a7308"
+    },
+    "assets/katex/fonts/KaTeX_Size3-Regular.woff2": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Size3-Regular.woff2",
+      "source_sha256": "73d591271b1604960cb10bb90fee021670af7297017e0e98480b332d11f51995"
+    },
+    "assets/katex/fonts/KaTeX_Main-Regular.woff2": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Main-Regular.woff2",
+      "source_sha256": "c2342cd8b869e01752a9321dc17213fc40d4d04c79688c1d43f2cf316abd7866"
+    },
+    "assets/katex/fonts/KaTeX_Script-Regular.ttf": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Script-Regular.ttf",
+      "source_sha256": "1c67f068fea8bb09bf099c088b1cf64bd27516a6e07f4684344873564bb66a67"
+    },
+    "assets/katex/fonts/KaTeX_Caligraphic-Bold.woff2": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Caligraphic-Bold.woff2",
+      "source_sha256": "de7701e42cf1f4cf0b766c03fb27977207eee2f4fd5d76fa82188406da43ea4c"
+    },
+    "assets/katex/fonts/KaTeX_Size3-Regular.ttf": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Size3-Regular.ttf",
+      "source_sha256": "500e04d54f0d51666332c9d2089aa803be22aa878eca539e59fa53c6e522b082"
+    },
+    "assets/katex/fonts/KaTeX_Typewriter-Regular.woff": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Typewriter-Regular.woff",
+      "source_sha256": "e14fed02b1aba7ce9f5afd5844b5d0321b22351febc720e0de8b8723527609f7"
+    },
+    "assets/katex/fonts/KaTeX_Caligraphic-Regular.woff": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Caligraphic-Regular.woff",
+      "source_sha256": "3398dd02302557a793f2863f88e02d96ce10df2abffa07c8e9fa90775116e65c"
+    },
+    "assets/katex/fonts/KaTeX_Typewriter-Regular.ttf": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Typewriter-Regular.ttf",
+      "source_sha256": "f01f3e87d9c6a61c0c081ceb577abd864eb00a612f7ac1620dd6915fad2ef5aa"
+    },
+    "assets/katex/fonts/KaTeX_Main-Italic.woff": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Main-Italic.woff",
+      "source_sha256": "f1d6ef86f3b11a528bd5185199bd2443ecb2b0dead96d88674b5a2c12be24bdf"
+    },
+    "assets/katex/fonts/KaTeX_Caligraphic-Bold.ttf": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Caligraphic-Bold.ttf",
+      "source_sha256": "07d8e303ce4fc12b4bb54f1004170dd190a1f3db45d400fe68060df3e0897268"
+    },
+    "assets/katex/fonts/KaTeX_SansSerif-Bold.woff2": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_SansSerif-Bold.woff2",
+      "source_sha256": "e99ae51144bf1232efcc1bfe5add36262c6866b0faab24fa75740e1b98577a62"
+    },
+    "assets/katex/fonts/KaTeX_Math-Italic.woff2": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Math-Italic.woff2",
+      "source_sha256": "7af58c5ec8f132a2ddde9027c6d7814decce4d3b822a11192a42a20e2e973264"
+    },
+    "assets/katex/fonts/KaTeX_Size4-Regular.woff2": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Size4-Regular.woff2",
+      "source_sha256": "a4af7d414440a1c1790825cfb700cf9cf43b0f2c4b04f0ebc523011ad9853ec0"
+    },
+    "assets/katex/fonts/KaTeX_Fraktur-Bold.woff2": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Fraktur-Bold.woff2",
+      "source_sha256": "74444efd593c005e3f4573b44524704c0af0a937fe911cca9e94068d0d140d3f"
+    },
+    "assets/katex/fonts/KaTeX_Caligraphic-Bold.woff": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Caligraphic-Bold.woff",
+      "source_sha256": "1ae6bd7475590e97e7f145a89e09ccde322f7a6bc0b91607b1c8b8ee28290fed"
+    },
+    "assets/katex/fonts/KaTeX_SansSerif-Bold.ttf": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_SansSerif-Bold.ttf",
+      "source_sha256": "1ece03f79f95277d57dc7f6b435a74e1379b0d46104a8530286b60ff49369ea0"
+    },
+    "assets/katex/fonts/KaTeX_Fraktur-Regular.woff": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Fraktur-Regular.woff",
+      "source_sha256": "5e28753be717dac97f559f49bc10be9cf3c124ddcabda6659d11cb68febc6463"
+    },
+    "assets/katex/fonts/KaTeX_Main-Bold.ttf": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Main-Bold.ttf",
+      "source_sha256": "138ac28d1663b3037e9c5f52371fa5c63d8324f4a38d22cd573e6ea3a3fd0cf8"
+    },
+    "assets/katex/fonts/KaTeX_SansSerif-Italic.woff2": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_SansSerif-Italic.woff2",
+      "source_sha256": "00b26ac825e2095056396e0553b8ac26d3f8ad158c3826e28b4c45b385c4714a"
+    },
+    "assets/katex/fonts/KaTeX_Main-Bold.woff2": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Main-Bold.woff2",
+      "source_sha256": "0f60d1b897938ec918c8ce073092411baf9438f6739465693ff18b0f9d20b021"
+    },
+    "assets/katex/fonts/KaTeX_SansSerif-Regular.woff2": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_SansSerif-Regular.woff2",
+      "source_sha256": "68e8c73ef42afd3ccec58bf0fba302cce448938e7fc020a5e31f8a952eee1342"
+    },
+    "assets/katex/fonts/KaTeX_Fraktur-Regular.ttf": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Fraktur-Regular.ttf",
+      "source_sha256": "1e6f9579e90e2cac37f8f60a597c436e075c114385652b7cbeb0dec0421291b3"
+    },
+    "assets/katex/fonts/KaTeX_Main-Regular.ttf": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Main-Regular.ttf",
+      "source_sha256": "d0332f52868370fd83ae7fa46470f90c8f2eab2fcf12bc4f88080b340c95a830"
+    },
+    "assets/katex/fonts/KaTeX_Size2-Regular.woff": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Size2-Regular.woff",
+      "source_sha256": "2014c523c3210bcc166648c4d4cc57f05b747df07a24277bf71c51e67dc79e3d"
+    },
+    "assets/katex/fonts/KaTeX_Main-BoldItalic.woff2": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Main-BoldItalic.woff2",
+      "source_sha256": "99cd42a3c072d918f2f44984a807cf7aa16e13545fd0875fc07c6c65f99e715b"
+    },
+    "assets/katex/fonts/KaTeX_Fraktur-Regular.woff2": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Fraktur-Regular.woff2",
+      "source_sha256": "51814d270d06ff0255dba0799994fa4d8c84d11f09951d47595f4abb1f3602dc"
+    },
+    "assets/katex/fonts/KaTeX_Script-Regular.woff2": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Script-Regular.woff2",
+      "source_sha256": "036d4e95149b69ff9bcc0cd55771efeb25ffa3947293e69acd78d5ac328c684b"
+    },
+    "assets/katex/fonts/KaTeX_Size4-Regular.woff": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Size4-Regular.woff",
+      "source_sha256": "99f9c6750b489c9462bf04900bd3f939df9b829339daaaaa99ef5495cdddea58"
+    },
+    "assets/katex/fonts/KaTeX_Size3-Regular.woff": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Size3-Regular.woff",
+      "source_sha256": "6ab6b62e9b62dae2c00dd90f791bd10950be0ecc3490d7d6045f51c2e8fe0949"
+    },
+    "assets/katex/fonts/KaTeX_AMS-Regular.woff": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_AMS-Regular.woff",
+      "source_sha256": "30da91e84c893f875e252689faebdc590b2871145e8adc7f9a9d4dbd8ce0b251"
+    },
+    "assets/katex/fonts/KaTeX_Main-Bold.woff": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Main-Bold.woff",
+      "source_sha256": "c76c5d696297d51b9cb1639c7da4334f0e7dec81b42b11213b5e25ef671bb822"
+    },
+    "assets/katex/fonts/KaTeX_SansSerif-Italic.ttf": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_SansSerif-Italic.ttf",
+      "source_sha256": "3931dd81faed86ba021bb2bbdc36f5bed9a38d6b4f4077aca59b265aa1b02083"
+    },
+    "assets/katex/fonts/KaTeX_Math-Italic.ttf": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Math-Italic.ttf",
+      "source_sha256": "08ce98e51b04d58945a301e639e02b6998af29fdfd61a7b8afdd07bbfc479d4a"
+    },
+    "assets/katex/fonts/KaTeX_Size1-Regular.woff": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Size1-Regular.woff",
+      "source_sha256": "c943cc986384f59e86bea5fd7dc50a9c4dfe567a7c05eb40d6790720dead97c9"
+    },
+    "assets/katex/fonts/KaTeX_SansSerif-Regular.woff": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_SansSerif-Regular.woff",
+      "source_sha256": "11e4dc8a6471ff6d6ee561d53d10fde8f7489e798257ff449c5d37c197435605"
+    },
+    "assets/katex/fonts/KaTeX_Main-Italic.ttf": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Main-Italic.ttf",
+      "source_sha256": "0d85ae7cc30f23790a7f1a58c4a112fdca8aae769b6ba11429af1d98b1b6cb3a"
+    },
+    "assets/katex/fonts/KaTeX_Math-Italic.woff": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Math-Italic.woff",
+      "source_sha256": "8a8d244581371912b8f3f5a23e2437cb2a59cd9bcaebb0346e722c05737a2571"
+    },
+    "assets/katex/fonts/KaTeX_Math-BoldItalic.woff2": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Math-BoldItalic.woff2",
+      "source_sha256": "dc47344dbb6cb5b655c8460d561f4df5f501b90c804ad3c6cec65fe322351ab1"
+    },
+    "assets/katex/fonts/KaTeX_Fraktur-Bold.ttf": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Fraktur-Bold.ttf",
+      "source_sha256": "9163df9c7122432e6495b4229fa9071cf9ae86a758ae5efc4924ec2e1a6dbce1"
+    },
+    "assets/katex/fonts/KaTeX_Size2-Regular.ttf": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Size2-Regular.ttf",
+      "source_sha256": "a6b2099fb555c60e3a0db3a08842ebf1d732c6eb4e4bf44913613bed4fc4e39b"
+    },
+    "assets/katex/fonts/KaTeX_SansSerif-Italic.woff": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_SansSerif-Italic.woff",
+      "source_sha256": "91ee67500cc0129aa0ace3ac5c61ff1692102f0f31d02b69347fba35dcb75bf2"
+    },
+    "assets/katex/fonts/KaTeX_Main-Italic.woff2": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Main-Italic.woff2",
+      "source_sha256": "97479ca6cce906abc961ecac96faa5f9ca2e61b8e7670d475826bcdee9a7c267"
+    },
+    "assets/katex/fonts/KaTeX_Size1-Regular.woff2": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Size1-Regular.woff2",
+      "source_sha256": "6b47c40166b6dbe21a5dfca7718413f2147fd2399be1ba605d8ad39cedf25dfe"
+    },
+    "assets/katex/fonts/KaTeX_Fraktur-Bold.woff": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Fraktur-Bold.woff",
+      "source_sha256": "9be7ceb88004ab8ad124082246fbfcca4091e36385d4ec6ed1df67375dad50fb"
+    },
+    "assets/katex/fonts/KaTeX_Script-Regular.woff": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Script-Regular.woff",
+      "source_sha256": "d96cdf2b3bdd4d64a8fd5f74a4c467f123a8a73931cd435889f08ffaf9bf947a"
+    },
+    "assets/katex/fonts/KaTeX_SansSerif-Regular.ttf": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_SansSerif-Regular.ttf",
+      "source_sha256": "f36ea897e19f4a2e571d1e900e4e3710e438deb05a842486045ba0a3e616a4ad"
+    },
+    "assets/katex/fonts/KaTeX_Math-BoldItalic.woff": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Math-BoldItalic.woff",
+      "source_sha256": "850c0af5c2238497febaf5e461d880bf458c341f42f4f330f1b1ab5698b1998e"
+    },
+    "assets/katex/fonts/KaTeX_Size1-Regular.ttf": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Size1-Regular.ttf",
+      "source_sha256": "95b6d2f1a50173bfedb8c63e1d1c99b10427d0a4df4201cb44513b226951a22b"
+    },
+    "assets/katex/fonts/KaTeX_Caligraphic-Regular.ttf": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Caligraphic-Regular.ttf",
+      "source_sha256": "ed0b74372feefcbb9c0666b2e210da37b7e49fa7fbbf3eeb11db5f693dacfbb7"
+    },
+    "assets/katex/fonts/KaTeX_Size4-Regular.ttf": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Size4-Regular.ttf",
+      "source_sha256": "c647367d1dd4e162468717d020e1fc0f1dc5c26ebfdffbe55261713bf88c5877"
+    },
+    "assets/katex/fonts/KaTeX_Size2-Regular.woff2": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Size2-Regular.woff2",
+      "source_sha256": "d04c54219f9eaec6d4d4fd42dfb28785975a4794d6b2fc71e566b9cd6db842dd"
+    },
+    "assets/katex/fonts/KaTeX_Caligraphic-Regular.woff2": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Caligraphic-Regular.woff2",
+      "source_sha256": "5d53e70ad607c2352162dec9e0923fb54ecdafaccbf604cd8dcf7d00facb989b"
+    },
+    "assets/katex/fonts/KaTeX_Main-BoldItalic.ttf": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Main-BoldItalic.ttf",
+      "source_sha256": "70ee1f64a20f2048c21940ef46d0144fd215baa953ca69afd1e31e98544f708f"
+    },
+    "assets/katex/fonts/KaTeX_SansSerif-Bold.woff": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_SansSerif-Bold.woff",
+      "source_sha256": "ece03cfd83e22c212cdef66feb8442d25a083beb988db3f1883f3f9738d750ba"
+    },
+    "assets/katex/fonts/KaTeX_Math-BoldItalic.ttf": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Math-BoldItalic.ttf",
+      "source_sha256": "f9377ab0271cda59af24bcffbd46a4d0c8a3572ffafdbb38de2ad5ea7b0d5ee5"
+    },
+    "licenses/@types__plotly.js/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@types/plotly.js/LICENSE",
+      "source_sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+    },
+    "licenses/@types__react-plotly.js/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@types/react-plotly.js/LICENSE",
+      "source_sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+    },
+    "licenses/katex/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/katex/LICENSE",
+      "source_sha256": "766ccc1f306c885aa45542a9846bbd0a505b27a0374f146778171c2254ce18e3"
+    },
+    "licenses/plotly.js-dist-min/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/plotly.js-dist-min/LICENSE",
+      "source_sha256": "8c45d9eaf50c2f72dd9c7ab9ef440788ba58a3538484b5c51c1f17d5128752e7"
+    },
+    "licenses/react-dom/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/react-dom/LICENSE",
+      "source_sha256": "52412d7bc7ce4157ea628bbaacb8829e0a9cb3c58f57f99176126bc8cf2bfc85"
+    },
+    "licenses/react-plotly.js/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/react-plotly.js/LICENSE",
+      "source_sha256": "78791e88f2d8d075d011ea3b9bf95103e11477a42e22f1654c58674fece36ff0"
+    },
+    "licenses/react/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/react/LICENSE",
+      "source_sha256": "52412d7bc7ce4157ea628bbaacb8829e0a9cb3c58f57f99176126bc8cf2bfc85"
+    },
+    "licenses/@types__react/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@types/react/LICENSE",
+      "source_sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+    },
+    "licenses/katex__node_modules__commander/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/katex/node_modules/commander/LICENSE",
+      "source_sha256": "04512a63dce4d2d506ad612dc0bd7681ccf6e3655f7b6eaef7dfac8323d1ec0b"
+    },
+    "licenses/loose-envify/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/loose-envify/LICENSE",
+      "source_sha256": "4eb7543b08d955a6d23fcc224601d43ff566e775be918805e26210d7f6eb4893"
+    },
+    "licenses/scheduler/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/scheduler/LICENSE",
+      "source_sha256": "52412d7bc7ce4157ea628bbaacb8829e0a9cb3c58f57f99176126bc8cf2bfc85"
+    },
+    "licenses/plotly.js/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/plotly.js/LICENSE",
+      "source_sha256": "8c45d9eaf50c2f72dd9c7ab9ef440788ba58a3538484b5c51c1f17d5128752e7"
+    },
+    "licenses/prop-types/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/prop-types/LICENSE",
+      "source_sha256": "f657f99d3fb9647db92628e96007aabb46e5f04f33e49999075aab8e250ca7ce"
+    },
+    "licenses/@types__prop-types/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@types/prop-types/LICENSE",
+      "source_sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+    },
+    "licenses/csstype/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/csstype/LICENSE",
+      "source_sha256": "11d55bd4541c75ee7879547ac49089c489163dae49551389713c3d026cab383e"
+    },
+    "licenses/js-tokens/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/js-tokens/LICENSE",
+      "source_sha256": "2213d91c606205c71eb051a199478cdc2adde945893404d7f1421436dd6d5cc1"
+    },
+    "licenses/@plotly__d3-sankey-circular/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@plotly/d3-sankey-circular/LICENSE",
+      "source_sha256": "793031003729acb6fc69e8e6c5ef754dd9f5be4e68ac1e70ced1cc7c1dabae94"
+    },
+    "licenses/@plotly__d3-sankey/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@plotly/d3-sankey/LICENSE",
+      "source_sha256": "2bf785e778d67a4f5266cffcd4f2cc5bb98cde73791666e7efeb8002ba32dfa5"
+    },
+    "licenses/@plotly__d3/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@plotly/d3/LICENSE",
+      "source_sha256": "e4796bd1fdc09e06a3683957a177d59b38aec4143df81b2d25472438f5763482"
+    },
+    "licenses/@plotly__mapbox-gl/LICENSE.txt": {
+      "source": "modules/opt-explorer/node_modules/@plotly/mapbox-gl/LICENSE.txt",
+      "source_sha256": "dcd8c5e27012f2c0754081a51b5e742ca71f4928d557bd204ab14447b9b76f44"
+    },
+    "licenses/@plotly__regl/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@plotly/regl/LICENSE",
+      "source_sha256": "42d997d1f47c9222dec2844468fc2a4fd144c6950d698eade460e94537ddcdd3"
+    },
+    "licenses/@turf__area/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@turf/area/LICENSE",
+      "source_sha256": "f9b32b82fd5a1d3a990526d86da97f42fb805d9f4d9f978125c4679b674fce44"
+    },
+    "licenses/@turf__bbox/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@turf/bbox/LICENSE",
+      "source_sha256": "f9b32b82fd5a1d3a990526d86da97f42fb805d9f4d9f978125c4679b674fce44"
+    },
+    "licenses/@turf__centroid/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@turf/centroid/LICENSE",
+      "source_sha256": "f9b32b82fd5a1d3a990526d86da97f42fb805d9f4d9f978125c4679b674fce44"
+    },
+    "licenses/base64-arraybuffer/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/base64-arraybuffer/LICENSE",
+      "source_sha256": "f3eca6ff762533fa5a77caf954a143e48afa204668cf97dce758c45a9e006be3"
+    },
+    "licenses/canvas-fit/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/canvas-fit/LICENSE.md",
+      "source_sha256": "435a6722c786b0a56fbe7387028f1d9d3f3a2d0fb615bb8fee118727c3f59b7b"
+    },
+    "licenses/color-parse/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/color-parse/LICENSE",
+      "source_sha256": "af45ae40c7d031f40e77e09fd33b12700e96ea861c4a73f0dff3294d47e60a81"
+    },
+    "licenses/country-regex/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/country-regex/LICENSE",
+      "source_sha256": "295a58ae617eab21d154117b48e9875ed7be5d50d246094105af2af055a79a45"
+    },
+    "licenses/d3-force/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/d3-force/LICENSE",
+      "source_sha256": "e1211892da0b0e0585b7aebe8f98c1274fba15bafe47fa1f4ee8a7a502c06304"
+    },
+    "licenses/d3-format/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/d3-format/LICENSE",
+      "source_sha256": "7eea8533ea92bd8c32a901e89ecb0305890905bb12711449565ddff96891146d"
+    },
+    "licenses/d3-geo-projection/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/d3-geo-projection/LICENSE",
+      "source_sha256": "4108a126a74cc35d4d5ae39ca5d0cc926fa7c8ec40e459a0c6d3481c69decbd8"
+    },
+    "licenses/d3-geo/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/d3-geo/LICENSE",
+      "source_sha256": "c3c9d41a75b64963748657932167ec4c56404b8fd557d4f89c9eeda6e2fdf39a"
+    },
+    "licenses/d3-hierarchy/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/d3-hierarchy/LICENSE",
+      "source_sha256": "e1211892da0b0e0585b7aebe8f98c1274fba15bafe47fa1f4ee8a7a502c06304"
+    },
+    "licenses/d3-interpolate/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/d3-interpolate/LICENSE",
+      "source_sha256": "e008c5e25a6be382593089c29bfabbc553c6378eee02895aec46ce396cc404ee"
+    },
+    "licenses/d3-time-format/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/d3-time-format/LICENSE",
+      "source_sha256": "7a3cb0e5055874e67db9aa2d5fe26de23204fa994ffbad198901ffe9c812a717"
+    },
+    "licenses/d3-time/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/d3-time/LICENSE",
+      "source_sha256": "e1211892da0b0e0585b7aebe8f98c1274fba15bafe47fa1f4ee8a7a502c06304"
+    },
+    "licenses/fast-isnumeric/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/fast-isnumeric/LICENSE",
+      "source_sha256": "71f353d5dca49bf6335eaa74ce0f92914f4b820e73a55d4277ac69a5b144a445"
+    },
+    "licenses/gl-mat4/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/gl-mat4/LICENSE.md",
+      "source_sha256": "28b772abdf0b639145dca52fb975cb322bac45ee098da1aa316d41e1d3c4493a"
+    },
+    "licenses/gl-text/license.md": {
+      "source": "modules/opt-explorer/node_modules/gl-text/license.md",
+      "source_sha256": "350454cc29b984110ff0936b4459fc8ea8f26b9b5cb7ca15664cca643577db9e"
+    },
+    "licenses/has-passive-events/license.md": {
+      "source": "modules/opt-explorer/node_modules/has-passive-events/license.md",
+      "source_sha256": "e9dd54ddece97061ebc2153110fcfeac1b0579e8556c0b07b195f004b00ff7fc"
+    },
+    "licenses/maplibre-gl/LICENSE.txt": {
+      "source": "modules/opt-explorer/node_modules/maplibre-gl/LICENSE.txt",
+      "source_sha256": "ee5fc05a0677eaf69601d2c7db0d9ecd6cc27c3abc1d0733bc9ed34707cf8ef2"
+    },
+    "licenses/mouse-change/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/mouse-change/LICENSE",
+      "source_sha256": "632d884bc3370b825072b2ba58896b727fbea1f8a81c6278babbc65d7dca4954"
+    },
+    "licenses/mouse-event-offset/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/mouse-event-offset/LICENSE.md",
+      "source_sha256": "91515553fda3d86e82454bab0eb876a2cb9a31c0dcb8be640870fed624e53697"
+    },
+    "licenses/mouse-wheel/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/mouse-wheel/LICENSE",
+      "source_sha256": "632d884bc3370b825072b2ba58896b727fbea1f8a81c6278babbc65d7dca4954"
+    },
+    "licenses/parse-svg-path/License": {
+      "source": "modules/opt-explorer/node_modules/parse-svg-path/License",
+      "source_sha256": "2d5ffdfe09268750ba687a149db8392038772e7f156db3a98b615a7de0cab76e"
+    },
+    "licenses/point-in-polygon/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/point-in-polygon/LICENSE",
+      "source_sha256": "a38ee3303e4f0cdffb18ca280b58b856dbc1bf916b0bb6018efc057ed2dcabbd"
+    },
+    "licenses/polybooljs/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/polybooljs/LICENSE",
+      "source_sha256": "6a3969e97bc3b992c17bfdcd6fcabd9b5688650cc0078235d512c014e86b716e"
+    },
+    "licenses/probe-image-size/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/probe-image-size/LICENSE",
+      "source_sha256": "95e3f7f0e81e9b4940cdfaa1956aaff5e4dfd2fb1565041e7c78eb9a606f23e3"
+    },
+    "licenses/regl-error2d/license": {
+      "source": "modules/opt-explorer/node_modules/regl-error2d/license",
+      "source_sha256": "2907ee84b30a5ca0f0fb134e24f60daf292a598bf5819e418eb2eb2b32262ed8"
+    },
+    "licenses/regl-line2d/license.md": {
+      "source": "modules/opt-explorer/node_modules/regl-line2d/license.md",
+      "source_sha256": "2907ee84b30a5ca0f0fb134e24f60daf292a598bf5819e418eb2eb2b32262ed8"
+    },
+    "licenses/regl-line2d/license": {
+      "source": "modules/opt-explorer/node_modules/regl-line2d/license",
+      "source_sha256": "2907ee84b30a5ca0f0fb134e24f60daf292a598bf5819e418eb2eb2b32262ed8"
+    },
+    "licenses/regl-scatter2d/license": {
+      "source": "modules/opt-explorer/node_modules/regl-scatter2d/license",
+      "source_sha256": "2907ee84b30a5ca0f0fb134e24f60daf292a598bf5819e418eb2eb2b32262ed8"
+    },
+    "licenses/regl-splom/license.md": {
+      "source": "modules/opt-explorer/node_modules/regl-splom/license.md",
+      "source_sha256": "350454cc29b984110ff0936b4459fc8ea8f26b9b5cb7ca15664cca643577db9e"
+    },
+    "licenses/strongly-connected-components/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/strongly-connected-components/LICENSE",
+      "source_sha256": "e67aed7df22dc8031e4fcf5338fe91cb33e3817e5c58a99a2a2802eea9069791"
+    },
+    "licenses/superscript-text/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/superscript-text/LICENSE",
+      "source_sha256": "632d884bc3370b825072b2ba58896b727fbea1f8a81c6278babbc65d7dca4954"
+    },
+    "licenses/tinycolor2/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/tinycolor2/LICENSE",
+      "source_sha256": "c6cb470a9ba0a50d57611aeec1f31da609c5aefdbee8eac7f289bcb0e30625fa"
+    },
+    "licenses/to-px/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/to-px/LICENSE",
+      "source_sha256": "632d884bc3370b825072b2ba58896b727fbea1f8a81c6278babbc65d7dca4954"
+    },
+    "licenses/topojson-client/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/topojson-client/LICENSE",
+      "source_sha256": "4c4d15b635e04e691825a76db7d33f7f2033b55669a7430011694f31e6c65999"
+    },
+    "licenses/webgl-context/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/webgl-context/LICENSE.md",
+      "source_sha256": "91515553fda3d86e82454bab0eb876a2cb9a31c0dcb8be640870fed624e53697"
+    },
+    "licenses/world-calendars/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/world-calendars/LICENSE",
+      "source_sha256": "61b072bb9553d8840cc44a3fe259b890566c3cf85b0907a043f2d73ffc802c36"
+    },
+    "licenses/object-assign/license": {
+      "source": "modules/opt-explorer/node_modules/object-assign/license",
+      "source_sha256": "6fb9754611c20f6649f68805e8c990e83261f29316e29de9e6cedae607b8634c"
+    },
+    "licenses/react-is/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/react-is/LICENSE",
+      "source_sha256": "52412d7bc7ce4157ea628bbaacb8829e0a9cb3c58f57f99176126bc8cf2bfc85"
+    },
+    "licenses/d3-array/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/d3-array/LICENSE",
+      "source_sha256": "e1211892da0b0e0585b7aebe8f98c1274fba15bafe47fa1f4ee8a7a502c06304"
+    },
+    "licenses/d3-collection/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/d3-collection/LICENSE",
+      "source_sha256": "c88423cbec18e11f2673dee760013af559a28c42704fb5471db146e5f954a476"
+    },
+    "licenses/d3-shape/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/d3-shape/LICENSE",
+      "source_sha256": "7eea8533ea92bd8c32a901e89ecb0305890905bb12711449565ddff96891146d"
+    },
+    "licenses/elementary-circuits-directed-graph/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/elementary-circuits-directed-graph/LICENSE",
+      "source_sha256": "7db11fce23faf713647e44b6c58143f7bdace4258dbc9ca800be7582782d5e2b"
+    },
+    "licenses/@mapbox__geojson-rewind/LICENSE.txt": {
+      "source": "modules/opt-explorer/node_modules/@mapbox/geojson-rewind/LICENSE.txt",
+      "source_sha256": "f69fa6a6652581ae8c6cbab9e720bacb3b335a03335c2024afd6ddc6f7cfe240"
+    },
+    "licenses/@mapbox__geojson-types/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@mapbox/geojson-types/LICENSE",
+      "source_sha256": "46323ce6756e643e3b0d2c2355d44677e53bffe288482d1f1a54375efdfbb147"
+    },
+    "licenses/@mapbox__mapbox-gl-supported/LICENSE.txt": {
+      "source": "modules/opt-explorer/node_modules/@mapbox/mapbox-gl-supported/LICENSE.txt",
+      "source_sha256": "e9e43336581d738d3d3c86e65b63bd2357dd4a945ec21e28c4eb0c4a8b522ac6"
+    },
+    "licenses/@mapbox__point-geometry/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@mapbox/point-geometry/LICENSE",
+      "source_sha256": "dd21817f71dfddadd36108266c1f19c89e2d1f24e4e27ee5b6c34743462d8310"
+    },
+    "licenses/@mapbox__tiny-sdf/LICENSE.txt": {
+      "source": "modules/opt-explorer/node_modules/@mapbox/tiny-sdf/LICENSE.txt",
+      "source_sha256": "daee818208313020b429fd7b69755232e3cd27348a10284076c4bd84e6008d83"
+    },
+    "licenses/@mapbox__vector-tile/LICENSE.txt": {
+      "source": "modules/opt-explorer/node_modules/@mapbox/vector-tile/LICENSE.txt",
+      "source_sha256": "de11b2b7d4af85d160347e7cbe734b5bc7b5beb5584281506bc1a5bc84b3aa3e"
+    },
+    "licenses/@mapbox__whoots-js/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/@mapbox/whoots-js/LICENSE.md",
+      "source_sha256": "27043d1a6a0e1985fde12660decbbd3b23c67de900b00609c90d4f0aa492f425"
+    },
+    "licenses/earcut/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/earcut/LICENSE",
+      "source_sha256": "cd661c432ea8243974e6fde6fc433ebee3e96525ca8b66321b9d9971674ede60"
+    },
+    "licenses/geojson-vt/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/geojson-vt/LICENSE",
+      "source_sha256": "828f2aed51b6526881a236758ec9b08cd69928fbfc70346d9d44a0b3a3444fe1"
+    },
+    "licenses/gl-matrix/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/gl-matrix/LICENSE.md",
+      "source_sha256": "af62d31a0cdc1bf95d5e19428c3e0de368b727d9d5b6b6cdb466f8a52e68ad06"
+    },
+    "licenses/grid-index/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/grid-index/LICENSE",
+      "source_sha256": "bdc2176275547505d0aa0c908e07053063bfcf04d285364d9032233b5c4c5a9b"
+    },
+    "licenses/pbf/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/pbf/LICENSE",
+      "source_sha256": "5d081d1d4848771dfef5e445660f918aedefd6ae9bb02058a1f7db9cee6c0902"
+    },
+    "licenses/potpack/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/potpack/LICENSE",
+      "source_sha256": "2c620eaf6c3ee3e33b07f3b6ef0dfd0a9e0a52c93a46aa4ccf7773dbb562daec"
+    },
+    "licenses/quickselect/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/quickselect/LICENSE",
+      "source_sha256": "597034cb7c11c916ad407344ea99a0b08e3c443a6b4421460f1d23c411c69707"
+    },
+    "licenses/rw/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/rw/LICENSE",
+      "source_sha256": "e273680c43c2ab5bb3b50af28de6a08000b333396834db7bf6129cd6f130c9cd"
+    },
+    "licenses/supercluster/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/supercluster/LICENSE",
+      "source_sha256": "b8878372a0d7d1c303f48659ddbd6881807cd2196e4af2f548d8da0c0f7c4d71"
+    },
+    "licenses/tinyqueue/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/tinyqueue/LICENSE",
+      "source_sha256": "780453e05abdc22307ee01c706a2e73f508d3e484fc4c804485ebf6fe0964694"
+    },
+    "licenses/vt-pbf/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/vt-pbf/LICENSE",
+      "source_sha256": "3d29e124a0236cfefe13458b82c44fde04d7dcc7b3b64b7fa4de0027953274db"
+    },
+    "licenses/@turf__helpers/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@turf/helpers/LICENSE",
+      "source_sha256": "f9b32b82fd5a1d3a990526d86da97f42fb805d9f4d9f978125c4679b674fce44"
+    },
+    "licenses/@turf__meta/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@turf/meta/LICENSE",
+      "source_sha256": "f9b32b82fd5a1d3a990526d86da97f42fb805d9f4d9f978125c4679b674fce44"
+    },
+    "licenses/@types__geojson/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@types/geojson/LICENSE",
+      "source_sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+    },
+    "licenses/tslib/LICENSE.txt": {
+      "source": "modules/opt-explorer/node_modules/tslib/LICENSE.txt",
+      "source_sha256": "210b19e543130388c68654b7497e967119ce17145f66ab7d85688fbd70f08751"
+    },
+    "licenses/element-size/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/element-size/LICENSE.md",
+      "source_sha256": "435a6722c786b0a56fbe7387028f1d9d3f3a2d0fb615bb8fee118727c3f59b7b"
+    },
+    "licenses/color-alpha__node_modules__color-parse/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/color-alpha/node_modules/color-parse/LICENSE",
+      "source_sha256": "af45ae40c7d031f40e77e09fd33b12700e96ea861c4a73f0dff3294d47e60a81"
+    },
+    "licenses/clamp/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/clamp/LICENSE.md",
+      "source_sha256": "c6db45c144aeabf87a299c54e57f0a9b68ba043012d728d560209169c91ef4bc"
+    },
+    "licenses/dtype/LICENSE-MIT": {
+      "source": "modules/opt-explorer/node_modules/dtype/LICENSE-MIT",
+      "source_sha256": "0e5d86671d8756fb5f87079c155f05c970be4d0f54d44bf93f1f234d27dd0b5f"
+    },
+    "licenses/color-name/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/color-name/LICENSE",
+      "source_sha256": "c064f7a3e353bc1bc977f3c897941c75ef763f44f41677e0a15370ca0853d6e2"
+    },
+    "licenses/color-space/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/color-space/LICENSE",
+      "source_sha256": "ca2abdf695884c77ea4b4a5b64ca7b732d9d9dbade4eebc1c2e76c53e9e3bc83"
+    },
+    "licenses/d3-dispatch/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/d3-dispatch/LICENSE",
+      "source_sha256": "e1211892da0b0e0585b7aebe8f98c1274fba15bafe47fa1f4ee8a7a502c06304"
+    },
+    "licenses/d3-quadtree/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/d3-quadtree/LICENSE",
+      "source_sha256": "e1211892da0b0e0585b7aebe8f98c1274fba15bafe47fa1f4ee8a7a502c06304"
+    },
+    "licenses/d3-timer/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/d3-timer/LICENSE",
+      "source_sha256": "e1211892da0b0e0585b7aebe8f98c1274fba15bafe47fa1f4ee8a7a502c06304"
+    },
+    "licenses/commander/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/commander/LICENSE",
+      "source_sha256": "04512a63dce4d2d506ad612dc0bd7681ccf6e3655f7b6eaef7dfac8323d1ec0b"
+    },
+    "licenses/resolve/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/resolve/LICENSE",
+      "source_sha256": "60acd7711e6c138e6041836e32d922705254cc1568a30fdf16aa8f59bb87aeaa"
+    },
+    "licenses/d3-color/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/d3-color/LICENSE",
+      "source_sha256": "faa682e3e430941f958d26180458f5934a62f58dac4d70ccdd15608c15d0f884"
+    },
+    "licenses/is-string-blank/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/is-string-blank/LICENSE",
+      "source_sha256": "4852317221de04bdbb8784b24498bac592fcc796dcb5f81dece1c6290d75cf52"
+    },
+    "licenses/bit-twiddle/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/bit-twiddle/LICENSE",
+      "source_sha256": "e67aed7df22dc8031e4fcf5338fe91cb33e3817e5c58a99a2a2802eea9069791"
+    },
+    "licenses/css-font/license.md": {
+      "source": "modules/opt-explorer/node_modules/css-font/license.md",
+      "source_sha256": "53e2988fd2e3e852161a07f5dbf2a31482f02eec07e35921c3afe9eaaa4c6124"
+    },
+    "licenses/es6-weak-map/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/es6-weak-map/LICENSE",
+      "source_sha256": "af2d033286be76e6b748da6ca99298524e03a5e2f90eff3b2e9ab653d38d198e"
+    },
+    "licenses/flatten-vertex-data/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/flatten-vertex-data/LICENSE.md",
+      "source_sha256": "fb415b6d1ed5f9dd12004f39df586bffd98cb56b2dc26ffe1016adc4c6c46f9b"
+    },
+    "licenses/font-atlas/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/font-atlas/LICENSE.md",
+      "source_sha256": "a9ecf3da3825b3e7232f29c970a2869bb1752c900bd75ba7cbabeb69b8f032b4"
+    },
+    "licenses/is-plain-obj/license": {
+      "source": "modules/opt-explorer/node_modules/is-plain-obj/license",
+      "source_sha256": "6fb9754611c20f6649f68805e8c990e83261f29316e29de9e6cedae607b8634c"
+    },
+    "licenses/parse-rect/license": {
+      "source": "modules/opt-explorer/node_modules/parse-rect/license",
+      "source_sha256": "e9dd54ddece97061ebc2153110fcfeac1b0579e8556c0b07b195f004b00ff7fc"
+    },
+    "licenses/parse-unit/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/parse-unit/LICENSE.md",
+      "source_sha256": "91515553fda3d86e82454bab0eb876a2cb9a31c0dcb8be640870fed624e53697"
+    },
+    "licenses/regl/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/regl/LICENSE",
+      "source_sha256": "42d997d1f47c9222dec2844468fc2a4fd144c6950d698eade460e94537ddcdd3"
+    },
+    "licenses/typedarray-pool/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/typedarray-pool/LICENSE",
+      "source_sha256": "e67aed7df22dc8031e4fcf5338fe91cb33e3817e5c58a99a2a2802eea9069791"
+    },
+    "licenses/is-browser/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/is-browser/LICENSE",
+      "source_sha256": "5519d0442a0d5e5e17fd32cd8ffd6d19581964509eb94c5b6ef56c363f5fbd17"
+    },
+    "licenses/maplibre-gl__node_modules__@mapbox__tiny-sdf/LICENSE.txt": {
+      "source": "modules/opt-explorer/node_modules/maplibre-gl/node_modules/@mapbox/tiny-sdf/LICENSE.txt",
+      "source_sha256": "4f78063c6c0757df950aa3440cef9a2a6bd1c552c994c32237c3acc283e72ee6"
+    },
+    "licenses/maplibre-gl__node_modules__@mapbox__unitbezier/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/maplibre-gl/node_modules/@mapbox/unitbezier/LICENSE",
+      "source_sha256": "f0dc305ad097eddbc66eebb79288c92d8a5043818ace81206383a4c1a3268fe3"
+    },
+    "licenses/@maplibre__maplibre-gl-style-spec/LICENSE.txt": {
+      "source": "modules/opt-explorer/node_modules/@maplibre/maplibre-gl-style-spec/LICENSE.txt",
+      "source_sha256": "bfd4cb919eec574e9213e1e61f880831eb5fc372d467be429fd0a8d51d1df890"
+    },
+    "licenses/@types__geojson-vt/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@types/geojson-vt/LICENSE",
+      "source_sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+    },
+    "licenses/@types__mapbox__point-geometry/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@types/mapbox__point-geometry/LICENSE",
+      "source_sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+    },
+    "licenses/@types__mapbox__vector-tile/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@types/mapbox__vector-tile/LICENSE",
+      "source_sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+    },
+    "licenses/@types__pbf/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@types/pbf/LICENSE",
+      "source_sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+    },
+    "licenses/@types__supercluster/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@types/supercluster/LICENSE",
+      "source_sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+    },
+    "licenses/maplibre-gl__node_modules__earcut/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/maplibre-gl/node_modules/earcut/LICENSE",
+      "source_sha256": "324139c19d87af03fda38afea1590e00ca354c4159bdb2ae9e9cec070cfa46a8"
+    },
+    "licenses/maplibre-gl__node_modules__geojson-vt/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/maplibre-gl/node_modules/geojson-vt/LICENSE",
+      "source_sha256": "828f2aed51b6526881a236758ec9b08cd69928fbfc70346d9d44a0b3a3444fe1"
+    },
+    "licenses/global-prefix/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/global-prefix/LICENSE",
+      "source_sha256": "e7d1fee7347ffddccc5fd03327ffdb50f8c112be0d5016d62388a92c4ae6e7a9"
+    },
+    "licenses/kdbush/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/kdbush/LICENSE",
+      "source_sha256": "597034cb7c11c916ad407344ea99a0b08e3c443a6b4421460f1d23c411c69707"
+    },
+    "licenses/maplibre-gl__node_modules__potpack/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/maplibre-gl/node_modules/potpack/LICENSE",
+      "source_sha256": "cfec0482fb785fe27e3b368a2d9e84bf7a61b275e83ec582bf288e98cd530bb0"
+    },
+    "licenses/maplibre-gl__node_modules__quickselect/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/maplibre-gl/node_modules/quickselect/LICENSE",
+      "source_sha256": "238ddb00e12a420a54e060afa19bdab4f70bf49e0e2a8ebb1a5e851f9ef447df"
+    },
+    "licenses/maplibre-gl__node_modules__supercluster/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/maplibre-gl/node_modules/supercluster/LICENSE",
+      "source_sha256": "b8878372a0d7d1c303f48659ddbd6881807cd2196e4af2f548d8da0c0f7c4d71"
+    },
+    "licenses/maplibre-gl__node_modules__tinyqueue/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/maplibre-gl/node_modules/tinyqueue/LICENSE",
+      "source_sha256": "780453e05abdc22307ee01c706a2e73f508d3e484fc4c804485ebf6fe0964694"
+    },
+    "licenses/mouse-event/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/mouse-event/LICENSE",
+      "source_sha256": "632d884bc3370b825072b2ba58896b727fbea1f8a81c6278babbc65d7dca4954"
+    },
+    "licenses/right-now/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/right-now/LICENSE.md",
+      "source_sha256": "435a6722c786b0a56fbe7387028f1d9d3f3a2d0fb615bb8fee118727c3f59b7b"
+    },
+    "licenses/signum/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/signum/LICENSE",
+      "source_sha256": "e67aed7df22dc8031e4fcf5338fe91cb33e3817e5c58a99a2a2802eea9069791"
+    },
+    "licenses/lodash.merge/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/lodash.merge/LICENSE",
+      "source_sha256": "f71e8ed126b46346494aad5486874cd8f0aafe95092ed67d2e3cb6110f939abc"
+    },
+    "licenses/needle/license.txt": {
+      "source": "modules/opt-explorer/node_modules/needle/license.txt",
+      "source_sha256": "33956869cf70ecaecf83b722d8d01e5252e9915ae6f86f07528114e62c93bb23"
+    },
+    "licenses/stream-parser/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/stream-parser/LICENSE",
+      "source_sha256": "5fe787805ffedb6cc45b0962e6de294df5dec1b62f9fdf4a5d0e121819d11edc"
+    },
+    "licenses/to-float32/license": {
+      "source": "modules/opt-explorer/node_modules/to-float32/license",
+      "source_sha256": "e9dd54ddece97061ebc2153110fcfeac1b0579e8556c0b07b195f004b00ff7fc"
+    },
+    "licenses/array-find-index/license": {
+      "source": "modules/opt-explorer/node_modules/array-find-index/license",
+      "source_sha256": "6fb9754611c20f6649f68805e8c990e83261f29316e29de9e6cedae607b8634c"
+    },
+    "licenses/@plotly__point-cluster/license.md": {
+      "source": "modules/opt-explorer/node_modules/@plotly/point-cluster/license.md",
+      "source_sha256": "2907ee84b30a5ca0f0fb134e24f60daf292a598bf5819e418eb2eb2b32262ed8"
+    },
+    "licenses/array-range/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/array-range/LICENSE.md",
+      "source_sha256": "91515553fda3d86e82454bab0eb876a2cb9a31c0dcb8be640870fed624e53697"
+    },
+    "licenses/array-rearrange/license.md": {
+      "source": "modules/opt-explorer/node_modules/array-rearrange/license.md",
+      "source_sha256": "7d73a6394617542e3f8b4e4ef7d806f2bb1af2cd438973becc3c3f8d12f7f68b"
+    },
+    "licenses/glslify/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/glslify/LICENSE.md",
+      "source_sha256": "10f1945ac47db03b7532264ae7addaccf22058af1dcb302c9e9dfed479e760c0"
+    },
+    "licenses/is-iexplorer/license": {
+      "source": "modules/opt-explorer/node_modules/is-iexplorer/license",
+      "source_sha256": "fdc43423b75a24876001d4e904946b178ab7f5546ebd50030e1d3ee3d6582eb4"
+    },
+    "licenses/raf/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/raf/LICENSE",
+      "source_sha256": "6b2194e178545b3dcde4a40a09b5f6c00bd9b5b695db0c826c14995c6c9b4ec5"
+    },
+    "licenses/get-canvas-context/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/get-canvas-context/LICENSE.md",
+      "source_sha256": "fb153e8eaf70c10aa169bc3d7401946a9d51163cafaca23458cea8e67de972f4"
+    },
+    "licenses/d3-path/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/d3-path/LICENSE",
+      "source_sha256": "b8265327ab678f554800e71188b1cc6b1ff57522e292d2b1c0be66f27cf328b6"
+    },
+    "licenses/get-stream/license": {
+      "source": "modules/opt-explorer/node_modules/get-stream/license",
+      "source_sha256": "5c932d88256b4ab958f64a856fa48e8bd1f55bc1d96b8149c65689e0c61789d3"
+    },
+    "licenses/minimist/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/minimist/LICENSE",
+      "source_sha256": "435a6722c786b0a56fbe7387028f1d9d3f3a2d0fb615bb8fee118727c3f59b7b"
+    },
+    "licenses/mapbox-gl/LICENSE.txt": {
+      "source": "modules/opt-explorer/node_modules/mapbox-gl/LICENSE.txt",
+      "source_sha256": "dcd8c5e27012f2c0754081a51b5e742ca71f4928d557bd204ab14447b9b76f44"
+    },
+    "licenses/ieee754/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/ieee754/LICENSE",
+      "source_sha256": "18d45466ba3253deae04667e267a91ea8de8548f18c1125264d1c9db28194cc1"
+    },
+    "licenses/resolve-protobuf-schema/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/resolve-protobuf-schema/LICENSE",
+      "source_sha256": "c0993ca46cd47c09710a977d3a3d51602cff96f19e8d2eb8d5887aa20a7beead"
+    },
+    "licenses/supercluster__node_modules__kdbush/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/supercluster/node_modules/kdbush/LICENSE",
+      "source_sha256": "597034cb7c11c916ad407344ea99a0b08e3c443a6b4421460f1d23c411c69707"
+    },
+    "licenses/color-normalize__node_modules__color-parse/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/color-normalize/node_modules/color-parse/LICENSE",
+      "source_sha256": "af45ae40c7d031f40e77e09fd33b12700e96ea861c4a73f0dff3294d47e60a81"
+    },
+    "licenses/is-core-module/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/is-core-module/LICENSE",
+      "source_sha256": "5c496ce5ae47eb8e5ddcaa5e29c27c446a3855b19e3a66991b52f361bed22b28"
+    },
+    "licenses/path-parse/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/path-parse/LICENSE",
+      "source_sha256": "3f4609137f65070541b9214300ea0d640af8192857de0eeb2b03403003d9228a"
+    },
+    "licenses/supports-preserve-symlinks-flag/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/supports-preserve-symlinks-flag/LICENSE",
+      "source_sha256": "0f0ca96f50793990031ebc488a38f7292ff70bce8ab6a8e5eeda674abc32ccdf"
+    },
+    "licenses/css-font-size-keywords/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/css-font-size-keywords/LICENSE",
+      "source_sha256": "03ac0b988d87f21fccdec911d13eaaea03c80a79ce650e2b2d1e5e9ed2238ec7"
+    },
+    "licenses/css-font-stretch-keywords/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/css-font-stretch-keywords/LICENSE",
+      "source_sha256": "03ac0b988d87f21fccdec911d13eaaea03c80a79ce650e2b2d1e5e9ed2238ec7"
+    },
+    "licenses/css-font-style-keywords/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/css-font-style-keywords/LICENSE",
+      "source_sha256": "03ac0b988d87f21fccdec911d13eaaea03c80a79ce650e2b2d1e5e9ed2238ec7"
+    },
+    "licenses/css-font-weight-keywords/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/css-font-weight-keywords/LICENSE",
+      "source_sha256": "03ac0b988d87f21fccdec911d13eaaea03c80a79ce650e2b2d1e5e9ed2238ec7"
+    },
+    "licenses/css-global-keywords/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/css-global-keywords/LICENSE",
+      "source_sha256": "03ac0b988d87f21fccdec911d13eaaea03c80a79ce650e2b2d1e5e9ed2238ec7"
+    },
+    "licenses/css-system-font-keywords/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/css-system-font-keywords/LICENSE",
+      "source_sha256": "03ac0b988d87f21fccdec911d13eaaea03c80a79ce650e2b2d1e5e9ed2238ec7"
+    },
+    "licenses/unquote/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/unquote/LICENSE",
+      "source_sha256": "10ce70def59838624a4da56a04784d0b743051f455311f7d6f585296ce2d5c3b"
+    },
+    "licenses/d/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/d/LICENSE",
+      "source_sha256": "77485a12d142fd84ee9f278b42968b2f029c876c8dddca7d0e13fa164ffeed34"
+    },
+    "licenses/es5-ext/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/es5-ext/LICENSE",
+      "source_sha256": "5dc6fe91750695c7a47f9bc200f7bd52f3e81c6854d431f43c34c7e7f8ae8b52"
+    },
+    "licenses/es6-iterator/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/es6-iterator/LICENSE",
+      "source_sha256": "29c6c58225baf0c91719e5600f7e1302cad616c0fd81c45b02b5e78882b9e2a9"
+    },
+    "licenses/es6-symbol/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/es6-symbol/LICENSE",
+      "source_sha256": "77485a12d142fd84ee9f278b42968b2f029c876c8dddca7d0e13fa164ffeed34"
+    },
+    "licenses/is-firefox/license": {
+      "source": "modules/opt-explorer/node_modules/is-firefox/license",
+      "source_sha256": "8949b2ba58a823c693244638c52760970e0782812df926d94c8a26c7c9016e7b"
+    },
+    "licenses/number-is-integer/license": {
+      "source": "modules/opt-explorer/node_modules/number-is-integer/license",
+      "source_sha256": "6fb9754611c20f6649f68805e8c990e83261f29316e29de9e6cedae607b8634c"
+    },
+    "licenses/dup/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/dup/LICENSE",
+      "source_sha256": "e67aed7df22dc8031e4fcf5338fe91cb33e3817e5c58a99a2a2802eea9069791"
+    },
+    "licenses/@maplibre__maplibre-gl-style-spec__node_modules__@mapbox__unitbezier/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@maplibre/maplibre-gl-style-spec/node_modules/@mapbox/unitbezier/LICENSE",
+      "source_sha256": "f0dc305ad097eddbc66eebb79288c92d8a5043818ace81206383a4c1a3268fe3"
+    },
+    "licenses/json-stringify-pretty-compact/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/json-stringify-pretty-compact/LICENSE",
+      "source_sha256": "2d51145876dda3dd13253463b852aa83b78aa598b90fca1709f39f1740ff9a2f"
+    },
+    "licenses/@maplibre__maplibre-gl-style-spec__node_modules__tinyqueue/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@maplibre/maplibre-gl-style-spec/node_modules/tinyqueue/LICENSE",
+      "source_sha256": "780453e05abdc22307ee01c706a2e73f508d3e484fc4c804485ebf6fe0964694"
+    },
+    "licenses/ini/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/ini/LICENSE",
+      "source_sha256": "4ec3d4c66cd87f5c8d8ad911b10f99bf27cb00cdfcff82621956e379186b016b"
+    },
+    "licenses/kind-of/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/kind-of/LICENSE",
+      "source_sha256": "4cd903859549d4b20b571041f96dfae1136ed079c476126268f9d7cc1b611150"
+    },
+    "licenses/which/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/which/LICENSE",
+      "source_sha256": "4ec3d4c66cd87f5c8d8ad911b10f99bf27cb00cdfcff82621956e379186b016b"
+    },
+    "licenses/needle__node_modules__debug/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/needle/node_modules/debug/LICENSE",
+      "source_sha256": "98c970de440dcfc77471610aec2377c9d9b0db2b3be6d1add524a586e1d7f422"
+    },
+    "licenses/iconv-lite/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/iconv-lite/LICENSE",
+      "source_sha256": "ac779f7314c74f232ef847ea86e714abe25cf6eeb5cc97b69451b74e2af6492d"
+    },
+    "licenses/sax/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/sax/LICENSE.md",
+      "source_sha256": "8a1af140fdfbf5afd3df27f7e662f989c5b963a300020dfafce42033cae9e004"
+    },
+    "licenses/stream-parser__node_modules__debug/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/stream-parser/node_modules/debug/LICENSE",
+      "source_sha256": "98c970de440dcfc77471610aec2377c9d9b0db2b3be6d1add524a586e1d7f422"
+    },
+    "licenses/binary-search-bounds/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/binary-search-bounds/LICENSE",
+      "source_sha256": "f2b10f2958d2724d6df0f16b1ea25d32cd7e6333ce88ac3c5cdff37c2c4222b8"
+    },
+    "licenses/defined/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/defined/LICENSE",
+      "source_sha256": "435a6722c786b0a56fbe7387028f1d9d3f3a2d0fb615bb8fee118727c3f59b7b"
+    },
+    "licenses/is-obj/license": {
+      "source": "modules/opt-explorer/node_modules/is-obj/license",
+      "source_sha256": "6fb9754611c20f6649f68805e8c990e83261f29316e29de9e6cedae607b8634c"
+    },
+    "licenses/math-log2/license": {
+      "source": "modules/opt-explorer/node_modules/math-log2/license",
+      "source_sha256": "6fb9754611c20f6649f68805e8c990e83261f29316e29de9e6cedae607b8634c"
+    },
+    "licenses/regl-scatter2d__node_modules__color-parse/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/regl-scatter2d/node_modules/color-parse/LICENSE",
+      "source_sha256": "af45ae40c7d031f40e77e09fd33b12700e96ea861c4a73f0dff3294d47e60a81"
+    },
+    "licenses/bl/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/bl/LICENSE.md",
+      "source_sha256": "dce3625a2f461b116e324ba6b52641cc8227c87fd07aeffae3f1b57c43fe4cfe"
+    },
+    "licenses/concat-stream/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/concat-stream/LICENSE",
+      "source_sha256": "96b29c9aaa611a05349b362d48c2ffce0966fe408401a2d1a157be312c035b5f"
+    },
+    "licenses/duplexify/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/duplexify/LICENSE",
+      "source_sha256": "3fe8d55a98dbf260eace67c00cf9bc53edb46234e840098a0b93df3096b97fb6"
+    },
+    "licenses/falafel/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/falafel/LICENSE",
+      "source_sha256": "60acd7711e6c138e6041836e32d922705254cc1568a30fdf16aa8f59bb87aeaa"
+    },
+    "licenses/from2/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/from2/LICENSE.md",
+      "source_sha256": "74afb88a7aa7f8db6735c014cba3f9f7b1b1fde39d7b56ba9b2c1f1f2d5d10ec"
+    },
+    "licenses/glsl-resolve/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/glsl-resolve/LICENSE.md",
+      "source_sha256": "74afb88a7aa7f8db6735c014cba3f9f7b1b1fde39d7b56ba9b2c1f1f2d5d10ec"
+    },
+    "licenses/glsl-token-whitespace-trim/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/glsl-token-whitespace-trim/LICENSE.md",
+      "source_sha256": "82d4cd7899b219ef29e6bd30820b22d12fd8d95ca2a43a6dc675c72ea2a19cc7"
+    },
+    "licenses/glslify-bundle/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/glslify-bundle/LICENSE.md",
+      "source_sha256": "8447fa7dd83aaf0c4807084a43d65164939f8b7067fb72c47e092e5b5063059e"
+    },
+    "licenses/stack-trace/License": {
+      "source": "modules/opt-explorer/node_modules/stack-trace/License",
+      "source_sha256": "c5ece09265dbd6335030832335dec72919b9ecfd4db126cb9bb9b8d023970304"
+    },
+    "licenses/static-eval/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/static-eval/LICENSE",
+      "source_sha256": "a22b9d5763f574e5db347c30acc0b33eaf4846767c03d2e27d012e864e79a824"
+    },
+    "licenses/through2/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/through2/LICENSE.md",
+      "source_sha256": "faae57631e1c7d641c3b6f9b110c2a7a28c8b383d08d7796ac472c509f075850"
+    },
+    "licenses/xtend/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/xtend/LICENSE",
+      "source_sha256": "82e67379203d5794e7c44549847d8d64ae6904591381682360470898bd306821"
+    },
+    "licenses/performance-now/license.txt": {
+      "source": "modules/opt-explorer/node_modules/performance-now/license.txt",
+      "source_sha256": "c3af1272f30870168177e888b184c1f802e5081e75a126c794670c0b562d3783"
+    },
+    "licenses/svg-path-bounds__node_modules__normalize-svg-path/license.md": {
+      "source": "modules/opt-explorer/node_modules/svg-path-bounds/node_modules/normalize-svg-path/license.md",
+      "source_sha256": "f3257cb8f6c6b69f90b1d4cebc1ef5dd84bf3bc831a0ba72b43dfa0f1a0f5100"
+    },
+    "licenses/protocol-buffers-schema/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/protocol-buffers-schema/LICENSE",
+      "source_sha256": "3fe8d55a98dbf260eace67c00cf9bc53edb46234e840098a0b93df3096b97fb6"
+    },
+    "licenses/hasown/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/hasown/LICENSE",
+      "source_sha256": "bf9b0d665be2a689851eea667ca9f42066ea1d903b38349c51e6a44b2577680a"
+    },
+    "licenses/parenthesis/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/parenthesis/LICENSE",
+      "source_sha256": "80dd594f7950d51ed7d4315248a9866f80507f02e92ee4eabdc12b89b476a539"
+    },
+    "licenses/type/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/type/LICENSE",
+      "source_sha256": "010cd06695b486890aa0e080f938ef52b393207b7352baf7f13513b7c272d256"
+    },
+    "licenses/esniff/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/esniff/LICENSE",
+      "source_sha256": "77485a12d142fd84ee9f278b42968b2f029c876c8dddca7d0e13fa164ffeed34"
+    },
+    "licenses/next-tick/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/next-tick/LICENSE",
+      "source_sha256": "d61b7b0b7ef23fe17a4cf996c50362ba842725e9b1a0686792a9c16894a6d5c0"
+    },
+    "licenses/ext/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/ext/LICENSE",
+      "source_sha256": "2f81a49be59092e3229ed757730791b7bee7b3394d26e58a4b6ae1829437698b"
+    },
+    "licenses/is-finite/license": {
+      "source": "modules/opt-explorer/node_modules/is-finite/license",
+      "source_sha256": "48da2f39e100d4085767e94966b43f4fa95ff6a0698fba57ed460914e35f94a0"
+    },
+    "licenses/isexe/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/isexe/LICENSE.md",
+      "source_sha256": "8a1af140fdfbf5afd3df27f7e662f989c5b963a300020dfafce42033cae9e004"
+    },
+    "licenses/ms/license.md": {
+      "source": "modules/opt-explorer/node_modules/ms/license.md",
+      "source_sha256": "1662fae9b5314d11cf51284e2dcd1f006a354f7343f08712a730fcff9a359801"
+    },
+    "licenses/safer-buffer/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/safer-buffer/LICENSE",
+      "source_sha256": "4bc935e71be198c67ddf3c2b5fddb195f6edc182bfc155a96a6db61b44b494b9"
+    },
+    "licenses/stream-parser__node_modules__ms/license.md": {
+      "source": "modules/opt-explorer/node_modules/stream-parser/node_modules/ms/license.md",
+      "source_sha256": "6652830c2607c722b66f1b57de15877ab8fc5dca406cc5b335afeb365d0f32c1"
+    },
+    "licenses/readable-stream/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/readable-stream/LICENSE",
+      "source_sha256": "ec62dc96da0099b87f4511736c87309335527fb7031639493e06c95728dc8c54"
+    },
+    "licenses/safe-buffer/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/safe-buffer/LICENSE",
+      "source_sha256": "c7cc929b57080f4b9d0c6cf57669f0463fc5b39906344dfc8d3bc43426b30eac"
+    },
+    "licenses/buffer-from/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/buffer-from/LICENSE",
+      "source_sha256": "14275f5c8139d02054c5259d52a88ccbba662a86af18c30f071c8d082dc6004c"
+    },
+    "licenses/inherits/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/inherits/LICENSE",
+      "source_sha256": "5ffe28e7ade7d8f10d85d5337a73fd793dac5c462fb9a28fbf8c5046c7fbca3b"
+    },
+    "licenses/typedarray/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/typedarray/LICENSE",
+      "source_sha256": "26181ebee1063f3dc6766a3b6d05999a0da058f172eadf2ca5d15105ffd9735a"
+    },
+    "licenses/end-of-stream/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/end-of-stream/LICENSE",
+      "source_sha256": "3fe8d55a98dbf260eace67c00cf9bc53edb46234e840098a0b93df3096b97fb6"
+    },
+    "licenses/stream-shift/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/stream-shift/LICENSE",
+      "source_sha256": "6a134e51aa31496c15a741592fc5d782b2dbf8d8b6b8524e15c8520ae0cd6374"
+    },
+    "licenses/acorn/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/acorn/LICENSE",
+      "source_sha256": "cb3984acf8a000bc42bfbe319b836507bd268ef1d0d53e37363e2d5cac1137e0"
+    },
+    "licenses/isarray/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/isarray/LICENSE",
+      "source_sha256": "68f12f6e2c33688699249c01d8f9623c534da20aa71989c57b061b7bc1676d14"
+    },
+    "licenses/glsl-resolve__node_modules__resolve/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/glsl-resolve/node_modules/resolve/LICENSE",
+      "source_sha256": "435a6722c786b0a56fbe7387028f1d9d3f3a2d0fb615bb8fee118727c3f59b7b"
+    },
+    "licenses/glsl-resolve__node_modules__xtend/LICENCE": {
+      "source": "modules/opt-explorer/node_modules/glsl-resolve/node_modules/xtend/LICENCE",
+      "source_sha256": "19338d17a974d1c747b3f6c618f08975b8908fdebccbc047c0e72b09daf6ddd3"
+    },
+    "licenses/glsl-inject-defines/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/glsl-inject-defines/LICENSE.md",
+      "source_sha256": "aa084193c84505fcea25068c7dc2eb1643a2ad2a744a586a22a14bc459b0eeb1"
+    },
+    "licenses/glsl-token-defines/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/glsl-token-defines/LICENSE.md",
+      "source_sha256": "aa084193c84505fcea25068c7dc2eb1643a2ad2a744a586a22a14bc459b0eeb1"
+    },
+    "licenses/glsl-token-depth/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/glsl-token-depth/LICENSE.md",
+      "source_sha256": "aa084193c84505fcea25068c7dc2eb1643a2ad2a744a586a22a14bc459b0eeb1"
+    },
+    "licenses/glsl-token-descope/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/glsl-token-descope/LICENSE.md",
+      "source_sha256": "aa084193c84505fcea25068c7dc2eb1643a2ad2a744a586a22a14bc459b0eeb1"
+    },
+    "licenses/glsl-token-scope/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/glsl-token-scope/LICENSE.md",
+      "source_sha256": "aa084193c84505fcea25068c7dc2eb1643a2ad2a744a586a22a14bc459b0eeb1"
+    },
+    "licenses/glsl-token-string/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/glsl-token-string/LICENSE.md",
+      "source_sha256": "aa084193c84505fcea25068c7dc2eb1643a2ad2a744a586a22a14bc459b0eeb1"
+    },
+    "licenses/glsl-tokenizer/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/glsl-tokenizer/LICENSE.md",
+      "source_sha256": "d3ec8ff484cdc71fcd1a6591730d54ed55d426350e80dfaf9c01cb27952b82c9"
+    },
+    "licenses/shallow-copy/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/shallow-copy/LICENSE",
+      "source_sha256": "435a6722c786b0a56fbe7387028f1d9d3f3a2d0fb615bb8fee118727c3f59b7b"
+    },
+    "licenses/events/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/events/LICENSE",
+      "source_sha256": "631987b7616a325a5b97566c232418481ddf7dbb5ecadefb991e791876cc2599"
+    },
+    "licenses/graceful-fs/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/graceful-fs/LICENSE",
+      "source_sha256": "f65c5d9f22a317b2a10803bd1868461ce6499c2ed7217bc80c0cc772a748789c"
+    },
+    "licenses/map-limit/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/map-limit/LICENSE.md",
+      "source_sha256": "74afb88a7aa7f8db6735c014cba3f9f7b1b1fde39d7b56ba9b2c1f1f2d5d10ec"
+    },
+    "licenses/escodegen/LICENSE.BSD": {
+      "source": "modules/opt-explorer/node_modules/escodegen/LICENSE.BSD",
+      "source_sha256": "d5d62471a28a9920416c7d37d387a3bf55f32cb768590f605f84990b76aee5de"
+    },
+    "licenses/svg-arc-to-cubic-bezier/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/svg-arc-to-cubic-bezier/LICENSE.md",
+      "source_sha256": "e494c8a762141fd7b97104bd7350710dcd2ee0462c75e211bc527cd717158b0b"
+    },
+    "licenses/function-bind/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/function-bind/LICENSE",
+      "source_sha256": "773e131a7684726005a7e4688a80b4620033bc08499bc1404dd1a1eb3bca725e"
+    },
+    "licenses/event-emitter/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/event-emitter/LICENSE",
+      "source_sha256": "519bbf857c213b95460e438767e9e5600159476e3e87facbbcc19f9b2c7f8886"
+    },
+    "licenses/core-util-is/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/core-util-is/LICENSE",
+      "source_sha256": "33b734d60042d0fe0c92dd1fc1e874193a1c899ec3e276a2eb935d2d0bf5b710"
+    },
+    "licenses/process-nextick-args/license.md": {
+      "source": "modules/opt-explorer/node_modules/process-nextick-args/license.md",
+      "source_sha256": "ecdccbcf39024f624ded480c01c0b25458e1eca8f26ecf040933865ce56d9a4f"
+    },
+    "licenses/readable-stream__node_modules__safe-buffer/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/readable-stream/node_modules/safe-buffer/LICENSE",
+      "source_sha256": "c7cc929b57080f4b9d0c6cf57669f0463fc5b39906344dfc8d3bc43426b30eac"
+    },
+    "licenses/string_decoder/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/string_decoder/LICENSE",
+      "source_sha256": "11f2aafb37d06b3ee5bdaf06e9811141d0da05263c316f3d627f45c20d43261b"
+    },
+    "licenses/util-deprecate/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/util-deprecate/LICENSE",
+      "source_sha256": "0154425673db15cdfa80ecba2c9b1f1a867f7197a006764712849bfc3a93cbb7"
+    },
+    "licenses/once/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/once/LICENSE",
+      "source_sha256": "4ec3d4c66cd87f5c8d8ad911b10f99bf27cb00cdfcff82621956e379186b016b"
+    },
+    "licenses/glsl-token-inject-block/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/glsl-token-inject-block/LICENSE.md",
+      "source_sha256": "fb153e8eaf70c10aa169bc3d7401946a9d51163cafaca23458cea8e67de972f4"
+    },
+    "licenses/glsl-token-assignments/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/glsl-token-assignments/LICENSE.md",
+      "source_sha256": "aa084193c84505fcea25068c7dc2eb1643a2ad2a744a586a22a14bc459b0eeb1"
+    },
+    "licenses/glsl-token-properties/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/glsl-token-properties/LICENSE.md",
+      "source_sha256": "aa084193c84505fcea25068c7dc2eb1643a2ad2a744a586a22a14bc459b0eeb1"
+    },
+    "licenses/glsl-tokenizer__node_modules__through2/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/glsl-tokenizer/node_modules/through2/LICENSE",
+      "source_sha256": "2cb181dde66fd7dea0dd4f728497bf41672f3b848c0278e98a67b54c53d80f00"
+    },
+    "licenses/map-limit__node_modules__once/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/map-limit/node_modules/once/LICENSE",
+      "source_sha256": "4ec3d4c66cd87f5c8d8ad911b10f99bf27cb00cdfcff82621956e379186b016b"
+    },
+    "licenses/esprima/LICENSE.BSD": {
+      "source": "modules/opt-explorer/node_modules/esprima/LICENSE.BSD",
+      "source_sha256": "94bcb9959136723aa4fb36e1a6c4d5c662a2369978cfae344dabfb83ae619e79"
+    },
+    "licenses/estraverse/LICENSE.BSD": {
+      "source": "modules/opt-explorer/node_modules/estraverse/LICENSE.BSD",
+      "source_sha256": "0e74697a68cebdcd61502c30fe80ab7f9e341d995dcd452023654d57133534b1"
+    },
+    "licenses/esutils/LICENSE.BSD": {
+      "source": "modules/opt-explorer/node_modules/esutils/LICENSE.BSD",
+      "source_sha256": "0e74697a68cebdcd61502c30fe80ab7f9e341d995dcd452023654d57133534b1"
+    },
+    "licenses/source-map/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/source-map/LICENSE",
+      "source_sha256": "6cb0631f71c7749763fd3dd1d5bee52dd1070ec17f2edc1710079ad070bd2fbd"
+    },
+    "licenses/string_decoder__node_modules__safe-buffer/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/string_decoder/node_modules/safe-buffer/LICENSE",
+      "source_sha256": "c7cc929b57080f4b9d0c6cf57669f0463fc5b39906344dfc8d3bc43426b30eac"
+    },
+    "licenses/wrappy/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/wrappy/LICENSE",
+      "source_sha256": "4ec3d4c66cd87f5c8d8ad911b10f99bf27cb00cdfcff82621956e379186b016b"
+    },
+    "licenses/glsl-tokenizer__node_modules__readable-stream/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/glsl-tokenizer/node_modules/readable-stream/LICENSE",
+      "source_sha256": "6239c6144c31e58cf925c34483606969c555574d64ffa96518ab5d7f45c75d43"
+    },
+    "licenses/glsl-tokenizer__node_modules__string_decoder/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/glsl-tokenizer/node_modules/string_decoder/LICENSE",
+      "source_sha256": "21a82bbee91262a076c2e34533d51d73475d55e889f1c42cf884c86b2a0d5773"
+    },
+    "launch.py": {
+      "source": "lectures/03-reading-optimization-planning-and-control/delivery/launch.py",
+      "source_sha256": "75aa7d334eecbf465d750587434874178377b1500908e57d599e63a219746d4d"
+    },
+    "lectures/03-D1-optimization-1/fig/bowl_landscape.png": {
+      "source": "lectures/03-D1-optimization-1/fig/bowl_landscape.png",
+      "source_sha256": "a1c6a4bf88d48e19c1299ff914de8fd76bb27547c9a4aa2477023e89d3a9cda8"
+    },
+    "lectures/03-D1-optimization-1/fig/gd_steps.png": {
+      "source": "lectures/03-D1-optimization-1/fig/gd_steps.png",
+      "source_sha256": "efcf4e751d6b515413abb212107f5e9bd04d679bf5f5703487be368ae41cd595"
+    },
+    "lectures/03-D1-optimization-1/fig/ik_iterates.png": {
+      "source": "lectures/03-D1-optimization-1/fig/ik_iterates.png",
+      "source_sha256": "02085724d81d9e91a4a41c02a1f0f80778dc2f35a683b689d2dabcefc9f51f15"
+    },
+    "lectures/03-D1-optimization-1/fig/stationary_straight.png": {
+      "source": "lectures/03-D1-optimization-1/fig/stationary_straight.png",
+      "source_sha256": "4979fecfec4ae0d9f38f20a746e07b32684cd3a65d5f2853550a8f28079f20e1"
+    },
+    "lectures/03-reading-optimization-planning-and-control/fig/panda_gn_runs.png": {
+      "source": "lectures/03-reading-optimization-planning-and-control/fig/panda_gn_runs.png",
+      "source_sha256": "d755809c0874ca836e6f8630473bae20bc0929df4f9f913a1d26e396cfbcb38b"
+    },
+    "lectures/03-D1-optimization-1/fig/lbfgs_rosenbrock.png": {
+      "source": "lectures/03-D1-optimization-1/fig/lbfgs_rosenbrock.png",
+      "source_sha256": "9dbbef76a442522270fce4744905aff2505a01699dd3531cc18b66a7294d77ba"
+    },
+    "lectures/03-D1-optimization-1/fig/cg_rosenbrock.png": {
+      "source": "lectures/03-D1-optimization-1/fig/cg_rosenbrock.png",
+      "source_sha256": "5484d2f709de7ab46c9177ccb824ef111c0e7e2d291eb00e3fdfe81cc57c09a8"
+    },
+    "lectures/03-D1-optimization-1/fig/line_search_overview.png": {
+      "source": "lectures/03-D1-optimization-1/fig/line_search_overview.png",
+      "source_sha256": "ff30b901e89cc0d367c9d0c569657d649b4ef2151668653e5de81cf0fcec1810"
+    },
+    "lectures/04-D1-constraints-and-komo/fig/kkt_disc_forces.png": {
+      "source": "lectures/04-D1-constraints-and-komo/fig/kkt_disc_forces.png",
+      "source_sha256": "489fc15d30af7dc20d6141ae4366c890795491072a3805b92ac9d9855de92807"
+    },
+    "lectures/04-D1-constraints-and-komo/fig/arm_joint_limit.png": {
+      "source": "lectures/04-D1-constraints-and-komo/fig/arm_joint_limit.png",
+      "source_sha256": "8e4f4c196508dd9a2c8067d51fba7d52fdd1c1e82a2c44b98ba756c7fb5d84f2"
+    },
+    "lectures/04-D1-constraints-and-komo/fig/drake-ik-nlp-al.png": {
+      "source": "lectures/04-D1-constraints-and-komo/fig/drake-ik-nlp-al.png",
+      "source_sha256": "2212b16c579e7b338287bb1b5ce17ee2a1c63453fdd02a8783262c7429f6dc26"
+    },
+    "lectures/03-reading-optimization-planning-and-control/fig/local_prediction_vs_fk.png": {
+      "source": "lectures/03-reading-optimization-planning-and-control/fig/local_prediction_vs_fk.png",
+      "source_sha256": "33105f35b32264f522aa0d7954b6fd53e9357a957231a774a82ca01aff78d2f4"
+    },
+    "lectures/03-D1-optimization-1/fig/armijo.png": {
+      "source": "lectures/03-D1-optimization-1/fig/armijo.png",
+      "source_sha256": "d73e8017a206fff23ea9b353d4cf2e953767869efecd914e3712170a8f3a9bf0"
+    },
+    "lectures/03-D1-optimization-1/fig/bowl_derivatives.png": {
+      "source": "lectures/03-D1-optimization-1/fig/bowl_derivatives.png",
+      "source_sha256": "464122e374b0b903fc8da040dd6a4c38bc37085e460f08a1484004fdf81eb81d"
+    },
+    "lectures/03-D1-optimization-1/fig/drake-gn-ik.png": {
+      "source": "lectures/03-D1-optimization-1/fig/drake-gn-ik.png",
+      "source_sha256": "5cfbbbb149bdd8a5c50d26b1512a7d0eb6409d37b91317d47224c0e3cebbfb83"
+    },
+    "lectures/04-D1-constraints-and-komo/fig/kkt_disc.png": {
+      "source": "lectures/04-D1-constraints-and-komo/fig/kkt_disc.png",
+      "source_sha256": "4fca4556347dd8826442758e831579bf9dae98b9af9cfe99939de91566971c77"
+    },
+    "lectures/04-D1-constraints-and-komo/fig/drake-ik-nlp.png": {
+      "source": "lectures/04-D1-constraints-and-komo/fig/drake-ik-nlp.png",
+      "source_sha256": "a2b4b08bac846a65e6d925e861254de0d459fb2754f0135f47ea96f88073e41a"
+    },
+    "lectures/04-D1-constraints-and-komo/fig/drake-constrained-ik-al.png": {
+      "source": "lectures/04-D1-constraints-and-komo/fig/drake-constrained-ik-al.png",
+      "source_sha256": "b85201eaee4288c8e0bbcd4425dd217a8e8e35376d4b6e8016a60545b50249ba"
+    },
+    "lectures/03-D1-optimization-1/fig/drake-gn-replay.png": {
+      "source": "lectures/03-D1-optimization-1/fig/drake-gn-replay.png",
+      "source_sha256": "db80d6c85a3d90733c3f4e71e2656e8a60de26b8c60c274eccb6829f1cfd079e"
+    },
+    "lectures/02-reading-kinematic-foundations/fig/workspace_ik.png": {
+      "source": "lectures/02-reading-kinematic-foundations/fig/workspace_ik.png",
+      "source_sha256": "a5049bfe0cfd8effe2be5977c128a6017ee10fc718c1a31cc3618110a64c9f85"
+    },
+    "lectures/02-D2-transforms-fk-jacobian/fig/two_link_bridge.png": {
+      "source": "lectures/02-D2-transforms-fk-jacobian/fig/two_link_bridge.png",
+      "source_sha256": "444e92d07fd3b5686882a71dcdb93309856a581ce74286b44d655f02c3f94a20"
+    }
+  },
+  "transforms": {
+    "drake/05-ik-nlp-al/ik_nlp_al_panda.py": "Documented portable reference paths; numerical functions unchanged.",
+    "support/reference_al_eq.py": "Documented portable reference paths; numerical functions unchanged."
+  },
+  "build_inputs": {
+    "scripts/build_optimization_package.py": "b66bbc0ca63701daa8bdda5d3ed910a54651ec1b3bae475820bc7a25e03c541b",
+    "scripts/build_essentials_package.py": "0f32da6a6cf120973c1c473c9761640304b78aaf65caed8660601d0d6393e32a",
+    "scripts/export_student_repo.py": "a3a05bce3f1ee05431f9f8cffda2eb30aa38f2b51895c5e9cc8c6564816ee558",
+    "lectures/03-reading-optimization-planning-and-control/delivery/README.md": "96567d881ba23f9af3dfc571c216dd9ebb048076b6a8502d5feadb13260f5898",
+    "lectures/03-reading-optimization-planning-and-control/delivery/launch.py": "75aa7d334eecbf465d750587434874178377b1500908e57d599e63a219746d4d",
+    "lectures/03-reading-optimization-planning-and-control/chapter-02.md": "371066ab1294aa40f28ad902e5bc8ec4f922428e23f07ca0adc22fe339daa752",
+    "lectures/03-reading-optimization-planning-and-control/chapter-02-essentials.md": "d96cc7ca5dff7c08efb00cec4ced5665d2299ab991bee83923bb428c2264119d",
+    "lectures/03-reading-optimization-planning-and-control/chapter-02-essentials.pdf": "4278ebe41c050a18af2bcd4ff293ab34e300e750eb7387e38d931612ef40ba27",
+    "lectures/02-reading-kinematic-foundations/chapter-01.md": "96316784756aeeabefb35b70a4d5e91805547ad6f40c7ae63362f39eb18e2f20",
+    "modules/opt-explorer/package.json": "fe99ec0562ed6ecf8e22435e69e65917c0196a4340a5a99858ae312953399848",
+    "modules/opt-explorer/package-lock.json": "b376859c7758951bdaa76873ec0b8334fc4d7dc1d2435bc4b9899e2b4dd68ae6",
+    "modules/opt-explorer/vite.config.ts": "c7a13d6ffcf6b2bd60e7c0220c96f421ccee1a373da39c466623d48772d8151f",
+    "modules/opt-explorer/index.html": "2acda4dc18f252d9287054102064d258e5a5ce695e18baa3667d0d1c9e954f84",
+    "modules/opt-explorer/src/App.tsx": "0e640dbfcdf0d21674cdd96b8cbc8d148d45afd0b18ec34a1cad21c39dec3582",
+    "modules/opt-explorer/src/Shell.tsx": "a05eac12f0436dae55a084888cdaab224831cb3e91248c8b91edb15749bf8cde",
+    "modules/opt-explorer/src/main.tsx": "f3b87a7b45270a0cab62155c3f851f44200897dbe71bfbf14ef5f8811aad2868",
+    "modules/opt-explorer/src/IkConvergenceDialog.tsx": "38cae2117dfe1b890d9a361b108ce668b56d6d9033220e959e42a1e92edb2781",
+    "modules/opt-explorer/src/styles.css": "3fc6e11ec3ba40fa4900d955bf5bccf5bab9601463d386c5fa114b5e97ff839f",
+    "modules/opt-explorer/src/optimizer.ts": "aba3be2c75989339bc2a4be4c7c8b74f4466437fe62c06b5c7abb722b0f6c16e",
+    "modules/opt-explorer/src/trajectorySampling.ts": "6eb26ec06a60ad4278fc22ea62371fdddf79450ed52f7706a2db778da816cf49",
+    "modules/opt-explorer/src/ikStopping.ts": "2b42b5cd82baa1a9184f138f03562055fc7001c98df1ff0970c00331da0d4776",
+    "modules/opt-explorer/src/linkState.ts": "f6aa1d6c91a53642307698fd4a1c2758cca50b9f7b652cd26b3193cedeaf5e35",
+    "modules/opt-explorer/src/ikConvergence.ts": "1a2d780aa7af853e57ae0105b908ffb5e1fa175b24f1a659f894574468cc2be8",
+    "modules/opt-explorer/src/types/plotly-js-dist-min.d.ts": "35656114b20fc0cebf929f3a6808d7913d4bc891076a6fa095e245e66ee95004",
+    "modules/opt-explorer/src/concepts/ConstrainedSurface3D.tsx": "ed1ac87dd0dd25f89912f8f10e433d779c399961473d6babca6e1189f549256a",
+    "modules/opt-explorer/src/concepts/DualVarChart.tsx": "9881c4372f8f8f0a7d13684dbbbf32f79be75a72c2f8ca53812dafc87db2c6bc",
+    "modules/opt-explorer/src/concepts/constrainedProblems.ts": "7ff2f24b52e6c1066a03f788382c850469c59c44592b5bb480084e9f7ff8b204",
+    "modules/opt-explorer/src/concepts/contourPlot.ts": "55c34934700cf16bb863d5052028dad25d145470be8db917d451ba871b4ab24a",
+    "modules/opt-explorer/src/concepts/ConceptsPage.tsx": "851d3306a3f7a8640bbb1ffd8074c7f0c58272c909d33d3c3dd464757b003128",
+    "modules/opt-explorer/src/concepts/testFunctions.ts": "6f5da08e9f92b9e495f9351211e9ec214e798ab902758dd370b02838ac5f869d",
+    "modules/opt-explorer/src/concepts/scalarOptimizers.ts": "e861bab9048f4fdbabdddb9f5d2dd66dae648a202220717d680098f0c003db07",
+    "modules/opt-explorer/src/concepts/constrainedOptimizers.ts": "62d8eb9dd09b48e33c8cc93b9305dfc246160f0124f5f26f26661f9771cfe936",
+    "modules/opt-explorer/src/concepts/ArmView.tsx": "6a27de7e8f0342da6f5ab83782a94d72f355eebbff001170b4abfa8a3bd08eac",
+    "modules/opt-explorer/src/concepts/ConstrainedPage.tsx": "466da9b9ee64a7ea1a9b03fbadd587379481ea8f88e3692988b28c4a36a87252",
+    "modules/opt-explorer/src/concepts/UpdatePanel.tsx": "cfb3f8de568016631e511b93cc61d1486ef01691c180bb2e3eacf60d1f9b89da",
+    "modules/opt-explorer/src/concepts/Surface3D.tsx": "e4fa29cdeebff82da0eff8949d0422e0daed7778758ebf1ede133605336eaace"
+  },
+  "links": [
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "../03-D1-optimization-1/fig/bowl_landscape.png",
+      "package_url": "lectures/03-D1-optimization-1/fig/bowl_landscape.png",
+      "kind": "Image",
+      "label": "Figure 1.1. The surface and contours describe the same dimensionless cost. The marked point has cost 49. The narrower contour direction has greater curvature."
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "../03-D1-optimization-1/fig/gd_steps.png",
+      "package_url": "lectures/03-D1-optimization-1/fig/gd_steps.png",
+      "kind": "Image",
+      "label": "Figure 1.2. The first three panels compare fixed gradient-descent scales on the same bowl. The last panel previews a curvature-based Newton update. Iterations count numerical updates, not elapsed time."
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "../03-D1-optimization-1/fig/ik_iterates.png",
+      "package_url": "lectures/03-D1-optimization-1/fig/ik_iterates.png",
+      "kind": "Image",
+      "label": "Figure 2.1. The left panel places the Gauss\u2013Newton and gradient-descent iterates on one fixed task-cost landscape over the two joint angles. Two configurations reach the target, and a saddle lies between their valleys. The right panel plots the tip distance of five update rules from the same start on a logarithmic scale. The dotted line marks the task tolerance. The horizontal axis counts accepted updates; it measures neither time nor computing cost. The strongest fixed-damping run continues past the displayed 60 updates."
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "../03-D1-optimization-1/fig/stationary_straight.png",
+      "package_url": "lectures/03-D1-optimization-1/fig/stationary_straight.png",
+      "kind": "Image",
+      "label": "Figure 2.2. A straight arm has horizontal task error and only vertical first-order tip motion. A bent configuration reaches the same target. Local stationarity therefore does not prove target unreachability."
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "fig/panda_gn_runs.png",
+      "package_url": "lectures/03-reading-optimization-planning-and-control/fig/panda_gn_runs.png",
+      "kind": "Image",
+      "label": "Figure 2.3. Damped Gauss\u2013Newton on the Panda with damping 10^{-3}, plotted against accepted updates. The columns are four runs: a comfortable start with a nearby target, a nearly stretched start with a target 5 cm along the weakest task direction, and an unreachable target without and with Armijo. The rows show the task error, the length of the accepted joint step over all seven joints, and the prediction gap of (2.23). Panels whose values stay within one factor of ten use linear axes. In the last run the prediction gap keeps falling while the task error stays near 0.246 m."
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "../03-D1-optimization-1/fig/lbfgs_rosenbrock.png",
+      "package_url": "lectures/03-D1-optimization-1/fig/lbfgs_rosenbrock.png",
+      "kind": "Image",
+      "label": "Figure 2.4. L-BFGS after three accepted updates on the Rosenbrock valley. The left panel locates the local view. The circled numbers follow the text, and the teal direction is rescaled for display."
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "../03-D1-optimization-1/fig/cg_rosenbrock.png",
+      "package_url": "lectures/03-D1-optimization-1/fig/cg_rosenbrock.png",
+      "kind": "Image",
+      "label": "Figure 2.5. Nonlinear conjugate gradient after the same three updates. The side panel adds the weighted previous direction to the new negative gradient tip to tail, at one scale."
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "../03-D1-optimization-1/fig/line_search_overview.png",
+      "package_url": "lectures/03-D1-optimization-1/fig/line_search_overview.png",
+      "kind": "Image",
+      "label": "Figure 2.6. The cost along one fixed direction (top) and the step sizes each test accepts (bottom). A trial at 0.10 passes Armijo and fails Wolfe. The line minimum at 0.5 passes all three. A trial at 0.78 lies past the minimum; it passes Armijo and Wolfe and fails strong Wolfe."
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "../04-D1-constraints-and-komo/fig/kkt_disc_forces.png",
+      "package_url": "lectures/04-D1-constraints-and-komo/fig/kkt_disc_forces.png",
+      "kind": "Image",
+      "label": "Figure 3.1. At the closest point in the disc, the downhill direction points outside. A nonnegative multiple of the inward constraint direction balances it."
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "../04-D1-constraints-and-komo/fig/arm_joint_limit.png",
+      "package_url": "lectures/04-D1-constraints-and-komo/fig/arm_joint_limit.png",
+      "kind": "Image",
+      "label": "Figure 3.2. Both exact IK branches exceed the elbow range. The best allowed configurations use the two limits and retain a nonzero task error."
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "../04-D1-constraints-and-komo/fig/drake-ik-nlp-al.png",
+      "package_url": "lectures/04-D1-constraints-and-komo/fig/drake-ik-nlp-al.png",
+      "kind": "Image",
+      "label": "Figure 3.3. The hard-target Panda solves reduce equality error while learning target and joint-bound multipliers. A multiplier update changes the stored balance at a fixed configuration."
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "chapter-02.md",
+      "package_url": "chapter-02-detailed.html",
+      "kind": "Link",
+      "label": "detailed reference"
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "fig/local_prediction_vs_fk.png",
+      "package_url": "lectures/03-reading-optimization-planning-and-control/fig/local_prediction_vs_fk.png",
+      "kind": "Image",
+      "label": "Figure A.1. The local equation predicts a target hit. Evaluating the proposed joint configuration with nonlinear forward kinematics leaves a position error. The two panels show computed configurations rather than a validated motion between them."
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "../03-D1-optimization-1/fig/armijo.png",
+      "package_url": "lectures/03-D1-optimization-1/fig/armijo.png",
+      "kind": "Image",
+      "label": "Figure A.2. Armijo compares actual cost with a required fraction of the tangent\u2019s predicted decrease. The trial at 0.125 is above the threshold; the trial at 0.0625 is below it. The larger rejected trials lie outside the displayed cost range."
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "chapter-02.md#23-penalize-a-large-proposed-step",
+      "package_url": "chapter-02-detailed.html#penalize-a-large-proposed-step",
+      "kind": "Link",
+      "label": "detailed reference"
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "../../SETUP.md",
+      "package_url": "README.html#python",
+      "kind": "Link",
+      "label": "environment guide"
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "code/local_step.py",
+      "package_url": "lectures/03-reading-optimization-planning-and-control/code/local_step.py",
+      "kind": "Link",
+      "label": "local_step.py"
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "code/jacobian_transpose.py",
+      "package_url": "lectures/03-reading-optimization-planning-and-control/code/jacobian_transpose.py",
+      "kind": "Link",
+      "label": "jacobian_transpose.py"
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "../03-D1-optimization-1/code/gauss_newton_ik.py",
+      "package_url": "lectures/03-D1-optimization-1/code/gauss_newton_ik.py",
+      "kind": "Link",
+      "label": "two-link IK calculation"
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "../03-D1-optimization-1/code/history_directions.py",
+      "package_url": "lectures/03-D1-optimization-1/code/history_directions.py",
+      "kind": "Link",
+      "label": "history-direction calculation"
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "../03-D1-optimization-1/code/make_solver_overview.py",
+      "package_url": "lectures/03-D1-optimization-1/code/make_solver_overview.py",
+      "kind": "Link",
+      "label": "line-search figure script"
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "../04-D1-constraints-and-komo/code/constrained_ik.py",
+      "package_url": "lectures/04-D1-constraints-and-komo/code/constrained_ik.py",
+      "kind": "Link",
+      "label": "constrained_ik.py"
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "../04-D1-constraints-and-komo/code/check_solvers.py",
+      "package_url": "lectures/04-D1-constraints-and-komo/code/check_solvers.py",
+      "kind": "Link",
+      "label": "solver checks"
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "../../drake/02-gauss-newton-ik/gn_ik_panda.py",
+      "package_url": "drake/02-gauss-newton-ik/gn_ik_panda.py",
+      "kind": "Link",
+      "label": "first program"
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "code/panda_runs_figure.py",
+      "package_url": "lectures/03-reading-optimization-planning-and-control/code/panda_runs_figure.py",
+      "kind": "Link",
+      "label": "figure script"
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "../../drake/03-ik-as-nlp/ik_nlp_panda.py",
+      "package_url": "drake/03-ik-as-nlp/ik_nlp_panda.py",
+      "kind": "Link",
+      "label": "second"
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "../../drake/05-ik-nlp-al/ik_nlp_al_panda.py",
+      "package_url": "drake/05-ik-nlp-al/ik_nlp_al_panda.py",
+      "kind": "Link",
+      "label": "third"
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "../../lectures/DEMOS.md",
+      "package_url": "demos.html",
+      "kind": "Link",
+      "label": "demonstration guide"
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "../../modules/gauss-newton-ik/index.html?view=local-step",
+      "package_url": "modules/gauss-newton-ik/index.html?view=local-step",
+      "kind": "Link",
+      "label": "position-update view"
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "../../modules/gauss-newton-ik/index.html?y=0.5,0.2&method=gd",
+      "package_url": "modules/gauss-newton-ik/index.html?y=0.5,0.2&method=gd",
+      "kind": "Link",
+      "label": "gradient-descent view"
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "http://127.0.0.1:8765/modules/opt-explorer/?tab=concepts&fn=elongated&preset=classic-zig-zag&method=gd&ls=off&alpha=0.08&arrows=off",
+      "package_url": "modules/opt-explorer/index.html?tab=concepts&fn=elongated&preset=classic-zig-zag&method=gd&ls=off&alpha=0.08&arrows=off",
+      "kind": "Link",
+      "label": "step-size view"
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "http://127.0.0.1:8765/modules/opt-explorer/?tab=concepts&fn=elongated&preset=classic-zig-zag&method=gd&ls=armijo&alpha=1&arrows=on",
+      "package_url": "modules/opt-explorer/index.html?tab=concepts&fn=elongated&preset=classic-zig-zag&method=gd&ls=armijo&alpha=1&arrows=on",
+      "kind": "Link",
+      "label": "Armijo view"
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "http://127.0.0.1:8765/modules/opt-explorer/?tab=concepts&fn=quartic-saddle&preset=near-the-maximum&method=newton&ls=off&arrows=off",
+      "package_url": "modules/opt-explorer/index.html?tab=concepts&fn=quartic-saddle&preset=near-the-maximum&method=newton&ls=off&arrows=off",
+      "kind": "Link",
+      "label": "Newton view"
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "http://127.0.0.1:8765/modules/opt-explorer/?tab=trajectory&preset=ik",
+      "package_url": "modules/opt-explorer/index.html?tab=trajectory&preset=ik",
+      "kind": "Link",
+      "label": "lecture-arm view"
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "http://127.0.0.1:8765/modules/opt-explorer/?tab=trajectory&preset=ik&y=0.7,0",
+      "package_url": "modules/opt-explorer/index.html?tab=trajectory&preset=ik&y=0.7,0",
+      "kind": "Link",
+      "label": "reach-boundary view"
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "http://127.0.0.1:8765/modules/opt-explorer/?tab=trajectory&preset=ik&elbow=60",
+      "package_url": "modules/opt-explorer/index.html?tab=trajectory&preset=ik&elbow=60",
+      "kind": "Link",
+      "label": "elbow-clipping view"
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "http://127.0.0.1:8765/modules/opt-explorer/?tab=concepts&fn=rosenbrock&preset=classic-start&method=lbfgs&ls=exact&arrows=off",
+      "package_url": "modules/opt-explorer/index.html?tab=concepts&fn=rosenbrock&preset=classic-start&method=lbfgs&ls=exact&arrows=off",
+      "kind": "Link",
+      "label": "L-BFGS view"
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "http://127.0.0.1:8765/modules/opt-explorer/?tab=concepts&fn=rosenbrock&preset=classic-start&method=bfgs&ls=strong-wolfe&arrows=off",
+      "package_url": "modules/opt-explorer/index.html?tab=concepts&fn=rosenbrock&preset=classic-start&method=bfgs&ls=strong-wolfe&arrows=off",
+      "kind": "Link",
+      "label": "BFGS view"
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "http://127.0.0.1:8765/modules/opt-explorer/?tab=concepts&fn=armijo-wolfe&preset=start-x-2&method=gd&ls=strong-wolfe&arrows=off",
+      "package_url": "modules/opt-explorer/index.html?tab=concepts&fn=armijo-wolfe&preset=start-x-2&method=gd&ls=strong-wolfe&arrows=off",
+      "kind": "Link",
+      "label": "line-search view"
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "../../modules/kkt-explorer/index.html?mode=disc&target=0.5,0.3",
+      "package_url": "modules/kkt-explorer/index.html?mode=disc&target=0.5,0.3",
+      "kind": "Link",
+      "label": "disc view"
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "../../modules/kkt-explorer/index.html?mode=wall&target=1.6,0.6",
+      "package_url": "modules/kkt-explorer/index.html?mode=wall&target=1.6,0.6",
+      "kind": "Link",
+      "label": "line view"
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "chapter-02.md#appendix-b-demonstrations",
+      "package_url": "chapter-02-detailed.html#appendix-b-demonstrations",
+      "kind": "Link",
+      "label": "detailed reference\u2019s demonstration appendix"
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "https://msp.org/pjm/1966/16-1/pjm-v16-n1-p01-p.pdf",
+      "package_url": "https://msp.org/pjm/1966/16-1/pjm-v16-n1-p01-p.pdf",
+      "kind": "Link",
+      "label": "1966 paper"
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "chapter-02.md",
+      "package_url": "chapter-02-detailed.html",
+      "kind": "Link",
+      "label": "detailed reference"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "fig/local_prediction_vs_fk.png",
+      "package_url": "lectures/03-reading-optimization-planning-and-control/fig/local_prediction_vs_fk.png",
+      "kind": "Image",
+      "label": "Figure 1.1. The left panel shows the starting arm and the straight displacement predicted by the local equation. The predicted tip coincides with the target. The right panel shows the proposed configuration evaluated by FK, with the starting arm faintly visible for comparison. The remaining distance is 0.174 m. These are computed configurations; the figure does not show a simulated or validated motion between them."
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../03-D1-optimization-1/fig/bowl_landscape.png",
+      "package_url": "lectures/03-D1-optimization-1/fig/bowl_landscape.png",
+      "kind": "Image",
+      "label": "Figure 1.2. The surface and contour map show the same cost. The maroon point marks the initial choice, with cost 49, and the gold star marks the minimum, with cost zero. The horizontal coordinates are the decision variables of this dimensionless example."
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../03-D1-optimization-1/fig/bowl_derivatives.png",
+      "package_url": "lectures/03-D1-optimization-1/fig/bowl_derivatives.png",
+      "kind": "Image",
+      "label": "Figure 1.3. The left panel draws the gradient at the initial point. The middle panel holds the second coordinate fixed; the right panel holds the first coordinate fixed. Both marked slice points have cost 49. The dashed tangent lines show the slopes 6 and 40. The curvature labels describe how those slopes change, as derived next. The gradient arrow is scaled for the drawing and does not specify a step."
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../02-reading-kinematic-foundations/chapter-01.md#52-how-many-answers-the-planar-geometry",
+      "package_url": "prerequisites.html#how-many-answers-the-planar-geometry",
+      "kind": "Link",
+      "label": "Chapter 01 \u00a75.2"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../03-D1-optimization-1/fig/gd_steps.png",
+      "package_url": "lectures/03-D1-optimization-1/fig/gd_steps.png",
+      "kind": "Image",
+      "label": "Figure 1.4. The three gradient-descent panels use the same bowl, start and twelve updates, with scales 0.05, 0.08 and 0.10. They show immediate removal of the second coordinate, shrinking alternation, and alternation of constant size. The lower-right panel previews Newton\u2019s curvature-based update, which \u00a72.1 will derive. The star marks the minimum. Coordinates and costs are dimensionless."
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../03-D1-optimization-1/fig/armijo.png",
+      "package_url": "lectures/03-D1-optimization-1/fig/armijo.png",
+      "kind": "Image",
+      "label": "Figure 1.5. The solid curve evaluates the bowl along the fixed direction from the initial point. The dashed line is its tangent prediction; the dash-dot line is the Armijo threshold. The trial 0.125 is above the threshold and is rejected. The trial 0.0625 is below it and is accepted. The three larger rejected trials are outside the displayed cost range. Both axes are dimensionless."
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../03-D1-optimization-1/fig/gd_steps.png",
+      "package_url": "lectures/03-D1-optimization-1/fig/gd_steps.png",
+      "kind": "Image",
+      "label": "Figure 2.1. The bowl comparison. The lower-right panel shows the full Newton step from the same starting point. The other panels retain the gradient-descent paths from \u00a71.3."
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../03-D1-optimization-1/fig/ik_iterates.png",
+      "package_url": "lectures/03-D1-optimization-1/fig/ik_iterates.png",
+      "kind": "Image",
+      "label": "Figure 2.2. The IK comparison. The left panel shows one fixed cost over joint coordinates, its two target-reaching configurations, and the accepted iterates from the shared start. The right panel compares undamped Gauss\u2013Newton, two fixed damping values, adaptive LM and gradient descent. Adaptive LM starts with the same damping as the moderate fixed-damping run and reduces it after useful model predictions. The dotted line marks the task tolerance. The horizontal axis counts accepted optimization updates, not physical time."
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../03-D1-optimization-1/fig/stationary_straight.png",
+      "package_url": "lectures/03-D1-optimization-1/fig/stationary_straight.png",
+      "kind": "Image",
+      "label": "Figure 2.3. The stretched arm has a horizontal position error while its first-order tip motions lie on a vertical line. The bent configuration reaches the same target. The figure distinguishes local stationarity from reachability."
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../03-D1-optimization-1/fig/drake-gn-ik.png",
+      "package_url": "lectures/03-D1-optimization-1/fig/drake-gn-ik.png",
+      "kind": "Image",
+      "label": "Figure 2.4. The rendering shows the solved configuration of the Panda\u2019s second run, with its flange position target in gold. This is a kinematic IK result, not a simulated execution of the intervening motion."
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../04-D1-constraints-and-komo/fig/kkt_disc.png",
+      "package_url": "lectures/04-D1-constraints-and-komo/fig/kkt_disc.png",
+      "kind": "Image",
+      "label": "Figure 3.1. The disc problem distinguishes an active boundary from an unused constraint."
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../04-D1-constraints-and-komo/fig/kkt_disc_forces.png",
+      "package_url": "lectures/04-D1-constraints-and-komo/fig/kkt_disc_forces.png",
+      "kind": "Image",
+      "label": "Figure 3.2. The downhill arrow and the inward constraint correction cancel at the boundary solution."
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../04-D1-constraints-and-komo/fig/arm_joint_limit.png",
+      "package_url": "lectures/04-D1-constraints-and-komo/fig/arm_joint_limit.png",
+      "kind": "Image",
+      "label": "Figure 3.3. Both constrained solutions respect the sixty-degree elbow range and stop beyond the target. The unconstrained solutions show why the elbow bound matters."
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../04-D1-constraints-and-komo/fig/drake-ik-nlp.png",
+      "package_url": "lectures/04-D1-constraints-and-komo/fig/drake-ik-nlp.png",
+      "kind": "Image",
+      "label": "Figure 3.4. The Panda reaches the target while its sampled wrist points avoid the sphere."
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../04-D1-constraints-and-komo/fig/drake-constrained-ik-al.png",
+      "package_url": "lectures/04-D1-constraints-and-komo/fig/drake-constrained-ik-al.png",
+      "kind": "Image",
+      "label": "Figure 3.5. The one-limit Panda replay plot records task error, violation, multiplier and accepted inner steps. It provides a static comparison of its active and inactive runs."
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../04-D1-constraints-and-komo/fig/drake-ik-nlp-al.png",
+      "package_url": "lectures/04-D1-constraints-and-komo/fig/drake-ik-nlp-al.png",
+      "kind": "Image",
+      "label": "Figure 3.6. The hard-target Panda replay figure plots equality violation, posture cost, equality-multiplier norm and the active joint multiplier for both runs."
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "code/local_step.py",
+      "package_url": "lectures/03-reading-optimization-planning-and-control/code/local_step.py",
+      "kind": "Link",
+      "label": "local_step.py"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "code/bowl_derivatives.py",
+      "package_url": "lectures/03-reading-optimization-planning-and-control/code/bowl_derivatives.py",
+      "kind": "Link",
+      "label": "bowl_derivatives.py"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../03-D1-optimization-1/code/descent.py",
+      "package_url": "lectures/03-D1-optimization-1/code/descent.py",
+      "kind": "Link",
+      "label": "descent.py"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../03-D1-optimization-1/code/make_vocabulary_figures.py",
+      "package_url": "lectures/03-D1-optimization-1/code/make_vocabulary_figures.py",
+      "kind": "Link",
+      "label": "make_vocabulary_figures.py"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "code/gradient_descent.py",
+      "package_url": "lectures/03-reading-optimization-planning-and-control/code/gradient_descent.py",
+      "kind": "Link",
+      "label": "gradient_descent.py"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../03-D1-optimization-1/code/descent.py",
+      "package_url": "lectures/03-D1-optimization-1/code/descent.py",
+      "kind": "Link",
+      "label": "descent.py"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "code/armijo.py",
+      "package_url": "lectures/03-reading-optimization-planning-and-control/code/armijo.py",
+      "kind": "Link",
+      "label": "armijo.py"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../03-D1-optimization-1/code/descent.py",
+      "package_url": "lectures/03-D1-optimization-1/code/descent.py",
+      "kind": "Link",
+      "label": "descent.py"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "code/jacobian_transpose.py",
+      "package_url": "lectures/03-reading-optimization-planning-and-control/code/jacobian_transpose.py",
+      "kind": "Link",
+      "label": "jacobian_transpose.py"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../03-D1-optimization-1/code/gauss_newton_ik.py",
+      "package_url": "lectures/03-D1-optimization-1/code/gauss_newton_ik.py",
+      "kind": "Link",
+      "label": "gauss_newton_ik.py"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../03-D1-optimization-1/code/descent.py",
+      "package_url": "lectures/03-D1-optimization-1/code/descent.py",
+      "kind": "Link",
+      "label": "descent.py"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../03-D1-optimization-1/code/gauss_newton_ik.py",
+      "package_url": "lectures/03-D1-optimization-1/code/gauss_newton_ik.py",
+      "kind": "Link",
+      "label": "gauss_newton_ik.py"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../03-D1-optimization-1/code/gauss_newton_ik.py",
+      "package_url": "lectures/03-D1-optimization-1/code/gauss_newton_ik.py",
+      "kind": "Link",
+      "label": "gauss_newton_ik.py"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "fig/local_prediction_vs_fk.png",
+      "package_url": "lectures/03-reading-optimization-planning-and-control/fig/local_prediction_vs_fk.png",
+      "kind": "Link",
+      "label": "opening prediction figure"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../03-D1-optimization-1/code/gauss_newton_ik.py",
+      "package_url": "lectures/03-D1-optimization-1/code/gauss_newton_ik.py",
+      "kind": "Link",
+      "label": "gauss_newton_ik.py"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../03-D1-optimization-1/code/gauss_newton_ik.py",
+      "package_url": "lectures/03-D1-optimization-1/code/gauss_newton_ik.py",
+      "kind": "Link",
+      "label": "gauss_newton_ik.py"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../03-D1-optimization-1/code/gauss_newton_ik.py",
+      "package_url": "lectures/03-D1-optimization-1/code/gauss_newton_ik.py",
+      "kind": "Link",
+      "label": "gauss_newton_ik.py"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../../drake/02-gauss-newton-ik/gn_ik_panda.py",
+      "package_url": "drake/02-gauss-newton-ik/gn_ik_panda.py",
+      "kind": "Link",
+      "label": "gn_ik_panda.py"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../../drake/README.md",
+      "package_url": "README.html#drake",
+      "kind": "Link",
+      "label": "Drake guide"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../03-D1-optimization-1/code/gauss_newton_ik.py",
+      "package_url": "lectures/03-D1-optimization-1/code/gauss_newton_ik.py",
+      "kind": "Link",
+      "label": "gauss_newton_ik.py"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../04-D1-constraints-and-komo/code/constrained_ik.py",
+      "package_url": "lectures/04-D1-constraints-and-komo/code/constrained_ik.py",
+      "kind": "Link",
+      "label": "constrained_ik.py"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../04-D1-constraints-and-komo/code/constrained_ik.py",
+      "package_url": "lectures/04-D1-constraints-and-komo/code/constrained_ik.py",
+      "kind": "Link",
+      "label": "constrained_ik.py"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../04-D1-constraints-and-komo/code/constrained_ik.py",
+      "package_url": "lectures/04-D1-constraints-and-komo/code/constrained_ik.py",
+      "kind": "Link",
+      "label": "constrained_ik.py"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../../drake/03-ik-as-nlp/ik_nlp_panda.py",
+      "package_url": "drake/03-ik-as-nlp/ik_nlp_panda.py",
+      "kind": "Link",
+      "label": "ik_nlp_panda.py"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../04-D1-constraints-and-komo/code/constrained_ik.py",
+      "package_url": "lectures/04-D1-constraints-and-komo/code/constrained_ik.py",
+      "kind": "Link",
+      "label": "constrained_ik.py"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../../drake/04-constrained-ik-al/constrained_ik_panda.py",
+      "package_url": "drake/04-constrained-ik-al/constrained_ik_panda.py",
+      "kind": "Link",
+      "label": "constrained_ik_panda.py"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../04-D1-constraints-and-komo/code/check_solvers.py",
+      "package_url": "lectures/04-D1-constraints-and-komo/code/check_solvers.py",
+      "kind": "Link",
+      "label": "check_solvers.py"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../../drake/05-ik-nlp-al/ik_nlp_al_panda.py",
+      "package_url": "drake/05-ik-nlp-al/ik_nlp_al_panda.py",
+      "kind": "Link",
+      "label": "ik_nlp_al_panda.py"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../../modules/gauss-newton-ik/index.html?view=local-step",
+      "package_url": "modules/gauss-newton-ik/index.html?view=local-step",
+      "kind": "Link",
+      "label": "staged local-step demonstration"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "http://127.0.0.1:8765/modules/opt-explorer/?tab=concepts&fn=elongated&preset=classic-zig-zag&method=gd&ls=off&alpha=0.08&arrows=off",
+      "package_url": "modules/opt-explorer/index.html?tab=concepts&fn=elongated&preset=classic-zig-zag&method=gd&ls=off&alpha=0.08&arrows=off",
+      "kind": "Link",
+      "label": "the step-size demonstration"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "http://127.0.0.1:8765/modules/opt-explorer/?tab=concepts&fn=elongated&preset=classic-zig-zag&method=gd&ls=armijo&alpha=1&arrows=on",
+      "package_url": "modules/opt-explorer/index.html?tab=concepts&fn=elongated&preset=classic-zig-zag&method=gd&ls=armijo&alpha=1&arrows=on",
+      "kind": "Link",
+      "label": "the Armijo demonstration"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "http://127.0.0.1:8765/modules/gauss-newton-ik/?y=0.5,0.2&method=gd",
+      "package_url": "modules/gauss-newton-ik/index.html?y=0.5,0.2&method=gd",
+      "kind": "Link",
+      "label": "the gradient-descent arm state"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "http://127.0.0.1:8765/modules/opt-explorer/?tab=concepts&fn=quartic-saddle&preset=near-the-maximum&method=newton&ls=off&arrows=off",
+      "package_url": "modules/opt-explorer/index.html?tab=concepts&fn=quartic-saddle&preset=near-the-maximum&method=newton&ls=off&arrows=off",
+      "kind": "Link",
+      "label": "explorer\u2019s quartic example"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "http://127.0.0.1:8765/modules/gauss-newton-ik/?y=0.5,0.2&method=gn",
+      "package_url": "modules/gauss-newton-ik/index.html?y=0.5,0.2&method=gn",
+      "kind": "Link",
+      "label": "two-link Gauss\u2013Newton module"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "http://127.0.0.1:8765/run/gn-ik-replay",
+      "package_url": "demos.html#gn-ik-replay",
+      "kind": "Link",
+      "label": "paused Panda replay"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../03-D1-optimization-1/fig/drake-gn-replay.png",
+      "package_url": "lectures/03-D1-optimization-1/fig/drake-gn-replay.png",
+      "kind": "Link",
+      "label": "existing replay plots"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "http://127.0.0.1:8765/modules/kkt-explorer/?mode=disc&target=0.5,0.3",
+      "package_url": "modules/kkt-explorer/index.html?mode=disc&target=0.5,0.3",
+      "kind": "Link",
+      "label": "disc explorer"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "http://127.0.0.1:8765/modules/kkt-explorer/?mode=wall&target=1.6,0.6",
+      "package_url": "modules/kkt-explorer/index.html?mode=wall&target=1.6,0.6",
+      "kind": "Link",
+      "label": "straight-fence explorer"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "http://127.0.0.1:8765/run/ik-nlp",
+      "package_url": "demos.html#ik-nlp",
+      "kind": "Link",
+      "label": "Panda constrained-IK demonstration"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "http://127.0.0.1:8765/log/ik-nlp",
+      "package_url": "demos.html#ik-nlp",
+      "kind": "Link",
+      "label": "solver log"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "http://127.0.0.1:8765/run/constrained-ik-replay",
+      "package_url": "demos.html#constrained-ik-replay",
+      "kind": "Link",
+      "label": "one-limit Panda replay"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "http://127.0.0.1:8765/run/ik-nlp-al-replay",
+      "package_url": "demos.html#ik-nlp-al-replay",
+      "kind": "Link",
+      "label": "hard-target Panda replay"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../02-reading-kinematic-foundations/chapter-01.md#76-use-a-local-model-to-propose-a-joint-position-update",
+      "package_url": "prerequisites.html#use-a-local-model-to-propose-a-joint-position-update",
+      "kind": "Link",
+      "label": "kinematics essentials"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../03-D1-optimization-1/notes.md",
+      "package_url": "chapter-02-detailed.html#optimization-fundamentals",
+      "kind": "Link",
+      "label": "the corresponding detailed derivations"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "https://msp.org/pjm/1966/16-1/pjm-v16-n1-p01-p.pdf",
+      "package_url": "https://msp.org/pjm/1966/16-1/pjm-v16-n1-p01-p.pdf",
+      "kind": "Link",
+      "label": "1966 paper"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../03-D1-optimization-1/code/gauss_newton_ik.py",
+      "package_url": "lectures/03-D1-optimization-1/code/gauss_newton_ik.py",
+      "kind": "Link",
+      "label": "gauss_newton_ik.py"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../../drake/02-gauss-newton-ik/gn_ik_panda.py",
+      "package_url": "drake/02-gauss-newton-ik/gn_ik_panda.py",
+      "kind": "Link",
+      "label": "Drake implementation"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../04-D1-constraints-and-komo/notes.md",
+      "package_url": "chapter-02-detailed.html#constraints-and-constrained-inverse-kinematics",
+      "kind": "Link",
+      "label": "the corresponding detailed derivations"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../04-D1-constraints-and-komo/code/constrained_ik.py",
+      "package_url": "lectures/04-D1-constraints-and-komo/code/constrained_ik.py",
+      "kind": "Link",
+      "label": "constrained_ik.py"
+    },
+    {
+      "document": "chapter-02.md",
+      "source_url": "../04-D1-constraints-and-komo/code/check_solvers.py",
+      "package_url": "lectures/04-D1-constraints-and-komo/code/check_solvers.py",
+      "kind": "Link",
+      "label": "check_solvers.py"
+    },
+    {
+      "document": "chapter-01.md",
+      "source_url": "fig/workspace_ik.png",
+      "package_url": "lectures/02-reading-kinematic-foundations/fig/workspace_ik.png",
+      "kind": "Image",
+      "label": "Figure 3. The reachable ring of the two-link arm and three targets: inside, two solutions (teal and gold, distinguished by the sign of q_2); on the outer circle, one solution, the stretched arm; outside, none."
+    },
+    {
+      "document": "chapter-01.md",
+      "source_url": "../02-D2-transforms-fk-jacobian/fig/two_link_bridge.png",
+      "package_url": "lectures/02-D2-transforms-fk-jacobian/fig/two_link_bridge.png",
+      "kind": "Image",
+      "label": "Figure 4. One joint-position update from the local model. The dark arm is at (30^{\\circ},45^{\\circ}) with its tip at (0.4241,0.4898) m; the star is the target (0.5,0.2) m and the arrow is the remaining displacement \\mathbf{e}. The gray arm is the configuration after the update \\Delta\\mathbf{q}=\\mathbf{J}^{-1}\\mathbf{e}; its tip is at (0.336,0.144) m, still 0.17 m from the target. Deck 03 calls this update the square step and draws the result as a ghost arm. (Deck 03, fig/two_link_bridge.png.)"
+    }
+  ],
+  "pdf_links": [
+    {
+      "source_url": "lectures/03-reading-optimization-planning-and-control/chapter-02.md",
+      "package_url": "chapter-02-detailed.html"
+    },
+    {
+      "source_url": "lectures/03-reading-optimization-planning-and-control/chapter-02.md#23-penalize-a-large-proposed-step",
+      "package_url": "chapter-02-detailed.html#penalize-a-large-proposed-step"
+    },
+    {
+      "source_url": "SETUP.md",
+      "package_url": "README.html#python"
+    },
+    {
+      "source_url": "lectures/03-reading-optimization-planning-and-control/code/local_step.py",
+      "package_url": "lectures/03-reading-optimization-planning-and-control/code/local_step.py"
+    },
+    {
+      "source_url": "lectures/03-reading-optimization-planning-and-control/code/jacobian_transpose.py",
+      "package_url": "lectures/03-reading-optimization-planning-and-control/code/jacobian_transpose.py"
+    },
+    {
+      "source_url": "lectures/03-D1-optimization-1/code/gauss_newton_ik.py",
+      "package_url": "lectures/03-D1-optimization-1/code/gauss_newton_ik.py"
+    },
+    {
+      "source_url": "lectures/03-D1-optimization-1/code/history_directions.py",
+      "package_url": "lectures/03-D1-optimization-1/code/history_directions.py"
+    },
+    {
+      "source_url": "lectures/03-D1-optimization-1/code/make_solver_overview.py",
+      "package_url": "lectures/03-D1-optimization-1/code/make_solver_overview.py"
+    },
+    {
+      "source_url": "lectures/04-D1-constraints-and-komo/code/constrained_ik.py",
+      "package_url": "lectures/04-D1-constraints-and-komo/code/constrained_ik.py"
+    },
+    {
+      "source_url": "lectures/04-D1-constraints-and-komo/code/check_solvers.py",
+      "package_url": "lectures/04-D1-constraints-and-komo/code/check_solvers.py"
+    },
+    {
+      "source_url": "drake/02-gauss-newton-ik/gn_ik_panda.py",
+      "package_url": "drake/02-gauss-newton-ik/gn_ik_panda.py"
+    },
+    {
+      "source_url": "lectures/03-reading-optimization-planning-and-control/code/panda_runs_figure.py",
+      "package_url": "lectures/03-reading-optimization-planning-and-control/code/panda_runs_figure.py"
+    },
+    {
+      "source_url": "drake/03-ik-as-nlp/ik_nlp_panda.py",
+      "package_url": "drake/03-ik-as-nlp/ik_nlp_panda.py"
+    },
+    {
+      "source_url": "drake/05-ik-nlp-al/ik_nlp_al_panda.py",
+      "package_url": "drake/05-ik-nlp-al/ik_nlp_al_panda.py"
+    },
+    {
+      "source_url": "lectures/DEMOS.md",
+      "package_url": "demos.html"
+    },
+    {
+      "source_url": "modules/gauss-newton-ik/index.html?view=local-step",
+      "package_url": "modules/gauss-newton-ik/index.html?view=local-step"
+    },
+    {
+      "source_url": "modules/gauss-newton-ik/index.html?y=0.5,0.2&method=gd",
+      "package_url": "modules/gauss-newton-ik/index.html?y=0.5,0.2&method=gd"
+    },
+    {
+      "source_url": "http://127.0.0.1:8765/modules/opt-explorer/?tab=concepts&fn=elongated&preset=classic-zig-zag&method=gd&ls=off&alpha=0.08&arrows=off",
+      "package_url": "modules/opt-explorer/index.html?tab=concepts&fn=elongated&preset=classic-zig-zag&method=gd&ls=off&alpha=0.08&arrows=off"
+    },
+    {
+      "source_url": "http://127.0.0.1:8765/modules/opt-explorer/?tab=concepts&fn=elongated&preset=classic-zig-zag&method=gd&ls=armijo&alpha=1&arrows=on",
+      "package_url": "modules/opt-explorer/index.html?tab=concepts&fn=elongated&preset=classic-zig-zag&method=gd&ls=armijo&alpha=1&arrows=on"
+    },
+    {
+      "source_url": "http://127.0.0.1:8765/modules/opt-explorer/?tab=concepts&fn=quartic-saddle&preset=near-the-maximum&method=newton&ls=off&arrows=off",
+      "package_url": "modules/opt-explorer/index.html?tab=concepts&fn=quartic-saddle&preset=near-the-maximum&method=newton&ls=off&arrows=off"
+    },
+    {
+      "source_url": "http://127.0.0.1:8765/modules/opt-explorer/?tab=trajectory&preset=ik",
+      "package_url": "modules/opt-explorer/index.html?tab=trajectory&preset=ik"
+    },
+    {
+      "source_url": "http://127.0.0.1:8765/modules/opt-explorer/?tab=trajectory&preset=ik&y=0.7,0",
+      "package_url": "modules/opt-explorer/index.html?tab=trajectory&preset=ik&y=0.7,0"
+    },
+    {
+      "source_url": "http://127.0.0.1:8765/modules/opt-explorer/?tab=trajectory&preset=ik&elbow=60",
+      "package_url": "modules/opt-explorer/index.html?tab=trajectory&preset=ik&elbow=60"
+    },
+    {
+      "source_url": "http://127.0.0.1:8765/modules/opt-explorer/?tab=concepts&fn=rosenbrock&preset=classic-start&method=lbfgs&ls=exact&arrows=off",
+      "package_url": "modules/opt-explorer/index.html?tab=concepts&fn=rosenbrock&preset=classic-start&method=lbfgs&ls=exact&arrows=off"
+    },
+    {
+      "source_url": "http://127.0.0.1:8765/modules/opt-explorer/?tab=concepts&fn=rosenbrock&preset=classic-start&method=bfgs&ls=strong-wolfe&arrows=off",
+      "package_url": "modules/opt-explorer/index.html?tab=concepts&fn=rosenbrock&preset=classic-start&method=bfgs&ls=strong-wolfe&arrows=off"
+    },
+    {
+      "source_url": "http://127.0.0.1:8765/modules/opt-explorer/?tab=concepts&fn=armijo-wolfe&preset=start-x-2&method=gd&ls=strong-wolfe&arrows=off",
+      "package_url": "modules/opt-explorer/index.html?tab=concepts&fn=armijo-wolfe&preset=start-x-2&method=gd&ls=strong-wolfe&arrows=off"
+    },
+    {
+      "source_url": "modules/kkt-explorer/index.html?mode=disc&target=0.5,0.3",
+      "package_url": "modules/kkt-explorer/index.html?mode=disc&target=0.5,0.3"
+    },
+    {
+      "source_url": "modules/kkt-explorer/index.html?mode=wall&target=1.6,0.6",
+      "package_url": "modules/kkt-explorer/index.html?mode=wall&target=1.6,0.6"
+    },
+    {
+      "source_url": "lectures/03-reading-optimization-planning-and-control/chapter-02.md#appendix-b-demonstrations",
+      "package_url": "chapter-02-detailed.html#appendix-b-demonstrations"
+    },
+    {
+      "source_url": "lectures/03-reading-optimization-planning-and-control/chapter-02.md#appendix-b-demonstrations",
+      "package_url": "chapter-02-detailed.html#appendix-b-demonstrations"
+    },
+    {
+      "source_url": "https://msp.org/pjm/1966/16-1/pjm-v16-n1-p01-p.pdf",
+      "package_url": "https://msp.org/pjm/1966/16-1/pjm-v16-n1-p01-p.pdf"
+    },
+    {
+      "source_url": "lectures/03-reading-optimization-planning-and-control/chapter-02.md",
+      "package_url": "chapter-02-detailed.html"
+    }
+  ],
+  "rendered_pdf_sha256": "4278ebe41c050a18af2bcd4ff293ab34e300e750eb7387e38d931612ef40ba27",
+  "delivered_pdf_sha256": "b1234ff318ca964e04b9649f13047f0627e3c838ae6d93c240c537108b1897f3",
+  "xref_entries": 1943,
+  "scope": "Chapter 02 companions only; no publication, assessments or instructor records.",
+  "files": {
+    "LICENSE.md": "300c8b380793f7177a514f2bfd0c791f22534bef6b53ac780f47bced08e39f92",
+    "README.html": "619964d3a0332089f7510efb37937ac66284fb14e17b2f91b4c1447afbc326d7",
+    "README.md": "1abe8e9597494347c6c01b54b0591d522a021633bda01c245bddf195eeaa6d72",
+    "assets/katex/fonts/KaTeX_AMS-Regular.ttf": "68534840bcfdd2bffb6f0e8deb48684dd01e7f04ea2813267577afb906de1d13",
+    "assets/katex/fonts/KaTeX_AMS-Regular.woff": "30da91e84c893f875e252689faebdc590b2871145e8adc7f9a9d4dbd8ce0b251",
+    "assets/katex/fonts/KaTeX_AMS-Regular.woff2": "0cdd387c9590a1a9f9794560022dbb59654a7d86f187aa0c81495ad42d3a7308",
+    "assets/katex/fonts/KaTeX_Caligraphic-Bold.ttf": "07d8e303ce4fc12b4bb54f1004170dd190a1f3db45d400fe68060df3e0897268",
+    "assets/katex/fonts/KaTeX_Caligraphic-Bold.woff": "1ae6bd7475590e97e7f145a89e09ccde322f7a6bc0b91607b1c8b8ee28290fed",
+    "assets/katex/fonts/KaTeX_Caligraphic-Bold.woff2": "de7701e42cf1f4cf0b766c03fb27977207eee2f4fd5d76fa82188406da43ea4c",
+    "assets/katex/fonts/KaTeX_Caligraphic-Regular.ttf": "ed0b74372feefcbb9c0666b2e210da37b7e49fa7fbbf3eeb11db5f693dacfbb7",
+    "assets/katex/fonts/KaTeX_Caligraphic-Regular.woff": "3398dd02302557a793f2863f88e02d96ce10df2abffa07c8e9fa90775116e65c",
+    "assets/katex/fonts/KaTeX_Caligraphic-Regular.woff2": "5d53e70ad607c2352162dec9e0923fb54ecdafaccbf604cd8dcf7d00facb989b",
+    "assets/katex/fonts/KaTeX_Fraktur-Bold.ttf": "9163df9c7122432e6495b4229fa9071cf9ae86a758ae5efc4924ec2e1a6dbce1",
+    "assets/katex/fonts/KaTeX_Fraktur-Bold.woff": "9be7ceb88004ab8ad124082246fbfcca4091e36385d4ec6ed1df67375dad50fb",
+    "assets/katex/fonts/KaTeX_Fraktur-Bold.woff2": "74444efd593c005e3f4573b44524704c0af0a937fe911cca9e94068d0d140d3f",
+    "assets/katex/fonts/KaTeX_Fraktur-Regular.ttf": "1e6f9579e90e2cac37f8f60a597c436e075c114385652b7cbeb0dec0421291b3",
+    "assets/katex/fonts/KaTeX_Fraktur-Regular.woff": "5e28753be717dac97f559f49bc10be9cf3c124ddcabda6659d11cb68febc6463",
+    "assets/katex/fonts/KaTeX_Fraktur-Regular.woff2": "51814d270d06ff0255dba0799994fa4d8c84d11f09951d47595f4abb1f3602dc",
+    "assets/katex/fonts/KaTeX_Main-Bold.ttf": "138ac28d1663b3037e9c5f52371fa5c63d8324f4a38d22cd573e6ea3a3fd0cf8",
+    "assets/katex/fonts/KaTeX_Main-Bold.woff": "c76c5d696297d51b9cb1639c7da4334f0e7dec81b42b11213b5e25ef671bb822",
+    "assets/katex/fonts/KaTeX_Main-Bold.woff2": "0f60d1b897938ec918c8ce073092411baf9438f6739465693ff18b0f9d20b021",
+    "assets/katex/fonts/KaTeX_Main-BoldItalic.ttf": "70ee1f64a20f2048c21940ef46d0144fd215baa953ca69afd1e31e98544f708f",
+    "assets/katex/fonts/KaTeX_Main-BoldItalic.woff": "a6f7ec0d846ac7ad975adb8959c37ed49b94acbc4ae436db9ce9e20287e4a64c",
+    "assets/katex/fonts/KaTeX_Main-BoldItalic.woff2": "99cd42a3c072d918f2f44984a807cf7aa16e13545fd0875fc07c6c65f99e715b",
+    "assets/katex/fonts/KaTeX_Main-Italic.ttf": "0d85ae7cc30f23790a7f1a58c4a112fdca8aae769b6ba11429af1d98b1b6cb3a",
+    "assets/katex/fonts/KaTeX_Main-Italic.woff": "f1d6ef86f3b11a528bd5185199bd2443ecb2b0dead96d88674b5a2c12be24bdf",
+    "assets/katex/fonts/KaTeX_Main-Italic.woff2": "97479ca6cce906abc961ecac96faa5f9ca2e61b8e7670d475826bcdee9a7c267",
+    "assets/katex/fonts/KaTeX_Main-Regular.ttf": "d0332f52868370fd83ae7fa46470f90c8f2eab2fcf12bc4f88080b340c95a830",
+    "assets/katex/fonts/KaTeX_Main-Regular.woff": "c6368d87e8a1a3a5d337623d83d8dc4b868f242a9ad476237d6f8d1e0f168cdc",
+    "assets/katex/fonts/KaTeX_Main-Regular.woff2": "c2342cd8b869e01752a9321dc17213fc40d4d04c79688c1d43f2cf316abd7866",
+    "assets/katex/fonts/KaTeX_Math-BoldItalic.ttf": "f9377ab0271cda59af24bcffbd46a4d0c8a3572ffafdbb38de2ad5ea7b0d5ee5",
+    "assets/katex/fonts/KaTeX_Math-BoldItalic.woff": "850c0af5c2238497febaf5e461d880bf458c341f42f4f330f1b1ab5698b1998e",
+    "assets/katex/fonts/KaTeX_Math-BoldItalic.woff2": "dc47344dbb6cb5b655c8460d561f4df5f501b90c804ad3c6cec65fe322351ab1",
+    "assets/katex/fonts/KaTeX_Math-Italic.ttf": "08ce98e51b04d58945a301e639e02b6998af29fdfd61a7b8afdd07bbfc479d4a",
+    "assets/katex/fonts/KaTeX_Math-Italic.woff": "8a8d244581371912b8f3f5a23e2437cb2a59cd9bcaebb0346e722c05737a2571",
+    "assets/katex/fonts/KaTeX_Math-Italic.woff2": "7af58c5ec8f132a2ddde9027c6d7814decce4d3b822a11192a42a20e2e973264",
+    "assets/katex/fonts/KaTeX_SansSerif-Bold.ttf": "1ece03f79f95277d57dc7f6b435a74e1379b0d46104a8530286b60ff49369ea0",
+    "assets/katex/fonts/KaTeX_SansSerif-Bold.woff": "ece03cfd83e22c212cdef66feb8442d25a083beb988db3f1883f3f9738d750ba",
+    "assets/katex/fonts/KaTeX_SansSerif-Bold.woff2": "e99ae51144bf1232efcc1bfe5add36262c6866b0faab24fa75740e1b98577a62",
+    "assets/katex/fonts/KaTeX_SansSerif-Italic.ttf": "3931dd81faed86ba021bb2bbdc36f5bed9a38d6b4f4077aca59b265aa1b02083",
+    "assets/katex/fonts/KaTeX_SansSerif-Italic.woff": "91ee67500cc0129aa0ace3ac5c61ff1692102f0f31d02b69347fba35dcb75bf2",
+    "assets/katex/fonts/KaTeX_SansSerif-Italic.woff2": "00b26ac825e2095056396e0553b8ac26d3f8ad158c3826e28b4c45b385c4714a",
+    "assets/katex/fonts/KaTeX_SansSerif-Regular.ttf": "f36ea897e19f4a2e571d1e900e4e3710e438deb05a842486045ba0a3e616a4ad",
+    "assets/katex/fonts/KaTeX_SansSerif-Regular.woff": "11e4dc8a6471ff6d6ee561d53d10fde8f7489e798257ff449c5d37c197435605",
+    "assets/katex/fonts/KaTeX_SansSerif-Regular.woff2": "68e8c73ef42afd3ccec58bf0fba302cce448938e7fc020a5e31f8a952eee1342",
+    "assets/katex/fonts/KaTeX_Script-Regular.ttf": "1c67f068fea8bb09bf099c088b1cf64bd27516a6e07f4684344873564bb66a67",
+    "assets/katex/fonts/KaTeX_Script-Regular.woff": "d96cdf2b3bdd4d64a8fd5f74a4c467f123a8a73931cd435889f08ffaf9bf947a",
+    "assets/katex/fonts/KaTeX_Script-Regular.woff2": "036d4e95149b69ff9bcc0cd55771efeb25ffa3947293e69acd78d5ac328c684b",
+    "assets/katex/fonts/KaTeX_Size1-Regular.ttf": "95b6d2f1a50173bfedb8c63e1d1c99b10427d0a4df4201cb44513b226951a22b",
+    "assets/katex/fonts/KaTeX_Size1-Regular.woff": "c943cc986384f59e86bea5fd7dc50a9c4dfe567a7c05eb40d6790720dead97c9",
+    "assets/katex/fonts/KaTeX_Size1-Regular.woff2": "6b47c40166b6dbe21a5dfca7718413f2147fd2399be1ba605d8ad39cedf25dfe",
+    "assets/katex/fonts/KaTeX_Size2-Regular.ttf": "a6b2099fb555c60e3a0db3a08842ebf1d732c6eb4e4bf44913613bed4fc4e39b",
+    "assets/katex/fonts/KaTeX_Size2-Regular.woff": "2014c523c3210bcc166648c4d4cc57f05b747df07a24277bf71c51e67dc79e3d",
+    "assets/katex/fonts/KaTeX_Size2-Regular.woff2": "d04c54219f9eaec6d4d4fd42dfb28785975a4794d6b2fc71e566b9cd6db842dd",
+    "assets/katex/fonts/KaTeX_Size3-Regular.ttf": "500e04d54f0d51666332c9d2089aa803be22aa878eca539e59fa53c6e522b082",
+    "assets/katex/fonts/KaTeX_Size3-Regular.woff": "6ab6b62e9b62dae2c00dd90f791bd10950be0ecc3490d7d6045f51c2e8fe0949",
+    "assets/katex/fonts/KaTeX_Size3-Regular.woff2": "73d591271b1604960cb10bb90fee021670af7297017e0e98480b332d11f51995",
+    "assets/katex/fonts/KaTeX_Size4-Regular.ttf": "c647367d1dd4e162468717d020e1fc0f1dc5c26ebfdffbe55261713bf88c5877",
+    "assets/katex/fonts/KaTeX_Size4-Regular.woff": "99f9c6750b489c9462bf04900bd3f939df9b829339daaaaa99ef5495cdddea58",
+    "assets/katex/fonts/KaTeX_Size4-Regular.woff2": "a4af7d414440a1c1790825cfb700cf9cf43b0f2c4b04f0ebc523011ad9853ec0",
+    "assets/katex/fonts/KaTeX_Typewriter-Regular.ttf": "f01f3e87d9c6a61c0c081ceb577abd864eb00a612f7ac1620dd6915fad2ef5aa",
+    "assets/katex/fonts/KaTeX_Typewriter-Regular.woff": "e14fed02b1aba7ce9f5afd5844b5d0321b22351febc720e0de8b8723527609f7",
+    "assets/katex/fonts/KaTeX_Typewriter-Regular.woff2": "71d517d67827787cfabdf186914cc3358eda539e37931941f2b2fd4a21f68c0b",
+    "assets/katex/katex.min.css": "0289a02cf451a44dd73add683a09644252363871ac11713a647b732cee8b1ee3",
+    "assets/katex/katex.min.js": "a29d2961d3146de5949d78ac7c1a9d93ae54955bad22a6db4fbe836e88e8bf48",
+    "chapter-02-detailed.html": "e356567a7c0f34288b79db11757e660982c7899e5773d5e3ddfd1567fd0c8555",
+    "chapter-02-essentials.html": "f5e6e803836bbf9d3a8024bceed39346d2763c7370f820a3eebaa42abd4c2802",
+    "chapter-02-essentials.pdf": "b1234ff318ca964e04b9649f13047f0627e3c838ae6d93c240c537108b1897f3",
+    "demos.html": "b48c2dc28be810a87798f807933203803ee100a2cb5c2a7e60dc9179789a2b22",
+    "demos.md": "ccd4a7dd6343812920f833e82310902ec0b0ee406d98f4902282893f16f6f1a9",
+    "drake/02-gauss-newton-ik/gn_ik_panda.py": "1ec56f0d14336b63776dfc5d2f82f9485bfe579003c4d9ad03c01a24baf8a4cd",
+    "drake/02-gauss-newton-ik/iterates-baseline.json": "4b8af1130bbc75c62d60c551b22671d1b9e0b7b2b7696cf6a24190ae6f3ff7ae",
+    "drake/02-gauss-newton-ik/panel/index.html": "d6bb46fd19c16b0673d6c1d1c064aa16160e0c56f6af33d48aa67a489b936463",
+    "drake/02-gauss-newton-ik/replay_panel.py": "0488e0a6c8e7df0eb8cb55dcc614ba4f24aa9cdf024a356a76c67dd97b163735",
+    "drake/03-ik-as-nlp/ik_nlp_panda.py": "9adf0a8a8f0fda94353bad5a8b09ae6d0a88ca3f8e99397b0d3fbfade25381b6",
+    "drake/04-constrained-ik-al/constrained_ik_panda.py": "5ccc6cd5c207de7a8f7a56eb22d99e45eaf94f749aa072c18d19322e7c1443b6",
+    "drake/04-constrained-ik-al/iterates-baseline.json": "5af5c05ca3be20ff4db38da1d6dbbf4bc427cf8af54f519622e0acd1d71c9370",
+    "drake/04-constrained-ik-al/panel.html": "5db3c1984a6578a27775c39863188e4103b5e7a7a2f0b4cb86228f54aa88e2a5",
+    "drake/05-ik-nlp-al/ik_nlp_al_panda.py": "9c8ecf729133d6512143a8b94fe9d37d360d375bea02b1b554d0ce45e0caf45a",
+    "drake/05-ik-nlp-al/iterates-baseline.json": "1d77492a37926edc61f59a1e5d80de7e9924d90877d9d22612186a6ce2cc3898",
+    "drake/05-ik-nlp-al/panel.html": "bd7502674ed26e28dc04b575801782017b40cbb71466c0f0347706e57eb467e3",
+    "launch.py": "75aa7d334eecbf465d750587434874178377b1500908e57d599e63a219746d4d",
+    "lectures/02-D2-transforms-fk-jacobian/fig/two_link_bridge.png": "444e92d07fd3b5686882a71dcdb93309856a581ce74286b44d655f02c3f94a20",
+    "lectures/02-reading-kinematic-foundations/fig/workspace_ik.png": "a5049bfe0cfd8effe2be5977c128a6017ee10fc718c1a31cc3618110a64c9f85",
+    "lectures/03-D1-optimization-1/code/descent.py": "743e02de1720ec28372ee78f05af936361873a85f7bdca3761985ff5324fd082",
+    "lectures/03-D1-optimization-1/code/gauss_newton_ik.py": "4c632e5a4346c8b86eab13234056eff6c22837beed3885a0ef1ef493b02749d2",
+    "lectures/03-D1-optimization-1/code/history_directions.py": "39b7d3d6e83b1753d0edadb0be3053dd9088aa08636c6b997dd9d2fcdf040794",
+    "lectures/03-D1-optimization-1/code/make_figures.py": "48b73c6f64d271ef744db672500179c38e406b53a2d9ddc458cdb51e1af48890",
+    "lectures/03-D1-optimization-1/code/make_solver_overview.py": "358e752f9b82bf43d6825669f7077afb6d042b558055d6bcc839644fc91afb60",
+    "lectures/03-D1-optimization-1/code/make_vocabulary_figures.py": "c05dd0eeb06ea2462ca563c1cfb2ef40c5ba66425bfad70b06fc563c1d274696",
+    "lectures/03-D1-optimization-1/fig/armijo.png": "d73e8017a206fff23ea9b353d4cf2e953767869efecd914e3712170a8f3a9bf0",
+    "lectures/03-D1-optimization-1/fig/bowl_derivatives.png": "464122e374b0b903fc8da040dd6a4c38bc37085e460f08a1484004fdf81eb81d",
+    "lectures/03-D1-optimization-1/fig/bowl_landscape.png": "a1c6a4bf88d48e19c1299ff914de8fd76bb27547c9a4aa2477023e89d3a9cda8",
+    "lectures/03-D1-optimization-1/fig/cg_rosenbrock.png": "5484d2f709de7ab46c9177ccb824ef111c0e7e2d291eb00e3fdfe81cc57c09a8",
+    "lectures/03-D1-optimization-1/fig/drake-gn-ik.png": "5cfbbbb149bdd8a5c50d26b1512a7d0eb6409d37b91317d47224c0e3cebbfb83",
+    "lectures/03-D1-optimization-1/fig/drake-gn-replay.png": "db80d6c85a3d90733c3f4e71e2656e8a60de26b8c60c274eccb6829f1cfd079e",
+    "lectures/03-D1-optimization-1/fig/gd_steps.png": "efcf4e751d6b515413abb212107f5e9bd04d679bf5f5703487be368ae41cd595",
+    "lectures/03-D1-optimization-1/fig/ik_iterates.png": "02085724d81d9e91a4a41c02a1f0f80778dc2f35a683b689d2dabcefc9f51f15",
+    "lectures/03-D1-optimization-1/fig/lbfgs_rosenbrock.png": "9dbbef76a442522270fce4744905aff2505a01699dd3531cc18b66a7294d77ba",
+    "lectures/03-D1-optimization-1/fig/line_search_overview.png": "ff30b901e89cc0d367c9d0c569657d649b4ef2151668653e5de81cf0fcec1810",
+    "lectures/03-D1-optimization-1/fig/stationary_straight.png": "4979fecfec4ae0d9f38f20a746e07b32684cd3a65d5f2853550a8f28079f20e1",
+    "lectures/03-reading-optimization-planning-and-control/code/armijo.py": "4de2b8033fbc797c00462139a79ea7fbef49d904a3cb5674222eb331bb113350",
+    "lectures/03-reading-optimization-planning-and-control/code/bowl_derivatives.py": "ea99c944b0a9f80fcafe4bb9a163e663e291b555d39afdc82d3c15597da518f2",
+    "lectures/03-reading-optimization-planning-and-control/code/gradient_descent.py": "c2c9ddc1a3b601a26f62ca18741cd999907fef302379e426d98a7cb72cd15416",
+    "lectures/03-reading-optimization-planning-and-control/code/jacobian_transpose.py": "404d56bfe52551b753834299bc6a82b30ace92293f56e57a0742f9ec53cf0c8e",
+    "lectures/03-reading-optimization-planning-and-control/code/local_step.py": "d640f5372a0a98fdeb7ef80b78f90ba0f95f96ded8a6c38d0fce7c17ab436aa0",
+    "lectures/03-reading-optimization-planning-and-control/code/make_figures.py": "48f783f2987e36757c3493b81f56abff8b8d124c6427436436e57c5637de0914",
+    "lectures/03-reading-optimization-planning-and-control/code/panda_runs_figure.py": "951fdddd8f58e93cfea6605280bddde7d98d6e18b3c1efca425de6a03d02884f",
+    "lectures/03-reading-optimization-planning-and-control/fig/local_prediction_vs_fk.png": "33105f35b32264f522aa0d7954b6fd53e9357a957231a774a82ca01aff78d2f4",
+    "lectures/03-reading-optimization-planning-and-control/fig/panda_gn_runs.png": "d755809c0874ca836e6f8630473bae20bc0929df4f9f913a1d26e396cfbcb38b",
+    "lectures/04-D1-constraints-and-komo/code/check_solvers.py": "7feedf8ca0c4bbba4dda0c8a99bee8f1ebb0b62bab0eed2ddf95e7080bf1242c",
+    "lectures/04-D1-constraints-and-komo/code/constrained_ik.py": "ffae9098c58b9961b0e7bdcf2b8cd380fb98a34c22b253bb219b2d250241d624",
+    "lectures/04-D1-constraints-and-komo/code/komo_two_link.py": "88702f1acef812f519700fcef050ffaf4faf9498ee67a47bdacfedaae1f92b73",
+    "lectures/04-D1-constraints-and-komo/fig/arm_joint_limit.png": "8e4f4c196508dd9a2c8067d51fba7d52fdd1c1e82a2c44b98ba756c7fb5d84f2",
+    "lectures/04-D1-constraints-and-komo/fig/drake-constrained-ik-al.png": "b85201eaee4288c8e0bbcd4425dd217a8e8e35376d4b6e8016a60545b50249ba",
+    "lectures/04-D1-constraints-and-komo/fig/drake-ik-nlp-al.png": "2212b16c579e7b338287bb1b5ce17ee2a1c63453fdd02a8783262c7429f6dc26",
+    "lectures/04-D1-constraints-and-komo/fig/drake-ik-nlp.png": "a2b4b08bac846a65e6d925e861254de0d459fb2754f0135f47ea96f88073e41a",
+    "lectures/04-D1-constraints-and-komo/fig/kkt_disc.png": "4fca4556347dd8826442758e831579bf9dae98b9af9cfe99939de91566971c77",
+    "lectures/04-D1-constraints-and-komo/fig/kkt_disc_forces.png": "489fc15d30af7dc20d6141ae4366c890795491072a3805b92ac9d9855de92807",
+    "licenses/@mapbox__geojson-rewind/LICENSE.txt": "f69fa6a6652581ae8c6cbab9e720bacb3b335a03335c2024afd6ddc6f7cfe240",
+    "licenses/@mapbox__geojson-types/LICENSE": "46323ce6756e643e3b0d2c2355d44677e53bffe288482d1f1a54375efdfbb147",
+    "licenses/@mapbox__mapbox-gl-supported/LICENSE.txt": "e9e43336581d738d3d3c86e65b63bd2357dd4a945ec21e28c4eb0c4a8b522ac6",
+    "licenses/@mapbox__point-geometry/LICENSE": "dd21817f71dfddadd36108266c1f19c89e2d1f24e4e27ee5b6c34743462d8310",
+    "licenses/@mapbox__tiny-sdf/LICENSE.txt": "daee818208313020b429fd7b69755232e3cd27348a10284076c4bd84e6008d83",
+    "licenses/@mapbox__vector-tile/LICENSE.txt": "de11b2b7d4af85d160347e7cbe734b5bc7b5beb5584281506bc1a5bc84b3aa3e",
+    "licenses/@mapbox__whoots-js/LICENSE.md": "27043d1a6a0e1985fde12660decbbd3b23c67de900b00609c90d4f0aa492f425",
+    "licenses/@maplibre__maplibre-gl-style-spec/LICENSE.txt": "bfd4cb919eec574e9213e1e61f880831eb5fc372d467be429fd0a8d51d1df890",
+    "licenses/@maplibre__maplibre-gl-style-spec__node_modules__@mapbox__unitbezier/LICENSE": "f0dc305ad097eddbc66eebb79288c92d8a5043818ace81206383a4c1a3268fe3",
+    "licenses/@maplibre__maplibre-gl-style-spec__node_modules__tinyqueue/LICENSE": "780453e05abdc22307ee01c706a2e73f508d3e484fc4c804485ebf6fe0964694",
+    "licenses/@plotly__d3/LICENSE": "e4796bd1fdc09e06a3683957a177d59b38aec4143df81b2d25472438f5763482",
+    "licenses/@plotly__d3-sankey/LICENSE": "2bf785e778d67a4f5266cffcd4f2cc5bb98cde73791666e7efeb8002ba32dfa5",
+    "licenses/@plotly__d3-sankey-circular/LICENSE": "793031003729acb6fc69e8e6c5ef754dd9f5be4e68ac1e70ced1cc7c1dabae94",
+    "licenses/@plotly__mapbox-gl/LICENSE.txt": "dcd8c5e27012f2c0754081a51b5e742ca71f4928d557bd204ab14447b9b76f44",
+    "licenses/@plotly__point-cluster/license.md": "2907ee84b30a5ca0f0fb134e24f60daf292a598bf5819e418eb2eb2b32262ed8",
+    "licenses/@plotly__regl/LICENSE": "42d997d1f47c9222dec2844468fc2a4fd144c6950d698eade460e94537ddcdd3",
+    "licenses/@turf__area/LICENSE": "f9b32b82fd5a1d3a990526d86da97f42fb805d9f4d9f978125c4679b674fce44",
+    "licenses/@turf__bbox/LICENSE": "f9b32b82fd5a1d3a990526d86da97f42fb805d9f4d9f978125c4679b674fce44",
+    "licenses/@turf__centroid/LICENSE": "f9b32b82fd5a1d3a990526d86da97f42fb805d9f4d9f978125c4679b674fce44",
+    "licenses/@turf__helpers/LICENSE": "f9b32b82fd5a1d3a990526d86da97f42fb805d9f4d9f978125c4679b674fce44",
+    "licenses/@turf__meta/LICENSE": "f9b32b82fd5a1d3a990526d86da97f42fb805d9f4d9f978125c4679b674fce44",
+    "licenses/@types__geojson/LICENSE": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383",
+    "licenses/@types__geojson-vt/LICENSE": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383",
+    "licenses/@types__mapbox__point-geometry/LICENSE": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383",
+    "licenses/@types__mapbox__vector-tile/LICENSE": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383",
+    "licenses/@types__pbf/LICENSE": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383",
+    "licenses/@types__plotly.js/LICENSE": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383",
+    "licenses/@types__prop-types/LICENSE": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383",
+    "licenses/@types__react/LICENSE": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383",
+    "licenses/@types__react-plotly.js/LICENSE": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383",
+    "licenses/@types__supercluster/LICENSE": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383",
+    "licenses/acorn/LICENSE": "cb3984acf8a000bc42bfbe319b836507bd268ef1d0d53e37363e2d5cac1137e0",
+    "licenses/array-find-index/license": "6fb9754611c20f6649f68805e8c990e83261f29316e29de9e6cedae607b8634c",
+    "licenses/array-range/LICENSE.md": "91515553fda3d86e82454bab0eb876a2cb9a31c0dcb8be640870fed624e53697",
+    "licenses/array-rearrange/license.md": "7d73a6394617542e3f8b4e4ef7d806f2bb1af2cd438973becc3c3f8d12f7f68b",
+    "licenses/base64-arraybuffer/LICENSE": "f3eca6ff762533fa5a77caf954a143e48afa204668cf97dce758c45a9e006be3",
+    "licenses/binary-search-bounds/LICENSE": "f2b10f2958d2724d6df0f16b1ea25d32cd7e6333ce88ac3c5cdff37c2c4222b8",
+    "licenses/bit-twiddle/LICENSE": "e67aed7df22dc8031e4fcf5338fe91cb33e3817e5c58a99a2a2802eea9069791",
+    "licenses/bl/LICENSE.md": "dce3625a2f461b116e324ba6b52641cc8227c87fd07aeffae3f1b57c43fe4cfe",
+    "licenses/buffer-from/LICENSE": "14275f5c8139d02054c5259d52a88ccbba662a86af18c30f071c8d082dc6004c",
+    "licenses/canvas-fit/LICENSE.md": "435a6722c786b0a56fbe7387028f1d9d3f3a2d0fb615bb8fee118727c3f59b7b",
+    "licenses/clamp/LICENSE.md": "c6db45c144aeabf87a299c54e57f0a9b68ba043012d728d560209169c91ef4bc",
+    "licenses/color-alpha__node_modules__color-parse/LICENSE": "af45ae40c7d031f40e77e09fd33b12700e96ea861c4a73f0dff3294d47e60a81",
+    "licenses/color-name/LICENSE": "c064f7a3e353bc1bc977f3c897941c75ef763f44f41677e0a15370ca0853d6e2",
+    "licenses/color-normalize__node_modules__color-parse/LICENSE": "af45ae40c7d031f40e77e09fd33b12700e96ea861c4a73f0dff3294d47e60a81",
+    "licenses/color-parse/LICENSE": "af45ae40c7d031f40e77e09fd33b12700e96ea861c4a73f0dff3294d47e60a81",
+    "licenses/color-space/LICENSE": "ca2abdf695884c77ea4b4a5b64ca7b732d9d9dbade4eebc1c2e76c53e9e3bc83",
+    "licenses/commander/LICENSE": "04512a63dce4d2d506ad612dc0bd7681ccf6e3655f7b6eaef7dfac8323d1ec0b",
+    "licenses/concat-stream/LICENSE": "96b29c9aaa611a05349b362d48c2ffce0966fe408401a2d1a157be312c035b5f",
+    "licenses/core-util-is/LICENSE": "33b734d60042d0fe0c92dd1fc1e874193a1c899ec3e276a2eb935d2d0bf5b710",
+    "licenses/country-regex/LICENSE": "295a58ae617eab21d154117b48e9875ed7be5d50d246094105af2af055a79a45",
+    "licenses/css-font/license.md": "53e2988fd2e3e852161a07f5dbf2a31482f02eec07e35921c3afe9eaaa4c6124",
+    "licenses/css-font-size-keywords/LICENSE": "03ac0b988d87f21fccdec911d13eaaea03c80a79ce650e2b2d1e5e9ed2238ec7",
+    "licenses/css-font-stretch-keywords/LICENSE": "03ac0b988d87f21fccdec911d13eaaea03c80a79ce650e2b2d1e5e9ed2238ec7",
+    "licenses/css-font-style-keywords/LICENSE": "03ac0b988d87f21fccdec911d13eaaea03c80a79ce650e2b2d1e5e9ed2238ec7",
+    "licenses/css-font-weight-keywords/LICENSE": "03ac0b988d87f21fccdec911d13eaaea03c80a79ce650e2b2d1e5e9ed2238ec7",
+    "licenses/css-global-keywords/LICENSE": "03ac0b988d87f21fccdec911d13eaaea03c80a79ce650e2b2d1e5e9ed2238ec7",
+    "licenses/css-system-font-keywords/LICENSE": "03ac0b988d87f21fccdec911d13eaaea03c80a79ce650e2b2d1e5e9ed2238ec7",
+    "licenses/csstype/LICENSE": "11d55bd4541c75ee7879547ac49089c489163dae49551389713c3d026cab383e",
+    "licenses/d/LICENSE": "77485a12d142fd84ee9f278b42968b2f029c876c8dddca7d0e13fa164ffeed34",
+    "licenses/d3-array/LICENSE": "e1211892da0b0e0585b7aebe8f98c1274fba15bafe47fa1f4ee8a7a502c06304",
+    "licenses/d3-collection/LICENSE": "c88423cbec18e11f2673dee760013af559a28c42704fb5471db146e5f954a476",
+    "licenses/d3-color/LICENSE": "faa682e3e430941f958d26180458f5934a62f58dac4d70ccdd15608c15d0f884",
+    "licenses/d3-dispatch/LICENSE": "e1211892da0b0e0585b7aebe8f98c1274fba15bafe47fa1f4ee8a7a502c06304",
+    "licenses/d3-force/LICENSE": "e1211892da0b0e0585b7aebe8f98c1274fba15bafe47fa1f4ee8a7a502c06304",
+    "licenses/d3-format/LICENSE": "7eea8533ea92bd8c32a901e89ecb0305890905bb12711449565ddff96891146d",
+    "licenses/d3-geo/LICENSE": "c3c9d41a75b64963748657932167ec4c56404b8fd557d4f89c9eeda6e2fdf39a",
+    "licenses/d3-geo-projection/LICENSE": "4108a126a74cc35d4d5ae39ca5d0cc926fa7c8ec40e459a0c6d3481c69decbd8",
+    "licenses/d3-hierarchy/LICENSE": "e1211892da0b0e0585b7aebe8f98c1274fba15bafe47fa1f4ee8a7a502c06304",
+    "licenses/d3-interpolate/LICENSE": "e008c5e25a6be382593089c29bfabbc553c6378eee02895aec46ce396cc404ee",
+    "licenses/d3-path/LICENSE": "b8265327ab678f554800e71188b1cc6b1ff57522e292d2b1c0be66f27cf328b6",
+    "licenses/d3-quadtree/LICENSE": "e1211892da0b0e0585b7aebe8f98c1274fba15bafe47fa1f4ee8a7a502c06304",
+    "licenses/d3-shape/LICENSE": "7eea8533ea92bd8c32a901e89ecb0305890905bb12711449565ddff96891146d",
+    "licenses/d3-time/LICENSE": "e1211892da0b0e0585b7aebe8f98c1274fba15bafe47fa1f4ee8a7a502c06304",
+    "licenses/d3-time-format/LICENSE": "7a3cb0e5055874e67db9aa2d5fe26de23204fa994ffbad198901ffe9c812a717",
+    "licenses/d3-timer/LICENSE": "e1211892da0b0e0585b7aebe8f98c1274fba15bafe47fa1f4ee8a7a502c06304",
+    "licenses/defined/LICENSE": "435a6722c786b0a56fbe7387028f1d9d3f3a2d0fb615bb8fee118727c3f59b7b",
+    "licenses/dtype/LICENSE-MIT": "0e5d86671d8756fb5f87079c155f05c970be4d0f54d44bf93f1f234d27dd0b5f",
+    "licenses/dup/LICENSE": "e67aed7df22dc8031e4fcf5338fe91cb33e3817e5c58a99a2a2802eea9069791",
+    "licenses/duplexify/LICENSE": "3fe8d55a98dbf260eace67c00cf9bc53edb46234e840098a0b93df3096b97fb6",
+    "licenses/earcut/LICENSE": "cd661c432ea8243974e6fde6fc433ebee3e96525ca8b66321b9d9971674ede60",
+    "licenses/element-size/LICENSE.md": "435a6722c786b0a56fbe7387028f1d9d3f3a2d0fb615bb8fee118727c3f59b7b",
+    "licenses/elementary-circuits-directed-graph/LICENSE": "7db11fce23faf713647e44b6c58143f7bdace4258dbc9ca800be7582782d5e2b",
+    "licenses/end-of-stream/LICENSE": "3fe8d55a98dbf260eace67c00cf9bc53edb46234e840098a0b93df3096b97fb6",
+    "licenses/es5-ext/LICENSE": "5dc6fe91750695c7a47f9bc200f7bd52f3e81c6854d431f43c34c7e7f8ae8b52",
+    "licenses/es6-iterator/LICENSE": "29c6c58225baf0c91719e5600f7e1302cad616c0fd81c45b02b5e78882b9e2a9",
+    "licenses/es6-symbol/LICENSE": "77485a12d142fd84ee9f278b42968b2f029c876c8dddca7d0e13fa164ffeed34",
+    "licenses/es6-weak-map/LICENSE": "af2d033286be76e6b748da6ca99298524e03a5e2f90eff3b2e9ab653d38d198e",
+    "licenses/escodegen/LICENSE.BSD": "d5d62471a28a9920416c7d37d387a3bf55f32cb768590f605f84990b76aee5de",
+    "licenses/esniff/LICENSE": "77485a12d142fd84ee9f278b42968b2f029c876c8dddca7d0e13fa164ffeed34",
+    "licenses/esprima/LICENSE.BSD": "94bcb9959136723aa4fb36e1a6c4d5c662a2369978cfae344dabfb83ae619e79",
+    "licenses/estraverse/LICENSE.BSD": "0e74697a68cebdcd61502c30fe80ab7f9e341d995dcd452023654d57133534b1",
+    "licenses/esutils/LICENSE.BSD": "0e74697a68cebdcd61502c30fe80ab7f9e341d995dcd452023654d57133534b1",
+    "licenses/event-emitter/LICENSE": "519bbf857c213b95460e438767e9e5600159476e3e87facbbcc19f9b2c7f8886",
+    "licenses/events/LICENSE": "631987b7616a325a5b97566c232418481ddf7dbb5ecadefb991e791876cc2599",
+    "licenses/ext/LICENSE": "2f81a49be59092e3229ed757730791b7bee7b3394d26e58a4b6ae1829437698b",
+    "licenses/falafel/LICENSE": "60acd7711e6c138e6041836e32d922705254cc1568a30fdf16aa8f59bb87aeaa",
+    "licenses/fast-isnumeric/LICENSE": "71f353d5dca49bf6335eaa74ce0f92914f4b820e73a55d4277ac69a5b144a445",
+    "licenses/flatten-vertex-data/LICENSE.md": "fb415b6d1ed5f9dd12004f39df586bffd98cb56b2dc26ffe1016adc4c6c46f9b",
+    "licenses/font-atlas/LICENSE.md": "a9ecf3da3825b3e7232f29c970a2869bb1752c900bd75ba7cbabeb69b8f032b4",
+    "licenses/from2/LICENSE.md": "74afb88a7aa7f8db6735c014cba3f9f7b1b1fde39d7b56ba9b2c1f1f2d5d10ec",
+    "licenses/function-bind/LICENSE": "773e131a7684726005a7e4688a80b4620033bc08499bc1404dd1a1eb3bca725e",
+    "licenses/geojson-vt/LICENSE": "828f2aed51b6526881a236758ec9b08cd69928fbfc70346d9d44a0b3a3444fe1",
+    "licenses/get-canvas-context/LICENSE.md": "fb153e8eaf70c10aa169bc3d7401946a9d51163cafaca23458cea8e67de972f4",
+    "licenses/get-stream/license": "5c932d88256b4ab958f64a856fa48e8bd1f55bc1d96b8149c65689e0c61789d3",
+    "licenses/gl-mat4/LICENSE.md": "28b772abdf0b639145dca52fb975cb322bac45ee098da1aa316d41e1d3c4493a",
+    "licenses/gl-matrix/LICENSE.md": "af62d31a0cdc1bf95d5e19428c3e0de368b727d9d5b6b6cdb466f8a52e68ad06",
+    "licenses/gl-text/license.md": "350454cc29b984110ff0936b4459fc8ea8f26b9b5cb7ca15664cca643577db9e",
+    "licenses/global-prefix/LICENSE": "e7d1fee7347ffddccc5fd03327ffdb50f8c112be0d5016d62388a92c4ae6e7a9",
+    "licenses/glsl-inject-defines/LICENSE.md": "aa084193c84505fcea25068c7dc2eb1643a2ad2a744a586a22a14bc459b0eeb1",
+    "licenses/glsl-resolve/LICENSE.md": "74afb88a7aa7f8db6735c014cba3f9f7b1b1fde39d7b56ba9b2c1f1f2d5d10ec",
+    "licenses/glsl-resolve__node_modules__resolve/LICENSE": "435a6722c786b0a56fbe7387028f1d9d3f3a2d0fb615bb8fee118727c3f59b7b",
+    "licenses/glsl-resolve__node_modules__xtend/LICENCE": "19338d17a974d1c747b3f6c618f08975b8908fdebccbc047c0e72b09daf6ddd3",
+    "licenses/glsl-token-assignments/LICENSE.md": "aa084193c84505fcea25068c7dc2eb1643a2ad2a744a586a22a14bc459b0eeb1",
+    "licenses/glsl-token-defines/LICENSE.md": "aa084193c84505fcea25068c7dc2eb1643a2ad2a744a586a22a14bc459b0eeb1",
+    "licenses/glsl-token-depth/LICENSE.md": "aa084193c84505fcea25068c7dc2eb1643a2ad2a744a586a22a14bc459b0eeb1",
+    "licenses/glsl-token-descope/LICENSE.md": "aa084193c84505fcea25068c7dc2eb1643a2ad2a744a586a22a14bc459b0eeb1",
+    "licenses/glsl-token-inject-block/LICENSE.md": "fb153e8eaf70c10aa169bc3d7401946a9d51163cafaca23458cea8e67de972f4",
+    "licenses/glsl-token-properties/LICENSE.md": "aa084193c84505fcea25068c7dc2eb1643a2ad2a744a586a22a14bc459b0eeb1",
+    "licenses/glsl-token-scope/LICENSE.md": "aa084193c84505fcea25068c7dc2eb1643a2ad2a744a586a22a14bc459b0eeb1",
+    "licenses/glsl-token-string/LICENSE.md": "aa084193c84505fcea25068c7dc2eb1643a2ad2a744a586a22a14bc459b0eeb1",
+    "licenses/glsl-token-whitespace-trim/LICENSE.md": "82d4cd7899b219ef29e6bd30820b22d12fd8d95ca2a43a6dc675c72ea2a19cc7",
+    "licenses/glsl-tokenizer/LICENSE.md": "d3ec8ff484cdc71fcd1a6591730d54ed55d426350e80dfaf9c01cb27952b82c9",
+    "licenses/glsl-tokenizer__node_modules__readable-stream/LICENSE": "6239c6144c31e58cf925c34483606969c555574d64ffa96518ab5d7f45c75d43",
+    "licenses/glsl-tokenizer__node_modules__string_decoder/LICENSE": "21a82bbee91262a076c2e34533d51d73475d55e889f1c42cf884c86b2a0d5773",
+    "licenses/glsl-tokenizer__node_modules__through2/LICENSE": "2cb181dde66fd7dea0dd4f728497bf41672f3b848c0278e98a67b54c53d80f00",
+    "licenses/glslify/LICENSE.md": "10f1945ac47db03b7532264ae7addaccf22058af1dcb302c9e9dfed479e760c0",
+    "licenses/glslify-bundle/LICENSE.md": "8447fa7dd83aaf0c4807084a43d65164939f8b7067fb72c47e092e5b5063059e",
+    "licenses/graceful-fs/LICENSE": "f65c5d9f22a317b2a10803bd1868461ce6499c2ed7217bc80c0cc772a748789c",
+    "licenses/grid-index/LICENSE": "bdc2176275547505d0aa0c908e07053063bfcf04d285364d9032233b5c4c5a9b",
+    "licenses/has-passive-events/license.md": "e9dd54ddece97061ebc2153110fcfeac1b0579e8556c0b07b195f004b00ff7fc",
+    "licenses/hasown/LICENSE": "bf9b0d665be2a689851eea667ca9f42066ea1d903b38349c51e6a44b2577680a",
+    "licenses/iconv-lite/LICENSE": "ac779f7314c74f232ef847ea86e714abe25cf6eeb5cc97b69451b74e2af6492d",
+    "licenses/ieee754/LICENSE": "18d45466ba3253deae04667e267a91ea8de8548f18c1125264d1c9db28194cc1",
+    "licenses/inherits/LICENSE": "5ffe28e7ade7d8f10d85d5337a73fd793dac5c462fb9a28fbf8c5046c7fbca3b",
+    "licenses/ini/LICENSE": "4ec3d4c66cd87f5c8d8ad911b10f99bf27cb00cdfcff82621956e379186b016b",
+    "licenses/is-browser/LICENSE": "5519d0442a0d5e5e17fd32cd8ffd6d19581964509eb94c5b6ef56c363f5fbd17",
+    "licenses/is-core-module/LICENSE": "5c496ce5ae47eb8e5ddcaa5e29c27c446a3855b19e3a66991b52f361bed22b28",
+    "licenses/is-finite/license": "48da2f39e100d4085767e94966b43f4fa95ff6a0698fba57ed460914e35f94a0",
+    "licenses/is-firefox/license": "8949b2ba58a823c693244638c52760970e0782812df926d94c8a26c7c9016e7b",
+    "licenses/is-iexplorer/license": "fdc43423b75a24876001d4e904946b178ab7f5546ebd50030e1d3ee3d6582eb4",
+    "licenses/is-obj/license": "6fb9754611c20f6649f68805e8c990e83261f29316e29de9e6cedae607b8634c",
+    "licenses/is-plain-obj/license": "6fb9754611c20f6649f68805e8c990e83261f29316e29de9e6cedae607b8634c",
+    "licenses/is-string-blank/LICENSE": "4852317221de04bdbb8784b24498bac592fcc796dcb5f81dece1c6290d75cf52",
+    "licenses/isarray/LICENSE": "68f12f6e2c33688699249c01d8f9623c534da20aa71989c57b061b7bc1676d14",
+    "licenses/isexe/LICENSE.md": "8a1af140fdfbf5afd3df27f7e662f989c5b963a300020dfafce42033cae9e004",
+    "licenses/js-tokens/LICENSE": "2213d91c606205c71eb051a199478cdc2adde945893404d7f1421436dd6d5cc1",
+    "licenses/json-stringify-pretty-compact/LICENSE": "2d51145876dda3dd13253463b852aa83b78aa598b90fca1709f39f1740ff9a2f",
+    "licenses/katex/LICENSE": "766ccc1f306c885aa45542a9846bbd0a505b27a0374f146778171c2254ce18e3",
+    "licenses/katex__node_modules__commander/LICENSE": "04512a63dce4d2d506ad612dc0bd7681ccf6e3655f7b6eaef7dfac8323d1ec0b",
+    "licenses/kdbush/LICENSE": "597034cb7c11c916ad407344ea99a0b08e3c443a6b4421460f1d23c411c69707",
+    "licenses/kind-of/LICENSE": "4cd903859549d4b20b571041f96dfae1136ed079c476126268f9d7cc1b611150",
+    "licenses/lodash.merge/LICENSE": "f71e8ed126b46346494aad5486874cd8f0aafe95092ed67d2e3cb6110f939abc",
+    "licenses/loose-envify/LICENSE": "4eb7543b08d955a6d23fcc224601d43ff566e775be918805e26210d7f6eb4893",
+    "licenses/map-limit/LICENSE.md": "74afb88a7aa7f8db6735c014cba3f9f7b1b1fde39d7b56ba9b2c1f1f2d5d10ec",
+    "licenses/map-limit__node_modules__once/LICENSE": "4ec3d4c66cd87f5c8d8ad911b10f99bf27cb00cdfcff82621956e379186b016b",
+    "licenses/mapbox-gl/LICENSE.txt": "dcd8c5e27012f2c0754081a51b5e742ca71f4928d557bd204ab14447b9b76f44",
+    "licenses/maplibre-gl/LICENSE.txt": "ee5fc05a0677eaf69601d2c7db0d9ecd6cc27c3abc1d0733bc9ed34707cf8ef2",
+    "licenses/maplibre-gl__node_modules__@mapbox__tiny-sdf/LICENSE.txt": "4f78063c6c0757df950aa3440cef9a2a6bd1c552c994c32237c3acc283e72ee6",
+    "licenses/maplibre-gl__node_modules__@mapbox__unitbezier/LICENSE": "f0dc305ad097eddbc66eebb79288c92d8a5043818ace81206383a4c1a3268fe3",
+    "licenses/maplibre-gl__node_modules__earcut/LICENSE": "324139c19d87af03fda38afea1590e00ca354c4159bdb2ae9e9cec070cfa46a8",
+    "licenses/maplibre-gl__node_modules__geojson-vt/LICENSE": "828f2aed51b6526881a236758ec9b08cd69928fbfc70346d9d44a0b3a3444fe1",
+    "licenses/maplibre-gl__node_modules__potpack/LICENSE": "cfec0482fb785fe27e3b368a2d9e84bf7a61b275e83ec582bf288e98cd530bb0",
+    "licenses/maplibre-gl__node_modules__quickselect/LICENSE": "238ddb00e12a420a54e060afa19bdab4f70bf49e0e2a8ebb1a5e851f9ef447df",
+    "licenses/maplibre-gl__node_modules__supercluster/LICENSE": "b8878372a0d7d1c303f48659ddbd6881807cd2196e4af2f548d8da0c0f7c4d71",
+    "licenses/maplibre-gl__node_modules__tinyqueue/LICENSE": "780453e05abdc22307ee01c706a2e73f508d3e484fc4c804485ebf6fe0964694",
+    "licenses/math-log2/license": "6fb9754611c20f6649f68805e8c990e83261f29316e29de9e6cedae607b8634c",
+    "licenses/minimist/LICENSE": "435a6722c786b0a56fbe7387028f1d9d3f3a2d0fb615bb8fee118727c3f59b7b",
+    "licenses/mouse-change/LICENSE": "632d884bc3370b825072b2ba58896b727fbea1f8a81c6278babbc65d7dca4954",
+    "licenses/mouse-event/LICENSE": "632d884bc3370b825072b2ba58896b727fbea1f8a81c6278babbc65d7dca4954",
+    "licenses/mouse-event-offset/LICENSE.md": "91515553fda3d86e82454bab0eb876a2cb9a31c0dcb8be640870fed624e53697",
+    "licenses/mouse-wheel/LICENSE": "632d884bc3370b825072b2ba58896b727fbea1f8a81c6278babbc65d7dca4954",
+    "licenses/ms/license.md": "1662fae9b5314d11cf51284e2dcd1f006a354f7343f08712a730fcff9a359801",
+    "licenses/needle/license.txt": "33956869cf70ecaecf83b722d8d01e5252e9915ae6f86f07528114e62c93bb23",
+    "licenses/needle__node_modules__debug/LICENSE": "98c970de440dcfc77471610aec2377c9d9b0db2b3be6d1add524a586e1d7f422",
+    "licenses/next-tick/LICENSE": "d61b7b0b7ef23fe17a4cf996c50362ba842725e9b1a0686792a9c16894a6d5c0",
+    "licenses/number-is-integer/license": "6fb9754611c20f6649f68805e8c990e83261f29316e29de9e6cedae607b8634c",
+    "licenses/object-assign/license": "6fb9754611c20f6649f68805e8c990e83261f29316e29de9e6cedae607b8634c",
+    "licenses/once/LICENSE": "4ec3d4c66cd87f5c8d8ad911b10f99bf27cb00cdfcff82621956e379186b016b",
+    "licenses/parenthesis/LICENSE": "80dd594f7950d51ed7d4315248a9866f80507f02e92ee4eabdc12b89b476a539",
+    "licenses/parse-rect/license": "e9dd54ddece97061ebc2153110fcfeac1b0579e8556c0b07b195f004b00ff7fc",
+    "licenses/parse-svg-path/License": "2d5ffdfe09268750ba687a149db8392038772e7f156db3a98b615a7de0cab76e",
+    "licenses/parse-unit/LICENSE.md": "91515553fda3d86e82454bab0eb876a2cb9a31c0dcb8be640870fed624e53697",
+    "licenses/path-parse/LICENSE": "3f4609137f65070541b9214300ea0d640af8192857de0eeb2b03403003d9228a",
+    "licenses/pbf/LICENSE": "5d081d1d4848771dfef5e445660f918aedefd6ae9bb02058a1f7db9cee6c0902",
+    "licenses/performance-now/license.txt": "c3af1272f30870168177e888b184c1f802e5081e75a126c794670c0b562d3783",
+    "licenses/plotly.js/LICENSE": "8c45d9eaf50c2f72dd9c7ab9ef440788ba58a3538484b5c51c1f17d5128752e7",
+    "licenses/plotly.js-dist-min/LICENSE": "8c45d9eaf50c2f72dd9c7ab9ef440788ba58a3538484b5c51c1f17d5128752e7",
+    "licenses/point-in-polygon/LICENSE": "a38ee3303e4f0cdffb18ca280b58b856dbc1bf916b0bb6018efc057ed2dcabbd",
+    "licenses/polybooljs/LICENSE": "6a3969e97bc3b992c17bfdcd6fcabd9b5688650cc0078235d512c014e86b716e",
+    "licenses/potpack/LICENSE": "2c620eaf6c3ee3e33b07f3b6ef0dfd0a9e0a52c93a46aa4ccf7773dbb562daec",
+    "licenses/probe-image-size/LICENSE": "95e3f7f0e81e9b4940cdfaa1956aaff5e4dfd2fb1565041e7c78eb9a606f23e3",
+    "licenses/process-nextick-args/license.md": "ecdccbcf39024f624ded480c01c0b25458e1eca8f26ecf040933865ce56d9a4f",
+    "licenses/prop-types/LICENSE": "f657f99d3fb9647db92628e96007aabb46e5f04f33e49999075aab8e250ca7ce",
+    "licenses/protocol-buffers-schema/LICENSE": "3fe8d55a98dbf260eace67c00cf9bc53edb46234e840098a0b93df3096b97fb6",
+    "licenses/quickselect/LICENSE": "597034cb7c11c916ad407344ea99a0b08e3c443a6b4421460f1d23c411c69707",
+    "licenses/raf/LICENSE": "6b2194e178545b3dcde4a40a09b5f6c00bd9b5b695db0c826c14995c6c9b4ec5",
+    "licenses/react/LICENSE": "52412d7bc7ce4157ea628bbaacb8829e0a9cb3c58f57f99176126bc8cf2bfc85",
+    "licenses/react-dom/LICENSE": "52412d7bc7ce4157ea628bbaacb8829e0a9cb3c58f57f99176126bc8cf2bfc85",
+    "licenses/react-is/LICENSE": "52412d7bc7ce4157ea628bbaacb8829e0a9cb3c58f57f99176126bc8cf2bfc85",
+    "licenses/react-plotly.js/LICENSE": "78791e88f2d8d075d011ea3b9bf95103e11477a42e22f1654c58674fece36ff0",
+    "licenses/readable-stream/LICENSE": "ec62dc96da0099b87f4511736c87309335527fb7031639493e06c95728dc8c54",
+    "licenses/readable-stream__node_modules__safe-buffer/LICENSE": "c7cc929b57080f4b9d0c6cf57669f0463fc5b39906344dfc8d3bc43426b30eac",
+    "licenses/regl/LICENSE": "42d997d1f47c9222dec2844468fc2a4fd144c6950d698eade460e94537ddcdd3",
+    "licenses/regl-error2d/license": "2907ee84b30a5ca0f0fb134e24f60daf292a598bf5819e418eb2eb2b32262ed8",
+    "licenses/regl-line2d/license": "2907ee84b30a5ca0f0fb134e24f60daf292a598bf5819e418eb2eb2b32262ed8",
+    "licenses/regl-line2d/license.md": "2907ee84b30a5ca0f0fb134e24f60daf292a598bf5819e418eb2eb2b32262ed8",
+    "licenses/regl-scatter2d/license": "2907ee84b30a5ca0f0fb134e24f60daf292a598bf5819e418eb2eb2b32262ed8",
+    "licenses/regl-scatter2d__node_modules__color-parse/LICENSE": "af45ae40c7d031f40e77e09fd33b12700e96ea861c4a73f0dff3294d47e60a81",
+    "licenses/regl-splom/license.md": "350454cc29b984110ff0936b4459fc8ea8f26b9b5cb7ca15664cca643577db9e",
+    "licenses/resolve/LICENSE": "60acd7711e6c138e6041836e32d922705254cc1568a30fdf16aa8f59bb87aeaa",
+    "licenses/resolve-protobuf-schema/LICENSE": "c0993ca46cd47c09710a977d3a3d51602cff96f19e8d2eb8d5887aa20a7beead",
+    "licenses/right-now/LICENSE.md": "435a6722c786b0a56fbe7387028f1d9d3f3a2d0fb615bb8fee118727c3f59b7b",
+    "licenses/rw/LICENSE": "e273680c43c2ab5bb3b50af28de6a08000b333396834db7bf6129cd6f130c9cd",
+    "licenses/safe-buffer/LICENSE": "c7cc929b57080f4b9d0c6cf57669f0463fc5b39906344dfc8d3bc43426b30eac",
+    "licenses/safer-buffer/LICENSE": "4bc935e71be198c67ddf3c2b5fddb195f6edc182bfc155a96a6db61b44b494b9",
+    "licenses/sax/LICENSE.md": "8a1af140fdfbf5afd3df27f7e662f989c5b963a300020dfafce42033cae9e004",
+    "licenses/scheduler/LICENSE": "52412d7bc7ce4157ea628bbaacb8829e0a9cb3c58f57f99176126bc8cf2bfc85",
+    "licenses/shallow-copy/LICENSE": "435a6722c786b0a56fbe7387028f1d9d3f3a2d0fb615bb8fee118727c3f59b7b",
+    "licenses/signum/LICENSE": "e67aed7df22dc8031e4fcf5338fe91cb33e3817e5c58a99a2a2802eea9069791",
+    "licenses/source-map/LICENSE": "6cb0631f71c7749763fd3dd1d5bee52dd1070ec17f2edc1710079ad070bd2fbd",
+    "licenses/stack-trace/License": "c5ece09265dbd6335030832335dec72919b9ecfd4db126cb9bb9b8d023970304",
+    "licenses/static-eval/LICENSE": "a22b9d5763f574e5db347c30acc0b33eaf4846767c03d2e27d012e864e79a824",
+    "licenses/stream-parser/LICENSE": "5fe787805ffedb6cc45b0962e6de294df5dec1b62f9fdf4a5d0e121819d11edc",
+    "licenses/stream-parser__node_modules__debug/LICENSE": "98c970de440dcfc77471610aec2377c9d9b0db2b3be6d1add524a586e1d7f422",
+    "licenses/stream-parser__node_modules__ms/license.md": "6652830c2607c722b66f1b57de15877ab8fc5dca406cc5b335afeb365d0f32c1",
+    "licenses/stream-shift/LICENSE": "6a134e51aa31496c15a741592fc5d782b2dbf8d8b6b8524e15c8520ae0cd6374",
+    "licenses/string_decoder/LICENSE": "11f2aafb37d06b3ee5bdaf06e9811141d0da05263c316f3d627f45c20d43261b",
+    "licenses/string_decoder__node_modules__safe-buffer/LICENSE": "c7cc929b57080f4b9d0c6cf57669f0463fc5b39906344dfc8d3bc43426b30eac",
+    "licenses/strongly-connected-components/LICENSE": "e67aed7df22dc8031e4fcf5338fe91cb33e3817e5c58a99a2a2802eea9069791",
+    "licenses/supercluster/LICENSE": "b8878372a0d7d1c303f48659ddbd6881807cd2196e4af2f548d8da0c0f7c4d71",
+    "licenses/supercluster__node_modules__kdbush/LICENSE": "597034cb7c11c916ad407344ea99a0b08e3c443a6b4421460f1d23c411c69707",
+    "licenses/superscript-text/LICENSE": "632d884bc3370b825072b2ba58896b727fbea1f8a81c6278babbc65d7dca4954",
+    "licenses/supports-preserve-symlinks-flag/LICENSE": "0f0ca96f50793990031ebc488a38f7292ff70bce8ab6a8e5eeda674abc32ccdf",
+    "licenses/svg-arc-to-cubic-bezier/LICENSE.md": "e494c8a762141fd7b97104bd7350710dcd2ee0462c75e211bc527cd717158b0b",
+    "licenses/svg-path-bounds__node_modules__normalize-svg-path/license.md": "f3257cb8f6c6b69f90b1d4cebc1ef5dd84bf3bc831a0ba72b43dfa0f1a0f5100",
+    "licenses/through2/LICENSE.md": "faae57631e1c7d641c3b6f9b110c2a7a28c8b383d08d7796ac472c509f075850",
+    "licenses/tinycolor2/LICENSE": "c6cb470a9ba0a50d57611aeec1f31da609c5aefdbee8eac7f289bcb0e30625fa",
+    "licenses/tinyqueue/LICENSE": "780453e05abdc22307ee01c706a2e73f508d3e484fc4c804485ebf6fe0964694",
+    "licenses/to-float32/license": "e9dd54ddece97061ebc2153110fcfeac1b0579e8556c0b07b195f004b00ff7fc",
+    "licenses/to-px/LICENSE": "632d884bc3370b825072b2ba58896b727fbea1f8a81c6278babbc65d7dca4954",
+    "licenses/topojson-client/LICENSE": "4c4d15b635e04e691825a76db7d33f7f2033b55669a7430011694f31e6c65999",
+    "licenses/tslib/LICENSE.txt": "210b19e543130388c68654b7497e967119ce17145f66ab7d85688fbd70f08751",
+    "licenses/type/LICENSE": "010cd06695b486890aa0e080f938ef52b393207b7352baf7f13513b7c272d256",
+    "licenses/typedarray/LICENSE": "26181ebee1063f3dc6766a3b6d05999a0da058f172eadf2ca5d15105ffd9735a",
+    "licenses/typedarray-pool/LICENSE": "e67aed7df22dc8031e4fcf5338fe91cb33e3817e5c58a99a2a2802eea9069791",
+    "licenses/unquote/LICENSE": "10ce70def59838624a4da56a04784d0b743051f455311f7d6f585296ce2d5c3b",
+    "licenses/util-deprecate/LICENSE": "0154425673db15cdfa80ecba2c9b1f1a867f7197a006764712849bfc3a93cbb7",
+    "licenses/vt-pbf/LICENSE": "3d29e124a0236cfefe13458b82c44fde04d7dcc7b3b64b7fa4de0027953274db",
+    "licenses/webgl-context/LICENSE.md": "91515553fda3d86e82454bab0eb876a2cb9a31c0dcb8be640870fed624e53697",
+    "licenses/which/LICENSE": "4ec3d4c66cd87f5c8d8ad911b10f99bf27cb00cdfcff82621956e379186b016b",
+    "licenses/world-calendars/LICENSE": "61b072bb9553d8840cc44a3fe259b890566c3cf85b0907a043f2d73ffc802c36",
+    "licenses/wrappy/LICENSE": "4ec3d4c66cd87f5c8d8ad911b10f99bf27cb00cdfcff82621956e379186b016b",
+    "licenses/xtend/LICENSE": "82e67379203d5794e7c44549847d8d64ae6904591381682360470898bd306821",
+    "modules/gauss-newton-ik/index.html": "9579d2d55d630e1980091808de3c52025c2eff0faafd687711ac62b2e040bd0e",
+    "modules/kkt-explorer/index.html": "0249c576dfa00cf0d97590f59335525a8458fe8b47a082347d711abf6f2d1d8f",
+    "modules/opt-explorer/assets/Surface3D-Dk5SUa24.js": "8bf132bc938a69baf7f2fa985c478aab35782483e7820d4f776edb94899e0991",
+    "modules/opt-explorer/assets/index-Co7bIwmt.js": "2484957f1a9dbc665afcb0b5a74a2e0834b2f7a797d08cdaef2d2ea6b37f463f",
+    "modules/opt-explorer/assets/index-rz-agBXp.css": "409f4187cded5b30172f827e391f8e26217ef238e1a9b665781d64f898b5c738",
+    "modules/opt-explorer/index.html": "4d86f194ab62d27a9227b332793987fbdc7cf0f0dd1b1eb5421977f35b5d0648",
+    "prerequisites.html": "4137368ab1c120c00bcd43081dfbe2c7cd483477ca7803e3660778d95d2f9e7b",
+    "requirements-drake.txt": "553f339be742762632880534e8d0e6bd286e5757c8ca49c877fdb57b15bb04ee",
+    "requirements.txt": "6d4cdf924e8b6fe2cf827f647ca740148e2e8b4c44ea31578dbea46cbd403417",
+    "support/reference-iterates.json": "1d77492a37926edc61f59a1e5d80de7e9924d90877d9d22612186a6ce2cc3898",
+    "support/reference_al_eq.py": "43fcf3b7ee6881ba501e31578b58366c8d130ca07c7bf26d90706e795a3e85eb"
+  }
+}

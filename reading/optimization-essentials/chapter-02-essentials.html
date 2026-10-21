@@ -1,0 +1,3009 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 2 companion</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <style>body{font-family:Charter,Georgia,serif;max-width:46em;margin:2em auto;padding:0 1em;line-height:1.5;color:#222}h1,h2,h3{font-family:Helvetica,Arial,sans-serif}img{max-width:100%}table{border-collapse:collapse;width:100%}td,th{border:1px solid #ddd;padding:.4em}pre{overflow:auto;background:#f6eef1;padding:1em}.katex-display{overflow-x:auto}.keep{break-inside:avoid}a{color:#1f6f8b}</style>
+  <script defer="" src="assets/katex/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <link rel="stylesheet" href="assets/katex/katex.min.css" />
+</head>
+<body>
+<h1 id="chapter-02-optimization-essentials">Chapter 02 · Optimization
+essentials</h1>
+<p>Chapter 1 established how joint angles determine a tool’s position
+and how the Jacobian predicts its small displacement. We assume that you
+can evaluate these maps and solve a small linear system. Here we use
+them to choose a configuration that reaches a target while respecting
+joint limits and geometric requirements. You will learn to construct a
+cost, propose and check numerical updates, and distinguish a successful
+solution from a calculation that merely stops. One planar arm connects
+all three parts, from an unconstrained position task to constrained
+inverse kinematics.</p>
+<h2 id="choose-and-check-a-configuration-update">1. Choose and check a
+configuration update</h2>
+<h3 id="turn-a-position-error-into-a-cost">1.1 Turn a position error
+into a cost</h3>
+<p>Consider the planar arm with link lengths 0.4 m and 0.3 m. Its
+shoulder and elbow angles form the joint vector <span
+class="math inline">\mathbf q</span>. The elbow angle is relative to the
+first link. Forward kinematics (FK), written <span
+class="math inline">\varphi</span>, maps these angles to the tip’s world
+position. We start at 30 and 45 degrees and ask the tip to reach the
+world point 0.5 m right and 0.2 m above the base. Angles inside
+derivatives and numerical calculations are in radians.</p>
+<p>Subtract the target <span class="math inline">\mathbf y^*</span> from
+the current position to form the vector of task errors, called the
+<strong>residual</strong>. Its half squared length gives one number for
+comparing configurations, called the <strong>cost</strong>.</p>
+<p><span class="math display">
+\mathbf r(\mathbf q)=\varphi(\mathbf q)-\mathbf y^*,
+\qquad f(\mathbf q)=\tfrac12\mathbf r(\mathbf q)^\top\mathbf r(\mathbf
+q).
+\tag{1.1}
+</span></p>
+<p>Residual components have units of meters, so this cost has units of
+squared meters. Minimizing it is the position inverse-kinematics (IK)
+problem. A zero cost means the modeled tip reaches the target.</p>
+<p>The Jacobian <span class="math inline">\mathbf J</span> predicts the
+change in tip position produced by a small joint increment <span
+class="math inline">\boldsymbol\delta</span>. At the current guess, the
+local prediction would reach the target if</p>
+<p><span class="math display">
+\varphi(\mathbf q+\boldsymbol\delta)
+\approx\varphi(\mathbf q)+\mathbf J\boldsymbol\delta,
+\qquad \mathbf J\boldsymbol\delta=-\mathbf r.
+\tag{1.2}
+</span></p>
+<div class="keep">
+<p>Columns of the Jacobian correspond to joints; rows correspond to
+task-motion components. At the start, the Jacobian is invertible.
+Evaluate it and the residual, then solve (1.2) for the proposed
+increment:</p>
+<p><span class="math display">
+\begin{aligned}
+\mathbf J^{(0)}&amp;\approx
+\begin{bmatrix}-0.490&amp;-0.290\\0.424&amp;0.078\end{bmatrix}
+\ \mathrm{m/rad},
+\qquad
+\mathbf r^{(0)}\approx\begin{bmatrix}-0.076\\0.290\end{bmatrix}
+\ \mathrm m,\\
+\boldsymbol\delta&amp;\approx\begin{bmatrix}-0.920\\1.293\end{bmatrix}
+\ \mathrm{rad}.
+\end{aligned}
+</span></p>
+</div>
+<p>The unique solution changes the elbow by about 74 degrees. The large
+change makes it important to check the actual FK result. Evaluating FK
+at the proposed configuration puts the tip approximately 0.336 m right
+and 0.144 m above the base, so it misses the target.</p>
+<table>
+<thead>
+<tr>
+<th>Evaluation</th>
+<th style="text-align: right;">Distance to target (m)</th>
+<th style="text-align: right;">Cost (<span
+class="math inline">\mathrm{m^2}</span>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Initial configuration</td>
+<td style="text-align: right;"><span
+class="math inline">0.300</span></td>
+<td style="text-align: right;"><span
+class="math inline">0.045</span></td>
+</tr>
+<tr>
+<td>Linear prediction at the proposed increment</td>
+<td style="text-align: right;"><span class="math inline">0</span></td>
+<td style="text-align: right;"><span class="math inline">0</span></td>
+</tr>
+<tr>
+<td>FK at the proposed configuration</td>
+<td style="text-align: right;"><span
+class="math inline">0.174</span></td>
+<td style="text-align: right;"><span
+class="math inline">0.015</span></td>
+</tr>
+</tbody>
+</table>
+<p>Solving the local equation exactly leaves an error in the nonlinear
+model. The cost decreases, but this one update does not finish the task.
+We need a method that repeatedly proposes an update, evaluates its
+result and decides whether to accept it. These guesses are computation
+steps; they are not a timed robot motion.</p>
+<h3 id="read-slope-and-curvature-at-the-current-point">1.2 Read slope
+and curvature at the current point</h3>
+<p>We write a generic decision vector as <span
+class="math inline">\mathbf z</span>; the robot’s joint vector <span
+class="math inline">\mathbf q</span> is its instance in inverse
+kinematics. Before returning to the arm, consider a two-coordinate cost
+whose shape is easy to see.</p>
+<p><span class="math display">
+f(\mathbf z)=z_1^2+10z_2^2,
+\qquad \mathbf z^{(0)}=\begin{bmatrix}3\\2\end{bmatrix}.
+\tag{1.3}
+</span></p>
+<p>The bowl in Figure 1.1 rises more rapidly along its second
+coordinate. Its contours show equal cost. The starting cost is 49, and
+the minimum is at the origin.</p>
+<figure>
+<img src="lectures/03-D1-optimization-1/fig/bowl_landscape.png"
+style="width:95.0%"
+alt="Figure 1.1. The surface and contours describe the same dimensionless cost. The marked point has cost 49. The narrower contour direction has greater curvature." />
+<figcaption aria-hidden="true">Figure 1.1. The surface and contours
+describe the same dimensionless cost. The marked point has cost 49. The
+narrower contour direction has greater curvature.</figcaption>
+</figure>
+<p>The cost’s rate of change along one coordinate is its partial
+derivative. Collecting these slopes gives the <strong>gradient</strong>.
+Differentiating the slopes gives the entries of the
+<strong>Hessian</strong>, which describes curvature.</p>
+<p><span class="math display">
+\begin{aligned}
+\nabla f(\mathbf z)&amp;=\begin{bmatrix}2z_1\\20z_2\end{bmatrix},
+&amp;\nabla f(\mathbf z^{(0)})&amp;=\begin{bmatrix}6\\40\end{bmatrix},\\
+\mathbf H(\mathbf z)&amp;=\begin{bmatrix}2&amp;0\\0&amp;20\end{bmatrix}.
+\end{aligned}
+\tag{1.4}
+</span></p>
+<p>The second slope is larger at this point, and it also changes faster
+as we move. Curvatures 2 and 20 differ by a factor of ten. The gradient
+depends on the point; this particular bowl’s Hessian is constant.</p>
+<p>For a cost with continuous second derivatives, combine the present
+value, slopes and curvature into a quadratic prediction.</p>
+<p><span class="math display">
+f(\mathbf z+\boldsymbol\delta)\approx
+f(\mathbf z)+\nabla f(\mathbf z)^\top\boldsymbol\delta
++\tfrac12\boldsymbol\delta^\top\mathbf H(\mathbf z)\boldsymbol\delta.
+\tag{1.5}
+</span></p>
+<p>This is the <strong>local quadratic model</strong>. It is exact for
+the bowl. For the arm, nonlinear FK makes both slope and curvature vary
+across configurations. With a fixed target and objective, the arm still
+moves through one fixed cost landscape.</p>
+<h3 id="choose-a-direction-and-a-step-length">1.3 Choose a direction and
+a step length</h3>
+<p>An optimizer chooses which way to move and how far to move along that
+direction. Write the next accepted guess as</p>
+<p><span class="math display">
+\mathbf z^{(i+1)}=\mathbf z^{(i)}+\alpha\mathbf d,
+\qquad \alpha&gt;0.
+\tag{1.6}
+</span></p>
+<p>The superscript labels a computation iteration. The vector <span
+class="math inline">\mathbf d</span> is the proposed direction, and
+<span class="math inline">\alpha</span> scales it. A positive scale
+preserves the direction. The gradient term in (1.5) predicts a decrease
+when its dot product with the direction is negative. Choosing the
+negative gradient gives</p>
+<p><span class="math display">
+\mathbf d=-\nabla f,
+\qquad \nabla f^\top\mathbf d=-\|\nabla f\|^2&lt;0
+\quad\text{when }\nabla f\ne\mathbf0.
+\tag{1.7}
+</span></p>
+<p>Repeatedly moving this way is <strong>gradient descent</strong>. The
+sign gives a local decrease prediction. A large step can still raise the
+actual cost.</p>
+<p>On the bowl, the two coordinate updates are</p>
+<p><span class="math display">
+z_1^{(i+1)}=(1-2\alpha)z_1^{(i)},
+\qquad z_2^{(i+1)}=(1-20\alpha)z_2^{(i)}.
+\tag{1.8}
+</span></p>
+<p>A factor between zero and one shrinks a coordinate. A negative factor
+changes its sign; its magnitude determines whether the alternation
+shrinks or grows. Scale 0.08 gives factors 0.84 and −0.6, so both
+coordinates shrink while the second alternates. Scale 0.10 gives factors
+0.8 and −1; the second coordinate then keeps the same magnitude. Figure
+1.2 shows these paths.</p>
+<figure>
+<img src="lectures/03-D1-optimization-1/fig/gd_steps.png"
+style="width:100.0%"
+alt="Figure 1.2. The first three panels compare fixed gradient-descent scales on the same bowl. The last panel previews a curvature-based Newton update. Iterations count numerical updates, not elapsed time." />
+<figcaption aria-hidden="true">Figure 1.2. The first three panels
+compare fixed gradient-descent scales on the same bowl. The last panel
+previews a curvature-based Newton update. Iterations count numerical
+updates, not elapsed time.</figcaption>
+</figure>
+<p>For each positive coordinate curvature, shrinking requires a scale
+smaller than twice its reciprocal. Both bowl coordinates shrink only
+when the scale is below 0.1. The high-curvature direction therefore
+limits progress in the low-curvature direction. This effect is called
+<strong>poor conditioning</strong>. The curvature ratio is ten here. A
+scalar step length cannot independently adjust the two coordinates. The
+fixed scale <span class="math inline">1/11</span> makes the larger
+factor magnitude as small as possible. Its factors are <span
+class="math inline">9/11</span> and <span
+class="math inline">-9/11</span>, so the cost falls to about 0.67 of its
+value per update and needs 45 updates to drop below <span
+class="math inline">10^{-6}</span> from this start. Other scales can
+need slightly fewer updates from a particular start, but none shrinks
+both coordinates faster in every update. A robot cost has no single
+curvature pair, so a scale tuned in one region can fail in another.</p>
+<h3 id="evaluate-a-proposal-before-accepting-it">1.4 Evaluate a proposal
+before accepting it</h3>
+<p>We can choose the scale by checking the actual cost. At a fixed point
+and descent direction, require a small fraction of the predicted
+decrease:</p>
+<p><span class="math display">
+f(\mathbf z+\alpha\mathbf d)
+\le f(\mathbf z)+c\alpha\nabla f(\mathbf z)^\top\mathbf d,
+\qquad 0&lt;c&lt;1.
+\tag{1.9}
+</span></p>
+<p>This is the <strong>Armijo test</strong>. Its right side lies below
+the current cost. For a differentiable objective and a strict descent
+direction, sufficiently small positive scales pass because the
+first-order model becomes accurate. To find one, use
+<strong>backtracking</strong>:</p>
+<ol type="1">
+<li>Compute the current cost, gradient and descent direction.</li>
+<li>Evaluate the proposed point at an initial positive scale.</li>
+<li>If (1.9) fails, halve the scale and repeat the evaluation with the
+same point and direction.</li>
+<li>Accept the first passing point, then recompute the local quantities
+there.</li>
+</ol>
+<p>For the bowl start, negative-gradient direction and decrease fraction
+0.01, the first accepted trial after halving from one is 0.0625. Its
+cost is 9.391, below the threshold 47.978. The preceding trial, 0.125,
+has cost 95.063 and fails its threshold 46.955.</p>
+<p>A practical search also needs finite-value checks, a trial budget and
+a response when arithmetic makes further changes too small. A failed
+search reports how the calculation stopped; it does not establish
+stationarity. Accepted Armijo steps reduce cost, while their path can
+still zigzag.</p>
+<p>For a direction obtained from a local Newton-type model, the initial
+trial usually uses scale one. A gradient-descent implementation may
+reuse or grow the previous accepted scale. The acceptance inequality is
+the same in both cases; the proposal rule is separate.</p>
+<h3 id="carry-the-gradient-back-through-the-arms-jacobian">1.5 Carry the
+gradient back through the arm’s Jacobian</h3>
+<p>The arm cost depends on the joints through the residual in (1.1). For
+each joint, the chain rule weights every residual component by how that
+component changes with the joint. With a fixed target this derivative is
+a Jacobian entry. In components and matrix form,</p>
+<p><span class="math display">
+\frac{\partial f}{\partial q_j}
+=r_xJ_{xj}+r_yJ_{yj},
+\qquad \nabla f(\mathbf q)=\mathbf J(\mathbf q)^\top\mathbf r(\mathbf
+q).
+\tag{1.10}
+</span></p>
+<p>Here <span class="math inline">x</span> and <span
+class="math inline">y</span> label the two task components, and <span
+class="math inline">j</span> indexes joints. A task with <span
+class="math inline">m</span> components and <span
+class="math inline">n</span> joints has an <span
+class="math inline">m</span>-by-<span class="math inline">n</span>
+Jacobian. Its transpose maps the task residual into <span
+class="math inline">n</span> cost derivatives. This works for a
+rectangular Jacobian and does not require an inverse.</p>
+<p>For the original arm start, the gradient is approximately</p>
+<p><span class="math display">
+\nabla f^{(0)}=\begin{bmatrix}0.160\\0.045\end{bmatrix}
+\ \mathrm{m^2/rad}.
+\tag{1.11}
+</span></p>
+<p>A gradient-descent trial with numerical scale one moves to
+approximately 20.83 and 42.45 degrees. Its FK error is 0.210 m, and its
+cost is 0.022 squared meters, so it passes the Armijo test with decrease
+fraction 0.01. For these units the scale carries squared radians per
+squared meter; it is not a physical duration. This
+<strong>Jacobian-transpose IK</strong> step uses the same cost and
+acceptance test as the opening example but proposes a different
+direction. The next part uses curvature and the residual model to choose
+that direction more efficiently.</p>
+<p><strong>Check your understanding.</strong> Why does solving the local
+position equation leave a nonlinear error? Why can a negative-gradient
+direction still need backtracking?</p>
+<p><strong>Answer.</strong> The linear model approximates FK over a
+finite update, and the descent prediction is local. Evaluating the
+actual result is therefore part of choosing a reliable update.</p>
+<h2 id="newton-and-numerical-inverse-kinematics">2. Newton and numerical
+inverse kinematics</h2>
+<h3 id="use-curvature-to-construct-a-step">2.1 Use curvature to
+construct a step</h3>
+<p>Gradient descent uses one scalar to scale every gradient component.
+The bowl showed why that can make progress slow along a shallow
+direction. We can instead choose the increment that minimizes the
+quadratic local model. Assume that the objective has continuous second
+derivatives near the current point. Hold that point fixed while varying
+the proposed increment <span
+class="math inline">\boldsymbol\delta</span>:</p>
+<p><span class="math display">
+m(\boldsymbol\delta)
+=f(\mathbf z)+\nabla f(\mathbf z)^\top\boldsymbol\delta
++\frac12\boldsymbol\delta^\top\mathbf H(\mathbf z)\boldsymbol\delta.
+\tag{2.1}
+</span></p>
+<p>The Hessian is symmetric. Differentiating the quadratic term
+therefore gives the Hessian times the increment. Setting the model’s
+derivative to zero gives <strong>Newton’s step</strong>:</p>
+<p><span class="math display">
+\begin{aligned}
+\nabla_{\boldsymbol\delta}m
+&amp;=\nabla f+\mathbf H\boldsymbol\delta=\mathbf0,\\
+\mathbf H\boldsymbol\delta&amp;=-\nabla f.
+\end{aligned}
+\tag{2.2}
+</span></p>
+<p>A linear-system solve produces the increment without forming a matrix
+inverse. Setting the derivative to zero finds a stationary point of the
+model. That point is the model’s minimum only when the model curves
+upward in every direction. A Hessian with positive curvature in every
+nonzero direction is called positive definite. Under this condition, the
+step uniquely minimizes the model. On the bowl, the gradient components
+are 6 and 40, and their curvatures are 2 and 20. Dividing each component
+by its curvature gives the increment −3 and −2. The full step reaches
+the minimum because the quadratic model is exact there.</p>
+<p>Invertibility alone does not guarantee a minimizing step. Consider a
+dimensionless saddle objective at the stated point:</p>
+<p><span class="math display">
+f_s(\mathbf z)=z_1^2-z_2^2,
+\qquad
+\mathbf z=\begin{bmatrix}0.5\\1\end{bmatrix},
+\qquad
+\mathbf H=\operatorname{diag}(2,-2).
+\tag{2.3}
+</span></p>
+<p>Newton proposes increments −0.5 and −1. Their inner product with the
+gradient is 1.5, so the direction points uphill. The full step reaches
+the saddle and increases the cost from −0.75 to zero. The stationary
+point of an indefinite quadratic need not be its minimum.</p>
+<div class="keep">
+<p>Adding sufficient positive diagonal curvature repairs this
+direction:</p>
+<p><span class="math display">
+(\mathbf H+\rho\mathbf I)\boldsymbol\delta=-\nabla f,
+\qquad
+\mathbf H+\rho\mathbf I\succ0.
+\tag{2.4}
+</span></p>
+</div>
+<p>For the saddle, the added coefficient must exceed 2. Choosing 3 gives
+increments −0.2 and 2, with a downhill directional slope of −4.2.
+Positive curvature ensures a descent direction whenever the gradient is
+nonzero. It still does not ensure that the full nonlinear step decreases
+the actual cost.</p>
+<p>The proposed Newton increment becomes the search direction. Armijo
+starts at scale one and may shorten it. This scale is dimensionless
+because the proposed increment already has the decision variable’s
+units. The curvature model is rebuilt after an accepted update, while
+the objective stays fixed.</p>
+<p>Near a minimum with positive-definite Hessian, Newton can converge
+rapidly when the objective is smooth enough and the start is close
+enough. The detailed reference gives the precise assumptions for its
+quadratic local rate. This result provides no guarantee from a distant
+starting configuration.</p>
+<h3 id="minimize-the-predicted-task-error">2.2 Minimize the predicted
+task error</h3>
+<p>Inverse kinematics supplies more structure than an arbitrary scalar
+cost. Its residual records the task errors separately. For a fixed
+position target, the residual is current position minus desired
+position, and the cost is half its squared length:</p>
+<p><span class="math display">
+\mathbf r(\mathbf q)=\varphi(\mathbf q)-\mathbf y^*,
+\qquad
+f(\mathbf q)=\frac12\lVert\mathbf r(\mathbf q)\rVert^2,
+\qquad
+\mathbf J\in\mathbb R^{m\times n}.
+\tag{2.5}
+</span></p>
+<p>Here the task has <span class="math inline">m</span> position
+components and the robot has <span class="math inline">n</span> joint
+coordinates. The residual Jacobian equals the position Jacobian because
+the target is fixed. Each row describes one task component, and each
+column describes one joint’s contribution.</p>
+<p>Section 1.5 already gave the exact gradient. Differentiating once
+more gives the Hessian, which splits into two parts:</p>
+<p><span class="math display">
+\nabla f=\mathbf J^\top\mathbf r,
+\qquad
+\mathbf H
+=\mathbf J^\top\mathbf J
++\sum_{\ell=1}^{m}r_\ell\nabla^2r_\ell.
+\tag{2.6}
+</span></p>
+<p>In this sum, <span class="math inline">\ell</span> indexes residual
+components, and <span class="math inline">\nabla^2r_\ell</span> is the
+matrix of second derivatives of one component. The first term needs only
+the Jacobian. The second term needs second derivatives of the forward
+kinematics, weighted by the remaining errors. The
+<strong>Gauss–Newton</strong> method keeps the first term as its
+curvature and drops the second. It keeps the exact gradient.</p>
+<p>The dropped term is small when the residuals are small and their
+second derivatives stay bounded. Near a configuration that reaches the
+target, Gauss–Newton then behaves almost like Newton. When large task
+error remains, for example at an unreachable target, the dropped term
+can matter. Dropping it changes only the local model. It does not make
+the robot’s nonlinear cost convex, and it does not guarantee that the
+method reaches the target.</p>
+<p>The same step follows from a second construction. First predict the
+residual with the current Jacobian. Then minimize the squared length of
+that prediction:</p>
+<p><span class="math display">
+\begin{aligned}
+\mathbf r(\mathbf q+\boldsymbol\delta)&amp;\approx\mathbf r+\mathbf
+J\boldsymbol\delta,\\
+m(\boldsymbol\delta)&amp;=\frac12\lVert\mathbf r+\mathbf
+J\boldsymbol\delta\rVert^2.
+\end{aligned}
+\tag{2.7}
+</span></p>
+<p>Expanding the square makes the derivative visible:</p>
+<p><span class="math display">
+\begin{aligned}
+m(\boldsymbol\delta)
+&amp;=\frac12\mathbf r^\top\mathbf r
++\mathbf r^\top\mathbf J\boldsymbol\delta
++\frac12\boldsymbol\delta^\top\mathbf J^\top\mathbf
+J\boldsymbol\delta,\\
+\nabla_{\boldsymbol\delta}m
+&amp;=\mathbf J^\top\mathbf r+\mathbf J^\top\mathbf J\boldsymbol\delta.
+\end{aligned}
+\tag{2.8}
+</span></p>
+<div class="keep">
+<p>Setting this derivative to zero gives the <strong>normal
+equations</strong>. Their solution is a <strong>Gauss–Newton
+step</strong>:</p>
+<p><span class="math display">
+(\mathbf J^\top\mathbf J)\boldsymbol\delta=-\mathbf J^\top\mathbf r.
+\tag{2.9}
+</span></p>
+</div>
+<p>The matrix on the left is the retained curvature of (2.6), and the
+right side is the exact negative gradient. So minimizing the predicted
+error and approximating Newton’s curvature give the same step.</p>
+<p>The retained curvature is always positive semidefinite because its
+quadratic form is a squared norm:</p>
+<p><span class="math display">
+\boldsymbol\delta^\top\mathbf J^\top\mathbf J\boldsymbol\delta
+=\lVert\mathbf J\boldsymbol\delta\rVert^2\ge0.
+\tag{2.10}
+</span></p>
+<p>So the model never curves downward, which avoids the uphill Newton
+direction of the saddle example. The curvature is positive definite when
+the Jacobian has full column rank. Otherwise, joint directions in the
+Jacobian’s null space leave the prediction unchanged, so several steps
+minimize the model equally well. Section 2.4 describes how a solver
+selects one of them.</p>
+<p>Solving the least-squares problem directly avoids forming the normal
+matrix, which squares the Jacobian’s condition number when its columns
+are independent.</p>
+<p>Any exact solution of the normal equations is a descent direction
+when the task-cost gradient is nonzero. Multiplying the equations by the
+step’s transpose makes the gradient’s directional slope equal to the
+negative squared length of the predicted task change; Appendix A.3
+writes out this calculation. At a stationary point, however, the
+minimum-norm step is zero. Gauss–Newton’s nonnegative model curvature
+does not eliminate saddles of the original objective.</p>
+<p>For the opening two-link example, the square Jacobian is invertible.
+The normal equations reduce to the original Jacobian equation and
+propose approximately −52.72 and 74.09 degrees. The predicted residual
+is zero, while the actual residual after the full step is 0.174 m.
+Armijo accepts it because the actual cost decreases enough. Acceptance
+does not require an exact prediction. This direction differs by about 70
+degrees from the negative gradient of Section 1.5. Gradient descent
+scales the gradient, while Gauss–Newton solves a linear system that uses
+the Jacobian’s structure.</p>
+<p>This step reuses the Jacobian least-squares solve of differential
+inverse kinematics from Chapter 1, but it answers a different question.
+Differential IK chooses joint velocities that best produce a requested
+tip velocity <span class="math inline">\dot{\mathbf
+p}_{\mathrm{cmd}}</span>. Gauss–Newton chooses a joint displacement that
+best removes the remaining position error <span
+class="math inline">\mathbf e</span>:</p>
+<p><span class="math display">
+\begin{aligned}
+&amp;\text{differential IK:}&amp;&amp;\min_{\dot{\mathbf q}}\
+\frac12\lVert\mathbf J\dot{\mathbf q}-\dot{\mathbf
+p}_{\mathrm{cmd}}\rVert^2,\\
+&amp;\text{Gauss–Newton:}&amp;&amp;\min_{\boldsymbol\delta}\
+\frac12\lVert\mathbf J\boldsymbol\delta-\mathbf e\rVert^2,
+\qquad \mathbf e=\mathbf y^*-\varphi(\mathbf q)=-\mathbf r.
+\end{aligned}
+\tag{2.11}
+</span></p>
+<p>The first problem uses meters per second and radians per second. The
+second uses meters and radians, and it contains no time step. The
+remaining displacement points from the tip to the target, so it is the
+negative of our residual, which explains the minus sign on the right of
+(2.9). A Gauss–Newton update is one step of a computation that searches
+for a configuration. It is not a joint command sent to the robot, and
+moving the robot to the result still requires a motion with its own
+timing and constraints.</p>
+<section id="penalize-large-joint-increments-and-adapt-the-penalty"
+class="keep">
+<h3>2.3 Penalize large joint increments and adapt the penalty</h3>
+<p>The opening proposal moves the elbow by about 74 degrees. A smaller
+proposal may make a more useful prediction. Add a penalty on the
+increment before choosing it:</p>
+<p><span class="math display">
+\begin{aligned}
+m_\rho(\boldsymbol\delta)
+&amp;=\frac12\lVert\mathbf r+\mathbf J\boldsymbol\delta\rVert^2
++\frac12\rho\lVert\boldsymbol\delta\rVert^2,\\
+(\mathbf J^\top\mathbf J+\rho\mathbf I)\boldsymbol\delta
+&amp;=-\mathbf J^\top\mathbf r.
+\end{aligned}
+\tag{2.12}
+</span></p>
+</section>
+<p>Differentiating the added quadratic contributes the damping
+coefficient times the increment. Any positive coefficient makes the
+system positive definite, including at a singular configuration. For
+position errors in meters and joint increments in radians, the damping
+coefficient has units of squared meters per squared radian.</p>
+<p>From the same initial configuration, damping 0.05 shortens the first
+proposal and leaves less actual error. Its locally predicted residual is
+0.147 m.</p>
+<table>
+<thead>
+<tr>
+<th>First step from the opening configuration</th>
+<th style="text-align: right;">Undamped</th>
+<th style="text-align: right;">Damping 0.05</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Shoulder change</td>
+<td style="text-align: right;"><span
+class="math inline">-52.72^\circ</span></td>
+<td style="text-align: right;"><span
+class="math inline">-23.82^\circ</span></td>
+</tr>
+<tr>
+<td>Elbow change</td>
+<td style="text-align: right;"><span
+class="math inline">74.09^\circ</span></td>
+<td style="text-align: right;"><span
+class="math inline">11.54^\circ</span></td>
+</tr>
+<tr>
+<td>Actual tip error after the step</td>
+<td style="text-align: right;"><span class="math inline">0.174</span>
+m</td>
+<td style="text-align: right;"><span class="math inline">0.115</span>
+m</td>
+</tr>
+</tbody>
+</table>
+<p>Both proposals pass Armijo at full scale, so the damping caused their
+difference. Damping changes the proposed direction and size; line search
+checks and scales that proposal afterward.</p>
+<p>Weak damping leaves the Gauss–Newton step almost unchanged. When the
+damping is much larger than the entries of <span
+class="math inline">\mathbf J^\top\mathbf J</span>, the added diagonal
+term dominates, and solving the system approximately divides the
+negative gradient by the damping:</p>
+<p><span class="math display">
+\boldsymbol\delta\approx-\frac1\rho\,\mathbf J^\top\mathbf r
+=-\frac1\rho\,\nabla f.
+\tag{2.13}
+</span></p>
+<p>The proposal then approaches a short negative-gradient step, and
+stronger damping shortens it further. So damping moves the proposal
+between a Gauss–Newton step and a short gradient-descent step.</p>
+<p>Some combinations of joint motions barely move the tip. Without
+damping, the normal equations ask for a large joint change along such a
+weak direction. Positive damping suppresses that request. It also slows
+the final corrections, because each update then removes only part of the
+remaining error along a weak direction. Appendix A.5 derives both
+effects from the Jacobian’s singular directions.</p>
+<p>Fixed damping keeps the same penalty even after the local model has
+become accurate. A solver can instead adapt the damping from the result
+of each trial. Methods that do so are called
+<strong>Levenberg–Marquardt</strong> (LM) methods. They solve (2.12) for
+a trial step and compare the actual decrease of the task cost with the
+decrease predicted by the undamped task model <span
+class="math inline">m</span> of (2.7):</p>
+<p><span class="math display">
+\eta_{\mathrm{LM}}
+=\frac{f(\mathbf q)-f(\mathbf q+\boldsymbol\delta)}
+{m(\mathbf 0)-m(\boldsymbol\delta)}
+=\frac{\text{actual cost decrease}}{\text{predicted cost decrease}}.
+\tag{2.14}
+</span></p>
+<p>The numerator uses forward kinematics. The denominator excludes the
+step penalty, so it measures only the predicted task improvement. The
+ratio needs a positive predicted decrease. Appendix A.3 shows that, for
+a damped step, the predicted decrease equals half the squared predicted
+task change plus the damping times the squared step length, so it is
+positive for every nonzero step. A zero step occurs only where the
+gradient already vanishes.</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>What the trial reveals</th>
+<th>How the solver responds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ratio near one or larger</td>
+<td>Accept the trial. The prediction was useful, so decrease the
+damping.</td>
+</tr>
+<tr>
+<td>Small positive ratio</td>
+<td>Accept the trial if it clears a small threshold. The prediction was
+optimistic, so increase the damping.</td>
+</tr>
+<tr>
+<td>Actual cost does not decrease enough</td>
+<td>Reject the trial. Keep the configuration, increase the damping and
+solve again.</td>
+</tr>
+</tbody>
+</table>
+<p>A rejected trial is not an update. The course code accepts a ratio
+above <span class="math inline">10^{-4}</span>, doubles the damping
+below 0.25 and halves it above 0.75. These are illustrative choices, and
+LM implementations differ in their thresholds and factors.</p>
+<p>Adapting the damping differs from a line search. A line search
+chooses a step length along a fixed direction. A new damping value
+changes the solution of the linear system, so it can turn the direction
+as well as change its length.</p>
+<p>On the opening arm, LM starting from damping 0.05 takes the same
+first step as fixed damping 0.05. Every trial in this run has a ratio
+above 0.75. LM therefore accepts each one, halves the damping after each
+update and reaches the task tolerance after seven updates, compared with
+21 for fixed damping 0.05. LM remains a local method. It can stop
+without reaching the target, and no damping rule enforces joint bounds
+or collision avoidance.</p>
+<h3 id="express-task-weights-and-a-fixed-posture-preference">2.4 Express
+task weights and a fixed posture preference</h3>
+<p>A position task may value horizontal accuracy more than vertical
+accuracy. It may also penalize some joint changes more than others. Let
+the symmetric positive-definite matrix <span class="math inline">\mathbf
+K</span> weight task errors. Let the symmetric positive-semidefinite
+matrix <span class="math inline">\mathbf D</span> weight increments. The
+weighted model and its stationary equation are</p>
+<p><span class="math display">
+\begin{aligned}
+m_{\mathbf D}(\boldsymbol\delta)
+&amp;=\frac12\lVert\mathbf r+\mathbf J\boldsymbol\delta\rVert_{\mathbf
+K}^2
++\frac12\lVert\boldsymbol\delta\rVert_{\mathbf D}^2,\\
+(\mathbf J^\top\mathbf K\mathbf J+\mathbf D)\boldsymbol\delta
+&amp;=-\mathbf J^\top\mathbf K\mathbf r.
+\end{aligned}
+\tag{2.15}
+</span></p>
+<p>A weighted squared norm means the vector’s transpose times its weight
+matrix times that vector. A diagonal task weight of four is equivalent
+to doubling that residual before squaring.</p>
+<p>When position and orientation appear together, their scales must
+state how meters and radians contribute to one cost. For a position-only
+cost with dimensionless task weights, increment weights carry squared
+meters per squared radian.</p>
+<p>The system is uniquely solvable if no nonzero joint direction is both
+invisible to the task and unpenalized by the increment weight. A
+positive-definite increment weight ensures this condition. Isotropic
+damping is the special case in which that matrix is a positive scalar
+times the identity.</p>
+<p>Penalizing a proposed increment discourages movement away from the
+current iterate. Its reference changes on every iteration. A persistent
+preference for a fixed posture changes the objective:</p>
+<p><span class="math display">
+f_{\mathrm{posture}}(\mathbf q)
+=\frac12\lVert\varphi(\mathbf q)-\mathbf y^*\rVert_{\mathbf K}^2
++\frac12\lVert\mathbf q-\mathbf q_{\mathrm{ref}}\rVert_{\mathbf D}^2.
+\tag{2.16}
+</span></p>
+<p>The reference posture stays fixed throughout the solve. It can differ
+from the initial guess. Substituting the proposed configuration into the
+posture term adds a constant posture gradient when we differentiate:</p>
+<p><span class="math display">
+\begin{aligned}
+(\mathbf J^\top\mathbf K\mathbf J+\mathbf D)\boldsymbol\delta
+&amp;=-\mathbf J^\top\mathbf K\mathbf r\\
+&amp;\quad-\mathbf D(\mathbf q^{(i)}-\mathbf q_{\mathrm{ref}}).
+\end{aligned}
+\tag{2.17}
+</span></p>
+<p>The extra term persists even when the proposed increment is zero. A
+line search must evaluate the full posture objective.</p>
+<p>A dimensionless scalar example makes the distinction concrete. Let
+the task map return its coordinate, let the target be one, and choose
+unit weights. A moving increment penalty produces successive
+configurations zero, one half, three quarters and seven eighths. They
+approach one. A fixed posture preference at zero instead minimizes the
+sum of the squared distance to one and the squared distance to zero. Its
+optimum is one half. Their first updates agree, but their objectives and
+later updates differ.</p>
+<p>An increment penalty changes the route to task-cost stationarity. A
+fixed posture cost changes the stationarity condition and may retain
+task error at its optimum. A hard target will require an equality
+constraint rather than either compromise.</p>
+<p>The weighted step can be written as one linear map applied to the
+residual. When the matrix on the left of (2.15) is invertible,
+define</p>
+<p><span class="math display">
+\mathbf J^\sharp=(\mathbf J^\top\mathbf K\mathbf J+\mathbf
+D)^{-1}\mathbf J^\top\mathbf K,
+\qquad
+\boldsymbol\delta=-\mathbf J^\sharp\mathbf r=\mathbf J^\sharp\mathbf e.
+\tag{2.18}
+</span></p>
+<p>The symbol names the map that turns the remaining displacement into a
+joint step. An implementation solves the linear system (2.15), or the
+equivalent least-squares problem, and does not form the inverse
+explicitly. Several familiar step rules are special cases or limits of
+this map:</p>
+<div class="keep">
+<table>
+<colgroup>
+<col style="width: 21%" />
+<col style="width: 32%" />
+<col style="width: 46%" />
+</colgroup>
+<thead>
+<tr>
+<th>Weights</th>
+<th><span class="math inline">\mathbf J^\sharp</span></th>
+<th>Step rule and requirement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="math inline">\mathbf D=\mathbf 0</span>, any <span
+class="math inline">\mathbf K\succ0</span></td>
+<td><span class="math inline">\mathbf J^{-1}</span></td>
+<td>Undamped Gauss–Newton, the inverse step of differential IK; needs a
+square, invertible <span class="math inline">\mathbf J</span></td>
+</tr>
+<tr>
+<td><span class="math inline">\mathbf K=\mathbf I</span>, <span
+class="math inline">\mathbf D=\rho\mathbf I</span> with <span
+class="math inline">\rho\to0</span></td>
+<td><span class="math inline">\mathbf J^{+}</span></td>
+<td>Minimum-norm least squares; the limit exists for every <span
+class="math inline">\mathbf J</span></td>
+</tr>
+<tr>
+<td><span class="math inline">\mathbf K=\mathbf I</span>, <span
+class="math inline">\mathbf D=\rho\mathbf I</span></td>
+<td><span class="math inline">(\mathbf J^\top\mathbf J+\rho\mathbf
+I)^{-1}\mathbf J^\top</span></td>
+<td>Uniform damping (2.12); unique for every <span
+class="math inline">\rho&gt;0</span></td>
+</tr>
+<tr>
+<td><span class="math inline">\mathbf K\succ0</span>, <span
+class="math inline">\mathbf D\succeq0</span></td>
+<td>the general map (2.18)</td>
+<td>Weighted, damped Gauss–Newton; unique when no unpenalized joint
+direction is invisible to the task</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The pseudoinverse <span class="math inline">\mathbf J^{+}</span>
+exists for every Jacobian. When the rows of <span
+class="math inline">\mathbf J</span> are independent, it has the
+explicit form</p>
+<p><span class="math display">
+\mathbf J^{+}=\mathbf J^\top(\mathbf J\mathbf J^\top)^{-1}.
+</span></p>
+<p>The second row needs an extra rule. Without a step penalty, the
+least-squares model can have several minimizing steps, because adding a
+joint motion in the Jacobian’s null space leaves the predicted tip
+position unchanged. The pseudoinverse selects the minimizing step with
+the smallest sum of squared joint changes. That preference is an
+additional selection rule. Setting <span class="math inline">\mathbf
+D=\mathbf 0</span> in (2.15) does not impose it. When the Jacobian lacks
+full column rank, the system is then singular, and every minimizing step
+solves it. Positive damping makes the step unique by penalizing every
+joint change, and as the damping approaches zero the damped step
+approaches the pseudoinverse step.</p>
+<p>On the opening arm the Jacobian is square and invertible, so the
+first two rows give the same step, and the third row gives the damped
+step of Section 2.3. For the fourth row, step weights of 0.05 for the
+shoulder and 2 for the elbow, in squared meters per squared radian, make
+elbow motion expensive. The elbow change drops to about <span
+class="math inline">0.43^\circ</span>, while the shoulder moves about
+<span class="math inline">-19.69^\circ</span>.</p>
+<h3 id="iterate-and-report-what-the-result-establishes">2.5 Iterate and
+report what the result establishes</h3>
+<p>An inverse-kinematics solve repeatedly rebuilds the local model. Its
+input is an initial configuration, a target, model weights and numerical
+tolerances. Its output includes the final configuration and a stopping
+reason. A protected iteration takes four steps:</p>
+<ol type="1">
+<li>Evaluate the current residual and Jacobian.</li>
+<li>Solve (2.15) for a proposed joint step.</li>
+<li>Starting from scale one, check trial scales against the actual
+objective with Armijo, and shorten the trial when it fails.</li>
+<li>Accept the first passing update, then return to step 1 at the new
+configuration.</li>
+</ol>
+<p>Rejected trials do not become iterates. Each new accepted
+configuration requires fresh kinematics.</p>
+<p>For the unweighted position task, use separate task and stationarity
+tests:</p>
+<p><span class="math display">
+\begin{aligned}
+\lVert\mathbf r\rVert&amp;&lt;\varepsilon_{\mathrm{task}},\\
+\lVert\mathbf J^\top\mathbf r\rVert
+&amp;\le\varepsilon_g\lVert\mathbf J\rVert_F\lVert\mathbf r\rVert.
+\end{aligned}
+\tag{2.19}
+</span></p>
+<p>The task tolerance is in meters. The gradient tolerance is
+dimensionless, and the Frobenius norm is the square root of the sum of
+squared matrix entries. This relative gradient test can pass with error
+remaining along a weak task direction. Always report task error with the
+stopping reason.</p>
+<p>The following comparisons use a task tolerance of <span
+class="math inline">10^{-6}</span> meters and a gradient tolerance of
+<span class="math inline">10^{-8}</span>. Protected Gauss–Newton steps
+use Armijo with coefficient 0.01, halving from scale one. Gradient
+descent uses the same test, but it starts each search from 1.2 times its
+previous accepted scale. The last permitted trial is the first at or
+below a scale floor of <span class="math inline">10^{-6}</span>. If that
+trial fails, the current configuration is retained. This practical
+stopping rule can reject a search even when a smaller trial would
+pass.</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Outcome</th>
+<th>What the computation establishes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Solved</td>
+<td>Task error meets its tolerance.</td>
+</tr>
+<tr>
+<td>Stationary</td>
+<td>Task error remains and the chosen gradient test passes.</td>
+</tr>
+<tr>
+<td>Stalled</td>
+<td>The line search rejects its last permitted trial.</td>
+</tr>
+<tr>
+<td>Iteration limit</td>
+<td>The update budget expires before another stopping test passes.</td>
+</tr>
+</tbody>
+</table>
+<p>For the ordinary target, undamped Gauss–Newton takes five updates
+from the shared start. The residuals are approximately 0.300, 0.174,
+0.036, 0.0015, then <span class="math inline">4.0\times10^{-6}</span>
+and <span class="math inline">2.0\times10^{-11}</span> meters. All full
+steps pass Armijo. The late rapid decrease is consistent with a regular
+zero-residual solution. Different starting configurations can reach the
+two different target solutions, so uniqueness of each local step does
+not imply uniqueness of the final answer.</p>
+<figure>
+<img src="lectures/03-D1-optimization-1/fig/ik_iterates.png"
+style="width:100.0%"
+alt="Figure 2.1. The left panel places the Gauss–Newton and gradient-descent iterates on one fixed task-cost landscape over the two joint angles. Two configurations reach the target, and a saddle lies between their valleys. The right panel plots the tip distance of five update rules from the same start on a logarithmic scale. The dotted line marks the task tolerance. The horizontal axis counts accepted updates; it measures neither time nor computing cost. The strongest fixed-damping run continues past the displayed 60 updates." />
+<figcaption aria-hidden="true">Figure 2.1. The left panel places the
+Gauss–Newton and gradient-descent iterates on one fixed task-cost
+landscape over the two joint angles. Two configurations reach the
+target, and a saddle lies between their valleys. The right panel plots
+the tip distance of five update rules from the same start on a
+logarithmic scale. The dotted line marks the task tolerance. The
+horizontal axis counts accepted updates; it measures neither time nor
+computing cost. The strongest fixed-damping run continues past the
+displayed 60 updates.</figcaption>
+</figure>
+<p>Figure 2.1 compares five update rules from the same start. All five
+reach the same elbow-up solution.</p>
+<table>
+<thead>
+<tr>
+<th>Update rule</th>
+<th style="text-align: right;">Accepted updates to the task
+tolerance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Undamped Gauss–Newton</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr>
+<td>Adaptive LM, damping starting at 0.05</td>
+<td style="text-align: right;">7</td>
+</tr>
+<tr>
+<td>Fixed damping 0.05</td>
+<td style="text-align: right;">21</td>
+</tr>
+<tr>
+<td>Gradient descent with Armijo</td>
+<td style="text-align: right;">46</td>
+</tr>
+<tr>
+<td>Fixed damping 0.5</td>
+<td style="text-align: right;">165</td>
+</tr>
+</tbody>
+</table>
+<p>Undamped Gauss–Newton finishes first here because its model becomes
+accurate as the error shrinks. Fixed damping keeps penalizing the late
+corrections, so its error falls by a nearly constant factor per update,
+and damping 0.5 makes that factor close to one. Adaptive LM starts like
+fixed damping 0.05, then halves the damping after each useful prediction
+and avoids the long tail. Gradient descent uses no curvature. Its
+accepted scale keeps growing and being cut back, and its progress along
+the weakly curved direction is slow, as on the poorly conditioned bowl
+of Section 1.3.</p>
+<p>These counts are accepted updates, not running times. The work per
+update differs. Gradient descent needs one gradient, Gauss–Newton solves
+a small linear system, LM may solve several systems when it rejects
+trials, and every line-search trial evaluates forward kinematics. The
+counts also belong to this start, target and set of settings, so they do
+not rank the methods in general. Even one method’s count depends on its
+settings. With its starting scale capped at one, gradient descent needs
+312 updates instead of 46.</p>
+<p>A reachable target can also produce a zero update. Stretch the arm
+along the horizontal axis and place the target 0.2 m closer to the base.
+The residual is horizontal, but both Jacobian columns are vertical:</p>
+<p><span class="math display">
+\mathbf r=\begin{bmatrix}0.2\\0\end{bmatrix}\ \mathrm m,
+\qquad
+\mathbf J=\begin{bmatrix}0&amp;0\\0.7&amp;0.3\end{bmatrix}\
+\mathrm{m/rad},
+\qquad
+\mathbf J^\top\mathbf r=\mathbf0.
+\tag{2.20}
+</span></p>
+<p>At this configuration and with this Jacobian, the gradient is exactly
+zero. So gradient descent, the minimum-norm Gauss–Newton step and every
+damped step, including LM’s trials, propose no motion. A solver reports
+stationarity here with 0.2 m of task error. Yet bending the arm reaches
+the target, as Figure 2.2 shows. This stationary point is a saddle of
+the actual task cost, and the first-order model cannot see the
+beneficial second-order radial motion. The zero step belongs to this
+exact configuration. From a start with the elbow bent by 10 degrees,
+protected Gauss–Newton reaches the target in four updates.</p>
+<figure>
+<img src="lectures/03-D1-optimization-1/fig/stationary_straight.png"
+style="width:100.0%"
+alt="Figure 2.2. A straight arm has horizontal task error and only vertical first-order tip motion. A bent configuration reaches the same target. Local stationarity therefore does not prove target unreachability." />
+<figcaption aria-hidden="true">Figure 2.2. A straight arm has horizontal
+task error and only vertical first-order tip motion. A bent
+configuration reaches the same target. Local stationarity therefore does
+not prove target unreachability.</figcaption>
+</figure>
+<p>The link lengths decide reachability before any optimizer runs,
+because the arm reaches at most 0.7 m from its base. The target 0.7 m to
+the right lies exactly on that boundary. Its only solution is the
+straight arm, where the Jacobian has no tip motion along the arm.
+Undamped Gauss–Newton from the shared start still reaches the task
+tolerance, after 11 updates, but its late error falls only by about a
+factor of four per update. For a target beyond reach, geometry can
+establish impossibility independently:</p>
+<p><span class="math display">
+\mathbf y^*=\begin{bmatrix}0.8\\0.1\end{bmatrix}\ \mathrm m,
+\qquad
+\lVert\mathbf y^*\rVert-0.7\ \mathrm m\approx0.106\ \mathrm m.
+\tag{2.21}
+</span></p>
+<p>The difference is the minimum achievable task error because the arm’s
+maximum reach is 0.7 m. The closest reachable tip position lies on the
+line from the base to the target, at about <span
+class="math inline">(0.695, 0.087)</span> m. Damping 0.01 reaches that
+closest configuration and reports stationarity after 29 updates, with
+the task error equal to the geometric minimum. An undamped protected run
+instead stalls after six accepted updates with a residual near 0.107 m.
+Its gradient remains substantial. A failed numerical search and an
+unreachable target are separate facts.</p>
+<h3 id="use-the-same-construction-on-a-seven-joint-arm">2.6 Use the same
+construction on a seven-joint arm</h3>
+<p>For a world-frame position target at the Panda’s flange origin, seven
+joint coordinates determine three task coordinates:</p>
+<p><span class="math display">
+\mathbf q\in\mathbb R^7,
+\qquad\mathbf r\in\mathbb R^3,
+\qquad\mathbf J\in\mathbb R^{3\times7}.
+\tag{2.22}
+</span></p>
+<p>At a rank-three configuration, four independent joint directions
+produce no first-order flange translation. The normal matrix is
+therefore singular even though every task direction is locally
+available. A minimum-norm least-squares choice or positive damping
+selects a step. No inverse of the rectangular Jacobian is required.</p>
+<p>From a comfortable starting posture, damping 0.001 reaches a nearby
+target in four updates. From a nearly stretched posture, a target 5 cm
+along the weakest task direction needs eighteen updates with the same
+damping. Near the solution, the weakest gain is about 0.026 m/rad,
+giving a residual factor near 0.60. Lowering damping to <span
+class="math inline">10^{-8}</span> reduces that count to five. The
+eighteen-update run reflects a weak nonzero motion gain and fixed
+damping, rather than an exactly singular solution.</p>
+<p>For each accepted increment, compare the locally predicted flange
+position with forward kinematics:</p>
+<p><span class="math display">
+\begin{aligned}
+\mathbf p_{\mathrm{pred}}^{(i)}
+&amp;=\varphi(\mathbf q^{(i-1)})
++\mathbf J(\mathbf q^{(i-1)})\mathbf s^{(i)},\\
+\text{prediction gap}
+&amp;=\lVert\mathbf p_{\mathrm{pred}}^{(i)}-\varphi(\mathbf
+q^{(i)})\rVert.
+\end{aligned}
+\tag{2.23}
+</span></p>
+<p>The accepted increment joins the preceding and current
+configurations. The prediction gap measures local-model accuracy. Task
+error measures distance to the target. In the stretched run, the first
+prediction gap is 9.92 mm and the task error is 14.61 mm. By update five
+they are 0.014 mm and 0.610 mm.</p>
+<p>For a farther target, two runs use the whole budget of forty updates.
+Without a line search, the joints jump by up to 4.2 rad per update and
+the run never settles. With Armijo, the run leaves 0.246 m of task error
+despite a prediction gap below one micrometer. A separate chain-length
+bound proves this target unreachable: its shoulder-to-target distance is
+1.104 m, while the shoulder-to-flange chain is at most 0.986 m long.
+Their difference gives an error lower bound of about 0.118 m. It does
+not prove that the observed 0.246 m residual is globally smallest.</p>
+<figure>
+<img
+src="lectures/03-reading-optimization-planning-and-control/fig/panda_gn_runs.png"
+style="width:100.0%"
+alt="Figure 2.3. Damped Gauss–Newton on the Panda with damping 10^{-3}, plotted against accepted updates. The columns are four runs: a comfortable start with a nearby target, a nearly stretched start with a target 5 cm along the weakest task direction, and an unreachable target without and with Armijo. The rows show the task error, the length of the accepted joint step over all seven joints, and the prediction gap of (2.23). Panels whose values stay within one factor of ten use linear axes. In the last run the prediction gap keeps falling while the task error stays near 0.246 m." />
+<figcaption aria-hidden="true">Figure 2.3. Damped Gauss–Newton on the
+Panda with damping <span class="math inline">10^{-3}</span>, plotted
+against accepted updates. The columns are four runs: a comfortable start
+with a nearby target, a nearly stretched start with a target 5 cm along
+the weakest task direction, and an unreachable target without and with
+Armijo. The rows show the task error, the length of the accepted joint
+step over all seven joints, and the prediction gap of (2.23). Panels
+whose values stay within one factor of ten use linear axes. In the last
+run the prediction gap keeps falling while the task error stays near
+0.246 m.</figcaption>
+</figure>
+<p>These results describe the stated starts, targets and damping. They
+are local evidence about these runs. They do not guarantee the same
+counts or outcomes for other targets.</p>
+<h3 id="reuse-previous-steps-to-choose-directions">2.7 Reuse previous
+steps to choose directions</h3>
+<p>Newton needs the full Hessian, and Gauss–Newton needs the
+least-squares structure of a residual. For a general smooth cost with
+many decision variables, such as a trajectory in the next chapter,
+computing or storing a Hessian can be expensive. Another family of
+methods reuses the previous moves and the gradients measured along
+them.</p>
+<p>Consider two consecutive accepted iterates. The <strong>accepted
+move</strong> is the difference between the new and old iterates. The
+<strong>gradient change</strong> is the difference between the gradients
+measured at those two points:</p>
+<p><span class="math display">
+\mathbf s=\mathbf z_{\mathrm{new}}-\mathbf z_{\mathrm{old}},
+\qquad
+\mathbf y=\mathbf g_{\mathrm{new}}-\mathbf g_{\mathrm{old}},
+\qquad
+\mathbf g=\nabla f(\mathbf z).
+\tag{2.24}
+</span></p>
+<p>In Sections 2.7 and 2.8, <span class="math inline">\mathbf y</span>
+denotes the gradient change; it is unrelated to the target <span
+class="math inline">\mathbf y^*</span> of Section 1. The bold gradient
+<span class="math inline">\mathbf g</span> is also distinct from the
+constraint functions of Section 3. For a quadratic cost with Hessian
+<span class="math inline">\mathbf H</span>, the gradient change equals
+<span class="math inline">\mathbf H\mathbf s</span> exactly. For a
+general smooth cost it equals the Hessian averaged along the move,
+multiplied by the move:</p>
+<p><span class="math display">
+\mathbf y=\Big(\int_0^1\nabla^2 f(\mathbf z_{\mathrm{old}}+t\,\mathbf
+s)\,dt\Big)\,\mathbf s.
+</span></p>
+<p>The pair therefore measures curvature along the latest move without
+second derivatives. A positive product <span class="math inline">\mathbf
+s^\top\mathbf y</span> means that the curvature in the direction of the
+move is positive on average over the move. The cost can still curve
+downward over part of it.</p>
+<p>One method stores a matrix <span class="math inline">\mathbf
+B^{-1}</span> that estimates the inverse Hessian. It starts from a
+positive-definite guess such as the identity. After each move it updates
+the estimate so that it maps the latest gradient change back to the
+move, and then it proposes a direction from the new gradient:</p>
+<p><span class="math display">
+\mathbf B^{-1}\mathbf y=\mathbf s,
+\qquad
+\mathbf d=-\mathbf B^{-1}\mathbf g.
+</span></p>
+<p>This method is called <strong>BFGS</strong>, for Broyden, Fletcher,
+Goldfarb and Shanno. Methods that build a curvature estimate from
+gradient changes are called <strong>quasi-Newton</strong> methods. The
+BFGS update keeps the estimate positive definite whenever <span
+class="math inline">\mathbf s^\top\mathbf y&gt;0</span>, so the
+direction is downhill. <strong>Limited-memory BFGS</strong> (L-BFGS)
+stores no matrix. It keeps only the last few pairs, often between 5 and
+20, and computes the direction directly from them. Its storage therefore
+grows only in proportion to the number of variables.</p>
+<p>Figure 2.4 shows L-BFGS with three stored pairs on the Rosenbrock
+function</p>
+<p><span class="math display">
+f(\mathbf z)=(1-z_1)^2+100\,(z_2-z_1^2)^2,
+\tag{2.25}
+</span></p>
+<p>a standard test whose minimum at <span
+class="math inline">(1,1)</span> lies at the end of a narrow curved
+valley. The run starts at <span class="math inline">(-1.2,1.0)</span>.
+An exact line search places each new iterate where the slope along its
+direction is zero. In the middle panel, the purple arrow ① is the latest
+move, from <span class="math inline">(-0.930, 0.828)</span> to <span
+class="math inline">(-0.785, 0.558)</span>. The maroon arrows ② are the
+negative gradients at its ends, drawn shorter than their true size at
+one shared display scale. The right panel ③ places both gradients at one
+origin, and their difference is the gradient change, with <span
+class="math inline">\mathbf s^\top\mathbf y=0.54</span>. The teal arrow
+④ is the L-BFGS direction. It leaves the negative gradient by <span
+class="math inline">75^\circ</span> and points along the valley instead
+of across it. The figure draws it as long as the negative gradient. Its
+actual length is 0.125, the size of a step in the decision variable, and
+it cannot share the gradients’ scale.</p>
+<figure>
+<img src="lectures/03-D1-optimization-1/fig/lbfgs_rosenbrock.png"
+style="width:100.0%"
+alt="Figure 2.4. L-BFGS after three accepted updates on the Rosenbrock valley. The left panel locates the local view. The circled numbers follow the text, and the teal direction is rescaled for display." />
+<figcaption aria-hidden="true">Figure 2.4. L-BFGS after three accepted
+updates on the Rosenbrock valley. The left panel locates the local view.
+The circled numbers follow the text, and the teal direction is rescaled
+for display.</figcaption>
+</figure>
+<p>A single stored pair shows how the history turns the direction. With
+one pair after an exact line search, the L-BFGS computation reduces
+to</p>
+<p><span class="math display">
+\mathbf d=\gamma\Big(-\mathbf g_{\mathrm{new}}
++\frac{\mathbf y^\top\mathbf g_{\mathrm{new}}}{\mathbf y^\top\mathbf
+s}\,\mathbf s\Big),
+\qquad
+\gamma=\frac{\mathbf s^\top\mathbf y}{\mathbf y^\top\mathbf y}.
+\tag{2.26}
+</span></p>
+<p>The scalar <span class="math inline">\gamma</span> estimates the
+inverse curvature along the move and rescales the negative gradient. The
+second term adds a multiple of the previous move. Here <span
+class="math inline">\gamma\approx0.012</span>, and the coefficient of
+that term is positive, about 297, so it turns the direction toward the
+previous move. This one-pair form only illustrates the mechanism. L-BFGS
+with several pairs applies one correction per stored pair, and in this
+two-dimensional example the older pairs change only the direction’s
+length.</p>
+<p>A cheaper method stores no curvature estimate at all. It adds a
+multiple of the previous search direction to the new negative gradient,
+and it is called <strong>nonlinear conjugate gradient</strong> (CG):</p>
+<p><span class="math display">
+\mathbf d_{\mathrm{new}}=-\mathbf g_{\mathrm{new}}+\beta\,\mathbf
+d_{\mathrm{previous}}.
+\tag{2.27}
+</span></p>
+<p>The weight <span class="math inline">\beta</span> is recomputed from
+the gradients at every step, so it is not a fixed momentum coefficient.
+The Polak–Ribière rule used here builds <span
+class="math inline">\beta</span> from the gradient change and replaces a
+negative value by zero. When the sum does not point downhill, the method
+restarts from the negative gradient.</p>
+<p>Figure 2.5 uses the same three updates. The purple arrow ① is the
+previous step, which is the previous direction multiplied by a small
+line-search scale. The dashed arrow in the side panel shows that
+previous direction at full size. The maroon arrow ② is the new negative
+gradient, drawn at a reduced display scale. The side panel places the
+weighted previous direction ③ tip to tail after the negative gradient,
+and the sum of those two arrows ④ is the new direction. The three
+vectors in the side panel share one scale. Here the weight is about
+0.465. The new direction is downhill and turns away from the negative
+gradient toward the valley floor. Appendix B.3 lists the vectors.</p>
+<figure>
+<img src="lectures/03-D1-optimization-1/fig/cg_rosenbrock.png"
+style="width:100.0%"
+alt="Figure 2.5. Nonlinear conjugate gradient after the same three updates. The side panel adds the weighted previous direction to the new negative gradient tip to tail, at one scale." />
+<figcaption aria-hidden="true">Figure 2.5. Nonlinear conjugate gradient
+after the same three updates. The side panel adds the weighted previous
+direction to the new negative gradient tip to tail, at one
+scale.</figcaption>
+</figure>
+<p>In this example the two methods take the same three updates, and
+their new directions are parallel. With exact line searches both
+directions have zero inner product with the newest gradient change, and
+in two dimensions that property fixes the direction. With more variables
+the methods generally differ, so the example ranks neither. Conjugate
+gradient reaches the minimum of a positive-definite quadratic in at most
+as many exact line searches as there are variables. That guarantee does
+not carry over to the Rosenbrock valley or to a robot cost.</p>
+<p>All three methods only propose a direction. They still need a line
+search, and none guarantees the globally best configuration. Appendix
+A.6 gives the full BFGS update, the L-BFGS computation for several pairs
+and the conjugate-gradient weight as optional reference.</p>
+<h3 id="check-the-slope-as-well-as-the-cost-decrease">2.8 Check the
+slope as well as the cost decrease</h3>
+<p>Armijo’s test (1.9) asks only whether the cost fell enough. For a
+smooth objective and a strict descent direction, sufficiently small
+positive steps pass it in exact arithmetic. Accepting such a short trial
+makes little progress while the cost still falls steeply along the
+direction. The <strong>Wolfe conditions</strong> add a test on the
+directional slope <span class="math inline">\nabla f(\mathbf
+z+\alpha\mathbf d)^\top\mathbf d</span> at the trial point. For a
+descent direction this slope is negative at <span
+class="math inline">\alpha=0</span>. With constants <span
+class="math inline">0&lt;c_1&lt;c_2&lt;1</span>, the conditions are</p>
+<p><span class="math display">
+\begin{aligned}
+&amp;\text{Armijo:}&amp;
+f(\mathbf z+\alpha\mathbf d)&amp;\le f(\mathbf z)+c_1\alpha\nabla
+f(\mathbf z)^\top\mathbf d,\\
+&amp;\text{Wolfe adds:}&amp;
+\nabla f(\mathbf z+\alpha\mathbf d)^\top\mathbf d&amp;\ge c_2\,\nabla
+f(\mathbf z)^\top\mathbf d,\\
+&amp;\text{strong Wolfe uses:}&amp;
+\lvert\nabla f(\mathbf z+\alpha\mathbf d)^\top\mathbf d\rvert&amp;\le
+c_2\,\lvert\nabla f(\mathbf z)^\top\mathbf d\rvert.
+\end{aligned}
+\tag{2.28}
+</span></p>
+<p>The constant <span class="math inline">c_1</span> is Armijo’s
+coefficient <span class="math inline">c</span> from (1.9). At an
+accepted Wolfe trial with a downhill slope, the slope’s size has shrunk
+to at most a fraction <span class="math inline">c_2</span> of its
+initial size. The Wolfe condition allows any uphill slope. Strong Wolfe
+replaces it with a bound on the slope’s size in both directions, so a
+trial where the cost already rises steeply along the line fails. Common
+choices are <span class="math inline">c_1=10^{-4}</span>, with <span
+class="math inline">c_2=0.9</span> for Newton and quasi-Newton
+directions such as BFGS and <span class="math inline">c_2=0.1</span> for
+nonlinear conjugate gradient.</p>
+<p>Figure 2.6 follows the cost <span class="math inline">f(z)=z^2</span>
+from <span class="math inline">z=2</span> along the direction <span
+class="math inline">-4</span>, with <span
+class="math inline">c_1=0.2</span> and <span
+class="math inline">c_2=0.5</span>. Along that line the cost is</p>
+<p><span class="math display">
+f(2-4\alpha)=(2-4\alpha)^2.
+</span></p>
+<p>Armijo accepts every scale up to 0.8, including tiny ones. Wolfe
+accepts scales from 0.25 to 0.8, and strong Wolfe accepts scales from
+0.25 to 0.75. The line minimum is at 0.5. Neither Wolfe variant asks for
+that exact minimum, and strong Wolfe still accepts points past it, up to
+0.75. Both are acceptance rules along a direction that has already been
+chosen. They compute no new direction.</p>
+<figure>
+<img src="lectures/03-D1-optimization-1/fig/line_search_overview.png"
+style="width:72.0%"
+alt="Figure 2.6. The cost along one fixed direction (top) and the step sizes each test accepts (bottom). A trial at 0.10 passes Armijo and fails Wolfe. The line minimum at 0.5 passes all three. A trial at 0.78 lies past the minimum; it passes Armijo and Wolfe and fails strong Wolfe." />
+<figcaption aria-hidden="true">Figure 2.6. The cost along one fixed
+direction (top) and the step sizes each test accepts (bottom). A trial
+at 0.10 passes Armijo and fails Wolfe. The line minimum at 0.5 passes
+all three. A trial at 0.78 lies past the minimum; it passes Armijo and
+Wolfe and fails strong Wolfe.</figcaption>
+</figure>
+<p>The slope condition matters for the history-based directions of
+Section 2.7. With <span class="math inline">\mathbf s=\alpha\mathbf
+d</span>, subtract the initial slope from both sides of the Wolfe
+condition:</p>
+<p><span class="math display">
+\begin{aligned}
+\mathbf s^\top\mathbf y
+&amp;=\alpha\big(\nabla f(\mathbf z+\alpha\mathbf d)-\nabla f(\mathbf
+z)\big)^\top\mathbf d\\
+&amp;\ge\alpha\,(c_2-1)\,\nabla f(\mathbf z)^\top\mathbf d&gt;0.
+\end{aligned}
+\tag{2.29}
+</span></p>
+<p>The right side is positive because <span
+class="math inline">c_2&lt;1</span> and the initial slope is negative.
+Every Wolfe step, ordinary or strong, therefore supplies a pair with
+positive average curvature along the move. BFGS needs exactly that
+property to keep its estimate positive definite, and Armijo alone does
+not ensure it. A practical search first enlarges the trial until it
+brackets an acceptable scale and then narrows the bracket; Appendix A.6
+outlines it.</p>
+<h3 id="what-the-solver-result-establishes">2.9 What the solver result
+establishes</h3>
+<p>The solvers of Sections 1 and 2 separate five decisions. The
+objective (2.5) states which configurations are good. A local model
+predicts the cost near the current configuration, using exact curvature
+for Newton, the linearized residual for Gauss–Newton, or curvature
+estimated from previous moves for BFGS and L-BFGS. Minimizing that
+model, shaped by damping and weights, gives the proposed direction. An
+acceptance rule, either a line-search test or LM’s ratio, decides
+whether a trial becomes an update. A stopping test then reports what the
+final configuration establishes.</p>
+<p>The opening example raised three questions. They ask how far to trust
+a proposed step, how to choose a step when the robot has more joints
+than task coordinates, and what to do when the target is out of reach.
+Damping discourages large joint changes, and the acceptance rule checks
+the actual cost afterward. A damped least-squares solve selects a unique
+joint step for the redundant arm. For an unreachable target, the same
+objective seeks the smallest remaining tip-to-target distance. A local
+solver may stop before finding the best configuration. A stationary
+report, a stalled line search or an iteration limit does not prove that
+a target is unreachable, while geometry such as a reach bound can.</p>
+<p>The objective also omits requirements the robot must satisfy. On the
+Panda, one unprotected far-target run moves a joint past its model
+limit. On the two-link arm, suppose the elbow may bend at most 60
+degrees either way. Both exact solutions for the opening target bend the
+elbow by about 80 degrees. An obvious repair clips the elbow back to its
+limit after every Gauss–Newton update. The clipped iteration settles
+with the elbow at its limit and 0.146 m of task error. This
+configuration satisfies the limit, but it is not the best allowed
+configuration. Keeping the elbow at its limit and rotating the shoulder
+reduces the task error to about 0.070 m. Earlier updates did move the
+shoulder, but the clipped iteration stopped before reaching stationarity
+with respect to the shoulder. Satisfying a limit after each step
+therefore does not establish a constrained minimum. Obstacles raise the
+same issue, because the tip-distance cost does not penalize collisions.
+Section 3 places the allowed configurations inside the optimization
+problem.</p>
+<p><strong>Check your understanding.</strong> Why can damping make a
+rectangular-Jacobian solve unique without ensuring that its final
+configuration reaches the target? Why can a tiny prediction gap coexist
+with large task error?</p>
+<p><strong>Answer.</strong> Damping makes the local step model positive
+definite. It supplies neither global reachability nor escape from every
+stationary point. A tiny prediction gap says that the accepted local
+increment was predicted accurately; it does not say that the remaining
+target displacement is achievable.</p>
+<h2 id="constraints-and-constrained-inverse-kinematics">3. Constraints
+and constrained inverse kinematics</h2>
+<h3 id="choose-among-the-allowed-configurations">3.1 Choose among the
+allowed configurations</h3>
+<p>Section 2.9 limited the running arm’s elbow to sixty degrees in
+either direction. We must now minimize error among allowed
+configurations.</p>
+<p>Clipping an unconstrained update to the joint range leaves an allowed
+configuration, but it can leave an improvement in a free joint. In the
+running example, repeated clipping settles near the following point:</p>
+<p><span class="math display">
+\mathbf q_{\mathrm{clip}}=
+\begin{bmatrix}-16.40^\circ\\60^\circ\end{bmatrix},
+\qquad
+\nabla f(\mathbf q_{\mathrm{clip}})\approx
+\begin{bmatrix}-0.073\\-0.044\end{bmatrix}
+\ \mathrm{m^2/rad}.
+\tag{3.1}
+</span></p>
+<p>The first derivative is negative. A small positive first-joint change
+lowers the cost while leaving the elbow at its limit. The clipped answer
+is allowed, but its free coordinate has not been optimized.</p>
+<p>We express each requirement through a function. An inequality is
+feasible when its value is nonpositive. An equality is feasible when its
+value is zero. With a decision vector of dimension <span
+class="math inline">d</span>, the problem is</p>
+<p><span class="math display">
+\begin{aligned}
+\min_{\mathbf z\in\mathbb R^d}\quad &amp;f(\mathbf z),\\
+\text{subject to}\quad
+&amp;g_i(\mathbf z)\le0,\quad i=1,\ldots,m,\\
+&amp;h_j(\mathbf z)=0,\quad j=1,\ldots,l.
+\end{aligned}
+\tag{3.2}
+</span></p>
+<p>This is a nonlinear program. Its feasible set contains all allowed
+candidates. The cost ranks those candidates. Here the decision vector is
+one robot configuration. The constraint functions can express joint
+bounds, clearance or exact task requirements:</p>
+<p><span class="math display">
+\begin{aligned}
+g_{\mathrm{upper}}&amp;=q_j-q_j^{\max},&amp;
+g_{\mathrm{lower}}&amp;=q_j^{\min}-q_j,\\
+g_{\mathrm{clearance}}&amp;=r_o-\|\mathbf p(\mathbf q)-\mathbf
+c_{\mathrm{obs}}\|,&amp;
+\mathbf h&amp;=\varphi(\mathbf q)-\mathbf y^*.
+\end{aligned}
+\tag{3.3}
+</span></p>
+<p>The clearance row protects the modeled point around a spherical
+obstacle with center <span class="math inline">\mathbf
+c_{\mathrm{obs}}</span> and radius <span class="math inline">r_o</span>.
+Protecting a point does not establish whole-link clearance. Each
+component of the target error supplies a separate equality. Bounds have
+radian units, and the position constraints have meter units.</p>
+<p>For clearance, let <span class="math inline">\mathbf J_p</span> be
+the point’s position Jacobian in world axes. Away from the obstacle
+center, the outward unit direction is <span
+class="math inline">\hat{\mathbf n}</span>. Increasing distance
+decreases the constraint, so the chain rule gives its column
+gradient:</p>
+<p><span class="math display">
+\hat{\mathbf n}=\frac{\mathbf p-\mathbf c_{\mathrm{obs}}}
+{\|\mathbf p-\mathbf c_{\mathrm{obs}}\|},
+\qquad \nabla g_{\mathrm{clearance}}=-\mathbf J_p^\top\hat{\mathbf n}.
+\tag{3.4}
+</span></p>
+<p>The sign is important. Reversing it would direct the modeled
+correction toward the obstacle. The distance derivative is undefined at
+the center, so this local expression assumes positive distance.</p>
+<p>A gradient gives the direction in which a constraint increases. At a
+boundary, a first-order feasible direction must avoid increasing the
+active inequality. For the upper elbow limit,</p>
+<p><span class="math display">
+g=q_2-\pi/3=0,
+\qquad
+\nabla g=\begin{bmatrix}0\\1\end{bmatrix},
+\qquad
+\nabla g^\top\mathbf d\le0.
+\tag{3.5}
+</span></p>
+<p>A negative elbow change enters the allowed side. A hard target has a
+different meaning from a task-error cost. Its nonzero error is
+infeasible, however small the cost might be. When no allowed
+configuration reaches the target, the hard-target program has no
+feasible solution.</p>
+<h3 id="balance-gradients-at-a-boundary">3.2 Balance gradients at a
+boundary</h3>
+<p>Consider choosing the point in a unit disc closest to a fixed target
+<span class="math inline">\mathbf z_t</span>. The subscript labels the
+target rather than time. These coordinates are dimensionless.</p>
+<p><span class="math display">
+f(\mathbf z)=\tfrac12\|\mathbf z-\mathbf z_t\|^2,
+\qquad
+g(\mathbf z)=\|\mathbf z\|-1\le0.
+\tag{3.6}
+</span></p>
+<p>An inside target is already the solution. For an outside target, the
+closest allowed point lies on the circle. The inequality is called
+active there because its value is zero. It is inactive at points with
+negative value.</p>
+<p>At the boundary solution, the cost gradient can remain nonzero.
+Moving directly toward the target would lower the cost but leave the
+disc. A tangential component of the cost gradient would permit
+improvement along the boundary, so that component must vanish at the
+minimum. The remaining normal component must point inward because moving
+inward cannot lower the cost. When the active constraint has a nonzero
+gradient, this gives</p>
+<p><span class="math display">
+\nabla f+\lambda\nabla g=\mathbf0,
+\qquad \lambda\ge0.
+\tag{3.7}
+</span></p>
+<p>The coefficient is a Lagrange multiplier. Its nonnegative sign
+follows from the allowed inward direction. Figure 3.1 shows the balance
+between the outward downhill direction and the inward correction. These
+arrows describe optimization; they do not represent measured contact
+forces.</p>
+<figure>
+<img src="lectures/04-D1-constraints-and-komo/fig/kkt_disc_forces.png"
+style="width:70.0%"
+alt="Figure 3.1. At the closest point in the disc, the downhill direction points outside. A nonnegative multiple of the inward constraint direction balances it." />
+<figcaption aria-hidden="true">Figure 3.1. At the closest point in the
+disc, the downhill direction points outside. A nonnegative multiple of
+the inward constraint direction balances it.</figcaption>
+</figure>
+<p>Substitute the disc gradients into (3.7). At the boundary the
+solution has unit norm, so the balance becomes a rescaling of the
+target:</p>
+<p><span class="math display">
+\begin{aligned}
+(\mathbf z^*-\mathbf z_t)+\lambda\mathbf z^*&amp;=\mathbf0,\\
+\mathbf z^*&amp;=\frac{\mathbf z_t}{\|\mathbf z_t\|},
+\qquad \lambda^*=\|\mathbf z_t\|-1.
+\end{aligned}
+\tag{3.8}
+</span></p>
+<p>For the plotted target with coordinates 1.6 and 0.6, the norm is
+about 1.709. The closest point has coordinates approximately 0.936 and
+0.351, and the multiplier is about 0.709. An inactive inequality has
+zero multiplier. An active inequality can also have zero multiplier, as
+when the target lies exactly on the circle and the cost gradient already
+vanishes.</p>
+<p>An equality constrains motion differently. Both sides of its surface
+are forbidden. First-order feasible directions must be tangent, and
+neither sign of a tangent direction may lower the cost at a minimum. The
+cost gradient again has only a normal component, but its coefficient may
+have either sign. For a normalized line with unit normal <span
+class="math inline">\mathbf n</span>,</p>
+<p><span class="math display">
+\begin{aligned}
+h(\mathbf z)&amp;=\frac{z_1+z_2-1}{\sqrt2}=0,
+\qquad \mathbf n=\frac1{\sqrt2}\begin{bmatrix}1\\1\end{bmatrix},\\
+\mathbf z^*&amp;=\mathbf z_t-\kappa\mathbf n,
+\qquad \kappa=h(\mathbf z_t).
+\end{aligned}
+\tag{3.9}
+</span></p>
+<p>For target coordinates 1.6 and 0.6, the multiplier is 0.849 and the
+closest point has coordinates 1 and 0. For target coordinates minus 0.3
+and minus 0.4, the multiplier is minus 1.202 and the closest point has
+coordinates 0.55 and 0.45. The two signs correct opposite sides of the
+line.</p>
+<p>For several constraints, each scalar row has its own multiplier.
+Assume continuously differentiable functions near a local minimum. Also
+assume that the equality gradients and active inequality gradients are
+linearly independent there. This sufficient regularity assumption is
+called the linear independence constraint qualification. Under it,
+multipliers exist that satisfy the Karush–Kuhn–Tucker conditions:</p>
+<p><span class="math display">
+\begin{aligned}
+\mathbf0&amp;=\nabla f+\sum_i\lambda_i\nabla g_i
+                  +\sum_j\kappa_j\nabla h_j,\\
+g_i&amp;\le0,\qquad h_j=0,\\
+\lambda_i&amp;\ge0,\qquad \lambda_i g_i=0.
+\end{aligned}
+\tag{3.10}
+</span></p>
+<p>The four requirements are stationarity, primal feasibility, dual
+feasibility and complementarity. Complementarity makes every inactive
+inequality’s multiplier zero. Equality multipliers have unrestricted
+signs and no complementarity condition. Other constraint qualifications
+can apply when linear independence fails. Without a suitable
+qualification, even a minimum need not have this gradient balance. At
+the stretched arm, for example, dependent target rows can fail to
+balance a posture gradient.</p>
+<p>These are necessary first-order conditions under the stated
+assumptions. They do not certify a minimum in a nonconvex problem. The
+straight-arm stationary saddle remains a counterexample when all joint
+bounds are inactive.</p>
+<p>The inequalities with zero value form the active set. If that set
+were known, we could solve its equalities and the stationarity equation,
+then check the omitted inequalities and multiplier signs. Practical
+methods must discover which rows matter. Nonnegative combinations of
+active inequality gradients form their cone. Combinations of equality
+gradients with unrestricted coefficients form their span. Stationarity
+places the negative cost gradient in the sum of that cone and span. This
+explains why an equality can supply either sign of correction while an
+inequality cannot.</p>
+<p>The scalar function that collects their gradient balance is the
+Lagrangian:</p>
+<p><span class="math display">
+L(\mathbf z,\boldsymbol\lambda,\boldsymbol\kappa)
+=f(\mathbf z)+\boldsymbol\lambda^\top\mathbf g(\mathbf z)
+             +\boldsymbol\kappa^\top\mathbf h(\mathbf z).
+\tag{3.11}
+</span></p>
+<p>Its gradient with respect to the decision vector gives stationarity
+with multipliers fixed. A constrained minimum need not minimize this
+scalar over all configurations.</p>
+<h3 id="interpret-a-constrained-ik-answer">3.3 Interpret a constrained
+IK answer</h3>
+<p>Return to the two-link arm and its sixty-degree elbow range. The
+target radius is 0.539 meters, but the smallest allowed tip radius is
+0.608 meters. The exact target is therefore impossible within this
+range. At either elbow limit, the first joint can rotate the tip circle
+toward the target. Figure 3.2 shows the resulting solutions. On the
+positive-elbow branch,</p>
+<p><span class="math display">
+\begin{aligned}
+\mathbf q^*&amp;\approx(-3.484^\circ,60^\circ)^\top,\\
+\|\varphi(\mathbf q^*)-\mathbf y^*\|&amp;\approx0.070\ \mathrm m,
+\qquad f^*\approx2.43\times10^{-3}\ \mathrm{m^2},\\
+\nabla f(\mathbf q^*)&amp;\approx(0,-1.19\times10^{-2})^\top\
+\mathrm{m^2/rad},\\
+\lambda^*&amp;\approx1.19\times10^{-2}\ \mathrm{m^2/rad}.
+\end{aligned}
+\tag{3.12}
+</span></p>
+<p>The first-joint derivative now vanishes. The positive upper-limit
+multiplier balances the remaining elbow derivative. The negative-elbow
+solution has the same cost with the lower limit active. Both improve on
+the clipped answer because they optimize the remaining free
+coordinate.</p>
+<figure>
+<img src="lectures/04-D1-constraints-and-komo/fig/arm_joint_limit.png"
+style="width:95.0%"
+alt="Figure 3.2. Both exact IK branches exceed the elbow range. The best allowed configurations use the two limits and retain a nonzero task error." />
+<figcaption aria-hidden="true">Figure 3.2. Both exact IK branches exceed
+the elbow range. The best allowed configurations use the two limits and
+retain a nonzero task error.</figcaption>
+</figure>
+<p>A multiplier also measures the local cost of changing a constraint.
+Express the allowed upper value of a scalar function as a parameter
+<span class="math inline">b</span>. Follow a smooth solution branch
+whose active set stays fixed. Differentiating the active constraint and
+using stationarity gives</p>
+<p><span class="math display">
+\begin{aligned}
+g(\mathbf z)&amp;\le b,\qquad g(\mathbf z^*(b))=b,\\
+\nabla g^\top\frac{d\mathbf z^*}{db}&amp;=1,\\
+\frac{df^*}{db}
+&amp;=\nabla f^\top\frac{d\mathbf z^*}{db}
+=-\lambda\nabla g^\top\frac{d\mathbf z^*}{db}
+=-\lambda.
+\end{aligned}
+\tag{3.13}
+</span></p>
+<p>Relaxing the upper elbow limit by one degree predicts a cost
+reduction of about <span class="math inline">2.08\times10^{-4}</span>
+square meters. Recomputing the positive branch gives <span
+class="math inline">2.05\times10^{-4}</span> square meters. This is a
+local derivative, so a finite change is approximate. A branch change can
+invalidate the prediction. Rescaling a constraint also rescales its
+multiplier. Its units are cost units divided by constraint units.</p>
+<p>A redundant arm can instead reach an exact target while choosing a
+preferred posture. For the seven-joint Panda, place the flange origin at
+a specified position in world axes and minimize deviation from the fixed
+ready posture:</p>
+<p><span class="math display">
+\begin{aligned}
+\min_{\mathbf q}\quad &amp;\tfrac12\|\mathbf q-\mathbf
+q_{\mathrm{ref}}\|^2,\\
+\text{subject to}\quad &amp;\varphi(\mathbf q)-\mathbf y^*=\mathbf0,\\
+&amp;\mathbf q^{\min}-\mathbf q\le\mathbf0,
+\qquad \mathbf q-\mathbf q^{\max}\le\mathbf0.
+\end{aligned}
+\tag{3.14}
+</span></p>
+<p>The cost has squared-radian units. Three target rows have meter
+units, and fourteen bound rows have radian units. The fixed posture
+determines the objective throughout the solve. It is distinct from
+damping the current proposed step. Clearance rows can be added for
+modeled robot geometry.</p>
+<p>For a target at world coordinates 0.45, 0.10 and 0.45 meters, the
+local answer has posture cost 0.209 squared radians and no active joint
+bound. Nonzero target multipliers remain because the equality forces the
+arm away from its preferred posture. Its world-x multiplier is about
+minus 2.071 squared radians per meter. Moving the target one millimeter
+in positive world x predicts a cost increase of 0.00207 squared radians;
+resolving on the same branch gives about 0.00208.</p>
+<p>For a target at world coordinates minus 0.20, 0 and 0.60 meters, the
+displayed local branch touches joint 2’s lower bound and has cost 1.499
+squared radians. Its bound multiplier is 1.053 radians. Tightening that
+bound by 0.001 radians increases cost by about 0.00105 squared radians.
+This check follows the same branch from the previous answer. A symmetric
+starting posture can instead lead to a constrained saddle, so
+first-order agreement alone does not select the desired minimum.</p>
+<h3 id="build-an-inner-problem-and-update-its-multipliers">3.4 Build an
+inner problem and update its multipliers</h3>
+<p>We can reuse unconstrained optimization by putting constraint terms
+into an auxiliary objective. An inner solve changes the configuration
+with these terms fixed. An outer update changes their parameters before
+solving again.</p>
+<p>A squared penalty charges for equality errors and positive inequality
+violations. Writing the positive part as <span
+class="math inline">g^+</span> gives</p>
+<p><span class="math display">
+g_i^+=\max(g_i,0),
+\qquad
+S=f+\mu\sum_i(g_i^+)^2+\mu\sum_j h_j^2.
+\tag{3.15}
+</span></p>
+<p>The positive weight <span class="math inline">\mu</span> converts
+squared constraint units into cost units. Mixed units require separate
+weights or declared row scaling. For one violated inequality, inner
+stationarity gives</p>
+<p><span class="math display">
+\mathbf0=\nabla f+2\mu g\nabla g,
+\qquad
+\widehat\lambda=2\mu g,
+\qquad
+g\approx\frac{\lambda^*}{2\mu}.
+\tag{3.16}
+</span></p>
+<p>The last approximation uses the limiting constrained multiplier. A
+finite penalty generally needs positive violation to supply a nonzero
+correcting gradient. Increasing the weight reduces violation but makes
+the normal direction increasingly stiff. The inner linear system can
+become poorly conditioned.</p>
+<p>A barrier approaches an inequality boundary from inside. The
+logarithm requires positive slack, so its auxiliary objective is defined
+only for strictly feasible inequalities:</p>
+<p><span class="math display">
+B=f-\mu\sum_i\log(-g_i),
+\qquad g_i&lt;0.
+\tag{3.17}
+</span></p>
+<p>Here the positive parameter has the objective’s units and decreases
+toward zero. The logarithm uses slack divided by a fixed reference unit;
+changing that reference adds a constant. Differentiation identifies the
+multiplier:</p>
+<p><span class="math display">
+\begin{aligned}
+\nabla B&amp;=\nabla f-\sum_i\frac{\mu}{g_i}\nabla g_i,\\
+\widehat\lambda_i&amp;=-\frac{\mu}{g_i}&gt;0,
+\qquad \widehat\lambda_i g_i=-\mu.
+\end{aligned}
+\tag{3.18}
+</span></p>
+<p>Complementarity is relaxed by a known amount. Accepted points stay
+strictly inside, and the method needs a strictly feasible start. An
+equality has no interior in the full decision space, so a logarithmic
+inequality term cannot encode it. Interior-point methods retain equality
+equations in their inner systems. Near an active boundary with a
+positive limiting multiplier, barrier curvature also becomes large as
+the parameter approaches zero.</p>
+<p>For the arm, the penalty with weight one leaves an elbow violation of
+0.338 degrees. Weight one hundred reduces it to 0.003 degrees. The
+barrier starting at parameter 0.01 follows an interior branch; parameter
+<span class="math inline">10^{-6}</span> leaves 0.005 degrees of slack.
+Starting the schedule at 0.1 is a different experiment that can settle
+at the symmetric saddle. A stationary inner result still requires
+interpretation.</p>
+<p>An augmented Lagrangian stores the required correction in a
+multiplier, so less correction must come from a remaining violation. For
+one equality,</p>
+<p><span class="math display">
+A=f+\kappa h+\mu h^2,
+\qquad
+\nabla A=\nabla f+(\kappa+2\mu h)\nabla h.
+\tag{3.19}
+</span></p>
+<p>At an inner stationary point, the coefficient of the equality
+gradient is the new estimate of its required multiplier. Store it after
+the solve. For an inequality, keep that estimate nonnegative:</p>
+<p><span class="math display">
+\kappa_{\mathrm{new}}=\kappa+2\mu h,
+\qquad
+\lambda_{\mathrm{new}}=\max(0,\lambda+2\mu g).
+\tag{3.20}
+</span></p>
+<p>The factor two follows from the penalty convention in (3.19). The
+configuration stays fixed during this outer update. On the next inner
+solve, the linear term supplies more of the needed balance at a smaller
+violation.</p>
+<p>We use the following inequality inclusion rule. Include a row when it
+is violated or its stored multiplier is positive, and reevaluate the set
+as the configuration changes:</p>
+<p><span class="math display">
+\begin{aligned}
+\mathcal I&amp;=\{i:g_i&gt;0\text{ or }\lambda_i&gt;0\},\\
+A&amp;=f+\sum_{i\in\mathcal I}(\lambda_i g_i+\mu g_i^2)
+    +\sum_j(\kappa_j h_j+\mu h_j^2).
+\end{aligned}
+\tag{3.21}
+</span></p>
+<p>A feasible row with positive multiplier stays included. A violated
+row enters even before its multiplier is learned. This is a particular
+augmented-Lagrangian construction; other implementations use different
+inequality projections.</p>
+<p>For the elbow, keep the weight at one. The first inner solution is
+the weight-one penalty answer. Subsequent outer updates reduce its
+violation from 0.338 degrees to 0.003 degrees and then about <span
+class="math inline">3.02\times10^{-5}</span> degrees. The multiplier
+approaches the value found for the elbow optimum. Fixed-weight local
+convergence requires sufficient weight, regularity and suitable
+curvature at the solution. It does not promise exact feasibility after a
+finite number of updates or convergence from every start.</p>
+<p>The connection to Gauss–Newton comes from completing a square. For an
+included inequality,</p>
+<p><span class="math display">
+\lambda g+\mu g^2
+=\tfrac12\left[\sqrt{2\mu}
+\left(g+\frac{\lambda}{2\mu}\right)\right]^2
+-\frac{\lambda^2}{4\mu}.
+\tag{3.22}
+</span></p>
+<p>The last term is constant during an inner solve. For a row that
+switches inclusion, the multiplier is zero and that constant is zero.
+Equality rows remain included. Their shifted residuals and Jacobian rows
+are</p>
+<p><span class="math display">
+\begin{aligned}
+r_g&amp;=\sqrt{2\mu}\left(g+\frac{\lambda}{2\mu}\right),\\
+\mathbf J_{r_g}&amp;=\sqrt{2\mu}\nabla g^\top,\\
+r_h&amp;=\sqrt{2\mu}\left(h+\frac{\kappa}{2\mu}\right),\\
+\mathbf J_{r_h}&amp;=\sqrt{2\mu}\nabla h^\top.
+\end{aligned}
+\tag{3.23}
+</span></p>
+<p>Stack them with residuals for the original cost. The half-squared
+residual norm then represents the augmented objective up to a constant.
+Damped Gauss–Newton supplies the inner proposal:</p>
+<p><span class="math display">
+(\mathbf J_r^\top\mathbf J_r+\rho\mathbf I)\boldsymbol\delta
+=-\mathbf J_r^\top\mathbf r.
+\tag{3.24}
+</span></p>
+<p>This residual Jacobian contains objective and constraint rows. It is
+larger than the kinematic Jacobian. Damping regularizes the local step,
+while the penalty weight defines the auxiliary objective. Armijo checks
+that objective with the multipliers frozen.</p>
+<h3 id="measure-every-part-of-the-constrained-stopping-condition">3.5
+Measure every part of the constrained stopping condition</h3>
+<p>The objective gradient remains nonzero at the elbow optimum because
+the boundary balances it. A small objective gradient alone therefore
+cannot judge a constrained result. Measure the separate KKT residuals
+instead:</p>
+<p><span class="math display">
+\begin{aligned}
+v_g&amp;=\max_i\max(g_i,0),&amp;
+v_h&amp;=\max_j|h_j|,\\
+s_L&amp;=\|\nabla L\|,&amp;
+c_{\mathrm{KKT}}&amp;=\max_i|\lambda_i g_i|.
+\end{aligned}
+\tag{3.25}
+</span></p>
+<p>Also check nonnegative inequality multipliers. Empty groups
+contribute zero. Feasibility tolerances must respect row units. A meter
+error and a radian error can be checked separately or divided by
+declared reference scales. Stationarity and complementarity need their
+own scales. A small step does not replace these tests.</p>
+<p>Evaluate the residuals after the multiplier update. Projection to
+zero can change stationarity even when the inner solve is exact. For
+example,</p>
+<p><span class="math display">
+\begin{aligned}
+f(z)&amp;=\tfrac12(z+2)^2,\quad g(z)=z\le0,
+\quad \lambda=\mu=1,\\
+A&#39;(z)&amp;=3z+3=0\quad\Longrightarrow\quad z&#39;=-1,\\
+\lambda_{\mathrm{new}}&amp;=\max(1-2,0)=0,
+\qquad L&#39;(z&#39;;\lambda_{\mathrm{new}})=1.
+\end{aligned}
+\tag{3.26}
+</span></p>
+<p>The point is feasible and complementary, but the updated gradient
+balance fails. An inner success is therefore insufficient. A solved
+status means that the declared residuals pass their numerical
+tolerances. It does not certify global optimality or safety of a
+physical motion.</p>
+<h3 id="follow-joint-updates-and-multiplier-updates-separately">3.6
+Follow joint updates and multiplier updates separately</h3>
+<p>The hard-target Panda program provides a complete example. Its
+posture reference stays fixed, its three target rows are in meters, and
+its fourteen joint-bound rows are in radians. Separate weights put the
+added terms in the posture cost’s squared-radian units:</p>
+<p><span class="math display">
+\begin{aligned}
+\mu_h&amp;=1000\ \mathrm{rad^2/m^2},\qquad \mu_g=100,\\
+A&amp;=f+\boldsymbol\kappa^\top\mathbf h+\mu_h\|\mathbf h\|^2\\
+&amp;\quad+\sum_{i\in\mathcal I}(\lambda_i g_i+\mu_g g_i^2).
+\end{aligned}
+\tag{3.27}
+</span></p>
+<p>Each inner update changes the joints while multipliers stay fixed.
+Each outer update changes the multipliers while the joints stay fixed.
+Figure 3.3 plots both types of event. The iteration axis counts
+numerical updates, not physical time.</p>
+<figure>
+<img src="lectures/04-D1-constraints-and-komo/fig/drake-ik-nlp-al.png"
+style="width:95.0%"
+alt="Figure 3.3. The hard-target Panda solves reduce equality error while learning target and joint-bound multipliers. A multiplier update changes the stored balance at a fixed configuration." />
+<figcaption aria-hidden="true">Figure 3.3. The hard-target Panda solves
+reduce equality error while learning target and joint-bound multipliers.
+A multiplier update changes the stored balance at a fixed
+configuration.</figcaption>
+</figure>
+<p>Run A starts at the preferred posture, with zero posture cost and
+0.224 meters of target error. Reaching the target must increase the
+cost. After the first inner solve, task distance is about 1.14
+millimeters. The next inner solve reduces it to about 7.83 micrometers
+because the outer update has retained the correcting target multiplier.
+Three outer updates and sixteen accepted joint updates reach the stated
+tolerances, with final posture cost 0.209 squared radians. No bound
+multiplier becomes positive.</p>
+<p>Run B uses the target behind the robot and a small asymmetric start,
+while keeping the same ready-posture objective. Its first accepted
+proposal crosses two lower bounds. The next local model includes those
+violated rows even though their multipliers are still zero. At the first
+outer update, joint 2 remains about 0.302 degrees beyond its lower bound
+and its stored multiplier becomes 1.054 radians. Continued inner and
+outer updates bring the violation within tolerance and the multiplier
+toward 1.053 radians. The final cost is 1.499 squared radians. The run
+uses fifty-four accepted joint updates, five outer updates and three
+rejected trials.</p>
+<p>Both runs check maximum equality error below <span
+class="math inline">10^{-6}</span> meters, positive bound violation
+below <span class="math inline">10^{-6}</span> radians, stationarity
+below <span class="math inline">10^{-6}</span> radians and
+complementarity below <span class="math inline">10^{-8}</span> squared
+radians. Intermediate configurations can violate hard constraints
+because those constraints define the requested answer rather than a
+feasible trajectory for the optimizer’s search. These iterates cannot be
+sent directly as robot commands.</p>
+<p><strong>Self-study check.</strong> Can a feasible inequality with
+positive multiplier be omitted from the next inner problem? Does a
+multiplier update move the arm? Does an exact IK answer determine a safe
+motion to it?</p>
+<p><strong>Answer.</strong> The stated inclusion rule retains that row.
+A multiplier update holds the configuration fixed. An IK answer supplies
+one configuration; interpolation may cross an obstacle or violate a
+nonlinear equality, and execution still needs timing and feedback.</p>
+<p>To choose a motion, the next chapter makes a sequence of
+configurations the decision variable. Neighboring configurations can
+contribute smoothness costs, and task and collision features can be
+imposed along the sequence. The nonlinear-program form and local solver
+machinery carry over, while temporal differences and validation between
+knots become new requirements.</p>
+<div style="break-before: page">
+
+</div>
+<h2 id="appendix-a.-supporting-calculations-and-self-study">Appendix A.
+Supporting calculations and self-study</h2>
+<p>The main reading develops the methods needed to formulate and check a
+configuration problem. The following calculations give additional
+numerical detail. The <a href="chapter-02-detailed.html">detailed
+reference</a> develops the full derivations and further examples.</p>
+<h3 id="a.1-check-the-opening-position-update">A.1 Check the opening
+position update</h3>
+<p>The planar arm has a fixed world-frame base. Its first joint rotates
+the first link, and its second joint rotates the second link relative to
+the first. With lengths 0.4 m and 0.3 m, its position map and starting
+task are</p>
+<p><span class="math display">
+\begin{aligned}
+\varphi(\mathbf q)&amp;=\begin{bmatrix}
+0.4\cos q_1+0.3\cos(q_1+q_2)\\
+0.4\sin q_1+0.3\sin(q_1+q_2)
+\end{bmatrix}\ \mathrm m,\\
+\mathbf q^{(0)}&amp;=\begin{bmatrix}30^\circ\\45^\circ\end{bmatrix},
+\qquad \mathbf y^*=\begin{bmatrix}0.5\\0.2\end{bmatrix}\ \mathrm m.
+\end{aligned}
+\tag{A.1}
+</span></p>
+<p>The trigonometric functions and their derivatives use radians.
+Evaluating the position Jacobian and residual at the start gives</p>
+<p><span class="math display">
+\begin{aligned}
+\mathbf J^{(0)}&amp;\approx
+\begin{bmatrix}-0.490&amp;-0.290\\0.424&amp;0.078\end{bmatrix}
+\ \mathrm{m/rad},\\
+\mathbf r^{(0)}&amp;\approx\begin{bmatrix}-0.076\\0.290\end{bmatrix}
+\ \mathrm m.
+\end{aligned}
+\tag{A.2}
+</span></p>
+<p>Solve the original linear system before evaluating the new FK
+position. The proposed increment and its checked result are</p>
+<p><span class="math display">
+\begin{aligned}
+\boldsymbol\delta&amp;\approx\begin{bmatrix}-0.920\\1.293\end{bmatrix}
+\ \mathrm{rad},\\
+\varphi(\mathbf q^{(0)}+\boldsymbol\delta)
+&amp;\approx\begin{bmatrix}0.336\\0.144\end{bmatrix}\ \mathrm m.
+\end{aligned}
+\tag{A.3}
+</span></p>
+<p>The remaining distance is about 0.174 m. Figure A.1 separates the
+predicted tip position from the FK result. Appendix B identifies the
+numerical calculation, which retains the precision needed for the linear
+solve.</p>
+<figure>
+<img
+src="lectures/03-reading-optimization-planning-and-control/fig/local_prediction_vs_fk.png"
+style="width:95.0%"
+alt="Figure A.1. The local equation predicts a target hit. Evaluating the proposed joint configuration with nonlinear forward kinematics leaves a position error. The two panels show computed configurations rather than a validated motion between them." />
+<figcaption aria-hidden="true">Figure A.1. The local equation predicts a
+target hit. Evaluating the proposed joint configuration with nonlinear
+forward kinematics leaves a position error. The two panels show computed
+configurations rather than a validated motion between them.</figcaption>
+</figure>
+<h3 id="a.2-find-the-bowls-exact-armijo-interval">A.2 Find the bowl’s
+exact Armijo interval</h3>
+<p>For the bowl start, the negative gradient has components minus six
+and minus forty. Substitution into the quadratic gives an exact cost
+along this fixed direction:</p>
+<p><span class="math display">
+\begin{aligned}
+f(\mathbf z^{(0)}+\alpha\mathbf d)
+&amp;=(3-6\alpha)^2+10(2-40\alpha)^2\\
+&amp;=49-1636\alpha+16036\alpha^2.
+\end{aligned}
+\tag{A.4}
+</span></p>
+<p>The Armijo right side with decrease fraction 0.01 is</p>
+<p><span class="math display">
+49-16.36\alpha.
+</span></p>
+<p>For a positive scale, subtracting this threshold and dividing by the
+scale shows exactly when the test passes:</p>
+<p><span class="math display">
+16036\alpha\le1619.64,
+\qquad 0&lt;\alpha\le\frac{40491}{400900}\approx0.10100025.
+\tag{A.5}
+</span></p>
+<p>This explains why trial 0.125 fails and 0.0625 passes. The extra
+digits in the cutoff distinguish the exact passing interval from the
+fixed-scale stability boundary of 0.1. They are different questions: one
+accepts a single update from this point, and the other describes
+repeated use of one scale on the bowl.</p>
+<p>The static comparison in Figure A.2 displays the cost, tangent and
+sufficient- decrease threshold. Each rejected trial leaves the current
+point and direction fixed. A new accepted point requires a new
+gradient.</p>
+<figure>
+<img src="lectures/03-D1-optimization-1/fig/armijo.png"
+style="width:95.0%"
+alt="Figure A.2. Armijo compares actual cost with a required fraction of the tangent’s predicted decrease. The trial at 0.125 is above the threshold; the trial at 0.0625 is below it. The larger rejected trials lie outside the displayed cost range." />
+<figcaption aria-hidden="true">Figure A.2. Armijo compares actual cost
+with a required fraction of the tangent’s predicted decrease. The trial
+at 0.125 is above the threshold; the trial at 0.0625 is below it. The
+larger rejected trials lie outside the displayed cost
+range.</figcaption>
+</figure>
+<h3 id="a.3-relate-the-normal-equations-to-descent">A.3 Relate the
+normal equations to descent</h3>
+<p>An exact Gauss–Newton step satisfies the normal equations. Multiply
+their two sides by the step’s transpose, and use the task-cost gradient
+from the chain rule:</p>
+<p><span class="math display">
+\begin{aligned}
+\mathbf J^\top\mathbf J\boldsymbol\delta
+&amp;=-\mathbf J^\top\mathbf r,\\
+\nabla f^\top\boldsymbol\delta
+&amp;=-\boldsymbol\delta^\top\mathbf J^\top\mathbf J\boldsymbol\delta
+=-\|\mathbf J\boldsymbol\delta\|^2.
+\end{aligned}
+\tag{A.6}
+</span></p>
+<p>The slope is negative whenever the cost gradient is nonzero. To see
+the exception, suppose the predicted task change is zero. Then the left
+side of the normal equations is zero, which forces the cost gradient to
+be zero as well. A nonzero gradient therefore gives a nonzero predicted
+task change and a strictly negative slope.</p>
+<p>For a positively damped step, the same multiplication gives</p>
+<p><span class="math display">
+\nabla f^\top\boldsymbol\delta
+=-\|\mathbf J\boldsymbol\delta\|^2-\rho\|\boldsymbol\delta\|^2.
+\tag{A.7}
+</span></p>
+<p>This is also negative for a nonzero step. The same substitution gives
+the decrease predicted by the undamped model (2.7), which the LM ratio
+(2.14) needs. Expand the model’s change and replace <span
+class="math inline">\mathbf J^\top\mathbf r</span> by <span
+class="math inline">-(\mathbf J^\top\mathbf J+\rho\mathbf
+I)\boldsymbol\delta</span>:</p>
+<p><span class="math display">
+\begin{aligned}
+m(\mathbf 0)-m(\boldsymbol\delta)
+&amp;=-\mathbf r^\top\mathbf J\boldsymbol\delta-\tfrac12\lVert\mathbf
+J\boldsymbol\delta\rVert^2\\
+&amp;=\lVert\mathbf
+J\boldsymbol\delta\rVert^2+\rho\lVert\boldsymbol\delta\rVert^2-\tfrac12\lVert\mathbf
+J\boldsymbol\delta\rVert^2
+=\tfrac12\lVert\mathbf
+J\boldsymbol\delta\rVert^2+\rho\lVert\boldsymbol\delta\rVert^2.
+\end{aligned}
+</span></p>
+<p>It is positive for every nonzero step when <span
+class="math inline">\rho&gt;0</span>. These identities establish descent
+directions, while the acceptance test checks the finite nonlinear
+update. A linear solve, a descent direction and an accepted full step
+are three distinct claims.</p>
+<h3 id="a.4-check-the-main-distinctions">A.4 Check the main
+distinctions</h3>
+<ol type="1">
+<li><strong>A local model predicts zero error, but FK reports a
+miss.</strong> Which calculation is wrong? Neither calculation must be
+wrong. The local map is approximate over a finite joint change. The
+checked FK position determines the actual task error.</li>
+<li><strong>The gradient is zero while task error remains.</strong> Must
+the target be unreachable? No. The stretched-arm example has a reachable
+target and zero local step. A geometric reachability argument or another
+solution is separate evidence.</li>
+<li><strong>A task weight increases from one to four.</strong> What
+changes in its residual contribution? The squared error receives four
+times the weight. Scaling that residual by two before squaring produces
+the same contribution.</li>
+<li><strong>A proposed step penalty and a posture cost use the same
+matrix.</strong> Do they minimize the same objective? Their references
+differ. The step penalty is rebuilt around the current iterate. The
+posture objective keeps its reference fixed throughout the solve.</li>
+<li><strong>LM increases its damping after a poor trial, and a line
+search halves its scale after a failed trial.</strong> Do the two
+responses do the same thing? No. A line search keeps one direction and
+chooses a step length along it; after a failed trial, backtracking
+shortens that length. Changing the damping changes the solution of the
+linear system, so the direction can turn toward the negative gradient as
+well as become shorter.</li>
+<li><strong>A redundant arm’s undamped least-squares model has many
+minimizing steps.</strong> Does setting the step penalty to zero select
+the pseudoinverse step? No. With no penalty every minimizer solves the
+singular normal equations. Choosing the one with the smallest joint
+change is an additional rule. Positive damping instead makes the step
+unique, and its step approaches the pseudoinverse step as the damping
+approaches zero.</li>
+<li><strong>L-BFGS and conjugate gradient propose parallel directions on
+the Rosenbrock example.</strong> Are the two methods equivalent?
+No. Both directions have zero inner product with the newest gradient
+change after an exact line search, and in two dimensions that fixes the
+direction. With more variables, or with inexact line searches, they
+generally differ.</li>
+<li><strong>A trial lies past the minimum along its line and the cost
+already rises there.</strong> Can strong Wolfe accept it? Yes, if the
+uphill slope’s size is at most the fraction <span
+class="math inline">c_2</span> of the initial slope’s size and Armijo
+holds. Strong Wolfe bounds the slope; it does not require the exact line
+minimum.</li>
+<li><strong>An inequality has zero value.</strong> Must its multiplier
+be positive? No. The target on the disc boundary has zero cost gradient
+and can have a zero multiplier. A negative inequality value, however,
+requires a zero multiplier at a KKT point.</li>
+<li><strong>The inner gradient is small.</strong> Can the outer solver
+stop immediately? It must still measure feasibility, updated Lagrangian
+stationarity, complementarity and multiplier signs. In particular,
+projecting a multiplier can change the gradient balance.</li>
+<li><strong>Every waypoint is feasible.</strong> Is the motion between
+waypoints safe? A nonlinear constraint can fail between them. Timing,
+input limits, tracking error and contact introduce additional
+requirements.</li>
+</ol>
+<h3 id="a.5-follow-damping-along-the-jacobians-singular-directions">A.5
+Follow damping along the Jacobian’s singular directions</h3>
+<p>Section 2.3 states that damping suppresses large steps along weak
+motion directions and slows the final corrections. The singular
+directions of the Jacobian make both effects exact. Take a unit joint
+direction and its paired unit task direction:</p>
+<p><span class="math display">
+\mathbf J\mathbf v_k=\sigma_k\mathbf u_k,
+\qquad
+\mathbf J^\top\mathbf u_k=\sigma_k\mathbf v_k.
+\tag{A.8}
+</span></p>
+<p>The index <span class="math inline">k</span> labels paired motion
+directions. These directions can be chosen as orthonormal sets. The
+nonnegative gain <span class="math inline">\sigma_k</span> is a singular
+value, measured in meters per radian here. Combining the two equations
+of (A.8) gives <span class="math inline">\mathbf J^\top\mathbf J\mathbf
+v_k=\sigma_k^2\mathbf v_k</span>. Multiplying the damped system (2.12)
+by <span class="math inline">\mathbf v_k^\top</span> and using the
+symmetry of its matrix therefore gives</p>
+<p><span class="math display">
+(\sigma_k^2+\rho)\,\mathbf v_k^\top\boldsymbol\delta
+=-\mathbf v_k^\top\mathbf J^\top\mathbf r
+=-\sigma_k\,\mathbf u_k^\top\mathbf r,
+</span></p>
+<p>so that</p>
+<p><span class="math display">
+\mathbf v_k^\top\boldsymbol\delta
+=-\frac{\sigma_k}{\sigma_k^2+\rho}\,
+\mathbf u_k^\top\mathbf r.
+\tag{A.9}
+</span></p>
+<p>Without damping, a small nonzero gain divides the task error and can
+demand a large joint change. Positive damping suppresses that response
+as the gain approaches zero. A zero-gain direction receives no
+task-driven increment.</p>
+<p>The same calculation predicts how much residual remains after a full
+step when the residual map is linear:</p>
+<p><span class="math display">
+\mathbf u_k^\top\mathbf r_{\mathrm{new}}
+=\frac{\rho}{\sigma_k^2+\rho}\,
+\mathbf u_k^\top\mathbf r.
+\tag{A.10}
+</span></p>
+<p>The factor lies between zero and one. Large fixed damping leaves a
+larger fraction and slows progress. On the Panda’s stretched run of
+Section 2.6, the weakest gain near the solution is about 0.026 m/rad and
+the damping is <span class="math inline">10^{-3}</span>, so the factor
+is about 0.60, matching the observed decrease per update. These factors
+describe local behavior near a regular solution, such as the Panda’s
+stretched run, rather than a global rate. At the reach boundary of the
+two-link arm, the weakest gain is zero and the residual lies along that
+direction, so this linear analysis no longer applies. The boundary run
+of Section 2.5 still shows the slowdown it suggests: fixed positive
+damping is very slow there, while undamped Gauss–Newton converges with a
+factor of about one quarter per update. The <a
+href="chapter-02-detailed.html#penalize-a-large-proposed-step">detailed
+reference</a> develops these damping factors and their bounds
+further.</p>
+<h3
+id="a.6-optional-reference-update-formulas-for-sections-2.7-and-2.8">A.6
+Optional reference: update formulas for Sections 2.7 and 2.8</h3>
+<p>Section 2.7 described how BFGS, L-BFGS and nonlinear conjugate
+gradient reuse earlier moves. This subsection gives their update rules
+for readers who want to implement them. The symbols are those of (2.24):
+the accepted move <span class="math inline">\mathbf s</span>, the
+gradient change <span class="math inline">\mathbf y</span> and the
+gradient <span class="math inline">\mathbf g</span>.</p>
+<p>BFGS replaces its inverse-Hessian estimate after each accepted move.
+The new estimate is</p>
+<p><span class="math display">
+\mathbf B_{\mathrm{new}}^{-1}
+=\Big(\mathbf I-\frac{\mathbf s\mathbf y^\top}{\mathbf y^\top\mathbf
+s}\Big)
+\mathbf B^{-1}
+\Big(\mathbf I-\frac{\mathbf y\mathbf s^\top}{\mathbf y^\top\mathbf
+s}\Big)
++\frac{\mathbf s\mathbf s^\top}{\mathbf y^\top\mathbf s}.
+\tag{A.11}
+</span></p>
+<p>Multiplying (A.11) by <span class="math inline">\mathbf y</span>
+shows that it satisfies the secant condition of Section 2.7. The right
+factor sends <span class="math inline">\mathbf y</span> to zero,</p>
+<p><span class="math display">
+\Big(\mathbf I-\frac{\mathbf y\mathbf s^\top}{\mathbf y^\top\mathbf
+s}\Big)\mathbf y
+=\mathbf y-\mathbf y\,\frac{\mathbf s^\top\mathbf y}{\mathbf
+y^\top\mathbf s}=\mathbf 0,
+</span></p>
+<p>so only the last term remains, and it gives <span
+class="math inline">\mathbf s</span>. When <span
+class="math inline">\mathbf s^\top\mathbf y&gt;0</span> and the old
+estimate is positive definite, the new estimate is positive definite as
+well. Storing it needs the square of the number of variables.</p>
+<p>L-BFGS keeps the last <span class="math inline">M</span> pairs <span
+class="math inline">(\mathbf s_k,\mathbf y_k)</span>, numbered <span
+class="math inline">k=1,\ldots,M</span> from oldest to newest, and never
+forms the matrix. It applies (A.11) once per stored pair, starting from
+the scalar estimate <span class="math inline">\gamma</span> of (2.26)
+times the identity. The following steps compute the direction <span
+class="math inline">-\mathbf B^{-1}\mathbf g</span> with one working
+vector <span class="math inline">\mathbf w</span>:</p>
+<ol type="1">
+<li><p>Set <span class="math inline">\mathbf w</span> to the current
+gradient <span class="math inline">\mathbf g</span>.</p></li>
+<li><p>For <span class="math inline">k</span> from <span
+class="math inline">M</span> down to 1, compute the scalar <span
+class="math inline">a_k</span> below and replace <span
+class="math inline">\mathbf w</span> by <span
+class="math inline">\mathbf w-a_k\mathbf y_k</span>:</p>
+<p><span class="math display">
+a_k=\frac{\mathbf s_k^\top\mathbf w}{\mathbf y_k^\top\mathbf s_k}.
+</span></p></li>
+<li><p>Multiply <span class="math inline">\mathbf w</span> by <span
+class="math inline">\gamma</span>, computed from the newest
+pair.</p></li>
+<li><p>For <span class="math inline">k</span> from 1 up to <span
+class="math inline">M</span>, compute the scalar <span
+class="math inline">b_k</span> below and replace <span
+class="math inline">\mathbf w</span> by <span
+class="math inline">\mathbf w+(a_k-b_k)\mathbf s_k</span>:</p>
+<p><span class="math display">
+b_k=\frac{\mathbf y_k^\top\mathbf w}{\mathbf y_k^\top\mathbf s_k}.
+</span></p></li>
+<li><p>Return the direction <span class="math inline">\mathbf d=-\mathbf
+w</span>.</p></li>
+</ol>
+<p>Each pass costs a multiple of <span class="math inline">M</span>
+times the number of variables. With one stored pair after an exact line
+search, the first loop gives <span class="math inline">a_1=0</span>, and
+the steps reduce to (2.26).</p>
+<p>Nonlinear conjugate gradient computes its weight in (2.27) from the
+gradient change. The Polak–Ribière rule used in Section 2.7 replaces
+negative values by zero:</p>
+<p><span class="math display">
+\beta=\max\!\Big(0,\ \frac{\mathbf g_{\mathrm{new}}^\top\mathbf
+y}{\mathbf g_{\mathrm{old}}^\top\mathbf g_{\mathrm{old}}}\Big).
+\tag{A.12}
+</span></p>
+<p>If the resulting direction is not downhill, the method restarts from
+the negative gradient. On a positive-definite quadratic with exact line
+searches, the successive directions satisfy <span
+class="math inline">\mathbf d_{\mathrm{new}}^\top\mathbf H\,\mathbf
+d_{\mathrm{previous}}=0</span>, a property called conjugacy, which gives
+the finite-step result of Section 2.7.</p>
+<p>A line search that returns a strong-Wolfe step works in two stages.
+In the first stage it increases the trial scale, for example by
+doubling, until one of three events occurs. If a trial fails Armijo or
+costs more than the previous trial, an acceptable scale lies between the
+two, and the search moves to the second stage. If a trial satisfies the
+strong-Wolfe slope condition, the search returns it. If the slope along
+the line has become uphill, an acceptable scale lies between this trial
+and the previous one, and the search again moves to the second stage.
+The second stage repeatedly tests the midpoint of the bracketing
+interval and keeps the half that still contains an acceptable scale,
+using the cost and the slope at the midpoint. For a cost that is
+continuously differentiable and bounded below along a descent direction,
+and for constants <span class="math inline">0&lt;c_1&lt;c_2&lt;1</span>,
+an acceptable scale exists, and the bracket keeps one inside it. No
+fixed number of trials is promised, so implementations also stop after a
+trial budget.</p>
+<h2 id="appendix-b.-run-the-numerical-examples">Appendix B. Run the
+numerical examples</h2>
+<p>The small calculations use Python 3 and NumPy. The Panda calculations
+also use Drake, which provides robot kinematics and numerical solvers.
+The <a href="README.html#python">environment guide</a> describes the
+supported authoring setup. The paths below are relative to the
+material’s top-level directory. Its existing Python environment can be
+used as shown, or replaced with an environment containing the required
+packages.</p>
+<h3 id="b.1-reproduce-the-opening-and-gradient-calculations">B.1
+Reproduce the opening and gradient calculations</h3>
+<p>Run the two complete calculations:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="va">reading</span><span class="op">=</span>lectures/03-reading-optimization-planning-and-control</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">.venv/bin/python</span> <span class="st">&quot;</span><span class="va">$reading</span><span class="st">/code/local_step.py&quot;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">.venv/bin/python</span> <span class="st">&quot;</span><span class="va">$reading</span><span class="st">/code/jacobian_transpose.py&quot;</span></span></code></pre></div>
+<p>In <a
+href="lectures/03-reading-optimization-planning-and-control/code/local_step.py">local_step.py</a>,
+<code>phi</code> computes FK, <code>jac</code> computes its Jacobian,
+and <code>example</code> builds the local position update and checks its
+result. In <a
+href="lectures/03-reading-optimization-planning-and-control/code/jacobian_transpose.py">jacobian_transpose.py</a>,
+<code>example</code> checks the chain-rule gradient against central
+differences, evaluates its first Armijo trial and examines the
+stationary stretched arm.</p>
+<p>The gradient check probes one coordinate on either side of the
+current point. Their difference divided by twice the probe size
+approximates the partial derivative. That calculation checks the
+implementation independently of its analytic chain-rule formula. Probe
+size and machine precision limit the agreement; an exact zero
+discrepancy is not the goal.</p>
+<h3 id="b.2-compare-bowl-updates-and-search-outcomes">B.2 Compare bowl
+updates and search outcomes</h3>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="va">reading</span><span class="op">=</span>lectures/03-reading-optimization-planning-and-control</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">.venv/bin/python</span> <span class="st">&quot;</span><span class="va">$reading</span><span class="st">/code/bowl_derivatives.py&quot;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">.venv/bin/python</span> <span class="st">&quot;</span><span class="va">$reading</span><span class="st">/code/gradient_descent.py&quot;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="ex">.venv/bin/python</span> <span class="st">&quot;</span><span class="va">$reading</span><span class="st">/code/armijo.py&quot;</span></span></code></pre></div>
+<p>The first script checks the bowl’s slopes, curvature and local-model
+values. The second reproduces fixed-scale recurrences and coordinate
+factors. The third prints trial scales, evaluated costs, thresholds and
+acceptance decisions. It also constructs a scale-floor example. A strict
+descent direction has a passing small trial mathematically, while a
+finite search can stop before reaching it.</p>
+<p>The broader <a
+href="lectures/03-D1-optimization-1/code/gauss_newton_ik.py">two-link IK
+calculation</a> contains <code>run_gn</code>, <code>run_gd</code> and
+<code>gn_step</code>. Its numerical examples compare raw, damped and
+protected steps:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="va">lecture</span><span class="op">=</span>lectures/03-D1-optimization-1</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">.venv/bin/python</span> <span class="st">&quot;</span><span class="va">$lecture</span><span class="st">/code/gauss_newton_ik.py&quot;</span></span></code></pre></div>
+<p>The printed letter labels identify the examples in that script.
+Example (f) prints the five undamped updates of Section 2.5. Example (g)
+prints the first damped steps, the fixed-damping and gradient-descent
+counts, the capped gradient-descent count and the adaptive LM run with
+its damping sequence and its number of rejected trials. Examples (j) and
+(k) print the boundary and beyond-reach runs, (m) the clipped elbow and
+(p) the straight arm and the bent starts. Its <code>run_gn</code>
+stopping policy is the one described in §2.5, and <code>run_lm</code>
+implements the adaptive rule of §2.3 with the thresholds stated there.
+Interactive modules can use different scale floors or update budgets, so
+compare the policy as well as the final number.</p>
+<h3
+id="b.3-reproduce-the-history-based-directions-and-the-line-search-bands">B.3
+Reproduce the history-based directions and the line-search bands</h3>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="va">lecture</span><span class="op">=</span>lectures/03-D1-optimization-1</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">.venv/bin/python</span> <span class="st">&quot;</span><span class="va">$lecture</span><span class="st">/code/history_directions.py&quot;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">.venv/bin/python</span> <span class="st">&quot;</span><span class="va">$lecture</span><span class="st">/code/make_solver_overview.py&quot;</span></span></code></pre></div>
+<p>The <a
+href="lectures/03-D1-optimization-1/code/history_directions.py">history-direction
+calculation</a> computes and checks the numbers behind Figures 2.4 and
+2.5; the Deck 04 figure script <code>make_figures.py</code> in the same
+folder draws them. Its <code>trace_lbfgs</code> and
+<code>trace_cg</code> functions take three accepted updates from the
+Rosenbrock start with the same exact line search,
+<code>exact_line_search</code>. The functions
+<code>lbfgs_direction</code>, <code>one_pair_rule</code> and
+<code>cg_direction</code> construct the directions of (2.26) and (2.27),
+and the script asserts that every stored pair has positive curvature and
+that every direction is downhill. Its printout gives the
+conjugate-gradient construction of Figure 2.5:</p>
+<p><span class="math display">
+\begin{aligned}
+-\mathbf g_{\mathrm{new}}&amp;=(22.0,\ 11.8),&amp;
+\mathbf d_{\mathrm{previous}}&amp;=(92.3,\ -173.0),\\
+\beta&amp;=0.465,&amp;
+\beta\,\mathbf d_{\mathrm{previous}}&amp;=(42.9,\ -80.4),\\
+\mathbf d_{\mathrm{new}}&amp;=(65.0,\ -68.7),&amp;
+\mathbf g_{\mathrm{new}}^\top\mathbf d_{\mathrm{new}}&amp;=-624.
+\end{aligned}
+</span></p>
+<p>The previous step is that direction multiplied by the line-search
+scale <span class="math inline">1.56\times10^{-3}</span>. Its
+<code>trace_bfgs</code> function reproduces the explorer’s BFGS run with
+the strong-Wolfe search, <code>wolfe_line_search</code>. The <a
+href="lectures/03-D1-optimization-1/code/make_solver_overview.py">line-search
+figure script</a> draws Figure 2.6. Running it rewrites that figure and
+checks the three classified trial scales of the caption.</p>
+<h3 id="b.4-reproduce-constraints-and-multiplier-updates">B.4 Reproduce
+constraints and multiplier updates</h3>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="va">lecture</span><span class="op">=</span>lectures/04-D1-constraints-and-komo</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">.venv/bin/python</span> <span class="st">&quot;</span><span class="va">$lecture</span><span class="st">/code/constrained_ik.py&quot;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">.venv/bin/python</span> <span class="st">&quot;</span><span class="va">$lecture</span><span class="st">/code/check_solvers.py&quot;</span></span></code></pre></div>
+<p>In <a
+href="lectures/04-D1-constraints-and-komo/code/constrained_ik.py">constrained_ik.py</a>,
+the functions <code>penalty_method</code>, <code>barrier_method</code>
+and <code>augmented_lagrangian</code> use the same arm and elbow
+restriction. Compare their allowed-side behavior, violation and
+multiplier estimates. The barrier’s default schedule starts at 0.01.
+Changing its start to 0.1 is a different local-solver experiment.</p>
+<p>The <a
+href="lectures/04-D1-constraints-and-komo/code/check_solvers.py">solver
+checks</a> compare feasibility, stationarity and complementarity
+explicitly. In particular, inspect the projected-multiplier scalar case
+from §3.5 rather than treating an inner solve’s termination as outer
+success.</p>
+<h3 id="b.5-reproduce-the-panda-examples">B.5 Reproduce the Panda
+examples</h3>
+<p>Run the print modes to obtain the numerical results without a
+graphical viewer:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">.venv/bin/python</span> drake/02-gauss-newton-ik/gn_ik_panda.py</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">.venv/bin/python</span> drake/03-ik-as-nlp/ik_nlp_panda.py</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">.venv/bin/python</span> drake/05-ik-nlp-al/ik_nlp_al_panda.py</span></code></pre></div>
+<p>The <a href="drake/02-gauss-newton-ik/gn_ik_panda.py">first
+program</a> compares nearby and far targets, local predictions and
+actual FK, and it records the runs of Figure 2.3. The reading’s <a
+href="lectures/03-reading-optimization-planning-and-control/code/panda_runs_figure.py">figure
+script</a> imports those runs and draws the figure at reading width. Its
+printout also gives the chain-length reachability bound. The <a
+href="drake/03-ik-as-nlp/ik_nlp_panda.py">second</a> formulates
+exact-target posture optimization and inspects active constraints and
+multipliers. Its sensitivity checks perturb the target and one active
+lower bound; their scope should be kept distinct from other printed
+multiplier conversions. The <a
+href="drake/05-ik-nlp-al/ik_nlp_al_panda.py">third</a> records both rail
+replay runs. Its <code>al_ik_nlp</code> function separates inner joint
+changes from outer multiplier changes, and its <code>--selftest</code>
+mode checks the result against independent solver results and the saved
+trace.</p>
+<p>Read the task point, world frame, objective, bounds, starting posture
+and stopping tolerances before comparing outputs. Equal formulations can
+still produce different local solutions from different starts. Solver
+agreement at one solution is useful evidence about that candidate, with
+the limits of a local calculation.</p>
+<h2
+id="appendix-c.-explore-the-demonstrations-and-continue-reading">Appendix
+C. Explore the demonstrations and continue reading</h2>
+<p>The figures carry the main observations without a live demonstration.
+The following optional visits let the reader reveal a prediction, change
+a target or distinguish joint and multiplier updates. They use the same
+examples as the main argument. The optimization-explorer visits in
+C.2–C.4 and the Panda replays in C.6 run through the course’s
+demonstration launcher; the <a href="demos.html">demonstration guide</a>
+gives the access procedure. The explorer labels the decision vector
+<span class="math inline">\mathbf x</span> and the damping <span
+class="math inline">\lambda</span>; they are this chapter’s <span
+class="math inline">\mathbf z</span> and <span
+class="math inline">\rho</span>.</p>
+<h3 id="c.1-reveal-a-local-prediction-before-checking-fk">C.1 Reveal a
+local prediction before checking FK</h3>
+<p>The <a
+href="modules/gauss-newton-ik/index.html?view=local-step">position-update
+view</a> opens the original two-link start and target. Predict where its
+linear equation places the tip. Press <strong>1. Predict with
+J</strong>. The predicted point coincides with the target while the
+configuration remains fixed. Press <strong>2. Check with FK</strong> to
+reveal the proposed arm and its remaining error. Press
+<strong>Reset</strong> to repeat the comparison.</p>
+<p>The observed miss is about 0.174 m. The equation was solved locally;
+its prediction did not turn the nonlinear FK map into a linear one.
+Figure A.1 provides the same comparison when the interaction is
+unavailable.</p>
+<p>The <a
+href="modules/gauss-newton-ik/index.html?y=0.5,0.2&amp;method=gd">gradient-descent
+view</a> uses the same initial task with a different proposal rule. One
+<strong>Step</strong> reduces distance from about 0.300 m to 0.210 m. It
+illustrates why the direction rule and the acceptance test have separate
+roles.</p>
+<h3 id="c.2-change-step-sizes-and-curvature-on-test-functions">C.2
+Change step sizes and curvature on test functions</h3>
+<p>The <a
+href="modules/opt-explorer/index.html?tab=concepts&amp;fn=elongated&amp;preset=classic-zig-zag&amp;method=gd&amp;ls=off&amp;alpha=0.08&amp;arrows=off">step-size
+view</a> opens the bowl of (1.3) with gradient descent at a fixed scale
+of about 0.08. It starts at <span class="math inline">(-2.5, 0.8)</span>
+instead of <span class="math inline">(3, 2)</span>, so compare the
+behavior with Figure 1.2 rather than the coordinates. Predict whether
+the oscillation across the narrow direction shrinks. Press <strong>+10
+Steps</strong>. The oscillation shrinks, because its factor is about
+<span class="math inline">-0.6</span>. Then set the slider to 0.100,
+press <strong>Reset</strong> and repeat. The oscillation now keeps its
+size, as the factor <span class="math inline">-1</span> of (1.8)
+predicts. Figure 1.2 shows both behaviors without the interaction.</p>
+<p>The <a
+href="modules/opt-explorer/index.html?tab=concepts&amp;fn=elongated&amp;preset=classic-zig-zag&amp;method=gd&amp;ls=armijo&amp;alpha=1&amp;arrows=on">Armijo
+view</a> starts the search from scale one. Predict whether the full
+trial passes. Press <strong>Step</strong> and read <strong>α
+used</strong> under <strong>Diagnostics</strong>. It shows 6.250e-2,
+which is 0.0625, the first accepted scale of §1.4. The full trial fails
+and halving finds an acceptable one. The explorer’s Armijo constant and
+start differ from the reading’s, so compare accepted scales rather than
+thresholds. Figure A.2 shows the same search without the
+interaction.</p>
+<p>The <a
+href="modules/opt-explorer/index.html?tab=concepts&amp;fn=quartic-saddle&amp;preset=near-the-maximum&amp;method=newton&amp;ls=off&amp;arrows=off">Newton
+view</a> uses a different example from the saddle of (2.3): a quartic
+cost with a maximum at the origin, starting at <span
+class="math inline">(0.1, 0.1)</span>. Predict whether the raw Newton
+step lowers the cost. Press <strong>Step</strong> once. The point lands
+near <span class="math inline">(-0.002, -0.002)</span>, and the cost
+rises toward the maximum. Tick <strong>Regularize Hessian</strong>,
+press <strong>Reset</strong> and press <strong>Step</strong> again. The
+point now lands near <span class="math inline">(0.165, 0.165)</span>,
+and the cost falls; the readout reports the damping it used, 10. The
+saddle calculation of (2.3)–(2.4) makes the same point without the
+interaction.</p>
+<h3
+id="c.3-compare-inverse-kinematics-update-rules-on-the-lecture-arm">C.3
+Compare inverse-kinematics update rules on the lecture arm</h3>
+<p>The <a
+href="modules/opt-explorer/index.html?tab=trajectory&amp;preset=ik">lecture-arm
+view</a> opens the two-link arm of Section 1.1, paused at its start and
+target, with no posture cost or obstacle. Predict which weights
+discourage elbow motion most. The four numbered row buttons under
+<strong>Arm and goal</strong> are the four rows of the step-rule table
+in §2.4. Each button restarts from the start; press <strong>Gauss-Newton
+step</strong> once after each. Row 1 proposes about <span
+class="math inline">(-52.7^\circ, 74.1^\circ)</span> and leaves 0.174 m
+of error. Row 3 proposes about <span class="math inline">(-23.8^\circ,
+11.5^\circ)</span> and leaves 0.115 m. Row 4 moves the elbow only about
+<span class="math inline">0.43^\circ</span>. With both task rows, the
+pseudoinverse would repeat row 1, so the row 2 button keeps only the
+horizontal task row. Its step, <span class="math inline">(-6.6^\circ,
+-3.9^\circ)</span>, is the smallest joint change that corrects the
+horizontal error. The weights and the selection rule change the proposal
+from the same configuration. The tables of §§2.3–2.4 give the same steps
+without the interaction.</p>
+<p>Click row 1 again and press <strong>Gauss-Newton step</strong> five
+times. The tip error follows the five updates of §2.5. Predict whether
+keeping the same damping throughout helps or slows the last corrections.
+Then click <strong>Compare convergence</strong>. The five curves of
+Figure 2.1 appear, with counts 5, 7, 21, 165 and 46, and the fixed
+damping slows the last corrections. <strong>Show full runs</strong>
+reveals the strongest fixed-damping tail, and <strong>Close
+comparison</strong> returns to the arm. The curves count accepted
+updates, as in the figure, which is the fallback for this visit.</p>
+<p>The <a
+href="modules/opt-explorer/index.html?tab=trajectory&amp;preset=ik&amp;y=0.7,0">reach-boundary
+view</a> places the target at <span class="math inline">(0.7, 0)</span>
+m. Predict whether this reachable target converges as quickly as the
+ordinary one. Press <strong>Gauss-Newton step</strong> four times and
+then <strong>Auto-play (GN)</strong>. The elbow straightens, and the run
+reports solved after 11 updates with slowly shrinking final corrections.
+Then recall the minimum miss of (2.21), click <strong>Beyond reach
+(damped)</strong> and click <strong>Auto-play (GN)</strong>. The run
+reports stationary after 29 updates, with the tip near <span
+class="math inline">(0.695, 0.087)</span> m and the geometric minimum
+error of 0.106 m. The remaining error comes from the target’s position,
+and the geometry of (2.21) establishes it without the interaction.</p>
+<p>The <a
+href="modules/opt-explorer/index.html?tab=trajectory&amp;preset=ik&amp;elbow=60">elbow-clipping
+view</a> clips the elbow at <span class="math inline">60^\circ</span>
+after every full Gauss–Newton step. Predict whether the clipped run
+finds the best allowed configuration. Press <strong>Auto-play
+(GN)</strong>. The run ends near <span class="math inline">(-16.4^\circ,
+60^\circ)</span> with 0.146 m of error. Keep the elbow at its limit and
+type <span class="math inline">-3.5</span> into the first free-joint
+angle field, then press Enter. The error drops to about 0.070 m. This
+manual edit illustrates an allowed improvement; it is not a constrained
+solve. Section 3.1 analyzes the clipped point.</p>
+<h3 id="c.4-inspect-history-based-directions-and-line-search-tests">C.4
+Inspect history-based directions and line-search tests</h3>
+<p>The <a
+href="modules/opt-explorer/index.html?tab=concepts&amp;fn=rosenbrock&amp;preset=classic-start&amp;method=lbfgs&amp;ls=exact&amp;arrows=off">L-BFGS
+view</a> opens the Rosenbrock valley at <span class="math inline">(-1.2,
+1.0)</span> with L-BFGS and the exact line search. Press
+<strong>Step</strong> three times; the point passes <span
+class="math inline">(-1.030, 1.069)</span> and <span
+class="math inline">(-0.930, 0.828)</span> and reaches <span
+class="math inline">(-0.785, 0.558)</span>. Predict whether the next
+direction follows the negative gradient across the valley. Tick
+<strong>Show arrows</strong>. The red search-direction arrow, labelled
+<span class="math inline">\mathbf d</span>, points along the teal
+direction of Figure 2.4, and the note line reports three stored pairs.
+The stored pairs turn the direction along the valley. Figure 2.4 is the
+fallback.</p>
+<p>The <a
+href="modules/opt-explorer/index.html?tab=concepts&amp;fn=rosenbrock&amp;preset=classic-start&amp;method=bfgs&amp;ls=strong-wolfe&amp;arrows=off">BFGS
+view</a> uses the same start with full BFGS and the strong-Wolfe search.
+BFGS starts from the identity, so its first step follows the negative
+gradient. Predict where that step lands. Press <strong>Step</strong>
+once. The strong-Wolfe search accepts the scale 0.0125, which carries
+the point across the valley to <span class="math inline">(1.495,
+2.100)</span>. Now select <strong>Conjugate Gradient</strong>, which
+resets the start, and press <strong>Step</strong> three times. The first
+step follows the same negative gradient but stops at <span
+class="math inline">(-1.030, 1.069)</span>, because the explorer’s
+conjugate-gradient step always uses the exact line search, whatever the
+selector shows. The line along that first direction has two minima. The
+exact search stops at the first one, and the strong-Wolfe search accepts
+a point just past the deeper second one. The two runs therefore differ
+mainly because their line searches differ, and the comparison does not
+rank the directions. Without the interaction, Figures 2.4 and 2.5 show
+the exact-search trace.</p>
+<p>The <a
+href="modules/opt-explorer/index.html?tab=concepts&amp;fn=armijo-wolfe&amp;preset=start-x-2&amp;method=gd&amp;ls=strong-wolfe&amp;arrows=off">line-search
+view</a> uses the example of Figure 2.6. Predict which of the scales
+0.10, 0.50 and 0.78 each test accepts. Scroll to <strong>Armijo &amp;
+Wolfe (1D Visual)</strong> and leave the optimizer’s
+<strong>Step</strong> button alone. Move <strong>Candidate step
+α</strong> to 0.10, 0.50 and 0.78, and read the cost plot, slope plot
+and pass/fail text together. At 0.10 Armijo passes and the slope test
+fails. At 0.50 both pass. At 0.78 both ordinary tests still pass
+although the line already rises. The panel displays ordinary Wolfe only,
+so use Figure 2.6 for the strong-Wolfe rejection of 0.78. A label such
+as “accepted” means that the tests passed; it does not certify an exact
+minimum.</p>
+<h3 id="c.5-move-a-target-across-a-constraint-boundary">C.5 Move a
+target across a constraint boundary</h3>
+<p>The <a
+href="modules/kkt-explorer/index.html?mode=disc&amp;target=0.5,0.3">disc
+view</a> begins with a target inside the unit disc. Predict whether it
+needs a constraint correction. Move the target outside by dragging it.
+The closest allowed point stays on the boundary, and the nonnegative
+multiplier grows with the outside distance for this normalization.</p>
+<p>Move the target onto the circle. The constraint is active, but its
+multiplier can be zero. This separates boundary activity from a positive
+correction. Figure 3.1 supplies the outside-target balance.</p>
+<p>The <a
+href="modules/kkt-explorer/index.html?mode=wall&amp;target=1.6,0.6">line
+view</a> can switch from an inequality wall to an equality rail. Move
+the target across the line after selecting the equality. The multiplier
+changes sign because either side must be corrected back to the rail. In
+inequality mode, a target on the allowed side needs no correction.</p>
+<h3 id="c.6-separate-joint-changes-from-multiplier-changes">C.6 Separate
+joint changes from multiplier changes</h3>
+<p>The Panda robot replays require the supported demonstration launcher
+and Drake. Launch <strong>ik-nlp-al-replay</strong> for the hard-target
+program. This optional viewer opens paused; its iterations show
+optimization events, rather than physical motion commands.</p>
+<p>Select <strong>Run A</strong> and <strong>Reset</strong>. The arm
+begins at its preferred posture, with zero posture cost but a target
+miss. Predict whether reaching the target can leave that cost at zero.
+Use <strong>Step</strong> through an inner solve. The arm moves with
+multipliers frozen, increasing posture cost while reducing equality
+error. At an outer event, the pose stays fixed while the stored
+multipliers change. Subsequent inner steps need less error to produce
+the required correction.</p>
+<p>Select <strong>Run B</strong> and <strong>Reset</strong>. The first
+accepted joint update crosses joint bounds, and the next model includes
+those violated rows. Follow the later multiplier event to see a positive
+stored lower-bound multiplier. An included constraint row and a newly
+learned multiplier are different events. Figure 3.3 is the static
+fallback for both runs.</p>
+<p>For the prediction-versus-FK comparison on the Panda, the optional
+<strong>gn-ik-replay</strong> viewer shows both markers. The rail
+replay’s ghost shows the previous configuration. It does not provide a
+separate linear-prediction marker. The <a
+href="chapter-02-detailed.html#appendix-b-demonstrations">detailed
+reference’s demonstration appendix</a> contains the full set of visits
+and their expected observations.</p>
+<h3 id="c.7-locate-the-detailed-material-and-its-sources">C.7 Locate the
+detailed material and its sources</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Essentials topic</th>
+<th>Detailed material</th>
+<th>Lecture sequence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cost and local geometry (§§1.1–1.2)</td>
+<td>Reference §§1.1–1.2</td>
+<td>Optimization I, pages 2–5</td>
+</tr>
+<tr>
+<td>Direction, scale and Armijo (§§1.3–1.4)</td>
+<td>Reference §§1.3–1.4</td>
+<td>Optimization I, pages 6–13</td>
+</tr>
+<tr>
+<td>Arm gradient (§1.5)</td>
+<td>Reference §1.5</td>
+<td>Optimization I, pages 14–15</td>
+</tr>
+<tr>
+<td>Newton and Gauss–Newton (§§2.1–2.2)</td>
+<td>Reference §§2.1–2.2</td>
+<td>Optimization I, pages 17–20</td>
+</tr>
+<tr>
+<td>Fixed and adaptive damping (§2.3, A.5)</td>
+<td>Reference §2.3</td>
+<td>Optimization I, pages 21–22</td>
+</tr>
+<tr>
+<td>Weights and step rules (§2.4)</td>
+<td>Reference §2.4</td>
+<td>Optimization I, pages 23–25</td>
+</tr>
+<tr>
+<td>Repeated IK, stopping and reach (§2.5)</td>
+<td>Reference §2.5</td>
+<td>Optimization I, pages 26–30</td>
+</tr>
+<tr>
+<td>Seven-joint arm (§2.6)</td>
+<td>Reference §2.6</td>
+<td>Optimization I, page 31</td>
+</tr>
+<tr>
+<td>History-based directions (§2.7)</td>
+<td>Appendix A.6</td>
+<td>Optimization I, pages 32–34; backups 43–44</td>
+</tr>
+<tr>
+<td>Wolfe conditions (§2.8)</td>
+<td>Appendix A.6</td>
+<td>Optimization I, page 35; backups 40–41</td>
+</tr>
+<tr>
+<td>What the solver result establishes (§2.9)</td>
+<td>Reference §2.6 and §3.1</td>
+<td>Optimization I, pages 36–38</td>
+</tr>
+<tr>
+<td>Constraint geometry and KKT (§§3.1–3.2)</td>
+<td>Reference §§3.1–3.4</td>
+<td>Optimization II, pages 2–15</td>
+</tr>
+<tr>
+<td>Hard-target IK and constrained methods (§§3.3–3.4)</td>
+<td>Reference §§3.5–3.6</td>
+<td>Optimization II, pages 17–24</td>
+</tr>
+<tr>
+<td>Constrained stopping and rail replay (§§3.5–3.6)</td>
+<td>Reference §§3.7–3.9</td>
+<td>Optimization II, pages 25–27</td>
+</tr>
+</tbody>
+</table>
+<p>The Optimization I slides write the BFGS inverse-Hessian estimate
+<span class="math inline">\mathbf B^{-1}</span> of §2.7 as <span
+class="math inline">\hat{\mathbf H}</span>.</p>
+<p>The <strong>Motion optimization with KOMO</strong> chapter continues
+by stacking configurations and coupling neighboring knots.
+<strong>Sampling-based motion planning</strong> develops another source
+of candidate paths. <strong>Execution, control and contact</strong> can
+start directly from a KOMO path. The reading order places sampling
+before execution, while their corresponding lecture session identifiers
+are 4.4 and 4.3. These are different ways of organizing the related
+topics.</p>
+<p>Larry Armijo’s <a
+href="https://msp.org/pjm/1966/16-1/pjm-v16-n1-p01-p.pdf">1966
+paper</a>, <em>Minimization of functions having Lipschitz continuous
+first partial derivatives</em>, gives the historical sufficient-decrease
+search. It is optional further reading. The chapter’s acceptance
+inequality and numerical examples supply the explanation needed
+here.</p>
+<p>The <a href="chapter-02-detailed.html">detailed reference</a> adds
+the difference-quotient calculations, convergence qualifications,
+singular-direction derivations, finite perturbation checks and full
+numerical traces. Its additional code and demonstration appendices
+support reproduction without interrupting the main mathematical
+development.</p>
+</body>
+</html>

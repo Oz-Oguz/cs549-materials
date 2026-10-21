@@ -473,7 +473,7 @@ def fit_camera(points, direction=CAMERA_DIR, fov_deg=75.0, margin=0.78, pad=0.09
 def replay_mode(app=False, app_port=0):
     """Paused replay in Meshcat. Displayed iterate i shows the robot at q^(i), the ghost at q^(i-1), the
     prediction made from q^(i-1) for the accepted update, and the FK result at q^(i) (the current flange).
-    Iterate 0 shows the start alone. Nothing advances by itself; Step, Back, Reset and the slider move it.
+    Iterate 0 shows the start with its flange (the FK marker) and, ahead of the first Step, the prediction for update 1. Nothing advances by itself; Step, Back, Reset and the slider move it.
     With app=True a web page (panel/index.html, served by replay_panel.py) wraps the Meshcat view with the
     explanation, readouts, plots and the same controls; Meshcat then keeps only its buttons and slider."""
     import json
@@ -492,6 +492,7 @@ def replay_mode(app=False, app_port=0):
     MeshcatVisualizer.AddToBuilder(builder, scene_graph, meshcat)
     diagram = builder.Build(); ctx = diagram.CreateDefaultContext(); pc = plant.GetMyContextFromRoot(ctx)
     ghost_path = f"/drake/visualizer/{plant.GetModelInstanceName(Ghost)}"
+    arm_path = f"/drake/visualizer/{plant.GetModelInstanceName(Panda)}"
     gold, teal, maroon, grey = Rgba(0.8, 0.6, 0.0, 0.55), Rgba(0.1, 0.6, 0.6, 0.6), Rgba(0.55, 0.1, 0.25, 1.0), Rgba(0.45, 0.45, 0.45, 0.9)
     # Marker radii stay below run 2's first prediction gap (9.9 mm) so that the close-up shows the gap as two
     # spheres; from the wide view the readouts carry the numbers. The target and the prediction are translucent,
@@ -500,7 +501,10 @@ def replay_mode(app=False, app_port=0):
     meshcat.SetObject("/replay/predicted", Sphere(0.010), teal)                         # translucent, larger: the promise
     meshcat.SetObject("/replay/actual", Sphere(0.007), maroon)                          # solid, smaller: where FK put it
     keys = list(rec["runs"])
-    state = {"run": "run2", "i": 0, "trials": False, "closeup": False, "camera": None, "applied_action_id": 0}
+    state = {"run": "run2", "i": 0, "trials": False, "closeup": False, "camera": None, "applied_action_id": 0,
+             "arm_opacity": 1.0,                                         # the solid arm's opacity; the ghost stays at 0.3
+             "show": {"target": True, "predicted": True, "actual": True, "beads": True, "ghost": True}}
+    MARKERS = tuple(state["show"])
     wide_pts = {k: [[0.0, 0.0, 0.0]] + [o for it in rec["runs"][k]["iterates"] for o in list(it["origins"].values()) + [it["p"]]]
                    + [u["prediction"] for u in rec["runs"][k]["accepted_updates"]] + [rec["runs"][k]["target"]] for k in keys}
     wide = {k: fit_camera(wide_pts[k]) for k in keys}                   # one wide view per run: the base and the run's accepted iterates
@@ -518,9 +522,16 @@ def replay_mode(app=False, app_port=0):
         _sys.path.insert(0, str(Path(__file__).resolve().parent))
         from replay_panel import ReplayPanel
         panel = ReplayPanel(meshcat.web_url(), rec, port=app_port)
-    SLIDER, SLIDER_MAX = "iterate i", 40
-    buttons = ["Step", "Back", "Reset"] + [rec["runs"][k]["label"] for k in keys] + ["Show / hide rejected trials", "Stop"]
+    SLIDER, SLIDER_MAX, OPACITY = "iterate i", 40, "arm opacity"
+    buttons = ["Step", "Back", "Reset"] + [rec["runs"][k]["label"] for k in keys] + ["Show / hide rejected trials", "Show / hide markers", "Stop"]
     meshcat.AddSlider(SLIDER, 0, SLIDER_MAX, 1, 0)
+    meshcat.AddSlider(OPACITY, 0, 1, 0.05, 1)
+
+    def set_arm_opacity(value):
+        # modulated_opacity multiplies every material's opacity in the browser, as for the ghost; it is resent
+        # once a second below because the arm's meshes are parsed asynchronously after they are sent
+        state["arm_opacity"] = float(np.clip(value, 0.0, 1.0))
+        meshcat.SetProperty(arm_path, "modulated_opacity", state["arm_opacity"])
     for b in buttons:
         meshcat.AddButton(b)
     clicks = {b: 0 for b in buttons}
@@ -550,9 +561,11 @@ def replay_mode(app=False, app_port=0):
         i = int(np.clip(i, 0, n)); state["i"] = i
         plant.SetPositions(pc, Panda, np.array(its[i]["q"]))
         plant.SetPositions(pc, Ghost, np.array(its[max(i - 1, 0)]["q"]))
-        meshcat.SetProperty(ghost_path, "visible", i >= 1)
+        show = state["show"]
+        meshcat.SetProperty(ghost_path, "visible", i >= 1 and show["ghost"])
+        meshcat.SetProperty("/replay/target", "visible", show["target"])
         for j in range(len(its)):
-            meshcat.SetProperty(f"/replay/beads/{j}", "visible", j <= i)
+            meshcat.SetProperty(f"/replay/beads/{j}", "visible", j <= i and show["beads"])
         meshcat.Delete("/replay/trials"); meshcat.Delete("/replay/gap_line")
         labels = [f"i = {i} of {n}  ({state['run']})"]
         p_now = np.array(its[i]["p"])
@@ -560,8 +573,9 @@ def replay_mode(app=False, app_port=0):
             u = run["accepted_updates"][i - 1]
             meshcat.SetTransform("/replay/predicted", RigidTransform(np.array(u["prediction"])))
             meshcat.SetTransform("/replay/actual", RigidTransform(np.array(u["p"])))
-            meshcat.SetProperty("/replay/predicted", "visible", True); meshcat.SetProperty("/replay/actual", "visible", True)
-            meshcat.SetLine("/replay/gap_line", np.column_stack([np.array(u["prediction"]), np.array(u["p"])]), 2.0, Rgba(0.1, 0.1, 0.1, 1.0))
+            meshcat.SetProperty("/replay/predicted", "visible", show["predicted"]); meshcat.SetProperty("/replay/actual", "visible", show["actual"])
+            if show["predicted"] and show["actual"]:                    # the line joins two drawn spheres only
+                meshcat.SetLine("/replay/gap_line", np.column_stack([np.array(u["prediction"]), np.array(u["p"])]), 2.0, Rgba(0.1, 0.1, 0.1, 1.0))
             trials = [t for t in run["trial_evaluations"] if t["i"] == i]
             if state["trials"]:
                 for j, t in enumerate(trials):
@@ -573,7 +587,14 @@ def replay_mode(app=False, app_port=0):
                        f"task error = {its[i]['residual']:.3e} m", f"accepted joint step = {u['step_norm']:.4f} rad",
                        f"prediction gap = {u['gap']:.3e} m"]
         else:
-            meshcat.SetProperty("/replay/predicted", "visible", False); meshcat.SetProperty("/replay/actual", "visible", False)
+            # iterate 0: the FK tip is the start's flange, and the teal sphere is already the model's promise for update 1
+            # (p^(0) + J^(0) dq^(0), the point the same sphere marks at iterate 1); no gap line, because no update has happened
+            first = run["accepted_updates"][0] if run["accepted_updates"] else None
+            meshcat.SetTransform("/replay/actual", RigidTransform(p_now))
+            if first is not None:
+                meshcat.SetTransform("/replay/predicted", RigidTransform(np.array(first["prediction"])))
+            meshcat.SetProperty("/replay/predicted", "visible", first is not None and show["predicted"])
+            meshcat.SetProperty("/replay/actual", "visible", show["actual"])
             labels += ["event: start (no update yet)", f"task error = {its[0]['residual']:.3e} m", "accepted joint step = none yet", "prediction gap = none yet"]
         labels += ["teal = predicted tip, maroon = FK tip, ghost = q^(i-1)", f"rho = {run['rho']:g} damps the step", "objective = 1/2|phi(q) - y*|^2",
                    f"outcome at the end: {run['outcome']} after {n} updates",
@@ -585,6 +606,7 @@ def replay_mode(app=False, app_port=0):
         diagram.ForcedPublish(ctx)
         if panel is not None:
             panel.publish({"run": state["run"], "i": i, "n": n, "trials": state["trials"], "closeup": state["closeup"],
+                           "arm_opacity": state["arm_opacity"], "show": dict(state["show"]),
                            "camera": state["camera"], "meshcat_url": meshcat.web_url(), "labels": labels, "p": its[i]["p"],
                            "origins": its[i].get("origins"), "applied_action_id": state["applied_action_id"]})
         print(f"{state['run']} i = {i}: " + " | ".join(labels[1:5]))
@@ -595,6 +617,7 @@ def replay_mode(app=False, app_port=0):
     # once can land before any material exists. It is resent once a second, which also covers a browser tab that
     # connects later; a resend is one small message.
     meshcat.SetProperty(ghost_path, "modulated_opacity", 0.3)
+    set_arm_opacity(state["arm_opacity"])
     faded_at = time.time()
     if panel is not None:
         print("Demo app at", panel.start(), flush=True)              # the launcher waits for this line in --app mode
@@ -602,7 +625,8 @@ def replay_mode(app=False, app_port=0):
     print("  Paused replay. Nothing moves until you press Step, Back or Reset or move the 'iterate i' slider (values past the")
     print("  run's last iterate snap back). The run buttons restart at iterate 0. The ghost is the previous iterate; the teal")
     print("  sphere is where the linear model predicted the flange, the maroon sphere where FK put it. 'Show / hide rejected")
-    print("  trials' draws the Armijo candidates of the selected update only (run 3b). 'Stop' quits. The grey lines are readouts.")
+    print("  trials' draws the Armijo candidates of the selected update only (run 3b). 'arm opacity' fades the arm so the spheres")
+    print("  inside it stay visible; 'Show / hide markers' toggles the spheres and the ghost. 'Stop' quits. The grey lines are readouts.")
     while meshcat.GetButtonClicks("Stop") == 0:
         changed = None
         for b in buttons:
@@ -614,6 +638,8 @@ def replay_mode(app=False, app_port=0):
                 elif b == "Back": changed = max(state["i"] - 1, 0)
                 elif b == "Reset": changed = 0
                 elif b == "Show / hide rejected trials": set_trials(not state["trials"]); changed = state["i"]
+                elif b == "Show / hide markers":
+                    on = not any(state["show"].values()); state["show"] = {m: on for m in MARKERS}; changed = state["i"]
                 elif b in [rec["runs"][k]["label"] for k in keys]:
                     load_run(next(k for k in keys if rec["runs"][k]["label"] == b)); changed = 0
                 if changed is not None:
@@ -628,6 +654,16 @@ def replay_mode(app=False, app_port=0):
             elif do.startswith("set:"): changed = int(np.clip(int(float(do[4:])), 0, n))
             elif do.startswith("run:") and do[4:] in rec["runs"]: load_run(do[4:]); changed = 0
             elif do.startswith("trials:"): set_trials(do.endswith("1")); changed = state["i"]
+            elif do.startswith("opacity:"):
+                try:
+                    set_arm_opacity(float(do[8:])); meshcat.SetSliderValue(OPACITY, state["arm_opacity"])
+                except ValueError:
+                    pass                                                # a malformed request is acknowledged and ignored
+            elif do.startswith("show:"):
+                parts = do.split(":")
+                if len(parts) == 3 and parts[2] in ("0", "1") and (parts[1] in MARKERS or parts[1] == "all"):
+                    for m in (MARKERS if parts[1] == "all" else (parts[1],)):
+                        state["show"][m] = parts[2] == "1"
             elif do.startswith("closeup:"):
                 state["closeup"] = do.endswith("1"); changed = state["i"]
                 if not state["closeup"]:
@@ -635,6 +671,9 @@ def replay_mode(app=False, app_port=0):
             state["i"] = changed                                      # the next queued action starts from this result
             state["applied_action_id"] = action_id                     # bounds and other no-ops are acknowledged too
             meshcat.SetSliderValue(SLIDER, float(changed))
+        ov = meshcat.GetSliderValue(OPACITY)
+        if abs(ov - state["arm_opacity"]) > 1e-9:                          # Meshcat's own opacity slider
+            set_arm_opacity(ov); changed = state["i"]
         sv = int(round(meshcat.GetSliderValue(SLIDER)))
         n = len(rec["runs"][state["run"]]["iterates"]) - 1
         if sv > n:
@@ -642,7 +681,7 @@ def replay_mode(app=False, app_port=0):
         if sv != state["i"] or changed is not None:
             draw(sv)
         if time.time() - faded_at > 1.0:
-            meshcat.SetProperty(ghost_path, "modulated_opacity", 0.3); faded_at = time.time()
+            meshcat.SetProperty(ghost_path, "modulated_opacity", 0.3); set_arm_opacity(state["arm_opacity"]); faded_at = time.time()
         time.sleep(0.05)
     meshcat.DeleteAddedControls()
     if panel is not None:
