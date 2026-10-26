@@ -4,7 +4,7 @@ Start `python3 launch.py` from this extracted folder to use the browser apps.
 
 [Return to the companion index](README.html).
 
-The Panda commands below need the [Drake environment](README.html#drake). The web replay opens paused. Open its printed address; stop with Ctrl+C.
+The Panda commands below need the [Drake environment](README.html#drake). Each web page opens without running anything: a replay waits for Step, and the IK page solves only when the target changes. Open the printed address; stop with Ctrl+C.
 
 ## Prediction versus FK on the Panda {#gn-ik-replay}
 

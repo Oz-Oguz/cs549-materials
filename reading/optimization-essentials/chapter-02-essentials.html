@@ -2664,9 +2664,9 @@ script</a> imports those runs and draws the figure at reading width. Its
 printout also gives the chain-length reachability bound. The <a
 href="drake/03-ik-as-nlp/ik_nlp_panda.py">second</a> formulates
 exact-target posture optimization and inspects active constraints and
-multipliers. Its sensitivity checks perturb the target and one active
-lower bound; their scope should be kept distinct from other printed
-multiplier conversions. The <a
+multipliers. Its sensitivity checks perturb the target, one active lower
+bound and the obstacle’s radius; their scope should be kept distinct
+from other printed multiplier conversions. The <a
 href="drake/05-ik-nlp-al/ik_nlp_al_panda.py">third</a> records both rail
 replay runs. Its <code>al_ik_nlp</code> function separates inner joint
 changes from outer multiplier changes, and its <code>--selftest</code>
@@ -2984,14 +2984,14 @@ detailed material and its sources</h3>
 <p>The Optimization I slides write the BFGS inverse-Hessian estimate
 <span class="math inline">\mathbf B^{-1}</span> of §2.7 as <span
 class="math inline">\hat{\mathbf H}</span>.</p>
-<p>The <strong>Motion optimization with KOMO</strong> chapter continues
-by stacking configurations and coupling neighboring knots.
-<strong>Sampling-based motion planning</strong> develops another source
-of candidate paths. <strong>Execution, control and contact</strong> can
-start directly from a KOMO path. The reading order places sampling
-before execution, while their corresponding lecture session identifiers
-are 4.4 and 4.3. These are different ways of organizing the related
-topics.</p>
+<p>The motion-planning continuation follows <strong>Deck 06</strong>. It
+defines configuration space and path validity before stacking
+configurations into a KOMO problem. Sampling-based planning provides
+another source of candidate paths, followed by refinement and renewed
+validation. The future essentials outline places these topics in Part I
+and elementary forces, torques, dynamics and control in Part II. The
+complete reading and the control lecture placement remain future
+work.</p>
 <p>Larry Armijo’s <a
 href="https://msp.org/pjm/1966/16-1/pjm-v16-n1-p01-p.pdf">1966
 paper</a>, <em>Minimization of functions having Lipschitz continuous

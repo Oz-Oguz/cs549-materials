@@ -3,7 +3,8 @@
     min_q   1/2 || q - q_ready ||^2
     s.t.    ^W p^E(q) = y*                                   equality: the flange reaches the target
             q_lo <= q <= q_hi                                the Panda's joint limits from the URDF
-            || p(q) - c || >= r_o   for each of three wrist points p  an obstacle sphere (only in run 3 and in --meshcat)
+            || p_s(q) - c || >= r_o + r_s  for every collision sphere s of links 1 to 8 (44 rows): the whole arm clear of
+                                     an obstacle sphere (c, r_o) (only in run 3 and in the live modes)
 
 Solved by SNOPT through Drake's InverseKinematics class. For each run the script prints the solution, which
 constraints are active, and the multipliers, which Drake calls dual solutions. The sign of a Drake dual depends
@@ -23,40 +24,131 @@ Runs (print mode):
      the Lagrangian on the tangent space of the active rows); the local minimum reached from the offset start has
      cost 1.499, lambda = 1.053, and its mirror image (joint 1 turned the other way) the same cost. Multipliers and
      prices are compared on the same branch; nothing here is a global claim.
-  3  the run-1 target with an obstacle sphere next to it: the distance constraint becomes active
+  3  the run-1 target with an obstacle sphere above the elbow, c = (0.175, 0.15, 0.75) m, r_o = 0.08 m: two collision
+     spheres of link 5 (the forearm) touch it, the cost rises from 0.209 to 0.364, and growing r_o by 1 mm confirms
+     the sum of their multipliers. The Panda's collision model in drake_models is spheres (collision_spheres()), so
+     the whole-arm clearance is one smooth point-to-point distance row per sphere. Run 1's answer, which ignores the
+     sphere, would put the forearm 26.9 mm inside it.
+     Then the live demonstration's moves are printed with their costs and active rows (Deck 05 slide 18's cues).
 
      The multiplier is also recomputed by hand: least squares on the stationarity condition
      grad f + J^T kappa - lambda e_2 = 0, with J the 3x7 translational Jacobian of the flange at the solution.
 
---meshcat  sliders for the target position (x 0.1..0.9, y -0.6..0.6, z 0.05..0.9 m, steps of 0.01); the sliders
-           start at run 3's target and the sphere is always drawn, so the first solve is run 3. Every move is
-           solved from the last shown configuration and from q_ready, and the lower-cost solution is shown
-           (the console says when the two starts end in different local solutions). The console prints the
-           active set, decided by the primal gap (a joint within 1e-5 rad of a bound, a wrist point within
-           1e-6 m of the sphere), not by the size of a dual, which SNOPT leaves at 1e-5 to 1e-4 on inactive
-           bounds. When SNOPT fails from both starts, the arm stays at its last solution, the target turns
-           grey, and the console says that this is a solver failure and not a proof of infeasibility.
-           Target (red) and obstacle (grey) are drawn. "Stop" ends it. Run 2's target lies behind the
-           robot, outside the x slider's range; it is a print-mode result only.
+--app      the live demonstration as a web page around Meshcat (the launcher's /run/ik-nlp, Deck 05 slide 18): target
+           sliders and fields (x 0.1..0.9, y -0.6..0.6, z 0.05..0.9 m, steps of 0.01), the cues' target presets, the
+           program with its parameters, the cost beside the same target's cost without the sphere, the active rows with
+           their multipliers, kappa, each link's smallest clearance, the start that won and a history of the solves.
+           Every target change is solved from the last shown configuration and from q_ready, and the lower-cost
+           solution is shown. The active set is decided by the primal gap (a joint within 1e-5 rad of a bound, a sphere
+           within 1e-6 m of the obstacle), not by the size of a dual. When SNOPT fails from both starts, the arm stays at
+           its last solution and the target turns grey; the page says whether the failure is also a proof (a target
+           inside the sphere: the flange point lies inside link 7's collision sphere), and whether the kept pose overlaps
+           a sphere that has moved since it was solved. The ready pose q_ready is drawn as a faded second arm (a toggle, on
+           at the start). The obstacle's centre and radius are editable (centre x -0.8..0.9, y -0.8..0.8, z 0..1.2 m,
+           radius 0.02..0.30 m; a "default sphere" button); a change re-solves the current target, and the preset
+           "inside the sphere" follows the current sphere. A second toggle shows the arm's collision spheres. Nothing
+           solves until the target or the sphere changes.
+--meshcat  the same solves with the sliders in Meshcat and one console line per solve, the default sphere, and a button
+           that shows or hides the ready pose ("Stop" ends it).
 
-Run:  python ik_nlp_panda.py            prints the three runs (notes §5 (k))
-      python ik_nlp_panda.py --meshcat  target sliders; the arm re-solves and the console prints the active set
-      python ik_nlp_panda.py --png FILE renders run 3 offline (the arm solved with the obstacle sphere in orange and the
-                                        target in red; the wrist frame sits on the sphere's surface): Deck 05 slide 18
+Run:  python ik_nlp_panda.py            prints the three runs and the live moves (notes §5 (k))
+      python ik_nlp_panda.py --app      the web page (scripts/demo_server.py id ik-nlp); check: drake/03-ik-as-nlp/check_ik_nlp.mjs
+      python ik_nlp_panda.py --meshcat  Meshcat sliders and console lines only
+      python ik_nlp_panda.py --png FILE renders run 3 offline from the front left (the arm with the obstacle in orange and the
+                                        target in red; the forearm on the sphere's surface): Deck 05 slide 18
 
-Tested 2026-09-28 with drake 1.46.0 on macOS (print mode). On 2026-10-06 the Meshcat mode was checked headless by a script
-that moves the sliders through Meshcat's own controls and reads this console.
+Tested 2026-09-28 with drake 1.46.0 on macOS (print mode). On 2026-10-25 the whole-arm model, the new scene and the --app page
+were checked headless by drake/03-ik-as-nlp/check_ik_nlp.mjs through the launcher.
 """
 import sys
 import time
+from pathlib import Path
 import numpy as np
 from pydrake.all import (AddMultibodyPlantSceneGraph, DiagramBuilder, InverseKinematics, JacobianWrtVariable,
-                         MeshcatVisualizer, Parser, Rgba, RigidTransform, SnoptSolver, Sphere, StartMeshcat)
+                         MeshcatVisualizer, Parser, Role, Rgba, RigidTransform, SnoptSolver, Sphere, StartMeshcat)
 
 np.set_printoptions(precision=4, suppress=True)
 PANDA_URL = "package://drake_models/franka_description/urdf/panda_arm.urdf"
 Q_READY = np.array([0.0, -0.785, 0.0, -2.356, 0.0, 1.571, 0.785])
-WRIST_POINTS = ["panda_link8", "panda_link7", "panda_link6"]        # frame origins kept out of the obstacle
+
+
+_SPHERES = None
+
+
+def collision_spheres():
+    """The Panda's collision model in drake_models: spheres on links 0 to 8. Returns, for the moving links 1 to 8, a list
+    of (link name, centre in the link frame, radius). Clearance of the whole arm from a spherical obstacle (c, r_o) is then
+    one smooth row per collision sphere s: || p_s(q) - c || >= r_o + r_s, with p_s(q) the sphere's centre in the world."""
+    global _SPHERES
+    if _SPHERES is None:
+        builder = DiagramBuilder()
+        plant, scene_graph = AddMultibodyPlantSceneGraph(builder, time_step=0.0)
+        (panda,) = Parser(plant).AddModelsFromUrl(PANDA_URL)
+        plant.Finalize()
+        inspector = scene_graph.model_inspector()
+        _SPHERES = []
+        for k in range(1, 9):
+            body = plant.GetBodyByName(f"panda_link{k}", panda)
+            for g in plant.GetCollisionGeometriesForBody(body):
+                shape = inspector.GetShape(g)
+                _SPHERES.append((body.name(), inspector.GetPoseInFrame(g).translation(), shape.radius()))
+    return _SPHERES
+
+
+# The obstacle sphere (c, r_o) of run 3 and the live demo: above the elbow, chosen by
+# planning/ik-nlp-whole-arm-2026-10-25/scene_search.py so that lowering the target changes the active link.
+OBSTACLE = (np.array([0.175, 0.15, 0.75]), 0.08)
+ACTIVE_JOINT_TOL, ACTIVE_GAP_TOL = 1e-5, 1e-6          # rad, m: the active set is decided by the primal gaps
+
+
+def sphere_gaps(plant, pc, panda, q, obstacle):
+    """Clearance of every collision sphere of links 1 to 8 from the obstacle at q, || p_s(q) - c || - r_o - r_s (m),
+    computed from forward kinematics."""
+    c, r_o = obstacle
+    plant.SetPositions(pc, panda, q)
+    out = []
+    for name, p_BS, r_s in collision_spheres():
+        p = plant.CalcPointsPositions(pc, plant.GetFrameByName(name, panda), p_BS.reshape(3, 1), plant.world_frame()).ravel()
+        out.append((name, p, r_s, float(np.linalg.norm(p - c) - r_o - r_s)))
+    return out
+
+
+def obstacle_rows(result, b, obstacle):
+    """One entry per obstacle row: link, sphere radius, clearance (m) and the multiplier lambda >= 0 of the row
+    g = r_o + r_s - || p_s(q) - c || <= 0. Drake evaluates the squared distance and reports its dual for a lower
+    bound on it; lambda for g is 2 d times that dual (checked by the radius price check in print mode)."""
+    c, r_o = obstacle
+    rows = []
+    for name, p_BS, r_s, bd in b["dist"]:
+        d = float(np.sqrt(result.EvalBinding(bd)[0]))
+        rows.append(dict(link=name, r_s=float(r_s), gap=d - r_o - r_s, lam=2 * d * float(result.GetDualSolution(bd)[0])))
+    for r in rows:
+        r["active"] = bool(r["gap"] < ACTIVE_GAP_TOL)
+    return rows
+
+
+def link_summary(rows):
+    """Per link: the smallest clearance of its rows, the number of active rows and the sum of their multipliers."""
+    out = {}
+    for r in rows:
+        e = out.setdefault(r["link"], dict(gap=9.0, n_active=0, lam=0.0, n_rows=0))
+        e["gap"] = min(e["gap"], r["gap"]); e["n_rows"] += 1
+        if r["active"]:
+            e["n_active"] += 1; e["lam"] += r["lam"]
+    return out
+
+
+def joint_rows(plant, result, q, b):
+    """The joint limits at a bound (within ACTIVE_JOINT_TOL) with lambda = +dual at a lower bound, -dual at an upper bound."""
+    lo, hi = plant.GetPositionLowerLimits(), plant.GetPositionUpperLimits()
+    dual = result.GetDualSolution(b["limits"])
+    out = []
+    for j in range(7):
+        if abs(q[j] - lo[j]) < ACTIVE_JOINT_TOL:
+            out.append(dict(joint=j + 1, side="lower", lam=float(dual[j])))
+        elif abs(q[j] - hi[j]) < ACTIVE_JOINT_TOL:
+            out.append(dict(joint=j + 1, side="upper", lam=float(-dual[j])))
+    return out
 
 
 def build(meshcat=None):
@@ -73,7 +165,8 @@ def build(meshcat=None):
 
 
 def solve_ik(plant, pc, panda, target, obstacle=None, q_guess=Q_READY, extra_limits=None):
-    """Returns (result, q, bindings) for the NLP above. extra_limits = (lo, hi) adds tightened joint limits (sensitivity check)."""
+    """Returns (result, q, bindings) for the NLP above. extra_limits = (lo, hi) adds tightened joint limits (sensitivity check).
+    With an obstacle, every collision sphere of links 1 to 8 stays clear of it (collision_spheres())."""
     ik = InverseKinematics(plant, pc)               # creates q and adds q_lo <= q <= q_hi
     q = ik.q()
     prog = ik.prog()
@@ -83,14 +176,14 @@ def solve_ik(plant, pc, panda, target, obstacle=None, q_guess=Q_READY, extra_lim
     dist = []
     if obstacle is not None:
         c, r = obstacle
-        for name in WRIST_POINTS:
-            dist.append((name, ik.AddPointToPointDistanceConstraint(plant.GetFrameByName(name, panda), np.zeros(3),
-                                                                    plant.world_frame(), c, r, 10.0)))
+        for name, p_BS, r_s in collision_spheres():              # a binding's row: r_o + r_s - || p_s(q) - c || <= 0
+            dist.append((name, p_BS, r_s, ik.AddPointToPointDistanceConstraint(plant.GetFrameByName(name, panda), p_BS,
+                                                                               plant.world_frame(), c, r + r_s, 10.0)))
     limits = prog.bounding_box_constraints()[0]
     if extra_limits is not None:
         prog.AddBoundingBoxConstraint(extra_limits[0], extra_limits[1], q)
     result = SnoptSolver().Solve(prog, q_guess, None)
-    return result, result.GetSolution(q), dict(pos=pos, dist=dist, limits=limits)
+    return result, result.GetSolution(q), dict(pos=pos, dist=dist, limits=limits, obstacle=obstacle)
 
 
 def reduced_hessian(plant, pc, panda, result, q_sol, b, eps=1e-5):
@@ -136,11 +229,13 @@ def report(plant, pc, panda, result, q_sol, b, label):
             print(f"  joint {j+1} at its {side} limit ({q_sol[j]:+.4f} rad); Drake dual = {dual_lim[j]:+.5f}  ->  lambda = {lam:.5f}")
     else:
         print(f"  no joint at a limit; all seven joint-limit duals = {dual_lim}")
-    for name, bd in b["dist"]:
-        d = np.sqrt(result.EvalBinding(bd)[0])            # Drake evaluates the squared distance
-        dual = result.GetDualSolution(bd)[0]
-        print(f"  distance({name}, obstacle centre) = {d:.4f} m  (>= r_o); Drake dual (squared-distance form) = {dual:+.4f}"
-              + (f"   ACTIVE  ->  lambda for g = r_o - d: {2*d*dual:.4f}" if abs(dual) > 1e-7 else ""))   # a lower bound on d^2: +dual
+    if b["dist"]:
+        rows = obstacle_rows(result, b, b["obstacle"])
+        for k, r in enumerate(rows):
+            if r["active"]:
+                print(f"  obstacle row {k} ({r['link']}, collision sphere r_s = {r['r_s']:.3f} m): clearance {r['gap']:+.1e} m, ACTIVE, lambda = {r['lam']:.4f}")
+        print("  per link: " + "; ".join(f"{n[6:]} {v['gap']*1000:+.1f} mm" + (f" ({v['n_active']} active, lambda sum {v['lam']:.4f})" if v["n_active"] else "")
+                                          for n, v in link_summary(rows).items()))
     print(f"  equality duals (Drake sign) = {result.GetDualSolution(b['pos'])}  ->  kappa = -dual = {-result.GetDualSolution(b['pos'])}")
     return active
 
@@ -204,17 +299,39 @@ def print_mode():
         print(f"  multiplier by hand (least squares on grad f + J^T kappa + lambda grad g = 0): lambda = {mult[3]:.5f}, kappa = {mult[:3]},"
               f" stationarity residual {np.linalg.norm((q - Q_READY) + M @ mult):.1e}  (Drake's lambda: {(dual if side == 'lower' else -dual):.5f})")
 
-    obstacle = (np.array([0.45, 0.10, 0.53]), 0.07)
+    obstacle = OBSTACLE
     res, q, b = solve_ik(plant, pc, panda, y1, obstacle=obstacle)
-    report(plant, pc, panda, res, q, b, f"run 3: run-1 target with an obstacle sphere at {obstacle[0]}, r_o = {obstacle[1]}")
+    report(plant, pc, panda, res, q, b, f"run 3: run-1 target with an obstacle sphere at {obstacle[0]}, r_o = {obstacle[1]}; every collision sphere of links 1 to 8 stays clear ({len(b['dist'])} rows)")
+    rows = obstacle_rows(res, b, obstacle); lam_sum = sum(r["lam"] for r in rows if r["active"])
+    delta = 0.001
+    res_r, _, _ = solve_ik(plant, pc, panda, y1, obstacle=(obstacle[0], obstacle[1] + delta), q_guess=q)
+    print(f"  sensitivity: grow r_o by {delta} m -> cost {res.get_optimal_cost():.5f} -> {res_r.get_optimal_cost():.5f}, change {res_r.get_optimal_cost()-res.get_optimal_cost():+.6f};"
+          f"  (sum of the active lambdas) * delta = {lam_sum*delta:+.6f}")
+    res_1, q_1, _ = solve_ik(plant, pc, panda, y1)
+    worst = min(sphere_gaps(plant, pc, panda, q_1, obstacle), key=lambda t: t[3])
+    print(f"  run 1's answer (cost {res_1.get_optimal_cost():.5f}), which ignores the sphere, would have the clearance {worst[3]*1000:+.1f} mm ({worst[0]}):"
+          f" the rows move the arm around the sphere")
+
+    print("\n--- the live demonstration's moves (each solved from the previous answer and from q_ready; the lower cost is kept) ---")
+    q_prev = q
+    for y in ([0.45, 0.10, 0.35], [0.45, 0.10, 0.30], [0.45, 0.10, 0.45], [0.18, 0.10, 0.75], [0.45, 0.10, 0.45], [0.10, 0.0, 0.25], [0.84, 0.10, 0.45], [0.85, 0.10, 0.45]):
+        y = np.array(y)
+        st = solve_live(plant, pc, panda, y, q_prev, obstacle)
+        if st["success"]:
+            q_prev = np.array(st["q"])
+        print("  " + live_line(st))
+    st0 = solve_live(plant, pc, panda, y1, q_prev, obstacle)
+    st1 = solve_live(plant, pc, panda, y1, np.array(st0["q"]), (obstacle[0], obstacle[1] + 0.001))
+    lam0 = sum(r["lam"] for r in st0["rows_active"])
+    print(f"  the page's price check at the start: radius {obstacle[1]} -> {obstacle[1] + 0.001} m, cost {st0['cost']:.5f} -> {st1['cost']:.5f},"
+          f" change {st1['cost'] - st0['cost']:+.5f}; (sum of the active lambdas) * 0.001 = {lam0 * 0.001:+.5f}")
 
 
 
 
-def render_png(out, q, spheres, title):
+def render_png(out, q, spheres, title, eye=(-0.02, 1.84, 1.13), look_at=(0.30, 0.05, 0.40)):
     """Offline picture with Drake's VTK render engine (no browser): the Panda at q with coloured spheres
-    (target, obstacle) registered as world visuals. The camera looks from the +y side, because from the
-    front the solved wrist of run 3 hides the obstacle behind link 7 (checked 2026-09-29)."""
+    (target, obstacle) registered as world visuals, seen from eye toward look_at (figure_mode passes FIG_EYE and FIG_LOOK_AT)."""
     from PIL import Image
     from pydrake.all import (CameraInfo, ClippingRange, ColorRenderCamera, DepthRange, DepthRenderCamera,
                              MakeRenderEngineVtk, RenderCameraCore, RenderEngineVtkParams, RgbdSensor, RotationMatrix)
@@ -226,7 +343,7 @@ def render_png(out, q, spheres, title):
     for i, (centre, radius, rgba) in enumerate(spheres):
         plant.RegisterVisualGeometry(plant.world_body(), RigidTransform(centre), Sphere(radius), f"sphere{i}", rgba)
     plant.Finalize()
-    eye, target = np.array([-0.02, 1.84, 1.13]), np.array([0.30, 0.05, 0.40])   # from +y: the wrist wraps the obstacle in view
+    eye, target = np.array(eye, dtype=float), np.array(look_at, dtype=float)
     z_cam = target - eye; z_cam /= np.linalg.norm(z_cam)
     x_cam = np.cross(z_cam, [0, 0, 1.0]); x_cam /= np.linalg.norm(x_cam)
     y_cam = np.cross(z_cam, x_cam)
@@ -253,82 +370,247 @@ def autocrop(path, margin=40):
     Image.fromarray(im[y0:y1, x0:x1]).save(path)
 
 
+FIG_EYE, FIG_LOOK_AT = (1.05, -1.45, 1.0), (0.28, 0.08, 0.52)   # from the front left: the forearm under the sphere and the target
+
+
 def figure_mode(out):
     diagram, ctx, plant, pc, panda = build()
-    y1 = np.array([0.45, 0.10, 0.45]); obstacle = (np.array([0.45, 0.10, 0.53]), 0.07)
+    y1 = np.array([0.45, 0.10, 0.45]); obstacle = OBSTACLE
     res, q, b = solve_ik(plant, pc, panda, y1, obstacle=obstacle)
     # opaque orange for the obstacle: a grey semi-transparent sphere is invisible against the grey links
     render_png(out, q, [(y1, 0.02, [0.9, 0.1, 0.1, 1.0]), (obstacle[0], obstacle[1], [0.95, 0.55, 0.10, 1.0])],
-               f"run 3: success = {result_word(res)}, cost {res.get_optimal_cost():.5f}, wrist point on the sphere")
+               f"run 3: success = {result_word(res)}, cost {res.get_optimal_cost():.5f}, link 5 on the sphere",
+               eye=FIG_EYE, look_at=FIG_LOOK_AT)
 
 
 def result_word(res):
     return "True" if res.is_success() else "False"
 
 
-def meshcat_mode():
+def solve_live(plant, pc, panda, y, q_prev, obstacle):
+    """One move of the live demonstration: solve from the last shown configuration and from q_ready, keep the lower
+    cost, and describe the answer (JSON-ready). A warm start alone can fail, or land in a worse valley, for a target
+    that q_ready solves (seen 2026-10-06 after an excursion toward the reach limit); two starts keep the shown answer
+    reproducible. Also solves without the obstacle, so that the obstacle's effect on the cost can be read."""
+    t0 = time.time()
+    y = np.asarray(y, dtype=float)
+    starts = [("the last pose", q_prev)] + ([("q_ready", Q_READY)] if np.any(q_prev != Q_READY) else [])
+    solved = []
+    for label, q_guess in starts:
+        res, q, b = solve_ik(plant, pc, panda, y, obstacle=obstacle, q_guess=q_guess)
+        if res.is_success():
+            solved.append((res.get_optimal_cost(), label, q, b, res))
+    res_free, _, _ = solve_ik(plant, pc, panda, y, q_guess=q_prev)
+    c, r_o = obstacle
+    st = dict(target=y.tolist(), obstacle=[c.tolist(), r_o], success=bool(solved),
+              free_cost=float(res_free.get_optimal_cost()) if res_free.is_success() else None,
+              target_inside=bool(np.linalg.norm(y - c) < r_o), target_to_centre=float(np.linalg.norm(y - c)))
+    if solved:
+        solved.sort(key=lambda t: t[0])
+        cost, label, q, b, res = solved[0]
+        rows = obstacle_rows(res, b, obstacle)
+        gaps = sphere_gaps(plant, pc, panda, q, obstacle)
+        worst = min(gaps, key=lambda t: t[3])
+        st.update(cost=float(cost), q=q.tolist(), start=label, kappa=(-res.GetDualSolution(b["pos"])).tolist(),
+                  joints=joint_rows(plant, res, q, b),
+                  rows_active=[dict(index=k, **r) for k, r in enumerate(rows) if r["active"]],
+                  links=link_summary(rows),
+                  arm_gaps={n[6:]: min(g for m_, _, _, g in gaps if m_ == n) for n in dict.fromkeys(m_ for m_, _, _, _ in gaps)},
+                  arm_min=[worst[0], worst[3]], spheres=[[p.tolist(), r_s, g] for _, p, r_s, g in gaps],
+                  other_cost=float(solved[1][0]) if len(solved) == 2 and abs(solved[0][0] - solved[1][0]) > 1e-4 else None,
+                  other_start=solved[1][1] if len(solved) == 2 else None, n_rows=len(rows))
+        plant.SetPositions(pc, panda, q)
+    st["ms"] = round(1000 * (time.time() - t0))
+    return st
+
+
+def live_line(st):
+    y = np.array(st["target"])
+    if not st["success"]:
+        why = ("The target lies inside the sphere, so this failure is also a proof: the flange point sits inside link 7's collision sphere"
+               if st["target_inside"] else "This is a solver failure, not a proof of infeasibility")
+        return f"y* = {y}  no feasible point found by SNOPT from the last pose or from q_ready. {why}. The arm stays at its last solution; the target is drawn grey."
+    act = [f"joint {j['joint']} ({j['side']}, lambda {j['lam']:.4f})" for j in st["joints"]]
+    act += [f"{n[6:]} ({v['n_active']} sphere{'s' if v['n_active'] > 1 else ''}, lambda {v['lam']:.4f})" for n, v in st["links"].items() if v["n_active"]]
+    valleys = (f"  [two local solutions: cost {st['cost']:.4f} from {st['start']}, cost {st['other_cost']:.4f} from {st['other_start']}; the lower one is shown]"
+               if st["other_cost"] is not None else "")
+    free = f", without the sphere {st['free_cost']:.4f}" if st["free_cost"] is not None else ""
+    arm = f"; whole-arm clearance {st['arm_min'][1]*1000:+.1f} mm ({st['arm_min'][0][6:]})"
+    kappa = "; kappa (" + ", ".join(f"{k + 0.0:.3f}" for k in np.round(st["kappa"], 3)) + ")"
+    return f"y* = {y}  cost = {st['cost']:.4f}{free}  active: {', '.join(act) if act else 'none'}{arm}{kappa}{valleys}"
+
+
+PRESETS = (("start", "the start (run 3)", [0.45, 0.10, 0.45]), ("lower10", "10 cm lower", [0.45, 0.10, 0.35]),
+           ("lower15", "15 cm lower", [0.45, 0.10, 0.30]), ("base", "near the base", [0.10, 0.0, 0.25]), ("inside", "inside the sphere", [0.18, 0.10, 0.75]),
+           ("far84", "far: x = 0.84 m", [0.84, 0.10, 0.45]), ("far85", "far: x = 0.85 m", [0.85, 0.10, 0.45]))
+SLIDER_RANGES = (("x", 0.1, 0.9, 0.45), ("y", -0.6, 0.6, 0.10), ("z", 0.05, 0.9, 0.45))
+
+
+OBSTACLE_RANGES = (("x", -0.8, 0.9), ("y", -0.8, 0.8), ("z", 0.0, 1.2), ("r", 0.02, 0.30))   # m: the page's sphere fields
+
+
+def build_display(meshcat):
+    """The scene drawn in Meshcat: the solved Panda and a second Panda kept at q_ready, drawn faded (the ghost; the
+    pattern of drake/05-ik-nlp-al). The solves use build()'s plant, which has only one robot, so the ghost adds no
+    decision variables."""
+    builder = DiagramBuilder()
+    plant, scene_graph = AddMultibodyPlantSceneGraph(builder, time_step=0.0)
+    parser = Parser(plant)
+    (panda,) = parser.AddModelsFromUrl(PANDA_URL)
+    parser.SetAutoRenaming(True)
+    (ghost,) = parser.AddModelsFromUrl(PANDA_URL)
+    for m in (panda, ghost):
+        plant.WeldFrames(plant.world_frame(), plant.GetFrameByName("panda_link0", m))
+    plant.Finalize()
+    MeshcatVisualizer.AddToBuilder(builder, scene_graph, meshcat)
+    diagram = builder.Build()
+    ctx = diagram.CreateDefaultContext()
+    pc = plant.GetMyContextFromRoot(ctx)
+    plant.SetPositions(pc, ghost, Q_READY)
+    return diagram, ctx, plant, pc, panda, f"/drake/visualizer/{plant.GetModelInstanceName(ghost)}"
+
+
+def meshcat_mode(app=False, app_port=0):
+    """--meshcat: target sliders in Meshcat and one console line per solve. --app: the same solves behind a web page
+    (Meshcat embedded) that shows the program, the cost, the active rows with their multipliers, the per-link
+    clearances, a history of the solves, the target presets of the cues, editable obstacle-sphere parameters, and
+    two toggles: the ready pose q_ready as a faded ghost (on at the start) and the robot's collision spheres.
+    Nothing solves until the target or the sphere changes."""
     meshcat = StartMeshcat()
-    diagram, ctx, plant, pc, panda = build(meshcat)
-    obstacle = (np.array([0.45, 0.10, 0.53]), 0.07)
+    _, _, plant, pc, panda = build()                       # the solves' plant: one robot
+    diagram_d, ctx_d, plant_d, pc_d, panda_d, ghost_path = build_display(meshcat)
     red, grey = Rgba(0.9, 0.1, 0.1, 1.0), Rgba(0.45, 0.45, 0.45, 1.0)
-    meshcat.SetObject("/obstacle", Sphere(obstacle[1]), Rgba(0.5, 0.5, 0.5, 0.6))
-    meshcat.SetTransform("/obstacle", RigidTransform(obstacle[0]))
+    maroon, pale = Rgba(0.55, 0.1, 0.25, 0.55), Rgba(0.2, 0.45, 0.8, 0.18)
     meshcat.SetObject("/target", Sphere(0.015), red)
-    for name, lo, hi, v in (("target x", 0.1, 0.9, 0.45), ("target y", -0.6, 0.6, 0.10), ("target z", 0.05, 0.9, 0.45)):
-        meshcat.AddSlider(name, lo, hi, 0.01, v)
-    meshcat.AddButton("Stop")
-    print("Meshcat at", meshcat.web_url(), "- move the target sliders; the arm re-solves; 'Stop' to quit.")
-    print("  The sliders start at run 3's target, with the sphere drawn, so the first solve is run 3 of the printout.")
-    print("  Each move is solved twice, from the last shown configuration and from q_ready, and the lower-cost")
-    print("  solution is shown. The active set is decided by the primal gaps, not by the size of a dual.")
-    lo, hi = plant.GetPositionLowerLimits(), plant.GetPositionUpperLimits()
-    last, q_prev = None, Q_READY
-    while meshcat.GetButtonClicks("Stop") == 0:
-        y = np.array([meshcat.GetSliderValue(f"target {a}") for a in "xyz"])
-        if last is None or np.any(y != last):
-            last = y
-            meshcat.SetTransform("/target", RigidTransform(y))
-            # Two starts: the last shown configuration (the warm start) and q_ready. A warm start alone can
-            # fail, or land in a worse valley, for a target that q_ready solves (seen 2026-10-06 after an
-            # excursion toward the reach limit); solving from both keeps the shown answer reproducible.
-            starts = [("the last pose", q_prev)] + ([("q_ready", Q_READY)] if np.any(q_prev != Q_READY) else [])
-            solved = []
-            for label, q_guess in starts:
-                res, q, b = solve_ik(plant, pc, panda, y, obstacle=obstacle, q_guess=q_guess)
-                if res.is_success():
-                    solved.append((res.get_optimal_cost(), label, q, b))
-            if solved:
-                solved.sort(key=lambda s: s[0])
-                cost, label, q, b = solved[0]
-                q_prev = q
-                plant.SetPositions(pc, panda, q)
-                diagram.ForcedPublish(ctx)
-                meshcat.SetObject("/target", Sphere(0.015), red)
-                act = [f"joint {j+1} ({'lower' if abs(q[j]-lo[j]) < 1e-5 else 'upper'})" for j in range(7) if min(abs(q[j]-lo[j]), abs(q[j]-hi[j])) < 1e-5]
-                for name, _ in b["dist"]:
-                    p_k = plant.CalcRelativeTransform(pc, plant.world_frame(), plant.GetFrameByName(name, panda)).translation()
-                    if abs(np.linalg.norm(p_k - obstacle[0]) - obstacle[1]) < 1e-6:
-                        act.append(f"obstacle/{name}")
-                valleys = ""
-                if len(solved) == 2 and abs(solved[0][0] - solved[1][0]) > 1e-4:
-                    valleys = (f"  [two local solutions: cost {solved[0][0]:.4f} from {solved[0][1]}, "
-                               f"cost {solved[1][0]:.4f} from {solved[1][1]}; the lower one is shown]")
-                print(f"  y* = {y}  cost = {cost:.4f}  active: {act if act else 'none'}{valleys}")
-            else:
-                meshcat.SetObject("/target", Sphere(0.015), grey)
-                plant.SetPositions(pc, panda, q_prev)
-                p_prev = plant.CalcRelativeTransform(pc, plant.world_frame(), plant.GetFrameByName("panda_link8", panda)).translation()
-                print(f"  y* = {y}  no feasible point found by SNOPT from the last pose or from q_ready."
-                      f" This is a solver failure, not a proof of infeasibility."
-                      f" (A target inside the sphere is infeasible by construction: the flange is one of the three constrained points.)"
-                      f" The arm stays at its last solution, flange at {p_prev}; the target is drawn grey.")
+    meshcat.SetCameraPose([1.0, -0.95, 0.95], [0.22, 0.05, 0.48])        # from the front left: the forearm under the sphere and the target
+    state = dict(spheres=False, ghost=True, obstacle=(OBSTACLE[0].copy(), OBSTACLE[1]), applied_action_id=0,
+                 history=[], last=None, q_prev=Q_READY, st=None)
+    panel = None
+    if app:
+        sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "02-gauss-newton-ik"))
+        from replay_panel import ReplayPanel
+        record = dict(obstacle=[OBSTACLE[0].tolist(), OBSTACLE[1]], q_ready=Q_READY.tolist(), presets=[dict(key=k, label=l, target=t) for k, l, t in PRESETS],
+                      sliders=[dict(axis=a, lo=lo, hi=hi, value=v) for a, lo, hi, v in SLIDER_RANGES], n_spheres=len(collision_spheres()),
+                      obstacle_ranges=[dict(key=k, lo=lo, hi=hi) for k, lo, hi in OBSTACLE_RANGES],
+                      lower=plant.GetPositionLowerLimits().tolist(), upper=plant.GetPositionUpperLimits().tolist(),
+                      tolerances=dict(joint=ACTIVE_JOINT_TOL, gap=ACTIVE_GAP_TOL))
+        panel = ReplayPanel(meshcat.web_url(), record, port=app_port, page=Path(__file__).with_name("panel.html"))
+    else:
+        for a, lo, hi, v in SLIDER_RANGES:
+            meshcat.AddSlider(f"target {a}", lo, hi, 0.01, v)
+        meshcat.AddButton("Show / hide the ready pose")
+        meshcat.AddButton("Stop")
+
+    def draw_obstacle():
+        c, r_o = state["obstacle"]
+        meshcat.SetObject("/obstacle", Sphere(r_o), Rgba(0.95, 0.55, 0.10, 0.45))
+        meshcat.SetTransform("/obstacle", RigidTransform(c))
+
+    def set_ghost(on):
+        state["ghost"] = on
+        meshcat.SetProperty(ghost_path, "visible", on)
+        meshcat.SetProperty(ghost_path, "modulated_opacity", 0.25)
+
+    def draw_spheres(st):
+        meshcat.Delete("/arm_spheres")
+        if not st or not st["success"]:
+            return
+        for k, (p, r_s, g) in enumerate(st["spheres"]):
+            touching = abs(g) <= ACTIVE_GAP_TOL
+            if state["spheres"] or touching:
+                meshcat.SetObject(f"/arm_spheres/{k}", Sphere(r_s), maroon if touching else pale)
+                meshcat.SetTransform(f"/arm_spheres/{k}", RigidTransform(np.array(p)))
+
+    def solve_and_show(y):
+        state["last"] = y
+        meshcat.SetTransform("/target", RigidTransform(y))
+        st = solve_live(plant, pc, panda, y, state["q_prev"], state["obstacle"])
+        if st["success"]:
+            state["q_prev"] = np.array(st["q"])
+            meshcat.SetObject("/target", Sphere(0.015), red)
+        else:
+            meshcat.SetObject("/target", Sphere(0.015), grey)
+            worst = min(sphere_gaps(plant, pc, panda, state["q_prev"], state["obstacle"]), key=lambda t: t[3])
+            st["kept_min"] = [worst[0], worst[3]]                 # the kept pose against the current sphere, which may have moved
+        plant_d.SetPositions(pc_d, panda_d, state["q_prev"])      # a failed solve keeps the last answer
+        diagram_d.ForcedPublish(ctx_d)
+        state["st"] = st
+        draw_spheres(st)
+        default = np.allclose(state["obstacle"][0], OBSTACLE[0]) and abs(state["obstacle"][1] - OBSTACLE[1]) < 1e-12
+        state["history"] = ([dict(target=st["target"], success=st["success"], cost=st.get("cost"),
+                                  obstacle=None if default else [state["obstacle"][0].tolist(), state["obstacle"][1]],
+                                  active=live_line(st).split("active: ")[1].split(";")[0] if st["success"] else "no feasible point found")] + state["history"])[:8]
+        print("  " + live_line(st), flush=True)
+        publish()
+
+    def publish():
+        if panel is not None:
+            panel.publish(dict(st=state["st"], spheres=state["spheres"], ghost=state["ghost"],
+                               obstacle=[state["obstacle"][0].tolist(), state["obstacle"][1]], history=state["history"],
+                               applied_action_id=state["applied_action_id"], meshcat_url=meshcat.web_url()))
+
+    print("Meshcat at", meshcat.web_url(), flush=True)
+    print("  Every collision sphere of links 1 to 8 must stay clear of the orange sphere; the flange must sit on the target.")
+    print("  The faded arm is the ready pose q_ready, the reference of the cost.")
+    print("  Each move is solved from the last shown configuration and from q_ready, and the lower-cost solution is shown.")
+    print("  The active set is decided by the primal gaps (1e-5 rad, 1e-6 m), not by the size of a dual.")
+    draw_obstacle()
+    solve_and_show(np.array([v for _, _, _, v in SLIDER_RANGES]))
+    set_ghost(True)
+    faded_at = time.time()
+    if panel is not None:
+        print("Demo app at", panel.start(), flush=True)
+    ghost_clicks, stop = 0, False
+    while not stop:
+        if panel is None:
+            if meshcat.GetButtonClicks("Stop") > 0:
+                break
+            if meshcat.GetButtonClicks("Show / hide the ready pose") != ghost_clicks:
+                ghost_clicks = meshcat.GetButtonClicks("Show / hide the ready pose"); set_ghost(not state["ghost"])
+            y = np.array([meshcat.GetSliderValue(f"target {a}") for a in "xyz"])
+            if np.any(y != state["last"]):
+                solve_and_show(y)
+        else:
+            for action_id, do in panel.pop_actions():
+                state["applied_action_id"] = action_id
+                if do.startswith("target:"):
+                    vals = [float(v) for v in do[7:].split(",")]
+                    y = np.array([np.clip(v, lo, hi) for v, (_, lo, hi, _) in zip(vals, SLIDER_RANGES)])
+                    if np.any(y != state["last"]):
+                        solve_and_show(y); continue
+                elif do.startswith("obstacle:"):
+                    if do == "obstacle:default":
+                        new = (OBSTACLE[0].copy(), OBSTACLE[1])
+                    else:
+                        vals = [float(v) for v in do[9:].split(",")]
+                        if len(vals) != 4 or not all(np.isfinite(vals)):
+                            publish(); continue
+                        vals = [float(np.clip(v, lo, hi)) for v, (_, lo, hi) in zip(vals, OBSTACLE_RANGES)]
+                        new = (np.array(vals[:3]), vals[3])
+                    if not (np.allclose(new[0], state["obstacle"][0]) and new[1] == state["obstacle"][1]):
+                        state["obstacle"] = new; draw_obstacle(); solve_and_show(state["last"]); continue
+                elif do.startswith("spheres:"):
+                    state["spheres"] = do.endswith("1"); draw_spheres(state["st"])
+                elif do.startswith("ghost:"):
+                    set_ghost(do.endswith("1"))
+                elif do == "stop":
+                    stop = True
+                publish()
+        if state["ghost"] and time.time() - faded_at > 1.0:         # Meshcat resets the opacity when the meshes finish loading
+            meshcat.SetProperty(ghost_path, "modulated_opacity", 0.25); faded_at = time.time()
         time.sleep(0.05)
-    meshcat.DeleteAddedControls()
+    if panel is None:
+        meshcat.DeleteAddedControls()
+    else:
+        panel.close()
+    print("stopped", flush=True)
 
 
 if __name__ == "__main__":
     if "--png" in sys.argv:
         figure_mode(sys.argv[sys.argv.index("--png") + 1])
+    elif "--app" in sys.argv:
+        meshcat_mode(app=True, app_port=int(sys.argv[sys.argv.index("--app-port") + 1]) if "--app-port" in sys.argv else 0)
     elif "--meshcat" in sys.argv:
         meshcat_mode()
     else:

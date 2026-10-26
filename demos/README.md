@@ -117,7 +117,7 @@ A web page, paused at the start. Step, Back and the slider walk through the Gaus
 Slides: `slides/04-D1-constraints-and-komo.pdf`, page 18 (Live demo: IK as a nonlinear program on the Panda).
 
 ```bash
-python drake/03-ik-as-nlp/ik_nlp_panda.py --meshcat
+python drake/03-ik-as-nlp/ik_nlp_panda.py --app
 ```
 
 Target sliders in the browser. After each move, the arm re-solves inverse kinematics as a nonlinear program, and the terminal prints which constraints are active.

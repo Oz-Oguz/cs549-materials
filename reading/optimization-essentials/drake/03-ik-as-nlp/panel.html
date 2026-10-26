@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IK as a nonlinear program on the Panda: the whole arm clear of a sphere</title>
+<style>
+  :root { --ink: #222; --muted: #666; --maroon: #7a1f3d; --teal: #1f8b8b; --orange: #c87412; --grey: #8a8a8a; --red: #c8261a; --green: #1a9a33; --line: #ddd; --bg: #fafafa; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; color: var(--ink); background: #fff; font-size: 17px; line-height: 1.4; }
+  header { display: flex; align-items: baseline; gap: 16px; padding: 8px 16px; border-bottom: 1px solid var(--line); }
+  header h1 { font-size: 20px; margin: 0; color: var(--maroon); }
+  header .sub { color: var(--muted); font-size: 15px; }
+  header button { margin-left: auto; font: inherit; font-size: 15px; padding: 4px 8px; border: 1px solid #bbb; border-radius: 6px; background: #fff; cursor: pointer; }
+  .workspace { display: grid; grid-template-columns: minmax(0, 1fr) 520px; height: calc(100vh - 46px); }
+  .workspace[data-panel-hidden="true"] { grid-template-columns: minmax(0, 1fr); }
+  .robot-view { position: relative; min-height: 360px; }
+  .robot-view iframe { width: 100%; height: 100%; border: 0; }
+  .panel { overflow: auto; border-left: 1px solid var(--line); padding: 10px 16px 24px; background: var(--bg); }
+  .panel[hidden] { display: none; }
+  section { margin-bottom: 12px; }
+  h2 { font-size: 16px; margin: 10px 0 6px; color: var(--maroon); }
+  p { margin: 4px 0; }
+  .badge { display: block; padding: 6px 10px; border-radius: 6px; font-weight: 600; font-size: 16px; color: #fff; background: var(--grey); }
+  .badge[data-kind="success"] { background: var(--teal); }
+  .badge[data-kind="proof"] { background: var(--maroon); }
+  .badge[data-kind="failure"] { background: var(--red); }
+  .key-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 6px; }
+  .key-grid div { background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; }
+  .key-grid .k { display: block; font-size: 13px; color: var(--muted); }
+  .key-grid .v { display: block; font-size: 19px; font-weight: 600; line-height: 1.25; }
+  .key-grid .v small { font-size: 13px; font-weight: normal; color: var(--muted); }
+  .sliders label { display: grid; grid-template-columns: 112px 1fr 64px; align-items: center; gap: 8px; margin: 2px 0; }
+  .sliders input.num { width: 64px; font: inherit; font-size: 15px; }
+  .presets { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 6px; }
+  .presets button { font: inherit; font-size: 14px; padding: 5px 6px; border: 1px solid #bbb; border-radius: 6px; background: #fff; cursor: pointer; }
+  .presets button:hover { background: #f0e8eb; }
+  .presets button[data-active="true"] { background: var(--maroon); color: #fff; border-color: var(--maroon); }
+  .toggles label { display: block; margin: 2px 0; font-size: 15px; }
+  details.help { font-size: 14px; color: var(--muted); margin: 0 0 2px 22px; } details.help summary { cursor: pointer; }
+  table.eq { width: 100%; border-collapse: collapse; font-family: "Charter", Georgia, serif; font-size: 18px; background: #fff; border: 1px solid var(--line); border-radius: 6px; margin: 6px 0; }
+  .eq td { padding: 4px 8px; vertical-align: top; border-bottom: 1px solid #eee; }
+  .eq tr:last-child td { border-bottom: 0; }
+  .eq td:first-child { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 15px; color: var(--muted); white-space: nowrap; width: 1%; padding-top: 6px; }
+  .eq sup, .eq sub { font-size: 70%; }
+  table.t { width: 100%; border-collapse: collapse; font-size: 15px; background: #fff; }
+  table.t th, table.t td { padding: 3px 6px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+  table.t th:first-child, table.t td:first-child { text-align: left; }
+  table.t th { color: var(--muted); font-weight: normal; }
+  table.t tr[data-active="true"] td { background: #f0e8eb; font-weight: 600; }
+  table.t tr[data-inside="true"] td { color: var(--red); font-weight: 600; }
+  .note { font-size: 15px; color: var(--muted); }
+  .warn { color: #a00; font-size: 15px; }
+  ol.hist { margin: 4px 0 0 20px; padding: 0; font-size: 14px; }
+  ol.hist li { margin: 2px 0; }
+  .legend span { display: inline-block; margin: 2px 12px 2px 0; font-size: 14px; }
+  .swatch { display: inline-block; width: 14px; height: 14px; border-radius: 50%; vertical-align: -2px; margin-right: 5px; border: 1px solid #999; }
+  @media (max-width: 1366px) {
+    .workspace { grid-template-columns: minmax(0, 1fr) 440px; }
+    header h1 { font-size: 18px; } header .sub { font-size: 13px; }
+    body { font-size: 15px; } .key-grid .v { font-size: 17px; } .badge { font-size: 14px; } table.t { font-size: 13px; } table.eq { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>IK as a nonlinear program on the Panda: the whole arm clear of a sphere</h1>
+  <span class="sub">Deck 05 slide 18 · each target change solves one program with SNOPT; nothing moves otherwise</span>
+  <button id="panel-toggle" type="button" aria-expanded="true">Hide panel</button>
+</header>
+<main class="workspace" id="workspace" data-panel-hidden="false">
+  <div class="robot-view">
+    <iframe id="meshcat-view" src="__MESHCAT_URL__" title="Panda in Meshcat" allow="fullscreen"></iframe>
+  </div>
+  <aside class="panel" id="panel">
+    <section>
+      <span class="badge" id="badge" data-kind="">Waiting for the first solve…</span>
+      <div class="key-grid">
+        <div><span class="k">optimal cost f* = ½‖q − q<sub>ready</sub>‖²</span><span class="v" id="key-cost">—</span></div>
+        <div><span class="k">same target without the sphere</span><span class="v" id="key-free">—</span></div>
+        <div><span class="k">active inequality rows</span><span class="v" id="key-active">—</span></div>
+      </div>
+    </section>
+    <section>
+      <h2>The program</h2>
+      <table class="eq">
+        <tr><td>cost</td><td>min<sub>q</sub> ½‖q − q<sub>ready</sub>‖²</td></tr>
+        <tr><td>rail (3 rows, κ)</td><td>φ(q) − y* = 0 &nbsp;<span class="note">the flange on the target</span></td></tr>
+        <tr><td>fences (14 rows, λ)</td><td>q<sup>min</sup> ≤ q ≤ q<sup>max</sup> &nbsp;<span class="note">the URDF joint limits</span></td></tr>
+        <tr id="eq-clear"><td>fences (<span id="n-rows">44</span> rows, λ)</td><td id="eq-clear-text">r<sub>o</sub> + r<sub>p</sub> − ‖p<sub>p</sub>(q) − c‖ ≤ 0 &nbsp;<span class="note">for every collision sphere p of links 1 to 8</span></td></tr>
+      </table>
+    </section>
+    <section>
+      <h2>Target y*</h2>
+      <div class="sliders" id="sliders"></div>
+      <div class="presets" id="presets"></div>
+      <div class="toggles" style="margin-top: 8px">
+        <label><input type="checkbox" id="ghost" checked> show the ready pose q<sub>ready</sub> as a faded arm (the posture the cost measures from)</label>
+        <label><input type="checkbox" id="spheres"> show all collision spheres of the arm (the rows' geometry)</label>
+      </div>
+      <p class="legend"><span><span class="swatch" style="background:#eee"></span>ready pose (faded arm)</span><span><span class="swatch" style="background:#f0a040"></span>obstacle (c, r<sub>o</sub>)</span><span><span class="swatch" style="background:#8c1a40"></span>a collision sphere on the obstacle (an active row)</span><span><span class="swatch" style="background:#e33"></span>target</span><span><span class="swatch" style="background:#777"></span>target with no solution found</span></p>
+      <p class="warn" id="connection" hidden>Waiting for the demo…</p>
+    </section>
+    <section>
+      <h2>Obstacle sphere (c, r<sub>o</sub>)</h2>
+      <div class="sliders" id="obstacle-fields"></div>
+      <div class="presets"><button type="button" id="obstacle-default">default sphere</button></div>
+      <p class="note">A change re-solves the current target. The slide's cue numbers and the presets other than "inside the sphere" assume the default sphere. A sphere that overlaps the base or link 1 can make every target infeasible.</p>
+    </section>
+    <section>
+      <h2>Active rows and multipliers</h2>
+      <table class="t" id="active-table"><thead><tr><th>row</th><th>gap</th><th>λ</th></tr></thead><tbody></tbody></table>
+      <p class="note" id="kappa">—</p>
+      <p class="note">A row is active when its gap is below 10⁻⁶ m (a sphere) or 10⁻⁵ rad (a joint), not when its multiplier looks large. Growing r<sub>o</sub> by δ raises f* by about (Σλ) δ; moving the target by δ along x changes f* by about −κ<sub>x</sub> δ.</p>
+    </section>
+    <section>
+      <h2>Clearance of each link</h2>
+      <table class="t" id="link-table"><thead><tr><th>link</th><th>smallest clearance</th><th>active spheres</th><th>Σλ</th></tr></thead><tbody></tbody></table>
+      <p class="note" id="link-note">Clearance = ‖p<sub>p</sub>(q) − c‖ − r<sub>o</sub> − r<sub>p</sub>, the smallest over the link's collision spheres, from forward kinematics.</p>
+    </section>
+    <section>
+      <h2>Solves</h2>
+      <p class="note" id="starts">—</p>
+      <ol class="hist" id="history"></ol>
+      <p class="note">Each target change solves a separate program from the last shown configuration and from q<sub>ready</sub>, and shows the lower cost. Two starts do not guarantee a global minimum, and consecutive answers are not a collision-free motion between them.</p>
+    </section>
+  </aside>
+</main>
+<script>
+(() => {
+  const byId = id => document.getElementById(id);
+  const mm = x => (x * 1000).toFixed(1) + ' mm';
+  const vec = (v, d = 3) => '(' + v.map(x => (Math.abs(x) < 0.5 * 10 ** -d ? 0 : x).toFixed(d)).join(', ') + ')';   // no "-0.000"
+  const linkName = n => n.replace('panda_', '');
+  let record = null, lastSeq = -1, awaitingActionId = 0, chain = Promise.resolve(), queued = 0, editing = false;
+  const act = what => {
+    queued++;
+    chain = chain.then(async () => {
+      try {
+        const r = await fetch('/action?do=' + encodeURIComponent(what), { cache: 'no-store', signal: AbortSignal.timeout(5000) });
+        const reply = await r.json(); awaitingActionId = Math.max(awaitingActionId, reply.action_id || 0);
+      } catch { byId('connection').hidden = false; } finally { queued--; }
+    });
+  };
+  const parseNum = t => Number(String(t).trim().replace(',', '.'));   // a comma or a point, whatever the browser's locale
+  const target = () => record.sliders.map(s => parseNum(byId('num-' + s.axis).value));
+  const sendTarget = () => act('target:' + target().map(v => v.toFixed(2)).join(','));
+  let obstacleNow = null;
+  const sendObstacle = () => {
+    const v = record.obstacle_ranges.map(s => parseNum(byId('obn-' + s.key).value));
+    obstacleNow = [v.slice(0, 3), v[3]];    // the presets use the sphere just sent, before the demo publishes it
+    act('obstacle:' + v.map(x => x.toFixed(3)).join(','));
+  };
+  // "inside the sphere" follows the current sphere: 5 cm from its centre, as the default preset (0.18, 0.10, 0.75) m is
+  const presetTarget = p => {
+    if (p.key !== 'inside' || !obstacleNow) return p.target;
+    const c = obstacleNow[0], d = [0.005, -0.05, 0];
+    return record.sliders.map((s, i) => Math.round(Math.min(s.hi, Math.max(s.lo, c[i] + d[i])) * 100) / 100);
+  };
+  function buildControls() {
+    const box = byId('sliders');
+    for (const s of record.sliders) {
+      const lab = document.createElement('label');
+      lab.innerHTML = `<span>target ${s.axis} (m)</span><input type="range" id="rng-${s.axis}" min="${s.lo}" max="${s.hi}" step="0.01" value="${s.value}"><input type="text" inputmode="decimal" class="num" id="num-${s.axis}" value="${s.value.toFixed(2)}">`;
+      box.appendChild(lab);
+      const rng = lab.querySelector('input[type=range]'), num = lab.querySelector('input.num');
+      rng.addEventListener('input', () => { editing = true; num.value = Number(rng.value).toFixed(2); });
+      rng.addEventListener('change', () => { editing = false; sendTarget(); });
+      num.addEventListener('focus', () => { editing = true; });
+      num.addEventListener('change', () => { editing = false; const v = Math.min(s.hi, Math.max(s.lo, parseNum(num.value))); if (!Number.isFinite(v)) { num.value = Number(rng.value).toFixed(2); return; } num.value = v.toFixed(2); rng.value = v; sendTarget(); });
+      num.addEventListener('blur', () => { editing = false; });
+    }
+    const pb = byId('presets');
+    for (const p of record.presets) {
+      const b = document.createElement('button'); b.type = 'button'; b.textContent = p.label; b.dataset.key = p.key;
+      b.addEventListener('click', () => { const y = presetTarget(p); record.sliders.forEach((s, i) => { byId('num-' + s.axis).value = y[i].toFixed(2); byId('rng-' + s.axis).value = y[i]; }); sendTarget(); });
+      pb.appendChild(b);
+    }
+    const ob = byId('obstacle-fields'), labels = { x: 'centre x (m)', y: 'centre y (m)', z: 'centre z (m)', r: 'radius r<sub>o</sub> (m)' };
+    record.obstacle_ranges.forEach((s, i) => {
+      const v = i < 3 ? record.obstacle[0][i] : record.obstacle[1];
+      const lab = document.createElement('label');
+      lab.innerHTML = `<span>${labels[s.key]}</span><input type="range" id="obr-${s.key}" min="${s.lo}" max="${s.hi}" step="0.005" value="${v}"><input type="text" inputmode="decimal" class="num" id="obn-${s.key}" value="${v.toFixed(3)}">`;
+      ob.appendChild(lab);
+      const rng = lab.querySelector('input[type=range]'), num = lab.querySelector('input.num');
+      rng.addEventListener('input', () => { editing = true; num.value = Number(rng.value).toFixed(3); });
+      rng.addEventListener('change', () => { editing = false; sendObstacle(); });
+      num.addEventListener('focus', () => { editing = true; });
+      num.addEventListener('change', () => { editing = false; const x = Math.min(s.hi, Math.max(s.lo, parseNum(num.value))); if (!Number.isFinite(x)) { num.value = Number(rng.value).toFixed(3); return; } num.value = x.toFixed(3); rng.value = x; sendObstacle(); });
+      num.addEventListener('blur', () => { editing = false; });
+    });
+    byId('obstacle-default').addEventListener('click', () => { obstacleNow = record.obstacle; act('obstacle:default'); });
+    byId('ghost').addEventListener('change', e => act('ghost:' + (e.target.checked ? 1 : 0)));
+    byId('spheres').addEventListener('change', e => act('spheres:' + (e.target.checked ? 1 : 0)));
+    byId('panel-toggle').addEventListener('click', () => {
+      const panel = byId('panel'), hidden = !panel.hidden;
+      panel.hidden = hidden; byId('workspace').dataset.panelHidden = String(hidden);
+      byId('panel-toggle').textContent = hidden ? 'Show panel' : 'Hide panel';
+      byId('panel-toggle').setAttribute('aria-expanded', String(!hidden));
+    });
+  }
+  function render(state) {
+    const st = state.st; if (!st) return;
+    const busy = queued > 0 || (state.applied_action_id || 0) < awaitingActionId;
+    document.body.dataset.busy = String(busy);
+    byId('spheres').checked = state.spheres; byId('ghost').checked = state.ghost;
+    if (!busy) obstacleNow = state.obstacle;
+    if (!editing && !busy) record.obstacle_ranges.forEach((s, i) => { const v = i < 3 ? state.obstacle[0][i] : state.obstacle[1]; byId('obn-' + s.key).value = v.toFixed(3); byId('obr-' + s.key).value = v; });
+    if (!editing && !busy) record.sliders.forEach((s, i) => { byId('num-' + s.axis).value = st.target[i].toFixed(2); byId('rng-' + s.axis).value = st.target[i]; });
+    for (const b of byId('presets').children) {
+      const p = record.presets.find(x => x.key === b.dataset.key);
+      b.dataset.active = String(presetTarget(p).every((v, i) => Math.abs(v - st.target[i]) < 1e-9));
+    }
+    const badge = byId('badge');
+    if (st.success) {
+      const pen = st.arm_min[1] < -1e-6;
+      badge.dataset.kind = 'success';
+      badge.textContent = `Solved: the flange is on the target y* = ${vec(st.target, 2)} m` + (pen ? `, but ${linkName(st.arm_min[0])} is ${mm(-st.arm_min[1])} inside the sphere` : '');
+      if (pen) badge.dataset.kind = 'failure';
+      byId('key-cost').innerHTML = st.cost.toFixed(4) + ' <small>rad²</small>';
+      byId('key-free').innerHTML = st.free_cost === null ? '—' : st.free_cost.toFixed(4) + ' <small>rad²</small>';
+      const nAct = st.rows_active.length + st.joints.length;
+      byId('key-active').innerHTML = nAct === 0 ? 'none' : `${nAct} <small>(${[...new Set(st.rows_active.map(r => linkName(r.link)))].concat(st.joints.map(j => 'joint ' + j.joint)).join(', ')})</small>`;
+    } else {
+      badge.dataset.kind = st.target_inside ? 'proof' : 'failure';
+      badge.textContent = st.target_inside
+        ? `No feasible point, and none exists: y* is ${(st.target_to_centre * 100).toFixed(1)} cm from c, inside the sphere, and the flange point lies inside link 7's collision sphere. The arm keeps its last answer.`
+        : 'SNOPT found no feasible point from either start. This is a solver failure, not a proof of infeasibility. The arm keeps its last answer.';
+      if (st.kept_min && st.kept_min[1] < -1e-6) badge.textContent += ` That answer was solved for an earlier sphere: ${linkName(st.kept_min[0])} is ${mm(-st.kept_min[1])} inside the current one.`;
+      byId('key-cost').textContent = '—'; byId('key-free').innerHTML = st.free_cost === null ? 'no solution either' : st.free_cost.toFixed(4) + ' <small>rad²</small>'; byId('key-active').textContent = '—';
+    }
+    const at = byId('active-table').tBodies[0]; at.innerHTML = '';
+    if (st.success) {
+      for (const j of st.joints) at.insertAdjacentHTML('beforeend', `<tr data-active="true"><td>joint ${j.joint} at its ${j.side} limit</td><td>0</td><td>${j.lam.toFixed(4)}</td></tr>`);
+      for (const r of st.rows_active) at.insertAdjacentHTML('beforeend', `<tr data-active="true"><td>${'sphere ' + r.index + ' on ' + linkName(r.link) + ' (r<sub>p</sub> = ' + r.r_s.toFixed(3) + ' m)'}</td><td>${r.gap.toExponential(1)} m</td><td>${r.lam.toFixed(4)}</td></tr>`);
+      if (!at.children.length) at.insertAdjacentHTML('beforeend', '<tr><td>no inequality row is active</td><td></td><td></td></tr>');
+      byId('kappa').innerHTML = `Rail multipliers κ = ${vec(st.kappa, 3)} rad²/m (Drake's equality duals with the sign flipped).`;
+    } else { byId('kappa').textContent = '—'; }
+    const lt = byId('link-table').tBodies[0]; lt.innerHTML = '';
+    if (st.success) {
+      for (const [n, g] of Object.entries(st.arm_gaps)) {
+        const L = st.links['panda_' + n];
+        const inside = g < -1e-6;
+        lt.insertAdjacentHTML('beforeend', `<tr data-active="${!!(L && L.n_active)}" data-inside="${inside}"><td>${n}</td><td>${mm(g)}${inside ? ' (inside)' : ''}</td><td>${L ? L.n_active + ' of ' + L.n_rows : 'no rows'}</td><td>${L && L.n_active ? L.lam.toFixed(4) : ''}</td></tr>`);
+      }
+    }
+    byId('link-note').innerHTML = 'Clearance = ‖p<sub>p</sub>(q) − c‖ − r<sub>o</sub> − r<sub>p</sub>, the smallest over the link\'s collision spheres, from forward kinematics.';
+    byId('starts').textContent = st.success
+      ? `Shown: the answer from ${st.start}` + (st.other_cost !== null ? `; the other start ended in a different local solution with cost ${st.other_cost.toFixed(4)}.` : '; both starts agree.') + ` Solve time ${st.ms} ms.`
+      : `Solve time ${st.ms} ms.`;
+    const h = byId('history'); h.innerHTML = '';
+    for (const e of state.history) h.insertAdjacentHTML('beforeend', `<li>y* = ${vec(e.target, 2)}${e.obstacle ? ', sphere ' + vec(e.obstacle[0], 2) + ' r ' + e.obstacle[1].toFixed(3) : ''}: ${e.success ? 'cost ' + e.cost.toFixed(4) + ', active ' + e.active : e.active}</li>`);
+  }
+  async function poll() {
+    try {
+      const r = await fetch('/state', { cache: 'no-store' });
+      if (r.ok) { const s = await r.json(); byId('connection').hidden = true; if (s.sequence >= lastSeq) { lastSeq = s.sequence; window.__state = s; render(s); } }
+      else byId('connection').hidden = false;
+    } catch { byId('connection').hidden = false; }
+    setTimeout(poll, 200);
+  }
+  fetch('/record', { cache: 'no-store' }).then(r => r.json()).then(rec => { record = rec; buildControls(); poll(); });
+})();
+</script>
+</body>
+</html>

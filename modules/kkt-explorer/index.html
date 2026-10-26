@@ -34,7 +34,7 @@
 <header>
   <h1>KKT explorer: the fence, the force, and the multiplier</h1>
   <p>Minimise <b>f(z) = ½‖z − z<sub>t</sub>‖²</b> (be as close as possible to the target) while staying on the allowed side of a fence.
-     <b>Drag the red target.</b> Watch the solution z*, the downhill pull of the cost −∇f (red), and the push of the fence −λ∇g (blue) cancel each other.
+     <b>Drag the red target, or type its coordinates in the Numbers table.</b> Watch the solution z*, the downhill pull of the cost −∇f (red), and the push of the fence −λ∇g (blue) cancel each other.
      The multiplier λ switches on exactly when the target crosses the fence.</p>
 </header>
 <main>
@@ -63,7 +63,13 @@
     </div>
     <div class="status" id="status"></div>
     <h2>Numbers</h2>
-    <table id="nums"></table>
+    <table id="nums">
+      <tbody id="nums-target"><tr><td class="k">target z<sub>t</sub></td><td style="white-space:nowrap">
+        <input id="target-z1" type="number" step="0.01" min="-2.2" max="2.2" style="width:5em" aria-label="target z1" title="z₁ of the target, between −2.2 and 2.2">
+        <input id="target-z2" type="number" step="0.01" min="-2.2" max="2.2" style="width:5em" aria-label="target z2" title="z₂ of the target, between −2.2 and 2.2">
+      </td></tr></tbody>
+      <tbody id="nums-rest"></tbody>
+    </table>
     <h2>The four KKT conditions, checked live</h2>
     <table id="kkt"></table>
     <p class="small" id="sens"></p>
@@ -158,6 +164,7 @@
     const zs = el('text', { x: px(sol.z) + 10, y: py(sol.z) - 10, 'font-size': 15, 'font-weight': 600 }); zs.textContent = 'z*';
     el('circle', { cx: px(zt), cy: py(zt), r: 9, fill: '#c33', stroke: '#fff', 'stroke-width': 2, id: 'target', style: 'cursor:grab' });
     const tt = el('text', { x: px(zt) + 12, y: py(zt) + 5, 'font-size': 15, fill: '#c33', 'font-weight': 600 }); tt.textContent = 'z_t (drag)';
+    syncTargetFields();
     report(sol, gf, push);
   }
 
@@ -170,8 +177,8 @@
     if (sol.rail) st.innerHTML = `<b>Rail (equality).</b> The solution is the projection of the target onto the line. κ = ${f3(sol.lam)} ${sol.lam >= 0 ? 'pulls the point back down onto the rail' : 'pulls it back up onto the rail'}: an equality multiplier has <b>either sign</b>, because a rail can push both ways.`;
     else if (sol.active) st.innerHTML = `<b>Leaning on the fence.</b> The target is outside, the solution sits on the boundary (g = 0), and the fence pushes with λ = ${f3(sol.lam)} > 0. The push cancels the pull exactly: ∇f + λ∇g = (${f3(sum[0])}, ${f3(sum[1])}).`;
     else st.innerHTML = `<b>Fence not touched.</b> The target is inside, so the unconstrained minimum z* = z<sub>t</sub> is feasible, ∇f(z*) = 0, and the multiplier is λ = 0 while g(z*) = ${f3(sol.g)} < 0: the constraint is <b>inactive</b>.`;
-    document.getElementById('nums').innerHTML = `
-      <tr><td class="k">target z<sub>t</sub></td><td>(${f3(zt[0])}, ${f3(zt[1])})</td></tr>
+    // the target row is fixed markup holding the two typed-target fields; only the rows below it are rebuilt
+    document.getElementById('nums-rest').innerHTML = `
       <tr><td class="k">solution z*</td><td>(${f3(sol.z[0])}, ${f3(sol.z[1])})</td></tr>
       <tr><td class="k">f* = ½‖z* − z<sub>t</sub>‖²</td><td>${f3(fstar)}</td></tr>
       <tr><td class="k">${sol.rail ? 'h(z*)' : 'g(z*)'}</td><td>${f3(sol.g)}</td></tr>
@@ -194,6 +201,26 @@
     else if (sol.active) { const drop = 0.5 * sol.lam * sol.lam - 0.5 * Math.max(0, sol.lam - 0.1) ** 2; sens.textContent = `Sensitivity: widen the fence by 0.1 (move the boundary outward) and f* drops by ${f3(drop)}. The first-order prediction is 0.1·λ = ${f3(0.1 * sol.lam)}. While λ > 0.1, the constraint stays active and the exact finite drop is 0.1·λ − 0.005. At λ ≤ 0.1, the widened fence reaches or passes the target, and the whole ½λ² disappears. The multiplier gives the local cost change per unit of relaxation.`; }
     else sens.textContent = `Sensitivity: widening the fence changes nothing (λ = 0): the constraint has no price while it is inactive.`;
   }
+
+  // typed target (2026-10-24): the two number fields in the Numbers table's target row follow dragging and the preset
+  // buttons; a field being edited is not overwritten, and a typed value is clamped to the plot's range [-R, R]
+  const tf = [document.getElementById('target-z1'), document.getElementById('target-z2')];
+  function syncTargetFields() {
+    tf.forEach((f, i) => { if (document.activeElement !== f) f.value = String(+zt[i].toFixed(3)); });
+  }
+  function readTargetField(i, commit) {
+    const raw = tf[i].value.trim();
+    if (!/^-?(\d+\.?\d*|\.\d+)$/.test(raw)) { if (commit) tf[i].value = String(+zt[i].toFixed(3)); return; }
+    const v = Math.max(-R, Math.min(R, Number(raw)));
+    zt = i === 0 ? [v, zt[1]] : [zt[0], v];
+    if (commit) tf[i].value = String(+v.toFixed(3));
+    draw();
+  }
+  tf.forEach((f, i) => {
+    f.addEventListener('input', () => readTargetField(i, false));          // live while typing or using the arrows
+    f.addEventListener('change', () => readTargetField(i, true));          // Enter or leaving the field: clamp and tidy
+    f.addEventListener('blur', () => syncTargetFields());
+  });
 
   // dragging
   let dragging = false;

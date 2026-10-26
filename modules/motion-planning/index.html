@@ -1,0 +1,727 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sampling demo · a tree grows through the configuration space of the two-link arm</title>
+<style>
+  :root { --accent: #9b1b4b; --ink: #222; --muted: #777; --soft: #f6eef1; --ok: #2a7d2a; --bad: #b00020; --start: #1f5fbf; --goal: #2a7d2a; --sample: #e08a00; --near: #555; --path: #1f5fbf; }
+  body { margin: 0; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; color: var(--ink); background: #fff; }
+  header { padding: 12px 22px 4px; }
+  header h1 { margin: 0 0 4px; font-size: 21px; color: var(--accent); }
+  header p { margin: 0; color: var(--muted); font-size: 14px; max-width: 1100px; }
+  main { display: grid; grid-template-columns: minmax(300px, 1fr) minmax(300px, 1fr) 360px; gap: 16px; padding: 8px 22px 20px; align-items: start; }
+  .view h2 { font-size: 15px; margin: 0 0 4px; color: var(--accent); }
+  svg.plot { width: 100%; height: auto; border: 1px solid #ddd; border-radius: 8px; background: #fff; display: block; }
+  .panel { font-size: 14px; line-height: 1.4; }
+  .panel h2 { font-size: 15px; margin: 10px 0 4px; color: var(--accent); }
+  fieldset { border: 1px solid #ddd; border-radius: 8px; padding: 6px 10px; margin: 0 0 8px; }
+  legend { color: var(--muted); font-size: 12px; padding: 0 4px; }
+  button { font: inherit; font-size: 14px; padding: 5px 12px; margin: 2px 4px 2px 0; border: 1px solid #bbb; border-radius: 6px; background: #fafafa; cursor: pointer; }
+  button:hover { background: #eee; } button:disabled { color: #aaa; cursor: default; background: #f7f7f7; }
+  button.primary { background: var(--accent); color: #fff; border-color: var(--accent); } button.primary:hover { background: #7d1239; }
+  button.primary:disabled { background: #f7f7f7; color: #aaa; border-color: #ddd; }
+  input[type=number] { font: inherit; width: 5em; }
+  label { cursor: pointer; }
+  table { border-collapse: collapse; font-size: 13px; margin: 2px 0 6px; width: 100%; }
+  td { padding: 2px 8px 2px 0; vertical-align: top; } td.k { color: var(--muted); white-space: nowrap; width: 9em; }
+  .status { background: var(--soft); border-left: 4px solid var(--accent); padding: 6px 10px; border-radius: 6px; margin: 6px 0; min-height: 2.6em; }
+  .result { border-left-color: var(--ok); background: #eef7ee; } .result.fail { border-left-color: var(--bad); background: #fbeeee; }
+  .ok { color: var(--ok); font-weight: 600; } .bad { color: var(--bad); font-weight: 600; }
+  .legend { font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
+  .legend span { display: inline-block; margin-right: 10px; }
+  .sw { display: inline-block; width: 18px; height: 3px; vertical-align: middle; margin-right: 4px; }
+  .sw.box { height: 10px; border: 1px solid #aaa; }
+  code { font-size: 0.92em; background: #f4f4f4; padding: 0 4px; border-radius: 4px; }
+  .small { font-size: 12px; color: var(--muted); }
+  body.edge .rrt-only { display: none !important; } body:not(.edge) .edge-only { display: none !important; }
+  svg.clplot { width: 100%; height: auto; border: 1px solid #ddd; border-radius: 8px; background: #fff; display: block; margin: 2px 0 4px; }
+  @media (max-width: 1100px) { main { grid-template-columns: 1fr 1fr; } .panel { grid-column: 1 / -1; } }
+</style>
+</head>
+<body>
+<header>
+  <h1 id="h-title">Sampling demo: a tree grows through the configuration space of the two-link arm</h1>
+  <p id="h-text">This page grows a rapidly exploring random tree (RRT) from the start posture of the arm (links 0.4 m and 0.3 m) toward the goal posture, the positive-elbow solution of the tip target (0.5, 0.2) m.
+     In the default model no part of either link may come within 5 mm of the disc, and the straight edge between the two postures is invalid. Each <b>Step</b> draws one random configuration, finds the nearest tree node,
+     proposes an extension of at most 10°, checks that edge with configurations at most 1° apart in each joint, and keeps or rejects it. Each posture drawn on the left is one point on the right.
+     Hover over the right view to see the posture at the mouse.</p>
+</header>
+<main>
+  <div class="view">
+    <h2>Workspace, in meters</h2>
+    <svg id="ws" class="plot" viewBox="0 0 520 520" role="img" aria-label="the two-link arm, the disc, the postures of this step"></svg>
+    <div class="legend" id="ws-legend">
+      <span><span class="sw" style="background:#1f5fbf"></span>start posture</span>
+      <span><span class="sw" style="background:#2a7d2a"></span>goal posture</span>
+      <span class="rrt-only"><span class="sw" style="background:#e08a00; border-top: 2px dashed #e08a00; height:0"></span>sampled posture</span>
+      <span class="rrt-only"><span class="sw" style="background:#555"></span>nearest tree node</span>
+      <span class="rrt-only"><span class="sw" style="background:#2a7d2a; height:4px"></span>accepted extension</span>
+      <span class="rrt-only"><span class="sw" style="border-top: 2px dotted #b00020; height:0; background:none"></span>rejected extension</span>
+      <span class="rrt-only"><span class="sw" style="background:#b00020; height:4px"></span>first invalid configuration on it, with a tie to the disc</span>
+      <span class="edge-only"><span class="sw" style="background:#9a9a9a"></span>postures already checked</span>
+      <span class="edge-only"><span class="sw" style="background:#d07a00; height:4px"></span>the current check, with a tie from its closest point to the disc center</span>
+      <span class="edge-only"><span class="sw" style="background:#b00020; height:4px"></span>a check that fails</span>
+      <span><span class="sw box" style="background:#bbb"></span>disc, radius 0.05 m</span>
+      <span><span class="sw" style="border-top: 2px dashed #888; height:0; background:none"></span>5 mm clearance ring</span>
+    </div>
+  </div>
+  <div class="view">
+    <h2>Configuration space, joint angles in degrees</h2>
+    <svg id="cs" class="plot" viewBox="0 0 520 520" role="img" aria-label="the joint box, the forbidden region, the tree, the sample and the extension"></svg>
+    <div class="legend" id="cs-legend">
+      <span><span class="sw box" style="background:#c9c9c9"></span><span id="cs-legend-forbidden">forbidden: part of a link would come within 5 mm of the disc</span></span>
+      <span id="cs-legend-missed" style="display:none"><span class="sw box" style="background:#f3c6c6"></span>also forbidden for the whole links, but allowed by the three-point checker</span>
+      <span class="rrt-only"><span class="sw" style="background:#9a9a9a"></span>tree edges</span>
+      <span class="rrt-only"><span class="sw" style="background:#1f5fbf; height:4px"></span>path found</span>
+      <span><span class="sw" style="border-top: 2px dashed #b00020; height:0; background:none"></span>direct edge start to goal</span>
+      <span class="rrt-only">× sample, ○ nearest node, · checked configurations, <span style="color:#b00020">×</span> first invalid one</span>
+      <span class="edge-only">○ scheduled check, ● checked and valid, <span style="color:#b00020">●</span> checked and invalid, <span style="color:#d07a00">◯</span> the current check</span>
+    </div>
+  </div>
+  <aside class="panel">
+    <div>
+      <button id="step" class="primary rrt-only">Step</button>
+      <button id="run" class="rrt-only">Run</button>
+      <button id="enext" class="primary edge-only">Next check</button>
+      <button id="erun" class="edge-only">Check until rejected</button>
+      <button id="reset">Reset</button>
+      <button id="play" class="rrt-only" disabled title="Move the arm along the path found, interpolated at 1° per joint, at an arbitrary display pace: no timing or speed is implied">Play path</button>
+    </div>
+    <fieldset>
+      <legend>what the edge check models</legend>
+      <label><input type="radio" name="checker" value="links" checked> <b>whole links</b> as line segments (the demo's model)</label><br>
+      <label><input type="radio" name="checker" value="points"> <b>three points</b>: tip, elbow, middle of link 2 (the model of the KOMO worked example, here with the same 5 mm margin)</label>
+    </fieldset>
+    <div class="rrt-only">
+      <label>seed <input id="seed" type="number" min="0" max="4294967295" step="1" value="7" title="the seed of the random generator; Reset starts the same tree again"></label>
+      <label style="margin-left:10px">budget <input id="budget" type="number" min="1" max="100000" step="1" value="3000" title="iterations before the planner gives up"></label>
+    </div>
+    <div>
+      <label class="rrt-only" title="draw the straight edge from the start to the goal in the configuration space, and halfway along it the posture whose second link crosses the disc"><input type="checkbox" id="direct" checked> direct edge</label>
+      <label style="margin-left:10px" title="show only the 180° × 180° window around the start and the goal; samples outside it are cut off at the frame"><input type="checkbox" id="zoom"> zoom in on the start and the goal</label>
+    </div>
+    <div class="status" id="status" aria-live="polite"></div>
+    <div class="status result" id="result" style="display:none" aria-live="polite"></div>
+    <div class="edge-only">
+      <h2>Clearance at each check</h2>
+      <svg id="cl" class="clplot" viewBox="0 0 360 230" role="img" aria-label="clearance from the disc surface at each check of the direct edge"></svg>
+      <div class="legend"><span>● checked, <span style="color:#b00020">●</span> below the 5 mm requirement; shaded: invalid; open marks: not yet checked</span></div>
+      <h2>This check</h2>
+      <table id="echeck">
+        <tr><td class="k">check</td><td id="ec-j">—</td></tr>
+        <tr><td class="k">configuration</td><td id="ec-q">—</td></tr>
+        <tr><td class="k">closest part</td><td id="ec-part">—</td></tr>
+        <tr><td class="k">clearance</td><td id="ec-c">—</td></tr>
+        <tr><td class="k">verdict</td><td id="ec-v">—</td></tr>
+      </table>
+    </div>
+    <h2 class="rrt-only">This iteration</h2>
+    <table id="event" class="rrt-only">
+      <tr><td class="k">sample</td><td id="ev-sample">—</td></tr>
+      <tr><td class="k">nearest node</td><td id="ev-near">—</td></tr>
+      <tr><td class="k">extension</td><td id="ev-ext">—</td></tr>
+      <tr><td class="k">edge check</td><td id="ev-check">—</td></tr>
+      <tr><td class="k">result</td><td id="ev-result">—</td></tr>
+      <tr><td class="k">goal test</td><td id="ev-goal">—</td></tr>
+    </table>
+    <h2>Fixed settings</h2>
+    <table id="params">
+      <tr><td class="k">joint box</td><td>−180° ≤ q₁, q₂ ≤ 180°; the page treats −180° and 180° as far apart</td></tr>
+      <tr><td class="k">start, goal</td><td id="p-endpoints"></td></tr>
+      <tr><td class="k">disc</td><td>center (0.49, 0.35) m, radius 0.05 m, plus a 5 mm margin</td></tr>
+      <tr class="rrt-only"><td class="k">extension</td><td>at most 10° (Euclidean, in joint space)</td></tr>
+      <tr class="rrt-only"><td class="k">goal sampling</td><td>each sample is the goal itself with probability 0.1</td></tr>
+      <tr><td class="k">edge check</td><td>configurations at most 1° apart in each joint, each checked by the model above; the first invalid one rejects the edge</td></tr>
+      <tr class="rrt-only"><td class="k">generator</td><td>a seeded generator (mulberry32); Reset restarts it from the same seed, so the same tree grows again</td></tr>
+    </table>
+    <p class="small edge-only">Next in the lecture: a tree planner tests many such connections on the same scene. <a href="?seed=7&amp;budget=3000">Open the tree demo</a>.</p>
+    <p class="small">Companion notes: <code>modules/motion-planning/notes.md</code>. Reference implementation with the same numbers: <code>modules/motion-planning/rrt_two_link.py</code>. Lecture: Deck 06, sampling-based planning.</p>
+  </aside>
+</main>
+<script>
+(function () {
+  'use strict';
+  // ----------------------------------------------------------------- the scene (radians inside, degrees on screen)
+  const L1 = 0.4, L2 = 0.3, DEG = Math.PI / 180;
+  const Q_START = [30 * DEG, 45 * DEG], Y_STAR = [0.5, 0.2];
+  const OBS_C = [0.49, 0.35], OBS_R = 0.05, MARGIN = 0.005;
+  const BOUND = Math.PI, STEP = 10 * DEG, P_GOAL = 0.1, SUB = 1 * DEG;
+  function ikPositiveElbow(y) {
+    const c2 = (y[0] * y[0] + y[1] * y[1] - L1 * L1 - L2 * L2) / (2 * L1 * L2);
+    const q2 = Math.acos(c2);
+    return [Math.atan2(y[1], y[0]) - Math.atan2(L2 * Math.sin(q2), L1 + L2 * Math.cos(q2)), q2];
+  }
+  const Q_GOAL = ikPositiveElbow(Y_STAR);
+
+  // ----------------------------------------------------------------- the generator (the same bits as rrt_two_link.py)
+  function mulberry32(seed) {
+    let a = seed >>> 0;
+    return function () {
+      a = (a + 0x6D2B79F5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  // ----------------------------------------------------------------- kinematics and the two checkers
+  function points(q) {
+    const e = [L1 * Math.cos(q[0]), L1 * Math.sin(q[0])];
+    const t = [e[0] + L2 * Math.cos(q[0] + q[1]), e[1] + L2 * Math.sin(q[0] + q[1])];
+    const m = [e[0] + 0.5 * L2 * Math.cos(q[0] + q[1]), e[1] + 0.5 * L2 * Math.sin(q[0] + q[1])];
+    return { base: [0, 0], e, t, m };
+  }
+  function segmentDistance(a, b, c) {
+    const dx = b[0] - a[0], dy = b[1] - a[1], dd = dx * dx + dy * dy;
+    let s = dd > 0 ? ((c[0] - a[0]) * dx + (c[1] - a[1]) * dy) / dd : 0;
+    s = s < 0 ? 0 : s > 1 ? 1 : s;
+    const p = [a[0] + s * dx, a[1] + s * dy];
+    return { d: Math.sqrt((c[0] - p[0]) ** 2 + (c[1] - p[1]) ** 2), p };
+  }
+  function pointDistance(p, c) { return { d: Math.sqrt((p[0] - c[0]) ** 2 + (p[1] - c[1]) ** 2), p }; }
+  // smallest distance from the modelled arm to the disc's surface, minus the margin (negative: invalid), with the part
+  function clearance(q, checker) {
+    const P = points(q);
+    const cands = checker === 'links'
+      ? [['link 1', segmentDistance(P.base, P.e, OBS_C)], ['link 2', segmentDistance(P.e, P.t, OBS_C)]]
+      : [['tip', pointDistance(P.t, OBS_C)], ['elbow', pointDistance(P.e, OBS_C)], ['mid of link 2', pointDistance(P.m, OBS_C)]];
+    let best = cands[0];
+    for (const c of cands) if (c[1].d < best[1].d) best = c;
+    return { c: best[1].d - OBS_R - MARGIN, part: best[0], p: best[1].p };
+  }
+  const inBounds = q => q[0] >= -BOUND && q[0] <= BOUND && q[1] >= -BOUND && q[1] <= BOUND;
+  function valid(q, checker) {
+    if (!inBounds(q)) return { ok: false, part: 'outside the joint box', c: null, p: null };
+    const r = clearance(q, checker);
+    return { ok: r.c >= 0, part: r.part, c: r.c, p: r.p };
+  }
+  const dist = (a, b) => Math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2);
+  // the edge check: qa is valid; configurations at most SUB apart per joint, in order; the first invalid one rejects
+  // the direct edge start -> goal under a checker: its check, and the configuration along it with the least clearance
+  function directEdge(checker) {
+    if (DIRECT[checker]) return DIRECT[checker];
+    const edge = checkEdge(Q_START, Q_GOAL, checker);
+    let deepest = null;
+    for (let j = 0; j <= edge.n; j++) {
+      const q = [Q_START[0] + (j / edge.n) * (Q_GOAL[0] - Q_START[0]), Q_START[1] + (j / edge.n) * (Q_GOAL[1] - Q_START[1])];
+      const r = clearance(q, checker);
+      if (!deepest || r.c < deepest.c) deepest = { j, q, c: r.c, part: r.part, p: r.p };
+    }
+    return (DIRECT[checker] = { edge, deepest });
+  }
+  function checkEdge(qa, qb, checker) {
+    const n = Math.max(1, Math.ceil(Math.max(Math.abs(qb[0] - qa[0]), Math.abs(qb[1] - qa[1])) / SUB));
+    const checked = [];
+    let worst = Infinity;
+    for (let j = 1; j <= n; j++) {
+      const q = [qa[0] + (j / n) * (qb[0] - qa[0]), qa[1] + (j / n) * (qb[1] - qa[1])];
+      const v = valid(q, checker);
+      checked.push({ j, q, ok: v.ok, c: v.c, part: v.part, p: v.p });
+      if (v.c !== null) worst = Math.min(worst, v.c);
+      if (!v.ok) return { ok: false, n, j, q, part: v.part, c: v.c, p: v.p, worst, checked };
+    }
+    return { ok: true, n, j: null, worst, checked };
+  }
+
+  // ----------------------------------------------------------------- the tree
+  const S = { seed: 7, budget: 3000, checker: 'links', showDirect: true, zoom: false, mode: 'rrt' };   // mode 'edge': ?mode=edge
+  const DIRECT = { links: null, points: null };   // the direct edge's check and its deepest posture, per checker
+  let rng, nodes, parents, events, outcome, goalIndex, iteration, path, revalidation, timer = null, playTimer = null, playQ = null, hoverQ = null;
+  // ?mode=edge: every scheduled configuration of the direct edge, j = 0..n (0 is the start, which the edge check assumes
+  // valid); the edge check evaluates j = 1, 2, ... and stops at the first invalid one. eK is the check on screen.
+  const EDGE = { links: null, points: null };
+  function edgeRows(checker) {
+    if (EDGE[checker]) return EDGE[checker];
+    const n = Math.max(1, Math.ceil(Math.max(Math.abs(Q_GOAL[0] - Q_START[0]), Math.abs(Q_GOAL[1] - Q_START[1])) / SUB));
+    const rows = [];
+    for (let j = 0; j <= n; j++) {
+      const q = [Q_START[0] + (j / n) * (Q_GOAL[0] - Q_START[0]), Q_START[1] + (j / n) * (Q_GOAL[1] - Q_START[1])];
+      const r = clearance(q, checker);
+      rows.push({ j, q, c: r.c, part: r.part, p: r.p });
+    }
+    let first = null;
+    for (let j = 1; j <= n; j++) if (rows[j].c < 0) { first = j; break; }
+    let deepest = 0;
+    for (const r of rows) if (r.c < rows[deepest].c) deepest = r.j;
+    return (EDGE[checker] = { n, rows, first, deepest });
+  }
+  let eK = 0, eTimer = null;
+  function stopEdgeRun() { if (eTimer) { clearInterval(eTimer); eTimer = null; } }
+  function nextCheck() { const E = edgeRows(S.checker); if (eK >= E.n) return; eK++; draw(); describe(); }
+  // Check until rejected: on to the first failure at a pace one can follow; past it, a faster diagnostic scan to the goal
+  function startEdgeRun() {
+    const E = edgeRows(S.checker);
+    if (eK >= E.n) return;
+    const target = E.first !== null && eK < E.first ? E.first : E.n;
+    eTimer = setInterval(() => { if (eK < target) { eK++; draw(); } if (eK >= target) stopEdgeRun(); describe(); }, target === E.first ? 250 : 80);
+    describe();
+  }
+  function reset() {
+    stopRun(); stopPlay();
+    rng = mulberry32(S.seed);
+    nodes = [Q_START]; parents = [-1]; events = []; outcome = 'running'; goalIndex = null; iteration = 0; path = null; revalidation = null; playQ = null;
+    stopEdgeRun(); eK = 0;
+    document.getElementById('play').disabled = true;
+    draw(); describe();
+  }
+  function step() {
+    if (outcome !== 'running') return null;
+    const i = ++iteration;
+    const u = rng();
+    let qRand, kind;
+    if (u < P_GOAL) { qRand = Q_GOAL; kind = 'goal'; }
+    else { qRand = [-Math.PI + 2 * Math.PI * rng(), -Math.PI + 2 * Math.PI * rng()]; kind = 'uniform'; }
+    let near = 0, best = Infinity;
+    for (let k = 0; k < nodes.length; k++) { const d = dist(qRand, nodes[k]); if (d < best) { best = d; near = k; } }
+    const qNear = nodes[near], d = best;
+    const qNew = d <= STEP ? qRand : [qNear[0] + STEP * (qRand[0] - qNear[0]) / d, qNear[1] + STEP * (qRand[1] - qNear[1]) / d];
+    const edge = checkEdge(qNear, qNew, S.checker);
+    const ev = { i, kind, u, qRand, near, qNew, d, edge, index: null, goal: false, goalTry: null };
+    if (edge.ok) {
+      nodes.push(qNew); parents.push(near);
+      ev.index = nodes.length - 1;
+      if (qNew === Q_GOAL) { outcome = 'connected'; goalIndex = ev.index; ev.goal = true; }
+      else if (dist(qNew, Q_GOAL) <= STEP) {
+        ev.goalTry = checkEdge(qNew, Q_GOAL, S.checker);
+        if (ev.goalTry.ok) { nodes.push(Q_GOAL); parents.push(ev.index); outcome = 'connected'; goalIndex = nodes.length - 1; ev.goal = true; }
+      }
+    }
+    events.push(ev);
+    if (outcome === 'connected') finish();
+    else if (iteration >= S.budget) { outcome = 'budget'; stopRun(); }
+    draw(); describe();
+    return ev;
+  }
+  function finish() {
+    stopRun();
+    path = [];
+    for (let k = goalIndex; k >= 0; k = parents[k]) path.push(k);
+    path.reverse();
+    // check the whole path again with the same rule, and also with the whole-link model (the same thing in links mode):
+    // the planner's test is repeated (it stops at an edge's first invalid configuration; `checked` counts what it
+    // evaluated), and a complete scan of every scheduled configuration (j = 0..n, no early stop) gives `worst`
+    const again = checker => {
+      let worst = Infinity, checked = 0, scheduled = 0, fail = null;
+      for (let e = 0; e + 1 < path.length; e++) {
+        const a = nodes[path[e]], b = nodes[path[e + 1]];
+        const r = checkEdge(a, b, checker);
+        checked += r.ok ? r.n : r.j; scheduled += r.n;
+        for (let j = 0; j <= r.n; j++) worst = Math.min(worst, clearance([a[0] + (j / r.n) * (b[0] - a[0]), a[1] + (j / r.n) * (b[1] - a[1])], checker).c);
+        if (!r.ok && !fail) fail = { edge: [path[e], path[e + 1]], j: r.j, n: r.n, q: r.q, part: r.part, c: r.c };
+      }
+      return { worst, checked, scheduled, fail };
+    };
+    let length = 0;
+    for (let e = 0; e + 1 < path.length; e++) length += dist(nodes[path[e]], nodes[path[e + 1]]);
+    // the deepest whole-link configuration over EVERY checked configuration of every edge (j = 0..n), independent of the early stop
+    let deepest = null;
+    for (let e = 0; e + 1 < path.length; e++) {
+      const a = nodes[path[e]], b = nodes[path[e + 1]];
+      const n = Math.max(1, Math.ceil(Math.max(Math.abs(b[0] - a[0]), Math.abs(b[1] - a[1])) / SUB));
+      for (let j = 0; j <= n; j++) {
+        const q = [a[0] + (j / n) * (b[0] - a[0]), a[1] + (j / n) * (b[1] - a[1])];
+        const r = clearance(q, 'links');
+        if (!deepest || r.c < deepest.c) deepest = { c: r.c, part: r.part, p: r.p, q, e, j, n, where: j === n ? `node #${path[e + 1]}` : j === 0 ? `node #${path[e]}` : `configuration ${j} of ${n} on edge #${path[e]} → #${path[e + 1]}` };
+      }
+    }
+    revalidation = { same: again(S.checker), links: again('links'), length, deepest };
+    document.getElementById('play').disabled = false;
+  }
+  function stopRun() { if (timer) { clearInterval(timer); timer = null; } document.getElementById('run').textContent = 'Run'; }
+  function startRun() {
+    if (outcome !== 'running') return;
+    stopPlay();
+    timer = setInterval(() => { step(); if (outcome !== 'running') stopRun(); }, 40);
+    document.getElementById('run').textContent = 'Pause';
+  }
+  function stopPlay() { if (playTimer) { clearInterval(playTimer); playTimer = null; } playQ = null; document.getElementById('play').textContent = 'Play path'; }
+  function startPlay() {
+    if (!path) return;
+    stopRun();
+    const frames = [];
+    for (let e = 0; e + 1 < path.length; e++) {
+      const a = nodes[path[e]], b = nodes[path[e + 1]];
+      const n = Math.max(1, Math.ceil(Math.max(Math.abs(b[0] - a[0]), Math.abs(b[1] - a[1])) / SUB));
+      for (let j = e === 0 ? 0 : 1; j <= n; j++) frames.push([a[0] + (j / n) * (b[0] - a[0]), a[1] + (j / n) * (b[1] - a[1])]);
+    }
+    let f = 0;
+    document.getElementById('play').textContent = 'Stop';
+    playTimer = setInterval(() => { playQ = frames[f++]; draw(); if (f >= frames.length) { stopPlay(); draw(); } }, 30);
+  }
+
+  // ----------------------------------------------------------------- drawing
+  const NS = 'http://www.w3.org/2000/svg';
+  const ws = document.getElementById('ws'), cs = document.getElementById('cs');
+  function el(parent, tag, attrs, text) {
+    const e = document.createElementNS(NS, tag);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    if (text !== undefined) e.textContent = text;
+    parent.appendChild(e); return e;
+  }
+  const fixed = (v, digits) => { const t = (v / DEG).toFixed(digits); return /^-0(\.0+)?$/.test(t) ? t.slice(1) : t; };   // no '-0°'
+  const fmt = (q, digits = 2) => `(${fixed(q[0], digits)}°, ${fixed(q[1], digits)}°)`;
+  const mm = c => `${(c * 1000).toFixed(1)} mm`;
+  // the page stores c = d_clear − 5 mm; it prints d_clear, the clearance from the disc's surface, as the deck does
+  const clr = c => `${mm(c + MARGIN)} from the disc surface`;
+  // how far inside: the disc's surface is crossed only beyond the 5 mm margin
+  const surf = c => (c + MARGIN >= 0 ? `${mm(c + MARGIN)} from the disc surface` : `${mm(-c - MARGIN)} inside the disc`);
+  const depthWords = c => (-c - MARGIN > 0 ? `${mm(-c - MARGIN)} inside the disc` : `${mm(-c)} inside the 5 mm clearance ring, outside the disc`);
+  // workspace: [-0.75, 0.75] m -> 520 px, y up
+  const WR = 0.75, WS = 520;
+  const wx = x => (x + WR) / (2 * WR) * WS, wy = y => WS - (y + WR) / (2 * WR) * WS;
+  // configuration space: a plot area with margins, [-180, 180] degrees each way
+  const CM = { l: 46, r: 12, t: 12, b: 40 }, CW = 520 - CM.l - CM.r, CH = 520 - CM.t - CM.b;
+  // the window shown: the whole box, or (zoom) a 180° × 180° window around the start and the goal (the forbidden band continues below it)
+  // in the edge-check view (?mode=edge) the zoom is a 90° × 90° window, so that the 1° checks along the edge stay apart
+  const win = () => !S.zoom ? { x0: -180, y0: -180, w: 360, h: 360, tick: 90 } : S.mode === 'edge' ? { x0: -30, y0: 30, w: 90, h: 90, tick: 15 } : { x0: -60, y0: -30, w: 180, h: 180, tick: 30 };
+  const cx = q1 => { const W = win(); return CM.l + (q1 / DEG - W.x0) / W.w * CW; };
+  const cy = q2 => { const W = win(); return CM.t + CH - (q2 / DEG - W.y0) / W.h * CH; };
+  const cq = (px, py) => { const W = win(); return [((px - CM.l) / CW * W.w + W.x0) * DEG, ((CM.t + CH - py) / CH * W.h + W.y0) * DEG]; };
+
+  let rasterHref = { links: null, points: null };
+  function raster(checker) {
+    // one pixel per degree: 361 x 361 clearance evaluations of this checker (and of the whole links, for the difference)
+    if (rasterHref[checker]) return rasterHref[checker];
+    const n = 361, canvas = document.createElement('canvas'); canvas.width = n; canvas.height = n;
+    const ctx = canvas.getContext('2d'), img = ctx.createImageData(n, n);
+    for (let iy = 0; iy < n; iy++) for (let ix = 0; ix < n; ix++) {
+      const q = [(ix - 180) * DEG, (180 - iy) * DEG];
+      const bad = !valid(q, checker).ok;
+      const badLinks = checker === 'links' ? bad : !valid(q, 'links').ok;
+      const o = 4 * (iy * n + ix);
+      if (bad) { img.data[o] = 0xc9; img.data[o + 1] = 0xc9; img.data[o + 2] = 0xc9; img.data[o + 3] = 255; }
+      else if (badLinks) { img.data[o] = 0xf3; img.data[o + 1] = 0xc6; img.data[o + 2] = 0xc6; img.data[o + 3] = 255; }
+      else img.data[o + 3] = 0;
+    }
+    ctx.putImageData(img, 0, 0);
+    rasterHref[checker] = canvas.toDataURL();
+    return rasterHref[checker];
+  }
+
+  function arm(parent, q, color, width, dash, opacity) {
+    const P = points(q);
+    const g = el(parent, 'g', { stroke: color, 'stroke-width': width, fill: 'none', 'stroke-linecap': 'round', opacity: opacity === undefined ? 1 : opacity, ...(dash ? { 'stroke-dasharray': dash } : {}) });
+    el(g, 'polyline', { points: `${wx(0)},${wy(0)} ${wx(P.e[0])},${wy(P.e[1])} ${wx(P.t[0])},${wy(P.t[1])}` });
+    el(g, 'circle', { cx: wx(P.e[0]), cy: wy(P.e[1]), r: 3, fill: color, stroke: 'none' });
+    el(g, 'circle', { cx: wx(P.t[0]), cy: wy(P.t[1]), r: 3, fill: color, stroke: 'none' });
+    return g;
+  }
+  function drawWorkspace() {
+    ws.innerHTML = '';
+    // axes
+    const ax = el(ws, 'g', { stroke: '#ddd', 'stroke-width': 1 });
+    for (let v = -0.6; v <= 0.61; v += 0.3) {
+      el(ax, 'line', { x1: wx(v), y1: 0, x2: wx(v), y2: WS }); el(ax, 'line', { x1: 0, y1: wy(v), x2: WS, y2: wy(v) });
+      el(ws, 'text', { x: wx(v) + 2, y: WS - 4, 'font-size': 11, fill: '#999' }, v.toFixed(1));
+      el(ws, 'text', { x: 3, y: wy(v) - 2, 'font-size': 11, fill: '#999' }, v.toFixed(1));
+    }
+    el(ws, 'text', { x: WS - 36, y: WS - 16, 'font-size': 11, fill: '#777' }, 'x (m)');
+    el(ws, 'text', { x: 6, y: 14, 'font-size': 11, fill: '#777' }, 'y (m)');
+    // the disc and its margin
+    const rpx = OBS_R / (2 * WR) * WS;
+    el(ws, 'circle', { cx: wx(OBS_C[0]), cy: wy(OBS_C[1]), r: rpx, fill: '#bbb', stroke: '#888' });
+    el(ws, 'circle', { cx: wx(OBS_C[0]), cy: wy(OBS_C[1]), r: (OBS_R + MARGIN) / (2 * WR) * WS, fill: 'none', stroke: '#888', 'stroke-dasharray': '3 3' });
+    // the base
+    el(ws, 'circle', { cx: wx(0), cy: wy(0), r: 5, fill: '#333' });
+    // start and goal postures, always
+    arm(ws, Q_START, '#1f5fbf', 2.5, null, 0.9); arm(ws, Q_GOAL, '#2a7d2a', 2.5, null, 0.9);
+    el(ws, 'text', { x: wx(points(Q_START).t[0]) + 6, y: wy(points(Q_START).t[1]) - 6, 'font-size': 12, fill: '#1f5fbf' }, 'start');
+    el(ws, 'text', { x: wx(points(Q_GOAL).t[0]) + 6, y: wy(points(Q_GOAL).t[1]) + 12, 'font-size': 12, fill: '#2a7d2a' }, 'goal');
+    el(ws, 'circle', { cx: wx(Y_STAR[0]), cy: wy(Y_STAR[1]), r: 3.5, fill: 'none', stroke: '#2a7d2a' });
+    if (S.mode === 'edge') drawEdgeWorkspace();
+    else {
+    // the path found: every posture of the path, faint; in three-point mode also the posture where the whole links are deepest in the disc
+    if (path) for (const k of path) arm(ws, nodes[k], '#1f5fbf', 1.2, null, 0.35);
+    if (path && !playQ && revalidation && revalidation.links.fail) {
+      const D = revalidation.deepest;
+      failMark(ws, D);
+      el(ws, 'text', { x: 6, y: WS - 44, 'font-size': 12, fill: '#b00020' }, `whole links at ${D.where}: ${D.part} is ${depthWords(D.c)}`);
+    }
+    // before the first sample: the direct edge's deepest posture, the second link through the disc
+    const ev = events[events.length - 1];
+    if (!ev && S.showDirect && !playQ) {
+      const D = directEdge(S.checker).deepest;
+      failMark(ws, D);
+      el(ws, 'text', { x: 6, y: WS - 44, 'font-size': 12, fill: '#b00020' }, `the direct edge's deepest configuration, ${D.j} of ${directEdge(S.checker).edge.n}: ${D.part} is ${mm(-D.c - MARGIN)} inside the disc`);
+    }
+    // the latest event: sampled posture (dashed), nearest node, the proposed extension, the failing configuration
+    if (ev && !playQ) {
+      arm(ws, ev.qRand, '#e08a00', 1.5, '5 4', 0.8);
+      arm(ws, nodes[ev.near], '#555', 2, null, 0.8);
+      const edge = ev.edge;
+      if (edge.ok) {
+        arm(ws, ev.qNew, '#2a7d2a', 4, null, 0.95);
+        if (ev.goalTry && !ev.goalTry.ok) failMark(ws, ev.goalTry);
+      } else {
+        arm(ws, ev.qNew, '#b00020', 1.5, '2 3', 0.7);     // where the extension wanted to go
+        failMark(ws, edge);                                 // the first invalid configuration on the way
+      }
+    }
+    }
+    if (playQ) arm(ws, playQ, '#1f5fbf', 4, null, 1);
+    if (hoverQ && !playQ) {
+      const v = valid(hoverQ, S.checker);
+      arm(ws, hoverQ, v.ok ? '#7a3fb0' : '#b00020', 2, '6 3', 0.9);
+      el(ws, 'text', { x: 6, y: WS - 30, 'font-size': 11, fill: '#7a3fb0' }, `at the mouse: q = ${fmt(hoverQ, 1)}, ${v.c === null ? 'outside the box' : v.ok ? 'valid, clearance ' + clr(v.c) + ' (' + v.part + '), 5 mm needed' : 'invalid, ' + v.part + ' is ' + depthWords(v.c)}`);
+    }
+  }
+  // ?mode=edge: the postures already checked (faint), the current check with a tie from its closest point to the disc center
+  function drawEdgeWorkspace() {
+    const E = edgeRows(S.checker);
+    for (let j = 1; j < eK; j++) arm(ws, E.rows[j].q, E.rows[j].c < 0 ? '#e7a3a3' : '#9a9a9a', 1.2, null, 0.7);
+    if (eK === 0) return;                               // the start posture is already drawn
+    const R = E.rows[eK];
+    if (R.c < 0) failMark(ws, R);
+    else {
+      arm(ws, R.q, '#d07a00', 4, null, 0.95);
+      el(ws, 'line', { x1: wx(R.p[0]), y1: wy(R.p[1]), x2: wx(OBS_C[0]), y2: wy(OBS_C[1]), stroke: '#d07a00', 'stroke-width': 1.5, 'stroke-dasharray': '2 2' });
+      el(ws, 'circle', { cx: wx(R.p[0]), cy: wy(R.p[1]), r: 4, fill: 'none', stroke: '#d07a00', 'stroke-width': 2 });
+    }
+    el(ws, 'text', { x: 6, y: WS - 44, 'font-size': 12, fill: R.c < 0 ? '#b00020' : '#a35f00' }, `check ${eK} of ${E.n}: ${R.part} is ${surf(R.c)} (5 mm required)`);
+  }
+  function failMark(parent, edge) {
+    arm(parent, edge.q, '#b00020', 4, null, 0.95);
+    if (edge.p) {
+      el(parent, 'line', { x1: wx(edge.p[0]), y1: wy(edge.p[1]), x2: wx(OBS_C[0]), y2: wy(OBS_C[1]), stroke: '#b00020', 'stroke-width': 1.5, 'stroke-dasharray': '2 2' });
+      el(parent, 'circle', { cx: wx(edge.p[0]), cy: wy(edge.p[1]), r: 4, fill: 'none', stroke: '#b00020', 'stroke-width': 2 });
+    }
+  }
+  function drawCSpace() {
+    cs.innerHTML = '';
+    const W = win();
+    const defs = el(cs, 'defs', {});
+    el(el(defs, 'clipPath', { id: 'cs-clip' }), 'rect', { x: CM.l, y: CM.t, width: CW, height: CH });
+    el(cs, 'rect', { x: CM.l, y: CM.t, width: CW, height: CH, fill: '#fff', stroke: '#999' });
+    const inner = el(cs, 'g', { 'clip-path': 'url(#cs-clip)' });   // everything in joint coordinates is cut at the frame
+    // pixel ix of the raster samples the angle ix − 180°, so the image spans −180.5° to 180.5° and each pixel is centered on its sample
+    el(inner, 'image', { href: raster(S.checker), x: cx(-180.5 * DEG), y: cy(180.5 * DEG), width: 361 / W.w * CW, height: 361 / W.h * CH, preserveAspectRatio: 'none', style: 'image-rendering: pixelated' });
+    const ax = el(inner, 'g', { stroke: '#ddd', 'stroke-width': 1 });
+    for (let v = W.x0; v <= W.x0 + W.w; v += W.tick) {
+      if (v !== W.x0 && v !== W.x0 + W.w) el(ax, 'line', { x1: cx(v * DEG), y1: CM.t, x2: cx(v * DEG), y2: CM.t + CH });
+      el(cs, 'text', { x: cx(v * DEG), y: CM.t + CH + 14, 'font-size': 11, fill: '#777', 'text-anchor': 'middle' }, v + '°');
+    }
+    for (let v = W.y0; v <= W.y0 + W.h; v += W.tick) {
+      if (v !== W.y0 && v !== W.y0 + W.h) el(ax, 'line', { x1: CM.l, y1: cy(v * DEG), x2: CM.l + CW, y2: cy(v * DEG) });
+      el(cs, 'text', { x: CM.l - 4, y: cy(v * DEG) + 3, 'font-size': 11, fill: '#777', 'text-anchor': 'end' }, v + '°');
+    }
+    if (S.zoom) el(cs, 'text', { x: CM.l + CW - 4, y: CM.t + 12, 'font-size': 11, fill: '#777', 'text-anchor': 'end' }, `zoomed: a ${W.w}° × ${W.h}° window of the ±180° box`);
+    el(cs, 'text', { x: CM.l + CW / 2, y: 520 - 6, 'font-size': 12, fill: '#555', 'text-anchor': 'middle' }, 'q₁, shoulder angle (°)');
+    el(cs, 'text', { x: 12, y: CM.t + CH / 2, 'font-size': 12, fill: '#555', 'text-anchor': 'middle', transform: `rotate(-90 12 ${CM.t + CH / 2})` }, 'q₂, elbow angle (°)');
+    // the direct edge
+    if (S.showDirect || S.mode === 'edge') el(inner, 'line', { x1: cx(Q_START[0]), y1: cy(Q_START[1]), x2: cx(Q_GOAL[0]), y2: cy(Q_GOAL[1]), stroke: '#b00020', 'stroke-width': 1.5, 'stroke-dasharray': '5 4', opacity: 0.8 });
+    if (S.mode === 'edge') drawEdgeCSpace(inner);
+    else {
+    // the tree
+    const tg = el(inner, 'g', { stroke: '#9a9a9a', 'stroke-width': 1 });
+    for (let k = 1; k < nodes.length; k++) el(tg, 'line', { x1: cx(nodes[parents[k]][0]), y1: cy(nodes[parents[k]][1]), x2: cx(nodes[k][0]), y2: cy(nodes[k][1]) });
+    const ng = el(inner, 'g', { fill: '#777' });
+    for (let k = 1; k < nodes.length; k++) el(ng, 'circle', { cx: cx(nodes[k][0]), cy: cy(nodes[k][1]), r: 1.8 });
+    // the path found
+    if (path) el(inner, 'polyline', { points: path.map(k => `${cx(nodes[k][0])},${cy(nodes[k][1])}`).join(' '), fill: 'none', stroke: '#1f5fbf', 'stroke-width': 3.5, 'stroke-linejoin': 'round', opacity: 0.9 });
+    if (path && revalidation && revalidation.links.fail) cross(inner, cx(revalidation.deepest.q[0]), cy(revalidation.deepest.q[1]), 7, '#b00020', 2.5);
+    // the latest event
+    const ev = events[events.length - 1];
+    if (ev) {
+      const a = nodes[ev.near], b = ev.qNew, edge = ev.edge;
+      el(inner, 'line', { x1: cx(a[0]), y1: cy(a[1]), x2: cx(ev.qRand[0]), y2: cy(ev.qRand[1]), stroke: '#e08a00', 'stroke-width': 1, 'stroke-dasharray': '3 3', opacity: 0.7 });
+      el(inner, 'line', { x1: cx(a[0]), y1: cy(a[1]), x2: cx(b[0]), y2: cy(b[1]), stroke: edge.ok ? '#2a7d2a' : '#b00020', 'stroke-width': 3 });
+      for (const c of edge.checked) el(inner, 'circle', { cx: cx(c.q[0]), cy: cy(c.q[1]), r: 2.2, fill: c.ok ? '#333' : '#b00020' });
+      if (!edge.ok) cross(inner, cx(edge.q[0]), cy(edge.q[1]), 6, '#b00020', 2.5);
+      if (ev.goalTry) {
+        el(inner, 'line', { x1: cx(b[0]), y1: cy(b[1]), x2: cx(Q_GOAL[0]), y2: cy(Q_GOAL[1]), stroke: ev.goalTry.ok ? '#2a7d2a' : '#b00020', 'stroke-width': 3, 'stroke-dasharray': ev.goalTry.ok ? '' : '4 3' });
+        if (!ev.goalTry.ok) cross(inner, cx(ev.goalTry.q[0]), cy(ev.goalTry.q[1]), 6, '#b00020', 2.5);
+      }
+      el(inner, 'circle', { cx: cx(a[0]), cy: cy(a[1]), r: 6, fill: 'none', stroke: '#555', 'stroke-width': 2 });
+      cross(inner, cx(ev.qRand[0]), cy(ev.qRand[1]), 7, '#e08a00', 2.5);
+    }
+    }
+    // start and goal
+    el(cs, 'circle', { cx: cx(Q_START[0]), cy: cy(Q_START[1]), r: 5, fill: '#1f5fbf' });
+    el(cs, 'text', { x: cx(Q_START[0]) + 8, y: cy(Q_START[1]) - 6, 'font-size': 12, fill: '#1f5fbf' }, 'start');
+    const g = [cx(Q_GOAL[0]), cy(Q_GOAL[1])];
+    el(cs, 'polygon', { points: `${g[0]},${g[1] - 7} ${g[0] + 7},${g[1]} ${g[0]},${g[1] + 7} ${g[0] - 7},${g[1]}`, fill: '#2a7d2a' });
+    el(cs, 'text', { x: g[0] + 9, y: g[1] + 4, 'font-size': 12, fill: '#2a7d2a' }, 'goal');
+    if (playQ) el(inner, 'circle', { cx: cx(playQ[0]), cy: cy(playQ[1]), r: 5, fill: '#1f5fbf', stroke: '#fff', 'stroke-width': 1.5 });
+    if (hoverQ && !playQ) cross(inner, cx(hoverQ[0]), cy(hoverQ[1]), 5, '#7a3fb0', 1.5);
+  }
+  // ?mode=edge: the scheduled checks along the direct edge (open), those already checked (filled), the current one (ring)
+  function drawEdgeCSpace(g) {
+    const E = edgeRows(S.checker);
+    for (const R of E.rows) {
+      if (R.j === 0) continue;
+      if (R.j <= eK) el(g, 'circle', { cx: cx(R.q[0]), cy: cy(R.q[1]), r: 2, fill: R.c < 0 ? '#b00020' : '#333' });
+      else el(g, 'circle', { cx: cx(R.q[0]), cy: cy(R.q[1]), r: 1.8, fill: '#fff', stroke: '#888', 'stroke-width': 0.8 });
+    }
+    if (E.first !== null && eK >= E.first) cross(g, cx(E.rows[E.first].q[0]), cy(E.rows[E.first].q[1]), 6, '#b00020', 2.5);
+    if (eK > 0) el(g, 'circle', { cx: cx(E.rows[eK].q[0]), cy: cy(E.rows[eK].q[1]), r: 7, fill: 'none', stroke: '#d07a00', 'stroke-width': 2.5 });
+  }
+  // ?mode=edge: the clearance from the disc surface at each check, revealed as the checks are made
+  const cl = document.getElementById('cl');
+  function drawEdgePlot() {
+    cl.innerHTML = '';
+    const E = edgeRows(S.checker), M = { l: 44, r: 10, t: 10, b: 34 }, W = 360 - M.l - M.r, H = 230 - M.t - M.b, Y0 = -60, Y1 = 110;
+    const px = j => M.l + j / E.n * W, py = v => M.t + (Y1 - v) / (Y1 - Y0) * H, mmOf = R => (R.c + MARGIN) * 1000;
+    el(cl, 'rect', { x: M.l, y: py(5), width: W, height: py(Y0) - py(5), fill: '#fbeeee' });
+    for (const v of [-50, 0, 50, 100]) {
+      el(cl, 'line', { x1: M.l, y1: py(v), x2: M.l + W, y2: py(v), stroke: '#e6e6e6' });
+      el(cl, 'text', { x: M.l - 5, y: py(v) + 4, 'font-size': 11, fill: '#777', 'text-anchor': 'end' }, String(v));
+    }
+    for (const j of [0, 10, 20, 30, 40]) if (j <= E.n) el(cl, 'text', { x: px(j), y: M.t + H + 14, 'font-size': 11, fill: '#777', 'text-anchor': 'middle' }, String(j));
+    el(cl, 'rect', { x: M.l, y: M.t, width: W, height: H, fill: 'none', stroke: '#999' });
+    el(cl, 'line', { x1: M.l, y1: py(0), x2: M.l + W, y2: py(0), stroke: '#555', 'stroke-width': 1 });
+    el(cl, 'line', { x1: M.l, y1: py(5), x2: M.l + W, y2: py(5), stroke: '#b00020', 'stroke-width': 1.2, 'stroke-dasharray': '5 3' });
+    el(cl, 'text', { x: M.l + W - 4, y: py(5) - 5, 'font-size': 11, fill: '#b00020', 'text-anchor': 'end' }, '5 mm required');
+    el(cl, 'text', { x: M.l + W - 4, y: py(0) + 13, 'font-size': 11, fill: '#555', 'text-anchor': 'end' }, 'disc surface');
+    el(cl, 'text', { x: M.l + W / 2, y: 230 - 5, 'font-size': 12, fill: '#555', 'text-anchor': 'middle' }, `check index j (0 = start, ${E.n} = goal)`);
+    el(cl, 'text', { x: 12, y: M.t + H / 2, 'font-size': 12, fill: '#555', 'text-anchor': 'middle', transform: `rotate(-90 12 ${M.t + H / 2})` }, 'clearance (mm)');
+    const done = E.rows.filter(R => R.j <= eK);
+    if (done.length > 1) el(cl, 'polyline', { points: done.map(R => `${px(R.j)},${py(mmOf(R))}`).join(' '), fill: 'none', stroke: '#999', 'stroke-width': 1 });
+    for (const R of E.rows) {
+      if (R.j <= eK) el(cl, 'circle', { cx: px(R.j), cy: py(mmOf(R)), r: 3, fill: R.c < 0 ? '#b00020' : '#333' });
+      else el(cl, 'circle', { cx: px(R.j), cy: M.t + H - 4, r: 1.8, fill: '#fff', stroke: '#aaa', 'stroke-width': 0.8 });
+    }
+    const C = E.rows[eK];
+    el(cl, 'circle', { cx: px(C.j), cy: py(mmOf(C)), r: 6.5, fill: 'none', stroke: '#d07a00', 'stroke-width': 2.2 });
+  }
+  function cross(parent, x, y, r, color, w) {
+    el(parent, 'line', { x1: x - r, y1: y - r, x2: x + r, y2: y + r, stroke: color, 'stroke-width': w });
+    el(parent, 'line', { x1: x - r, y1: y + r, x2: x + r, y2: y - r, stroke: color, 'stroke-width': w });
+  }
+  function draw() { drawWorkspace(); drawCSpace(); if (S.mode === 'edge') drawEdgePlot(); }
+
+  // ----------------------------------------------------------------- words
+  const T = id => document.getElementById(id);
+  function describeEdge() {
+    const E = edgeRows(S.checker), R = E.rows[eK], f = E.first, d = E.rows[E.deepest];
+    T('result').style.display = 'none';
+    let html;
+    if (eK === 0) html = `<b>Paused at check 0 of ${E.n}</b>, the start posture, which the edge check assumes valid (${surf(R.c)}). The checks are numbered 0 at the start to ${E.n} at the goal. Predict which check fails first, then press <b>Next check</b>.`;
+    else if (f === null) html = eK < E.n ? `Check <b>${eK}</b> of ${E.n}: ${R.part} is ${surf(R.c)}; 5 mm is required, so it is <span class="ok">valid</span>.` : `All ${E.n} checks pass. That proves clearance only at the checked postures.`;
+    else if (eK < f) html = `Check <b>${eK}</b> of ${E.n}: ${R.part} is ${surf(R.c)}; 5 mm is required, so it is <span class="ok">valid</span>. Press <b>Next check</b>.`;
+    else if (eK === f) html = `<span class="bad">Check ${f} of ${E.n} fails.</span> ${R.part[0].toUpperCase() + R.part.slice(1)} is ${surf(R.c)}, below the 5 mm requirement. The edge check stops here and <b>rejects the connection</b>, so it never evaluates checks ${f + 1} to ${E.n}. Further presses only scan the rest as a diagnostic.`;
+    else if (eK < E.n) html = `Diagnostic scan, check ${eK} of ${E.n}: ${R.part} is ${surf(R.c)}. The edge check itself stopped at check ${f}.`;
+    else html = `Scan complete. The edge check rejected the connection at check ${f}. The deepest of the ${E.n + 1} checked postures is check ${d.j}, where ${d.part} is <b>${surf(d.c)}</b>.`;
+    T('status').innerHTML = html;
+    T('ec-j').textContent = `${eK} of ${E.n}, s = ${(eK / E.n).toFixed(3)}` + (eK === 0 ? ' (start)' : eK === E.n ? ' (goal)' : '');
+    T('ec-q').textContent = fmt(R.q);
+    T('ec-part').textContent = R.part;
+    T('ec-c').textContent = `${surf(R.c)}; 5 mm required`;
+    T('ec-v').innerHTML = eK === 0 ? 'the start, assumed valid by the edge check'
+      : (R.c < 0 ? '<span class="bad">invalid</span>' : '<span class="ok">valid</span>')
+        + (f !== null && eK === f ? ': the edge check rejects the connection here' : f !== null && eK > f ? ', not evaluated by the edge check' : '');
+    const running = !!eTimer;
+    T('enext').disabled = eK >= E.n;
+    T('enext').textContent = f !== null && eK >= f ? 'Next check (diagnostic)' : 'Next check';
+    T('erun').disabled = eK >= E.n && !running;
+    T('erun').textContent = running ? 'Stop checking' : f === null ? 'Check every posture' : eK < f ? 'Check until rejected' : 'Scan the rest (diagnostic)';
+  }
+  function describe() {
+    if (S.mode === 'edge') return describeEdge();
+    const status = T('status'), result = T('result');
+    const directLinks = directEdge(S.checker).edge;
+    const deep = directEdge(S.checker).deepest;
+    const direct = directLinks.ok ? 'valid' : `<span class="bad">invalid</span>. Its first failing check, configuration ${directLinks.j} of ${directLinks.n}, puts ${directLinks.part} ${mm(-directLinks.c)} inside the clearance ring; at configuration ${deep.j} of ${directLinks.n}, ${deep.part} is ${depthWords(deep.c)}`;
+    const ev = events[events.length - 1];
+    if (!ev) {
+      status.innerHTML = `<b>Paused.</b> The tree holds the start only. The direct edge from the start to the goal, checked with configurations at most 1° apart in each joint, is ${direct}. Press <b>Step</b> to draw the first sample.`;
+      for (const id of ['ev-sample', 'ev-near', 'ev-ext', 'ev-check', 'ev-result', 'ev-goal']) T(id).textContent = '—';
+    } else {
+      const edge = ev.edge;
+      status.innerHTML = `Iteration <b>${ev.i}</b> of ${S.budget}, <b>${nodes.length}</b> nodes in the tree. `
+        + (edge.ok ? `<span class="ok">Edge accepted</span>: node #${ev.index} joins the tree.` : `<span class="bad">Edge rejected</span> at checked configuration ${edge.j} of ${edge.n}: ${edge.part} is ${mm(-edge.c)} inside the clearance ring.`);
+      T('ev-sample').innerHTML = ev.kind === 'goal' ? `the goal itself ${fmt(ev.qRand)}, drawn with probability 0.1` : `uniform in the box: ${fmt(ev.qRand)}`;
+      T('ev-near').textContent = `#${ev.near} ${fmt(nodes[ev.near])}, ${(ev.d / DEG).toFixed(2)}° away`;
+      T('ev-ext').textContent = ev.d <= STEP ? `the sample is within 10°, so the extension ends at the sample: ${fmt(ev.qNew)}` : `10° from the nearest node toward the sample: ${fmt(ev.qNew)}`;
+      T('ev-check').textContent = `${edge.n} configurations, at most 1° apart in each joint; ${edge.ok ? 'all valid, smallest clearance ' + clr(edge.worst) + ' (5 mm needed)' : 'configuration ' + edge.j + ' at ' + fmt(edge.q) + ' is invalid, ' + edge.part + ' is ' + mm(-edge.c) + ' inside the clearance ring'}`;
+      T('ev-result').innerHTML = edge.ok ? `<span class="ok">accepted</span>, parent #${ev.near}` : `<span class="bad">rejected</span>, the tree is unchanged`;
+      T('ev-goal').innerHTML = !edge.ok ? 'not tried (no new node)'
+        : ev.qNew === Q_GOAL ? '<span class="ok">the new node is the goal</span>'
+        : ev.goalTry ? (ev.goalTry.ok ? `<span class="ok">the goal is within 10° and the edge to it is valid: connected</span>` : `the goal is within 10° but the edge to it is <span class="bad">invalid</span> at configuration ${ev.goalTry.j} of ${ev.goalTry.n} (${ev.goalTry.part} is ${mm(-ev.goalTry.c)} inside the clearance ring)`)
+        : `the goal is ${(dist(ev.qNew, Q_GOAL) / DEG).toFixed(2)}° away, more than 10°: not tried`;
+    }
+    if (outcome === 'connected') {
+      const r = revalidation, same = r.same, links = r.links;
+      result.style.display = ''; result.className = 'status result';
+      let html = `<b>Goal connected</b> at iteration ${iteration} with ${nodes.length} nodes. Path: ${path.length - 1} edges, ${(r.length / DEG).toFixed(2)}° long in joint space (the direct edge would be ${(dist(Q_START, Q_GOAL) / DEG).toFixed(2)}°).<br>`
+        + `Checked again with the same model, configurations at most 1° apart in each joint: ${same.fail ? `the repeated edge tests evaluated ${same.checked} of ${same.scheduled} scheduled configurations, each failing edge stopping at its first invalid one (first failure in path order at edge #${same.fail.edge[0]} → #${same.fail.edge[1]}, check ${same.fail.j} of ${same.fail.n}); over all ${same.scheduled} the` : `${same.scheduled} configurations,`} smallest clearance <b>${clr(same.worst)}</b> (5 mm needed) → ${same.fail ? '<span class="bad">invalid</span>' : '<span class="ok">valid</span>'}. This repeats the planner's own test; a finite check cannot prove that the continuous motion is clear.`;
+      if (S.checker === 'points') {
+        const D = r.deepest;
+        html += `<br>The same path with the <b>whole links</b> as segments: ` + (links.fail
+          ? `<span class="bad">invalid</span>. First failure at edge #${links.fail.edge[0]} → #${links.fail.edge[1]}, configuration ${links.fail.j} of ${links.fail.n} (${links.fail.part} is ${mm(-links.fail.c)} inside the clearance ring). Deepest over every checked configuration: ${D.where} at ${fmt(D.q)}, where ${D.part} is <b>${depthWords(D.c)}</b>. The three-point model accepted it.`
+          : `<span class="ok">valid</span> (smallest clearance ${clr(links.worst)}); with this seed the three points happened to be enough. Try another seed.`);
+        if (links.fail) result.className = 'status result fail';
+      }
+      result.innerHTML = html;
+    } else if (outcome === 'budget') {
+      result.style.display = ''; result.className = 'status result fail';
+      result.innerHTML = `<b>Budget exhausted</b>: ${iteration} iterations, ${nodes.length} nodes, no connection to the goal. This does not show that no path exists; the planner stopped because its budget ran out. Raise the budget or change the seed; either change starts a new tree.`;
+    } else result.style.display = 'none';
+    T('cs-legend-missed').style.display = S.checker === 'points' ? '' : 'none';
+    T('cs-legend-forbidden').textContent = S.checker === 'points' ? 'forbidden: the tip, the elbow or the middle of link 2 would come within 5 mm of the disc' : 'forbidden: part of a link would come within 5 mm of the disc';
+    T('step').disabled = outcome !== 'running'; T('run').disabled = outcome !== 'running';
+  }
+
+  // ----------------------------------------------------------------- controls and the address
+  T('p-endpoints').textContent = `start ${fmt(Q_START)}, goal ${fmt(Q_GOAL)}`;
+  const params = new URLSearchParams(location.search);
+  if (params.get('checker') === 'points') { S.checker = 'points'; document.querySelector('input[name=checker][value=points]').checked = true; }
+  // an absent, empty or malformed parameter keeps the default: only a plain decimal integer is read (Number(null) and Number('') are 0)
+  const intParam = k => (/^\d+$/.test(params.get(k) ?? '') ? Number(params.get(k)) : NaN);
+  const seedParam = intParam('seed'), budgetParam = intParam('budget');
+  if (Number.isInteger(seedParam) && seedParam >= 0 && seedParam <= 4294967295) { S.seed = seedParam; T('seed').value = seedParam; }
+  if (Number.isInteger(budgetParam) && budgetParam >= 1 && budgetParam <= 100000) { S.budget = budgetParam; T('budget').value = budgetParam; }
+  if (params.get('direct') === '0') { S.showDirect = false; T('direct').checked = false; }
+  if (params.get('zoom') === '1') { S.zoom = true; T('zoom').checked = true; }
+  if (params.get('mode') === 'edge') {
+    // the edge-check view: zoomed by default (?zoom=0 shows the whole box); the tree controls are hidden
+    S.mode = 'edge'; document.body.classList.add('edge');
+    S.zoom = params.get('zoom') !== '0'; T('zoom').checked = S.zoom;
+    document.title = 'Edge-check demo · one connection of the two-link arm, checked posture by posture';
+    T('h-title').textContent = 'Edge-check demo: one connection of the two-link arm, checked posture by posture';
+    T('h-text').innerHTML = 'This page checks the straight joint-space connection from the start posture of the arm (links 0.4 m and 0.3 m) to the goal posture, the positive-elbow solution of the tip target (0.5, 0.2) m. '
+      + 'The connection is divided into equal subintervals, so that no joint changes by more than 1° between checks. Each <b>Next check</b> tests one posture: no part of the modeled arm may come within 5 mm of the disc. '
+      + 'The edge check stops at the first posture that fails and rejects the connection. Passing every check would prove clearance only at the checked postures. Hover over the right view to see the posture at the mouse.';
+  }
+  T('step').addEventListener('click', () => { stopRun(); stopPlay(); step(); });
+  T('run').addEventListener('click', () => timer ? stopRun() : startRun());
+  T('reset').addEventListener('click', reset);
+  T('enext').addEventListener('click', () => { stopEdgeRun(); nextCheck(); });
+  T('erun').addEventListener('click', () => { if (eTimer) { stopEdgeRun(); describe(); } else startEdgeRun(); });
+  T('play').addEventListener('click', () => playTimer ? (stopPlay(), draw()) : startPlay());
+  for (const r of document.querySelectorAll('input[name=checker]')) r.addEventListener('change', e => { S.checker = e.target.value; reset(); });
+  const intField = t => (/^\d+$/.test(t.trim()) ? Number(t) : NaN);
+  T('seed').addEventListener('change', e => { const v = intField(e.target.value); if (Number.isInteger(v) && v >= 0 && v <= 4294967295) { S.seed = v; reset(); } else e.target.value = S.seed; });
+  T('budget').addEventListener('change', e => { const v = intField(e.target.value); if (Number.isInteger(v) && v >= 1 && v <= 100000) { S.budget = v; reset(); } else e.target.value = S.budget; });
+  T('direct').addEventListener('change', e => { S.showDirect = e.target.checked; draw(); });
+  T('zoom').addEventListener('change', e => { S.zoom = e.target.checked; draw(); });
+  cs.addEventListener('pointermove', e => {
+    const pt = new DOMPoint(e.clientX, e.clientY).matrixTransform(cs.getScreenCTM().inverse());   // viewBox units, border excluded
+    const px = pt.x, py = pt.y;
+    if (px < CM.l || px > CM.l + CW || py < CM.t || py > CM.t + CH) { if (hoverQ) { hoverQ = null; draw(); } return; }
+    hoverQ = cq(px, py); draw();
+  });
+  cs.addEventListener('pointerleave', () => { hoverQ = null; draw(); });
+  document.addEventListener('keydown', e => {
+    if (e.key !== ' ') return;
+    const t = e.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT')) return;   // typing or toggling a field
+    e.preventDefault();                                                                                 // a focused button must not fire
+    if (S.mode === 'edge') { stopEdgeRun(); nextCheck(); } else { stopRun(); step(); }
+  });
+
+  // for the scripted check (modules/motion-planning/check_module.mjs): read-only access to the state
+  window.__rrt = {
+    settings: () => ({ ...S }), directEdge: checker => { const D = directEdge(checker || S.checker); return { ok: D.edge.ok, n: D.edge.n, j: D.edge.j, part: D.edge.part, c: D.edge.c, deepest: D.deepest }; }, constants: { L1, L2, Q_START, Q_GOAL, OBS_C, OBS_R, MARGIN, STEP, P_GOAL, SUB },
+    state: () => ({ iteration, outcome, nodes: nodes.slice(), parents: parents.slice(), path: path && path.slice(), revalidation,
+      deepest: revalidation && revalidation.deepest, events: events.map(e => ({ i: e.i, kind: e.kind, u: e.u, qRand: e.qRand, near: e.near, qNew: e.qNew, d: e.d, n: e.edge.n, result: e.edge.ok ? 'accepted' : 'rejected', j: e.edge.j, part: e.edge.part, cFail: e.edge.c, worst: e.edge.worst, goal: e.goal, goalTry: e.goalTry && { n: e.goalTry.n, result: e.goalTry.ok ? 'accepted' : 'rejected', j: e.goalTry.j } })), running: !!timer, playing: !!playTimer }),
+    checkEdge: (a, b, checker) => { const r = checkEdge(a, b, checker || S.checker); return { ok: r.ok, n: r.n, j: r.j, q: r.q, part: r.part, c: r.c, worst: r.worst }; },
+    clearance: (q, checker) => clearance(q, checker || S.checker),
+    setHover: q => { hoverQ = q; draw(); },
+    edge: () => { const E = edgeRows(S.checker); return { mode: S.mode, k: eK, n: E.n, first: E.first, deepest: E.deepest, running: !!eTimer, rows: E.rows.map(R => ({ j: R.j, q: R.q, c: R.c, part: R.part })) }; },
+  };
+  reset();
+})();
+</script>
+</body>
+</html>

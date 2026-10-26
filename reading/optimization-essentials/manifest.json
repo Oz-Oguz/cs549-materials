@@ -3,11 +3,11 @@
   "documents": {
     "chapter-02-essentials.html": {
       "source": "lectures/03-reading-optimization-planning-and-control/chapter-02-essentials.md",
-      "sha256": "d96cc7ca5dff7c08efb00cec4ced5665d2299ab991bee83923bb428c2264119d"
+      "sha256": "427723ea623b4a524f475ddd9fac24063a58752da8548f247a50ab0156a2431a"
     },
     "chapter-02-detailed.html": {
       "source": "lectures/03-reading-optimization-planning-and-control/chapter-02.md",
-      "sha256": "371066ab1294aa40f28ad902e5bc8ec4f922428e23f07ca0adc22fe339daa752"
+      "sha256": "4bdd1d60c57afbc98e25d62fa58a97a4110192ea359cbc3c4e8f6df35a57175f"
     },
     "prerequisites.html": {
       "source": "lectures/02-reading-kinematic-foundations/chapter-01.md",
@@ -69,7 +69,7 @@
     },
     "lectures/04-D1-constraints-and-komo/code/constrained_ik.py": {
       "source": "lectures/04-D1-constraints-and-komo/code/constrained_ik.py",
-      "source_sha256": "ffae9098c58b9961b0e7bdcf2b8cd380fb98a34c22b253bb219b2d250241d624"
+      "source_sha256": "67fbe1b322bba479742a35cb97b7b223e9cacd15d0e373fa5b79b2d4ca0d258f"
     },
     "lectures/04-D1-constraints-and-komo/code/check_solvers.py": {
       "source": "lectures/04-D1-constraints-and-komo/code/check_solvers.py",
@@ -77,7 +77,7 @@
     },
     "lectures/04-D1-constraints-and-komo/code/komo_two_link.py": {
       "source": "lectures/04-D1-constraints-and-komo/code/komo_two_link.py",
-      "source_sha256": "88702f1acef812f519700fcef050ffaf4faf9498ee67a47bdacfedaae1f92b73"
+      "source_sha256": "f2ae67a507772fd117ab97c74857ecbc7dbd60259a1a374629a1c3719bccfd4d"
     },
     "drake/02-gauss-newton-ik/gn_ik_panda.py": {
       "source": "drake/02-gauss-newton-ik/gn_ik_panda.py",
@@ -97,7 +97,11 @@
     },
     "drake/03-ik-as-nlp/ik_nlp_panda.py": {
       "source": "drake/03-ik-as-nlp/ik_nlp_panda.py",
-      "source_sha256": "9adf0a8a8f0fda94353bad5a8b09ae6d0a88ca3f8e99397b0d3fbfade25381b6"
+      "source_sha256": "27c6c09f2a6ec9d4678d0ae8af261325376cd08345b756fb5a90e16ca38ab21b"
+    },
+    "drake/03-ik-as-nlp/panel.html": {
+      "source": "drake/03-ik-as-nlp/panel.html",
+      "source_sha256": "90eab4c231be57145718149d7c0e2c540f553e3a81760dc7cc1508c5fec0eede"
     },
     "drake/04-constrained-ik-al/constrained_ik_panda.py": {
       "source": "drake/04-constrained-ik-al/constrained_ik_panda.py",
@@ -137,15 +141,15 @@
     },
     "modules/kkt-explorer/index.html": {
       "source": "modules/kkt-explorer/index.html",
-      "source_sha256": "0249c576dfa00cf0d97590f59335525a8458fe8b47a082347d711abf6f2d1d8f"
+      "source_sha256": "f3d0263feed7cab63ec9032a47833aa960d2c8eb16e3e848ddbada4e736577e2"
     },
-    "modules/opt-explorer/assets/Surface3D-Dk5SUa24.js": {
-      "source": "modules/opt-explorer/dist/assets/Surface3D-Dk5SUa24.js",
-      "source_sha256": "8bf132bc938a69baf7f2fa985c478aab35782483e7820d4f776edb94899e0991"
+    "modules/opt-explorer/assets/Surface3D-D4tAdakq.js": {
+      "source": "modules/opt-explorer/dist/assets/Surface3D-D4tAdakq.js",
+      "source_sha256": "36d07b460f16a098d2be99cb9cba2fb4c78ada0272580e4bf3a1d5f84a502107"
     },
-    "modules/opt-explorer/assets/index-Co7bIwmt.js": {
-      "source": "modules/opt-explorer/dist/assets/index-Co7bIwmt.js",
-      "source_sha256": "2484957f1a9dbc665afcb0b5a74a2e0834b2f7a797d08cdaef2d2ea6b37f463f"
+    "modules/opt-explorer/assets/index-DzbDHDal.js": {
+      "source": "modules/opt-explorer/dist/assets/index-DzbDHDal.js",
+      "source_sha256": "1eb04adbf0309d36bbe425d521d1419e59de1380adda4e99b8afc5809d8a6588"
     },
     "modules/opt-explorer/assets/index-rz-agBXp.css": {
       "source": "modules/opt-explorer/dist/assets/index-rz-agBXp.css",
@@ -153,7 +157,7 @@
     },
     "modules/opt-explorer/index.html": {
       "source": "modules/opt-explorer/dist/index.html",
-      "source_sha256": "4d86f194ab62d27a9227b332793987fbdc7cf0f0dd1b1eb5421977f35b5d0648"
+      "source_sha256": "91d045d6dd651d4e6356659b9817fe3ef1d0398d8b154a7d5f58d9729861e41b"
     },
     "assets/katex/katex.min.js": {
       "source": "modules/opt-explorer/node_modules/katex/dist/katex.min.js",
@@ -1421,7 +1425,7 @@
     },
     "launch.py": {
       "source": "lectures/03-reading-optimization-planning-and-control/delivery/launch.py",
-      "source_sha256": "75aa7d334eecbf465d750587434874178377b1500908e57d599e63a219746d4d"
+      "source_sha256": "02d9612773eb40411faa8b0e93e60386581f6ea40ad81e47d8b3ce23789fe91a"
     },
     "lectures/03-D1-optimization-1/fig/bowl_landscape.png": {
       "source": "lectures/03-D1-optimization-1/fig/bowl_landscape.png",
@@ -1489,7 +1493,7 @@
     },
     "lectures/04-D1-constraints-and-komo/fig/drake-ik-nlp.png": {
       "source": "lectures/04-D1-constraints-and-komo/fig/drake-ik-nlp.png",
-      "source_sha256": "a2b4b08bac846a65e6d925e861254de0d459fb2754f0135f47ea96f88073e41a"
+      "source_sha256": "e962a9deff62782263f72e629b6b61d9518041c725d4661abe1a4e3aa3fbb99c"
     },
     "lectures/04-D1-constraints-and-komo/fig/drake-constrained-ik-al.png": {
       "source": "lectures/04-D1-constraints-and-komo/fig/drake-constrained-ik-al.png",
@@ -1513,20 +1517,20 @@
     "support/reference_al_eq.py": "Documented portable reference paths; numerical functions unchanged."
   },
   "build_inputs": {
-    "scripts/build_optimization_package.py": "b66bbc0ca63701daa8bdda5d3ed910a54651ec1b3bae475820bc7a25e03c541b",
+    "scripts/build_optimization_package.py": "cdc784afb0b3f2804affbc740d4cc2d33f016bf00071da976d086dc5d6929d73",
     "scripts/build_essentials_package.py": "0f32da6a6cf120973c1c473c9761640304b78aaf65caed8660601d0d6393e32a",
     "scripts/export_student_repo.py": "a3a05bce3f1ee05431f9f8cffda2eb30aa38f2b51895c5e9cc8c6564816ee558",
     "lectures/03-reading-optimization-planning-and-control/delivery/README.md": "96567d881ba23f9af3dfc571c216dd9ebb048076b6a8502d5feadb13260f5898",
-    "lectures/03-reading-optimization-planning-and-control/delivery/launch.py": "75aa7d334eecbf465d750587434874178377b1500908e57d599e63a219746d4d",
-    "lectures/03-reading-optimization-planning-and-control/chapter-02.md": "371066ab1294aa40f28ad902e5bc8ec4f922428e23f07ca0adc22fe339daa752",
-    "lectures/03-reading-optimization-planning-and-control/chapter-02-essentials.md": "d96cc7ca5dff7c08efb00cec4ced5665d2299ab991bee83923bb428c2264119d",
-    "lectures/03-reading-optimization-planning-and-control/chapter-02-essentials.pdf": "4278ebe41c050a18af2bcd4ff293ab34e300e750eb7387e38d931612ef40ba27",
+    "lectures/03-reading-optimization-planning-and-control/delivery/launch.py": "02d9612773eb40411faa8b0e93e60386581f6ea40ad81e47d8b3ce23789fe91a",
+    "lectures/03-reading-optimization-planning-and-control/chapter-02.md": "4bdd1d60c57afbc98e25d62fa58a97a4110192ea359cbc3c4e8f6df35a57175f",
+    "lectures/03-reading-optimization-planning-and-control/chapter-02-essentials.md": "427723ea623b4a524f475ddd9fac24063a58752da8548f247a50ab0156a2431a",
+    "lectures/03-reading-optimization-planning-and-control/chapter-02-essentials.pdf": "f23745e2995f13ab9158a6739b0828448ff4b786bcfd10c787a92948e29142d0",
     "lectures/02-reading-kinematic-foundations/chapter-01.md": "96316784756aeeabefb35b70a4d5e91805547ad6f40c7ae63362f39eb18e2f20",
     "modules/opt-explorer/package.json": "fe99ec0562ed6ecf8e22435e69e65917c0196a4340a5a99858ae312953399848",
     "modules/opt-explorer/package-lock.json": "b376859c7758951bdaa76873ec0b8334fc4d7dc1d2435bc4b9899e2b4dd68ae6",
     "modules/opt-explorer/vite.config.ts": "c7a13d6ffcf6b2bd60e7c0220c96f421ccee1a373da39c466623d48772d8151f",
     "modules/opt-explorer/index.html": "2acda4dc18f252d9287054102064d258e5a5ce695e18baa3667d0d1c9e954f84",
-    "modules/opt-explorer/src/App.tsx": "0e640dbfcdf0d21674cdd96b8cbc8d148d45afd0b18ec34a1cad21c39dec3582",
+    "modules/opt-explorer/src/App.tsx": "e9b94d28fb8289ba76f8f472f72d81e55f685ae06b2954973ec88ef25a858d31",
     "modules/opt-explorer/src/Shell.tsx": "a05eac12f0436dae55a084888cdaab224831cb3e91248c8b91edb15749bf8cde",
     "modules/opt-explorer/src/main.tsx": "f3b87a7b45270a0cab62155c3f851f44200897dbe71bfbf14ef5f8811aad2868",
     "modules/opt-explorer/src/IkConvergenceDialog.tsx": "38cae2117dfe1b890d9a361b108ce668b56d6d9033220e959e42a1e92edb2781",
@@ -1534,19 +1538,20 @@
     "modules/opt-explorer/src/optimizer.ts": "aba3be2c75989339bc2a4be4c7c8b74f4466437fe62c06b5c7abb722b0f6c16e",
     "modules/opt-explorer/src/trajectorySampling.ts": "6eb26ec06a60ad4278fc22ea62371fdddf79450ed52f7706a2db778da816cf49",
     "modules/opt-explorer/src/ikStopping.ts": "2b42b5cd82baa1a9184f138f03562055fc7001c98df1ff0970c00331da0d4776",
-    "modules/opt-explorer/src/linkState.ts": "f6aa1d6c91a53642307698fd4a1c2758cca50b9f7b652cd26b3193cedeaf5e35",
+    "modules/opt-explorer/src/linkState.ts": "675ef7d19bd27a892a4cd7c2faf90b2cbce7be2962b5fc019f0195a920ee0ccc",
     "modules/opt-explorer/src/ikConvergence.ts": "1a2d780aa7af853e57ae0105b908ffb5e1fa175b24f1a659f894574468cc2be8",
     "modules/opt-explorer/src/types/plotly-js-dist-min.d.ts": "35656114b20fc0cebf929f3a6808d7913d4bc891076a6fa095e245e66ee95004",
-    "modules/opt-explorer/src/concepts/ConstrainedSurface3D.tsx": "ed1ac87dd0dd25f89912f8f10e433d779c399961473d6babca6e1189f549256a",
+    "modules/opt-explorer/src/concepts/ArmHeightView.tsx": "a7489feff5f066c9813e3b7fcb2b7fb7360cc3b1e384cb6fffb95d988e445229",
+    "modules/opt-explorer/src/concepts/ConstrainedSurface3D.tsx": "1f50a431906a349409b0d0db030f1a7e5788dfdcdff4373190ae004ea95c9b89",
     "modules/opt-explorer/src/concepts/DualVarChart.tsx": "9881c4372f8f8f0a7d13684dbbbf32f79be75a72c2f8ca53812dafc87db2c6bc",
-    "modules/opt-explorer/src/concepts/constrainedProblems.ts": "7ff2f24b52e6c1066a03f788382c850469c59c44592b5bb480084e9f7ff8b204",
+    "modules/opt-explorer/src/concepts/constrainedProblems.ts": "64f1b786e5adcf13a3c3983b653fcd31c141506a633cc51b9fc62b5975d3aeef",
     "modules/opt-explorer/src/concepts/contourPlot.ts": "55c34934700cf16bb863d5052028dad25d145470be8db917d451ba871b4ab24a",
     "modules/opt-explorer/src/concepts/ConceptsPage.tsx": "851d3306a3f7a8640bbb1ffd8074c7f0c58272c909d33d3c3dd464757b003128",
     "modules/opt-explorer/src/concepts/testFunctions.ts": "6f5da08e9f92b9e495f9351211e9ec214e798ab902758dd370b02838ac5f869d",
     "modules/opt-explorer/src/concepts/scalarOptimizers.ts": "e861bab9048f4fdbabdddb9f5d2dd66dae648a202220717d680098f0c003db07",
     "modules/opt-explorer/src/concepts/constrainedOptimizers.ts": "62d8eb9dd09b48e33c8cc93b9305dfc246160f0124f5f26f26661f9771cfe936",
-    "modules/opt-explorer/src/concepts/ArmView.tsx": "6a27de7e8f0342da6f5ab83782a94d72f355eebbff001170b4abfa8a3bd08eac",
-    "modules/opt-explorer/src/concepts/ConstrainedPage.tsx": "466da9b9ee64a7ea1a9b03fbadd587379481ea8f88e3692988b28c4a36a87252",
+    "modules/opt-explorer/src/concepts/ArmView.tsx": "6e11c2cc616b8dd4bcdd7c8a3f22ab98f31472c3dcda5089bd78635f67dcc729",
+    "modules/opt-explorer/src/concepts/ConstrainedPage.tsx": "cd23b6bd47b86c9a2a11a1e7244ccfc26cabe825e48984889229e481dac91483",
     "modules/opt-explorer/src/concepts/UpdatePanel.tsx": "cfb3f8de568016631e511b93cc61d1486ef01691c180bb2e3eacf60d1f9b89da",
     "modules/opt-explorer/src/concepts/Surface3D.tsx": "e4fa29cdeebff82da0eff8949d0422e0daed7778758ebf1ede133605336eaace"
   },
@@ -1955,7 +1960,7 @@
       "source_url": "../04-D1-constraints-and-komo/fig/drake-ik-nlp.png",
       "package_url": "lectures/04-D1-constraints-and-komo/fig/drake-ik-nlp.png",
       "kind": "Image",
-      "label": "Figure 3.4. The Panda reaches the target while its sampled wrist points avoid the sphere."
+      "label": "Figure 3.4. The Panda reaches the target while its forearm rests on the obstacle sphere."
     },
     {
       "document": "chapter-02.md",
@@ -2246,13 +2251,6 @@
     },
     {
       "document": "chapter-02.md",
-      "source_url": "http://127.0.0.1:8765/log/ik-nlp",
-      "package_url": "demos.html#ik-nlp",
-      "kind": "Link",
-      "label": "solver log"
-    },
-    {
-      "document": "chapter-02.md",
       "source_url": "http://127.0.0.1:8765/run/constrained-ik-replay",
       "package_url": "demos.html#constrained-ik-replay",
       "kind": "Link",
@@ -2466,9 +2464,9 @@
       "package_url": "chapter-02-detailed.html"
     }
   ],
-  "rendered_pdf_sha256": "4278ebe41c050a18af2bcd4ff293ab34e300e750eb7387e38d931612ef40ba27",
-  "delivered_pdf_sha256": "b1234ff318ca964e04b9649f13047f0627e3c838ae6d93c240c537108b1897f3",
-  "xref_entries": 1943,
+  "rendered_pdf_sha256": "f23745e2995f13ab9158a6739b0828448ff4b786bcfd10c787a92948e29142d0",
+  "delivered_pdf_sha256": "7cfa56a9839f9c83c87ef8085869658ddc84cca07d247fb5cb5d0fb7769dfe0d",
+  "xref_entries": 1937,
   "scope": "Chapter 02 companions only; no publication, assessments or instructor records.",
   "files": {
     "LICENSE.md": "300c8b380793f7177a514f2bfd0c791f22534bef6b53ac780f47bced08e39f92",
@@ -2536,23 +2534,24 @@
     "assets/katex/fonts/KaTeX_Typewriter-Regular.woff2": "71d517d67827787cfabdf186914cc3358eda539e37931941f2b2fd4a21f68c0b",
     "assets/katex/katex.min.css": "0289a02cf451a44dd73add683a09644252363871ac11713a647b732cee8b1ee3",
     "assets/katex/katex.min.js": "a29d2961d3146de5949d78ac7c1a9d93ae54955bad22a6db4fbe836e88e8bf48",
-    "chapter-02-detailed.html": "e356567a7c0f34288b79db11757e660982c7899e5773d5e3ddfd1567fd0c8555",
-    "chapter-02-essentials.html": "f5e6e803836bbf9d3a8024bceed39346d2763c7370f820a3eebaa42abd4c2802",
-    "chapter-02-essentials.pdf": "b1234ff318ca964e04b9649f13047f0627e3c838ae6d93c240c537108b1897f3",
-    "demos.html": "b48c2dc28be810a87798f807933203803ee100a2cb5c2a7e60dc9179789a2b22",
-    "demos.md": "ccd4a7dd6343812920f833e82310902ec0b0ee406d98f4902282893f16f6f1a9",
+    "chapter-02-detailed.html": "36800f8e431f3b28333e3690c14dce76a349438accc6a3da303f02eb59700abb",
+    "chapter-02-essentials.html": "c08b359a72bff49136c05f6ada6c9e463c953c8e454dfd02f5654bff7d9b4421",
+    "chapter-02-essentials.pdf": "7cfa56a9839f9c83c87ef8085869658ddc84cca07d247fb5cb5d0fb7769dfe0d",
+    "demos.html": "89abd4d8a834d69f35bf5f3e59a4bb183088e268e9dce5fee952712dcd467f62",
+    "demos.md": "845201d1f3fa0f471af663f2e11ca0e8fd9becfe586ce23be6b696a4d72f196a",
     "drake/02-gauss-newton-ik/gn_ik_panda.py": "1ec56f0d14336b63776dfc5d2f82f9485bfe579003c4d9ad03c01a24baf8a4cd",
     "drake/02-gauss-newton-ik/iterates-baseline.json": "4b8af1130bbc75c62d60c551b22671d1b9e0b7b2b7696cf6a24190ae6f3ff7ae",
     "drake/02-gauss-newton-ik/panel/index.html": "d6bb46fd19c16b0673d6c1d1c064aa16160e0c56f6af33d48aa67a489b936463",
     "drake/02-gauss-newton-ik/replay_panel.py": "0488e0a6c8e7df0eb8cb55dcc614ba4f24aa9cdf024a356a76c67dd97b163735",
-    "drake/03-ik-as-nlp/ik_nlp_panda.py": "9adf0a8a8f0fda94353bad5a8b09ae6d0a88ca3f8e99397b0d3fbfade25381b6",
+    "drake/03-ik-as-nlp/ik_nlp_panda.py": "27c6c09f2a6ec9d4678d0ae8af261325376cd08345b756fb5a90e16ca38ab21b",
+    "drake/03-ik-as-nlp/panel.html": "90eab4c231be57145718149d7c0e2c540f553e3a81760dc7cc1508c5fec0eede",
     "drake/04-constrained-ik-al/constrained_ik_panda.py": "5ccc6cd5c207de7a8f7a56eb22d99e45eaf94f749aa072c18d19322e7c1443b6",
     "drake/04-constrained-ik-al/iterates-baseline.json": "5af5c05ca3be20ff4db38da1d6dbbf4bc427cf8af54f519622e0acd1d71c9370",
     "drake/04-constrained-ik-al/panel.html": "5db3c1984a6578a27775c39863188e4103b5e7a7a2f0b4cb86228f54aa88e2a5",
     "drake/05-ik-nlp-al/ik_nlp_al_panda.py": "9c8ecf729133d6512143a8b94fe9d37d360d375bea02b1b554d0ce45e0caf45a",
     "drake/05-ik-nlp-al/iterates-baseline.json": "1d77492a37926edc61f59a1e5d80de7e9924d90877d9d22612186a6ce2cc3898",
     "drake/05-ik-nlp-al/panel.html": "bd7502674ed26e28dc04b575801782017b40cbb71466c0f0347706e57eb467e3",
-    "launch.py": "75aa7d334eecbf465d750587434874178377b1500908e57d599e63a219746d4d",
+    "launch.py": "02d9612773eb40411faa8b0e93e60386581f6ea40ad81e47d8b3ce23789fe91a",
     "lectures/02-D2-transforms-fk-jacobian/fig/two_link_bridge.png": "444e92d07fd3b5686882a71dcdb93309856a581ce74286b44d655f02c3f94a20",
     "lectures/02-reading-kinematic-foundations/fig/workspace_ik.png": "a5049bfe0cfd8effe2be5977c128a6017ee10fc718c1a31cc3618110a64c9f85",
     "lectures/03-D1-optimization-1/code/descent.py": "743e02de1720ec28372ee78f05af936361873a85f7bdca3761985ff5324fd082",
@@ -2582,12 +2581,12 @@
     "lectures/03-reading-optimization-planning-and-control/fig/local_prediction_vs_fk.png": "33105f35b32264f522aa0d7954b6fd53e9357a957231a774a82ca01aff78d2f4",
     "lectures/03-reading-optimization-planning-and-control/fig/panda_gn_runs.png": "d755809c0874ca836e6f8630473bae20bc0929df4f9f913a1d26e396cfbcb38b",
     "lectures/04-D1-constraints-and-komo/code/check_solvers.py": "7feedf8ca0c4bbba4dda0c8a99bee8f1ebb0b62bab0eed2ddf95e7080bf1242c",
-    "lectures/04-D1-constraints-and-komo/code/constrained_ik.py": "ffae9098c58b9961b0e7bdcf2b8cd380fb98a34c22b253bb219b2d250241d624",
-    "lectures/04-D1-constraints-and-komo/code/komo_two_link.py": "88702f1acef812f519700fcef050ffaf4faf9498ee67a47bdacfedaae1f92b73",
+    "lectures/04-D1-constraints-and-komo/code/constrained_ik.py": "67fbe1b322bba479742a35cb97b7b223e9cacd15d0e373fa5b79b2d4ca0d258f",
+    "lectures/04-D1-constraints-and-komo/code/komo_two_link.py": "f2ae67a507772fd117ab97c74857ecbc7dbd60259a1a374629a1c3719bccfd4d",
     "lectures/04-D1-constraints-and-komo/fig/arm_joint_limit.png": "8e4f4c196508dd9a2c8067d51fba7d52fdd1c1e82a2c44b98ba756c7fb5d84f2",
     "lectures/04-D1-constraints-and-komo/fig/drake-constrained-ik-al.png": "b85201eaee4288c8e0bbcd4425dd217a8e8e35376d4b6e8016a60545b50249ba",
     "lectures/04-D1-constraints-and-komo/fig/drake-ik-nlp-al.png": "2212b16c579e7b338287bb1b5ce17ee2a1c63453fdd02a8783262c7429f6dc26",
-    "lectures/04-D1-constraints-and-komo/fig/drake-ik-nlp.png": "a2b4b08bac846a65e6d925e861254de0d459fb2754f0135f47ea96f88073e41a",
+    "lectures/04-D1-constraints-and-komo/fig/drake-ik-nlp.png": "e962a9deff62782263f72e629b6b61d9518041c725d4661abe1a4e3aa3fbb99c",
     "lectures/04-D1-constraints-and-komo/fig/kkt_disc.png": "4fca4556347dd8826442758e831579bf9dae98b9af9cfe99939de91566971c77",
     "lectures/04-D1-constraints-and-komo/fig/kkt_disc_forces.png": "489fc15d30af7dc20d6141ae4366c890795491072a3805b92ac9d9855de92807",
     "licenses/@mapbox__geojson-rewind/LICENSE.txt": "f69fa6a6652581ae8c6cbab9e720bacb3b335a03335c2024afd6ddc6f7cfe240",
@@ -2845,11 +2844,11 @@
     "licenses/wrappy/LICENSE": "4ec3d4c66cd87f5c8d8ad911b10f99bf27cb00cdfcff82621956e379186b016b",
     "licenses/xtend/LICENSE": "82e67379203d5794e7c44549847d8d64ae6904591381682360470898bd306821",
     "modules/gauss-newton-ik/index.html": "9579d2d55d630e1980091808de3c52025c2eff0faafd687711ac62b2e040bd0e",
-    "modules/kkt-explorer/index.html": "0249c576dfa00cf0d97590f59335525a8458fe8b47a082347d711abf6f2d1d8f",
-    "modules/opt-explorer/assets/Surface3D-Dk5SUa24.js": "8bf132bc938a69baf7f2fa985c478aab35782483e7820d4f776edb94899e0991",
-    "modules/opt-explorer/assets/index-Co7bIwmt.js": "2484957f1a9dbc665afcb0b5a74a2e0834b2f7a797d08cdaef2d2ea6b37f463f",
+    "modules/kkt-explorer/index.html": "f3d0263feed7cab63ec9032a47833aa960d2c8eb16e3e848ddbada4e736577e2",
+    "modules/opt-explorer/assets/Surface3D-D4tAdakq.js": "36d07b460f16a098d2be99cb9cba2fb4c78ada0272580e4bf3a1d5f84a502107",
+    "modules/opt-explorer/assets/index-DzbDHDal.js": "1eb04adbf0309d36bbe425d521d1419e59de1380adda4e99b8afc5809d8a6588",
     "modules/opt-explorer/assets/index-rz-agBXp.css": "409f4187cded5b30172f827e391f8e26217ef238e1a9b665781d64f898b5c738",
-    "modules/opt-explorer/index.html": "4d86f194ab62d27a9227b332793987fbdc7cf0f0dd1b1eb5421977f35b5d0648",
+    "modules/opt-explorer/index.html": "91d045d6dd651d4e6356659b9817fe3ef1d0398d8b154a7d5f58d9729861e41b",
     "prerequisites.html": "4137368ab1c120c00bcd43081dfbe2c7cd483477ca7803e3660778d95d2f9e7b",
     "requirements-drake.txt": "553f339be742762632880534e8d0e6bd286e5757c8ca49c877fdb57b15bb04ee",
     "requirements.txt": "6d4cdf924e8b6fe2cf827f647ca740148e2e8b4c44ea31578dbea46cbd403417",

@@ -1,4 +1,4 @@
-"""Session 4.2 worked example: k-order trajectory optimization (the KOMO formulation) of the two-link arm
+"""Session 4.3 worked example (Deck 06; source retained in the Deck 05 folder): k-order trajectory optimization (the KOMO formulation) of the two-link arm
 (l1 = 0.4 m, l2 = 0.3 m) around a disc obstacle, solved with the augmented Lagrangian on the outside and the
 damped Gauss-Newton step of deck 04 on the inside. It is the mathematics behind `ry.KOMO`, written out in RAI's
 convention for time and costs (rai commit ccc36b55, the robotic 0.4.1 wheel; measured in the container on 2026-10-21,

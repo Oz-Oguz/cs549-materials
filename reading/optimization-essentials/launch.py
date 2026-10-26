@@ -11,7 +11,7 @@ import webbrowser
 ROOT = Path(__file__).resolve().parent
 DEMOS = {
     "gn-ik-replay": ("02-gauss-newton-ik/gn_ik_panda.py", ["--replay", "--app"]),
-    "ik-nlp": ("03-ik-as-nlp/ik_nlp_panda.py", ["--meshcat"]),
+    "ik-nlp": ("03-ik-as-nlp/ik_nlp_panda.py", ["--app"]),
     "constrained-ik-replay": ("04-constrained-ik-al/constrained_ik_panda.py", ["--replay", "--app"]),
     "ik-nlp-al-replay": ("05-ik-nlp-al/ik_nlp_al_panda.py", ["--replay", "--app"]),
 }
@@ -36,7 +36,7 @@ def main():
     if args.demo:
         script, flags = DEMOS[args.demo]
         command = [sys.executable, str(ROOT / "drake" / script), *flags]
-        if "--replay" in flags:
+        if "--app" in flags:
             command += ["--app-port", str(args.app_port)]
         raise SystemExit(subprocess.call(command, cwd=ROOT))
     handler = partial(Handler, directory=str(ROOT))

@@ -22,6 +22,12 @@ Cost convention of this deck:  f(q) = 1/2 ||phi(q) - y*||^2,  so that grad f = J
 (g) KKT points that are not minima: the saddle (21.80, 0) deg of the unconstrained cost, and a constrained
     maximum on the upper limit; and a minimum where KKT fails (the stretched arm on the rail phi = (0.7, 0)).
 
+(n) Inverse kinematics as a nonlinear program on two joints (Deck 05 slide 17): the posture cost
+    1/2 ||q - q_ref||_D^2 with D = I and q_ref = q_0 = (30, 45) deg, and ONE task equality, the tip height
+    h(q) = phi_2(q) - b = 0 with b = 0.2 m. Two joints and one equality leave a curve of feasible configurations;
+    the answer is where the posture cost's circles touch it. Solved by Newton's method on the KKT system
+    (q - q_ref + kappa grad h = 0, h = 0); the sensitivity d f*/d b = -kappa is checked at b = 0.21 m.
+
 Solution names: this file names the two unconstrained solutions by the sign of q2, as the kinematics
 reading does; Deck 04's 'elbow-up' is q2 > 0 and its 'elbow-down' is q2 < 0.
 
@@ -146,6 +152,28 @@ def sensitivity(y, q2max, lam):
     f_0 = f(constrained_ik_by_hand(y, q2max)[0], y)
     print(f"\n  sensitivity: relax the limit by 1 deg: f* goes from {f_0:.6f} to {f_plus:.6f}, change {f_plus - f_0:+.6f};"
           f"  -lambda* * (1 deg in rad) = {-lam*eps:+.6f}")
+
+
+# ----------------------------------------------------------------------------- (n) IK as an NLP with one task equality
+def hess_tip_height(q):
+    """Hessian of the tip height phi_2(q) = l1 sin q1 + l2 sin(q1 + q2)."""
+    s1, s12 = np.sin(q[0]), np.sin(q[0] + q[1])
+    return np.array([[-L1*s1 - L2*s12, -L2*s12], [-L2*s12, -L2*s12]])
+
+
+def ik_nlp_height(q_ref, b, q0=None, tol=1e-13, max_iter=50):
+    """min 1/2 ||q - q_ref||^2  s.t.  h(q) = phi_2(q) - b = 0, by Newton's method on the KKT system
+    F(q, kappa) = (q - q_ref + kappa grad h, h) = 0, started at q0 (default q_ref) with kappa = 0.
+    Returns (q*, kappa*, iterations)."""
+    q = np.array(q_ref if q0 is None else q0, float); kappa = 0.0
+    for it in range(max_iter):
+        gh = jac(q)[1]; h = phi(q)[1] - b
+        F = np.concatenate([q - q_ref + kappa*gh, [h]])
+        if np.linalg.norm(F) < tol: break
+        K = np.zeros((3, 3)); K[:2, :2] = np.eye(2) + kappa*hess_tip_height(q); K[:2, 2] = gh; K[2, :2] = gh
+        d = np.linalg.solve(K, -F)
+        q, kappa = q + d[:2], kappa + d[2]
+    return q, kappa, it
 
 
 # ----------------------------------------------------------------------------- (d) three methods
@@ -275,3 +303,23 @@ if __name__ == "__main__":
     Js = jac(np.zeros(2))
     print(f"  the stretched arm at q = (0, 0) with the rail phi(q) = (0.7, 0): J = {Js.tolist()} has rank {np.linalg.matrix_rank(Js)},"
           f" so the two rail gradients are parallel; the point is the only feasible one (a minimum) and no kappa balances a gradient outside their span: KKT needs independent active gradients")
+
+    print("\n=== (n) IK as a nonlinear program on two joints: min 1/2|q - q_ref|^2  s.t.  tip height phi_2(q) = 0.2 m ===")
+    q_ref, b = np.array([30*DEG, 45*DEG]), 0.2
+    q_n, kap_n, it_n = ik_nlp_height(q_ref, b)
+    gh = jac(q_n)[1]; f_n = 0.5*float(np.sum((q_n - q_ref)**2))
+    print(f"  the reference posture q_ref = (30, 45) deg puts the tip at {phi(q_ref)}: the equality is violated by h(q_ref) = {phi(q_ref)[1] - b:+.4f} m")
+    print(f"  answer after {it_n} Newton steps on the KKT system: q* = ({np.degrees(q_n[0]):.2f}, {np.degrees(q_n[1]):.2f}) deg, tip at {phi(q_n)},"
+          f" h(q*) = {phi(q_n)[1] - b:.1e} m, f* = {f_n:.5f} rad^2, kappa* = {kap_n:.4f} rad^2/m")
+    print(f"  stationarity |q* - q_ref + kappa* grad h| = {np.linalg.norm(q_n - q_ref + kap_n*gh):.1e}; grad f(q*) = q* - q_ref = {q_n - q_ref} rad"
+          f" is not zero, it is parallel to grad h = {gh} m/rad")
+    q_b, _, _ = ik_nlp_height(q_ref, b + 0.01, q0=q_n); f_b = 0.5*float(np.sum((q_b - q_ref)**2))
+    print(f"  raising the height to 0.21 m: q* = ({np.degrees(q_b[0]):.2f}, {np.degrees(q_b[1]):.2f}) deg; predicted change -kappa* 0.01 = {-0.01*kap_n:+.5f},"
+          f" computed {f_b - f_n:+.5f} rad^2")
+    best = min((0.5*float(np.sum((np.array([q1, q2]) - q_ref)**2)), q1, q2)
+               for q1 in np.linspace(-np.pi, np.pi, 3601)
+               for v in [(b - L1*np.sin(q1))/L2] if abs(v) <= 1
+               for a in (np.arcsin(v), np.pi - np.arcsin(v))
+               for q2 in [(a - q1 + np.pi) % (2*np.pi) - np.pi])
+    print(f"  a scan of the whole feasible curve (q1 on a 0.1 deg grid) finds its closest point at ({np.degrees(best[1]):.1f}, {np.degrees(best[2]):.1f}) deg with cost {best[0]:.5f}: the same answer")
+

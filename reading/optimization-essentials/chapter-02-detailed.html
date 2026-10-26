@@ -309,16 +309,14 @@ methods; optional reference passages supply deeper proofs and
 extensions. Appendix A collects numerical implementations, Appendix B
 describes demonstrations, and Appendix C gives source and lecture
 correspondence.</p>
-<p><em>Motion optimization with KOMO</em>, associated with session 4.2,
-extends one configuration to a stack of configurations and adds features
-that couple neighboring knots. <em>Sampling-based motion planning</em>,
-associated with session 4.4, develops collision-aware path search.
-<em>Execution, control and contact</em> begins with session 4.3’s
-execution problem and then develops physical contact. The readings place
-sampling before execution so that a planned path is available as an
-input. Execution can also begin directly from a KOMO path. Together
-these readings develop the computations needed to approach, grasp,
-carry, place and release an object.</p>
+<p>The motion-planning continuation follows Deck 06. Session 4.3
+introduces configuration space, paths, validity checks and motion
+optimization with KOMO. Session 4.4 adds sampling-based planning,
+refinement and revalidation. A future two-part essentials note will
+connect this planning material to elementary forces, torques, dynamics
+and control. Its second part can begin from either a KOMO or a sampled
+path. Extended contact and manipulation remain optional future material;
+the complete continuation has not yet been written.</p>
 <h2 id="optimization-fundamentals">1. Optimization fundamentals</h2>
 <h3 id="from-a-kinematics-update-to-an-optimization-problem">1.1 From a
 kinematics update to an optimization problem</h3>
@@ -617,7 +615,7 @@ candidate, and FK can check its task error. A low position error alone
 establishes neither a suitable grasp orientation nor a safe route to it.
 The configuration requirements motivate this chapter’s constraints.
 Finding a safe route continues in the <em>Motion optimization with
-KOMO</em> (session 4.2) and <em>Sampling-based motion planning</em>
+KOMO</em> (session 4.3) and <em>Sampling-based motion planning</em>
 (session 4.4).</p>
 <p>The staged prediction/FK comparison makes the mismatch in Figure 1.1
 visible in two reveals. Appendix B describes the optional visit.</p>
@@ -1262,7 +1260,7 @@ class="math inline">\mathbf y^*</span> of §1.1. Both are global minima
 of the position cost because each has zero target error. So a cost can
 have several global minima, and local methods started in different
 places can reach different ones.</p>
-<p>In <em>Motion optimization with KOMO</em> (session 4.2), the decision
+<p>In <em>Motion optimization with KOMO</em> (session 4.3), the decision
 variable <span class="math inline">\mathbf z</span> will contain all
 free configurations of a trajectory. The gradient and Hessian of its
 cost describe how that scalar cost changes when its coordinates change.
@@ -5444,17 +5442,27 @@ f(\mathbf q)=\tfrac12\|\mathbf q-\mathbf q_{\mathrm{ready}}\|^2.
 </span></p>
 <p>The cost is in squared radians. Three target equalities are in
 meters. The model’s seven lower and seven upper joint bounds are in
-radians. In the obstacle run, three wrist-frame origins must remain
-outside a sphere; this sampled-point model does not establish full-link
-or self-collision clearance.</p>
-<p>Figure 3.4 shows the exact flange target and the sampled wrist-point
-clearances.</p>
+radians. In the obstacle run, the whole arm must remain outside a
+sphere. Drake’s Panda model describes the arm’s body by 44 collision
+spheres on links 1 to 8. Collision sphere <span
+class="math inline">p</span> has center <span
+class="math inline">\mathbf p_p(\mathbf q)</span> and radius <span
+class="math inline">r_p</span>, and one inequality per sphere keeps it
+outside the obstacle:</p>
+<p><span class="math display">
+r_o+r_p-\|\mathbf p_p(\mathbf q)-\mathbf c_{\mathrm{obs}}\|\le0.
+</span></p>
+<p>The spheres approximate the robot’s surface, and self-collision is
+not modeled. A single sampled point is the case <span
+class="math inline">r_p=0</span>, which constrains only that point.</p>
+<p>Figure 3.4 shows the exact flange target and the forearm resting on
+the obstacle.</p>
 <figure>
 <img src="lectures/04-D1-constraints-and-komo/fig/drake-ik-nlp.png"
 style="width:70.0%"
-alt="Figure 3.4. The Panda reaches the target while its sampled wrist points avoid the sphere." />
+alt="Figure 3.4. The Panda reaches the target while its forearm rests on the obstacle sphere." />
 <figcaption aria-hidden="true">Figure 3.4. The Panda reaches the target
-while its sampled wrist points avoid the sphere.</figcaption>
+while its forearm rests on the obstacle sphere.</figcaption>
 </figure>
 <table>
 <colgroup>
@@ -5488,21 +5496,23 @@ sphere</td>
 <tr>
 <td>3</td>
 <td>Run 1 target, with sphere</td>
-<td>Wrist point <code>panda_link7</code> at the sphere</td>
-<td><span class="math inline">0.386</span></td>
+<td>Two collision spheres of link 5 at the obstacle</td>
+<td><span class="math inline">0.364</span></td>
 </tr>
 </tbody>
 </table>
 <p>For run 3 the sphere center and radius are</p>
 <p><span class="math display">
-\mathbf c_{\mathrm{obs}}=(0.45,0.10,0.53)^\top\ \mathrm m,
-\qquad r_o=0.07\ \mathrm m.
+\mathbf c_{\mathrm{obs}}=(0.175,0.15,0.75)^\top\ \mathrm m,
+\qquad r_o=0.08\ \mathrm m.
 </span></p>
-<p>The target is eight centimeters below the center. The flange reaches
-it while the next wrist point touches the sphere’s surface at 0.070
-meters. The other two sampled distances are 0.080 and approximately
-0.077 meters. The obstacle raises the posture cost because the arm must
-adopt a less preferred configuration.</p>
+<p>The sphere sits above the elbow. Run 1’s answer for this target would
+push the forearm, link 5, 26.9 millimeters into it. With the clearance
+rows in place, the arm bends around the obstacle, and two collision
+spheres of link 5 end on its surface. Every other row is inactive; the
+nearest, on link 4, is 6.7 millimeters clear. The obstacle raises the
+posture cost from 0.209 to 0.364 because the arm must adopt a less
+preferred configuration.</p>
 <h4 id="recover-and-interpret-the-multipliers">Recover and interpret the
 multipliers</h4>
 <p>Run 1 has no active inequality, but its target equality has nonzero
@@ -5551,19 +5561,29 @@ Tightening the lower bound by 0.001 radians raises cost by approximately
 <span class="math inline">1.05\times10^{-3}</span> squared radians,
 matching the multiplier prediction. This perturbation reuses the answer
 as the start so that the comparison follows the same local branch.</p>
-<p>Run 3’s distance-form inequality multiplier is approximately <span
-class="math inline">7.303\ \mathrm{rad^2/m}</span>. The implementation
-obtains a raw multiplier for a squared-distance bound. At contact,
-differentiating squared distance gives an extra factor of twice the
-radius. Multiplying the raw value 52.161 by 0.14 gives 7.303. Comparing
-multipliers across formulations requires this scale conversion as well
-as a sign check. Drake’s equality duals have the opposite sign to our
-<span class="math inline">\boldsymbol\kappa</span>; its raw upper-bound
-duals have the opposite sign to our <span
-class="math inline">\lambda</span>. The numerical perturbations check
-the equality-dual sign and one active lower-bound sign. The upper-bound
-sign follows from the declared constraint convention; the obstacle value
-above uses the squared-distance scale conversion.</p>
+<p>Run 3’s two active distance-form multipliers are approximately <span
+class="math inline">0.793</span> and <span class="math inline">7.933\
+\mathrm{rad^2/m}</span>. The implementation obtains a raw multiplier for
+a squared-distance bound. At contact, differentiating squared distance
+gives an extra factor of twice the contact distance <span
+class="math inline">r_o+r_p</span>. For the sphere with <span
+class="math inline">r_p=0.060</span> m, the raw value 2.832 times 0.28
+gives 0.793. For the sphere with <span
+class="math inline">r_p=0.055</span> m, the raw value 29.383 times 0.27
+gives 7.933. Both rows contain <span class="math inline">r_o</span>, so
+growing the obstacle’s radius by one millimeter predicts a cost increase
+of <span
+class="math inline">(0.793+7.933)(0.001)=8.73\times10^{-3}</span>
+squared radians. The re-solved program changes cost by <span
+class="math inline">8.84\times10^{-3}</span>. Comparing multipliers
+across formulations requires this scale conversion as well as a sign
+check. Drake’s equality duals have the opposite sign to our <span
+class="math inline">\boldsymbol\kappa</span>; its raw upper-bound duals
+have the opposite sign to our <span class="math inline">\lambda</span>.
+The numerical perturbations check the equality-dual sign and one active
+lower-bound sign. The upper-bound sign follows from the declared
+constraint convention; the obstacle value above uses the
+squared-distance scale conversion.</p>
 <h4 id="preserve-the-start-when-comparing-local-solutions">Preserve the
 start when comparing local solutions</h4>
 <p>The run-2 target lies in the robot’s symmetry plane. From the exactly
@@ -5582,8 +5602,8 @@ feasible negative curvature. At the asymmetric answer its eigenvalues
 are approximately 0.677, 1.000 and 1.090. This supports local minimality
 under the stated regularity conditions and the accuracy of the numerical
 derivatives. It is not a global-optimality result.</p>
-<p>Changing the target changes the active wrist point and may remove all
-active inequalities. An exact target inside the forbidden sphere is
+<p>Changing the target changes the active link and may remove all active
+inequalities. An exact target inside the forbidden sphere is
 geometrically impossible. Appendix B compares these cases; Figure 3.4
 and the solution table provide the fixed-target example.</p>
 <p>The numerical example for this subsection is indexed in Appendix A
@@ -6555,9 +6575,9 @@ constraints can be placed at appropriate points in the sequence.
 <em>Motion optimization with KOMO</em> will explain knot spacing,
 temporal differences, sparse feature dependencies, actual RAI/KOMO
 execution and validation between knots. Sampling-based planning will
-provide another way to find candidate paths. Execution, control and
-contact will explain how a path becomes a commanded and observed
-motion.</p>
+provide another way to find candidate paths. The future forces, dynamics
+and control part will explain how a path becomes a commanded and
+observed motion.</p>
 <h4 id="check-your-understanding-19">Check your understanding</h4>
 <p>Before accepting a constrained-IK result, identify the task point and
 frame, the cost being minimized, the hard requirements, the initial
@@ -7136,29 +7156,31 @@ are independently printed by example (a′) of
 <code>constrained_ik.py</code>.</p>
 <h3 id="b.3.5-demonstration-for-3.5">B.3.5 Demonstration for §3.5</h3>
 <p>Open the <a href="demos.html#ik-nlp">Panda constrained-IK
-demonstration</a> and its <a href="demos.html#ik-nlp">solver log</a>. It
-begins at run 3.</p>
+demonstration</a>. The page shows the robot beside the program, the
+cost, the active rows with their multipliers and each link’s clearance.
+It begins at run 3.</p>
 <ol type="1">
-<li>Predict the active constraint before reading the log. The wrist
-point <code>panda_link7</code> touches the sphere; the target equality
-remains imposed.</li>
-<li>Lower the target z slider from 0.45 to 0.35 meters. The active
-sphere point changes to <code>panda_link6</code>, and the cost is
-approximately 0.327. Lower it to 0.30 meters. No inequality remains
-active, while posture cost rises to approximately 0.408 because the
-target is farther from the preferred pose.</li>
-<li>Move z to 0.50 meters. The solver finds no feasible point and
-retains its last solution. Here infeasibility also follows directly: the
-target lies only three centimeters from the center, but the constrained
-flange must stay at least seven centimeters away.</li>
-<li>Restore the initial target. The original active wrist point and cost
-return.</li>
+<li>Predict the active constraint before reading the page. Two collision
+spheres of link 5 touch the obstacle; the target equality remains
+imposed.</li>
+<li>Press <strong>10 cm lower</strong>. One collision sphere of link 4
+becomes active, and the cost is approximately 0.347. Press <strong>15 cm
+lower</strong>. No inequality remains active, while posture cost rises
+to approximately 0.408 because the target is farther from the preferred
+pose.</li>
+<li>Press <strong>inside the sphere</strong>. The solver finds no
+feasible point and retains its last solution. Here infeasibility also
+follows directly: the flange point lies inside link 7’s collision
+sphere, which would then overlap the obstacle.</li>
+<li>Press <strong>the start (run 3)</strong>. The original active link
+and cost return. The page also reports a second local solution, with
+cost 0.402, reached from the last pose.</li>
 </ol>
 <p>The demonstration compares solutions from two starts and displays the
 better feasible candidate it finds. Two starts do not exhaust all local
-solutions. Each slider position defines a separate IK problem; the
-displayed changes do not plan a collision-free motion between answers.
-The figure and table provide the static fallback.</p>
+solutions. Each target defines a separate IK problem; the displayed
+changes do not plan a collision-free motion between answers. The figure
+and table provide the static fallback.</p>
 <h3 id="b.3.6-demonstration-for-3.6">B.3.6 Demonstration for §3.6</h3>
 <p>Open the <a href="demos.html#constrained-ik-replay">one-limit Panda
 replay</a>.</p>
@@ -7287,8 +7309,8 @@ and <a
 href="lectures/04-D1-constraints-and-komo/code/check_solvers.py"><code>check_solvers.py</code></a>
 provide the small computations. The existing Panda programs supply the
 hard-target example and both augmented-Lagrangian replays. Section 3.9
-closes the configuration problem before Deck 05 page 28 introduces
-trajectories.</p>
+closes the configuration problem before Deck 06 introduces
+configuration-space paths and then trajectory optimization.</p>
 <p>The detailed Wolfe conditions and bracket-and-zoom search extend the
 line-search acceptance rules. Their algorithms remain optional in the
 Optimization I notes §9 and Deck 04 backup pages 40–41; the main deck
