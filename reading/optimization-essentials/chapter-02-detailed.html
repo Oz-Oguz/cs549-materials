@@ -5416,20 +5416,87 @@ an equality, and posture deviation becomes the cost:</p>
 \varphi(\mathbf q)-\mathbf y^*=\mathbf0,\\
 &amp;\mathbf q^{\min}-\mathbf q\le\mathbf0,
 \qquad \mathbf q-\mathbf q^{\max}\le\mathbf0,\\
-&amp;r_o-\|\mathbf p_p(\mathbf q)-\mathbf c_{\mathrm{obs}}\|\le0.
+&amp;r_o+r_p-\|\mathbf p_p(\mathbf q)-\mathbf c_{\mathrm{obs}}\|\le0.
 \end{aligned}\tag{3.6}
 </span></p>
-<p>The point index <span class="math inline">p</span> selects the
-modeled collision points. The matrix <span class="math inline">\mathbf
-D</span> is a fixed positive-definite posture weight. Its reference
-stays fixed during the solve. The proposed-step penalty of §2.3 instead
-measures an increment from the changing current iterate. These terms
-have different stationary conditions and different purposes.</p>
+<p>The index <span class="math inline">p</span> selects the modeled
+collision spheres, with center <span class="math inline">\mathbf
+p_p(\mathbf q)</span> and radius <span class="math inline">r_p</span>. A
+sampled point has <span class="math inline">r_p=0</span>. The matrix
+<span class="math inline">\mathbf D</span> is a fixed positive-definite
+posture weight. Its reference stays fixed during the solve. The
+proposed-step penalty of §2.3 instead measures an increment from the
+changing current iterate. These terms have different stationary
+conditions and different purposes.</p>
 <p>The two-link arm with the sixty-degree range would make this
 exact-target program infeasible for the running target. Its reachable
 radii lie between 0.608 and 0.700 meters, while the target radius is
 0.539 meters. We have a geometric proof in that example. A failed solve
 would not supply the proof.</p>
+<h4 id="keep-one-exact-task-coordinate-and-choose-a-posture">Keep one
+exact task coordinate and choose a posture</h4>
+<p>An exact two-coordinate tip target would fix both joints once an
+elbow branch is chosen, leaving no freedom for the posture cost to
+resolve. Instead, keep the tip height at <span
+class="math inline">b=0.2</span> m and let the cost choose among
+configurations on that height curve. Set <span
+class="math inline">\mathbf D=\mathbf I</span> and keep the reference
+posture <span class="math inline">\mathbf
+q_{\mathrm{ref}}=(30^\circ,45^\circ)^\top</span> fixed:</p>
+<p><span class="math display">
+\min_{\mathbf q}\ \tfrac12\|\mathbf q-\mathbf q_{\mathrm{ref}}\|^2
+\quad\text{subject to}\quad
+h(\mathbf q)=\varphi_2(\mathbf q)-b=0.
+</span></p>
+<p>For the lecture arm, the height and its gradient are</p>
+<p><span class="math display">
+\begin{aligned}
+\varphi_2(\mathbf q)&amp;=l_1\sin q_1+l_2\sin(q_1+q_2),\\
+\nabla h(\mathbf q)&amp;=
+\begin{bmatrix}
+l_1\cos q_1+l_2\cos(q_1+q_2)\\
+l_2\cos(q_1+q_2)
+\end{bmatrix}.
+\end{aligned}
+</span></p>
+<p>The reference tip is at approximately <span
+class="math inline">(0.424,0.490)</span> m, so its initial height
+violation is <span class="math inline">0.290</span> m. At the
+constrained answer, the target equality and gradient balance give three
+equations for <span class="math inline">q_1</span>, <span
+class="math inline">q_2</span> and the signed equality multiplier:</p>
+<p><span class="math display">
+\mathbf q-\mathbf q_{\mathrm{ref}}+\kappa\nabla h(\mathbf q)=\mathbf0,
+\qquad h(\mathbf q)=0.
+</span></p>
+<p>Solving them from the reference posture gives approximately <span
+class="math inline">\mathbf q^*=(2.59^\circ,34.75^\circ)^\top</span>,
+tip position <span class="math inline">(0.638,0.200)</span> m, posture
+cost <span class="math inline">0.13046</span> squared radians and <span
+class="math inline">\kappa^*=0.74982</span> squared radians per meter.
+The joint gradient is <span
+class="math inline">(-0.4785,-0.1788)^\top</span> radians, and the
+height gradient is <span class="math inline">(0.6381,0.2385)^\top</span>
+meters per radian. The ratio of the first components is about <span
+class="math inline">0.750</span>, which checks the multiplier. The
+second components give the same result to three digits.</p>
+<p>Figure 3.4 shows the height curve and the smallest posture-cost
+circle that touches it. Raising the required height by <span
+class="math inline">0.01</span> m predicts a cost decrease of about
+<span class="math inline">0.00750</span> squared radians from the signed
+multiplier. Resolving at <span class="math inline">0.21</span> m gives
+<span class="math inline">-0.00742</span> squared radians. This is a
+local sensitivity along the same solution branch. The example has no
+obstacle or joint-bound row and does not specify a motion between
+postures.</p>
+<figure>
+<img src="lectures/04-D1-constrained-optimization/fig/arm_ik_nlp.png"
+style="width:95.0%"
+alt="Figure 3.4. The height equality leaves a curve of two-link configurations. The fixed posture cost selects a point on that curve." />
+<figcaption aria-hidden="true">Figure 3.4. The height equality leaves a
+curve of two-link configurations. The fixed posture cost selects a point
+on that curve.</figcaption>
+</figure>
 <h4 id="inspect-the-program-on-seven-joints">Inspect the program on
 seven joints</h4>
 <p>A robot-modeling library supplies the kinematics and their
@@ -5457,14 +5524,15 @@ r_o+r_p-\|\mathbf p_p(\mathbf q)-\mathbf c_{\mathrm{obs}}\|\le0.
 <p>The spheres approximate the robot’s surface, and self-collision is
 not modeled. A single sampled point is the case <span
 class="math inline">r_p=0</span>, which constrains only that point.</p>
-<p>Figure 3.4 shows the exact flange target and the forearm resting on
+<p>Figure 3.5 shows the exact flange target and the forearm resting on
 the obstacle.</p>
 <figure>
 <img src="lectures/04-D1-constrained-optimization/fig/drake-ik-nlp.png"
 style="width:70.0%"
-alt="Figure 3.4. The Panda reaches the target while its forearm rests on the obstacle sphere." />
-<figcaption aria-hidden="true">Figure 3.4. The Panda reaches the target
-while its forearm rests on the obstacle sphere.</figcaption>
+alt="Figure 3.5. The Panda reaches the target while two modeled collision spheres on its forearm touch the obstacle." />
+<figcaption aria-hidden="true">Figure 3.5. The Panda reaches the target
+while two modeled collision spheres on its forearm touch the
+obstacle.</figcaption>
 </figure>
 <table>
 <colgroup>
@@ -5606,7 +5674,7 @@ under the stated regularity conditions and the accuracy of the numerical
 derivatives. It is not a global-optimality result.</p>
 <p>Changing the target changes the active link and may remove all active
 inequalities. An exact target inside the forbidden sphere is
-geometrically impossible. Appendix B compares these cases; Figure 3.4
+geometrically impossible. Appendix B compares these cases; Figure 3.5
 and the solution table provide the fixed-target example.</p>
 <p>The numerical example for this subsection is indexed in Appendix A
 (§3.5).</p>
@@ -6032,14 +6100,14 @@ replay checks and labels hardware-range violations, but those ranges are
 not all constraints of this one-limit program. Its final residual is
 therefore not a proof of global unreachability. Section 3.8 restores the
 full joint box in a different program.</p>
-<p>Figure 3.5 compares task error, violation and multiplier learning for
+<p>Figure 3.6 compares task error, violation and multiplier learning for
 an active and an inactive bound.</p>
 <figure>
 <img
 src="lectures/04-D1-constrained-optimization/fig/drake-constrained-ik-al.png"
 style="width:95.0%"
-alt="Figure 3.5. The one-limit Panda replay plot records task error, violation, multiplier and accepted inner steps. It provides a static comparison of its active and inactive runs." />
-<figcaption aria-hidden="true">Figure 3.5. The one-limit Panda replay
+alt="Figure 3.6. The one-limit Panda replay plot records task error, violation, multiplier and accepted inner steps. It provides a static comparison of its active and inactive runs." />
+<figcaption aria-hidden="true">Figure 3.6. The one-limit Panda replay
 plot records task error, violation, multiplier and accepted inner steps.
 It provides a static comparison of its active and inactive
 runs.</figcaption>
@@ -6488,14 +6556,14 @@ outer residual checks still decide whether the constrained problem is
 solved. At outer iteration 3, feasibility passes while stationarity and
 complementarity fail; the final outer update brings all tests below
 their thresholds.</p>
-<p>Figure 3.6 compares feasibility and multiplier histories in the
+<p>Figure 3.7 compares feasibility and multiplier histories in the
 hard-target runs.</p>
 <figure>
 <img
 src="lectures/04-D1-constrained-optimization/fig/drake-ik-nlp-al.png"
 style="width:95.0%"
-alt="Figure 3.6. The hard-target Panda replay figure plots equality violation, posture cost, equality-multiplier norm and the active joint multiplier for both runs." />
-<figcaption aria-hidden="true">Figure 3.6. The hard-target Panda replay
+alt="Figure 3.7. The hard-target Panda replay figure plots equality violation, posture cost, equality-multiplier norm and the active joint multiplier for both runs." />
+<figcaption aria-hidden="true">Figure 3.7. The hard-target Panda replay
 figure plots equality violation, posture cost, equality-multiplier norm
 and the active joint multiplier for both runs.</figcaption>
 </figure>

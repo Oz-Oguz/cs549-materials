@@ -3,11 +3,11 @@
   "documents": {
     "chapter-02-essentials.html": {
       "source": "lectures/03-reading-optimization-planning-and-control/chapter-02-essentials.md",
-      "sha256": "5dc88301078be6a5d0ffd95ffb3817939c7c35497e911a9101d1d852014caa53"
+      "sha256": "646da6c8cbfe773bf2ee3f3d30480311d15ff0295abf9db8e765467d59dcce7b"
     },
     "chapter-02-detailed.html": {
       "source": "lectures/03-reading-optimization-planning-and-control/chapter-02.md",
-      "sha256": "2422460d8927756ff066cf0da6efb15b40548f1f0843ea8f56be455dfd6b1838"
+      "sha256": "2a7f88725260738be6a15fcfb224dd8c0ccf6d0ff058a2c118db86f54de306e0"
     },
     "prerequisites.html": {
       "source": "lectures/02-reading-kinematic-foundations/chapter-01.md",
@@ -1467,6 +1467,14 @@
       "source": "lectures/04-D1-constrained-optimization/fig/arm_joint_limit.png",
       "source_sha256": "8e4f4c196508dd9a2c8067d51fba7d52fdd1c1e82a2c44b98ba756c7fb5d84f2"
     },
+    "lectures/04-D1-constrained-optimization/fig/arm_ik_nlp.png": {
+      "source": "lectures/04-D1-constrained-optimization/fig/arm_ik_nlp.png",
+      "source_sha256": "3e7fd1e896182ff84d8dc1cd395244aeb87395c9f355dc1384cf333ee29ff147"
+    },
+    "lectures/04-D1-constrained-optimization/fig/drake-ik-nlp.png": {
+      "source": "lectures/04-D1-constrained-optimization/fig/drake-ik-nlp.png",
+      "source_sha256": "e962a9deff62782263f72e629b6b61d9518041c725d4661abe1a4e3aa3fbb99c"
+    },
     "lectures/04-D1-constrained-optimization/fig/drake-ik-nlp-al.png": {
       "source": "lectures/04-D1-constrained-optimization/fig/drake-ik-nlp-al.png",
       "source_sha256": "2212b16c579e7b338287bb1b5ce17ee2a1c63453fdd02a8783262c7429f6dc26"
@@ -1490,10 +1498,6 @@
     "lectures/04-D1-constrained-optimization/fig/kkt_disc.png": {
       "source": "lectures/04-D1-constrained-optimization/fig/kkt_disc.png",
       "source_sha256": "4fca4556347dd8826442758e831579bf9dae98b9af9cfe99939de91566971c77"
-    },
-    "lectures/04-D1-constrained-optimization/fig/drake-ik-nlp.png": {
-      "source": "lectures/04-D1-constrained-optimization/fig/drake-ik-nlp.png",
-      "source_sha256": "e962a9deff62782263f72e629b6b61d9518041c725d4661abe1a4e3aa3fbb99c"
     },
     "lectures/04-D1-constrained-optimization/fig/drake-constrained-ik-al.png": {
       "source": "lectures/04-D1-constrained-optimization/fig/drake-constrained-ik-al.png",
@@ -1522,9 +1526,9 @@
     "scripts/export_student_repo.py": "8d6aaabef8214742efde0a86476097d11bb629625059b2c0ca276e044ad4167f",
     "lectures/03-reading-optimization-planning-and-control/delivery/README.md": "96567d881ba23f9af3dfc571c216dd9ebb048076b6a8502d5feadb13260f5898",
     "lectures/03-reading-optimization-planning-and-control/delivery/launch.py": "02d9612773eb40411faa8b0e93e60386581f6ea40ad81e47d8b3ce23789fe91a",
-    "lectures/03-reading-optimization-planning-and-control/chapter-02.md": "2422460d8927756ff066cf0da6efb15b40548f1f0843ea8f56be455dfd6b1838",
-    "lectures/03-reading-optimization-planning-and-control/chapter-02-essentials.md": "5dc88301078be6a5d0ffd95ffb3817939c7c35497e911a9101d1d852014caa53",
-    "lectures/03-reading-optimization-planning-and-control/chapter-02-essentials.pdf": "f5c860c2d8bbf9363b598b85d17a3df716beb624f5186a01749523bd0e53411f",
+    "lectures/03-reading-optimization-planning-and-control/chapter-02.md": "2a7f88725260738be6a15fcfb224dd8c0ccf6d0ff058a2c118db86f54de306e0",
+    "lectures/03-reading-optimization-planning-and-control/chapter-02-essentials.md": "646da6c8cbfe773bf2ee3f3d30480311d15ff0295abf9db8e765467d59dcce7b",
+    "lectures/03-reading-optimization-planning-and-control/chapter-02-essentials.pdf": "d805c7df67da11bd1ddc8c4c5a588f331ea194db3f5c39246f9385347abb2420",
     "lectures/02-reading-kinematic-foundations/chapter-01.md": "96316784756aeeabefb35b70a4d5e91805547ad6f40c7ae63362f39eb18e2f20",
     "modules/opt-explorer/package.json": "fe99ec0562ed6ecf8e22435e69e65917c0196a4340a5a99858ae312953399848",
     "modules/opt-explorer/package-lock.json": "b376859c7758951bdaa76873ec0b8334fc4d7dc1d2435bc4b9899e2b4dd68ae6",
@@ -1628,10 +1632,24 @@
     },
     {
       "document": "chapter-02-essentials.md",
+      "source_url": "../04-D1-constrained-optimization/fig/arm_ik_nlp.png",
+      "package_url": "lectures/04-D1-constrained-optimization/fig/arm_ik_nlp.png",
+      "kind": "Image",
+      "label": "Figure 3.3. The height equality leaves a curve of two-link configurations. The posture cost selects its closest point to the fixed reference."
+    },
+    {
+      "document": "chapter-02-essentials.md",
+      "source_url": "../04-D1-constrained-optimization/fig/drake-ik-nlp.png",
+      "package_url": "lectures/04-D1-constrained-optimization/fig/drake-ik-nlp.png",
+      "kind": "Image",
+      "label": "Figure 3.4. The Panda reaches the target while two modeled collision spheres on its forearm touch the obstacle."
+    },
+    {
+      "document": "chapter-02-essentials.md",
       "source_url": "../04-D1-constrained-optimization/fig/drake-ik-nlp-al.png",
       "package_url": "lectures/04-D1-constrained-optimization/fig/drake-ik-nlp-al.png",
       "kind": "Image",
-      "label": "Figure 3.3. The hard-target Panda solves reduce equality error while learning target and joint-bound multipliers. A multiplier update changes the stored balance at a fixed configuration."
+      "label": "Figure 3.5. The hard-target Panda solves reduce equality error while learning target and joint-bound multipliers. A multiplier update changes the stored balance at a fixed configuration."
     },
     {
       "document": "chapter-02-essentials.md",
@@ -1957,24 +1975,31 @@
     },
     {
       "document": "chapter-02.md",
+      "source_url": "../04-D1-constrained-optimization/fig/arm_ik_nlp.png",
+      "package_url": "lectures/04-D1-constrained-optimization/fig/arm_ik_nlp.png",
+      "kind": "Image",
+      "label": "Figure 3.4. The height equality leaves a curve of two-link configurations. The fixed posture cost selects a point on that curve."
+    },
+    {
+      "document": "chapter-02.md",
       "source_url": "../04-D1-constrained-optimization/fig/drake-ik-nlp.png",
       "package_url": "lectures/04-D1-constrained-optimization/fig/drake-ik-nlp.png",
       "kind": "Image",
-      "label": "Figure 3.4. The Panda reaches the target while its forearm rests on the obstacle sphere."
+      "label": "Figure 3.5. The Panda reaches the target while two modeled collision spheres on its forearm touch the obstacle."
     },
     {
       "document": "chapter-02.md",
       "source_url": "../04-D1-constrained-optimization/fig/drake-constrained-ik-al.png",
       "package_url": "lectures/04-D1-constrained-optimization/fig/drake-constrained-ik-al.png",
       "kind": "Image",
-      "label": "Figure 3.5. The one-limit Panda replay plot records task error, violation, multiplier and accepted inner steps. It provides a static comparison of its active and inactive runs."
+      "label": "Figure 3.6. The one-limit Panda replay plot records task error, violation, multiplier and accepted inner steps. It provides a static comparison of its active and inactive runs."
     },
     {
       "document": "chapter-02.md",
       "source_url": "../04-D1-constrained-optimization/fig/drake-ik-nlp-al.png",
       "package_url": "lectures/04-D1-constrained-optimization/fig/drake-ik-nlp-al.png",
       "kind": "Image",
-      "label": "Figure 3.6. The hard-target Panda replay figure plots equality violation, posture cost, equality-multiplier norm and the active joint multiplier for both runs."
+      "label": "Figure 3.7. The hard-target Panda replay figure plots equality violation, posture cost, equality-multiplier norm and the active joint multiplier for both runs."
     },
     {
       "document": "chapter-02.md",
@@ -2464,9 +2489,9 @@
       "package_url": "chapter-02-detailed.html"
     }
   ],
-  "rendered_pdf_sha256": "f5c860c2d8bbf9363b598b85d17a3df716beb624f5186a01749523bd0e53411f",
-  "delivered_pdf_sha256": "b34cb13ade2ce12faa23719948aa469963546b01ec5d8a1dd4ed61b754146649",
-  "xref_entries": 1937,
+  "rendered_pdf_sha256": "d805c7df67da11bd1ddc8c4c5a588f331ea194db3f5c39246f9385347abb2420",
+  "delivered_pdf_sha256": "f8ba9c3ed1e521e0d7a819eec7849985fcf51254eee6e2db779688a8a351e89d",
+  "xref_entries": 1977,
   "scope": "Chapter 02 companions only; no publication, assessments or instructor records.",
   "files": {
     "LICENSE.md": "300c8b380793f7177a514f2bfd0c791f22534bef6b53ac780f47bced08e39f92",
@@ -2534,9 +2559,9 @@
     "assets/katex/fonts/KaTeX_Typewriter-Regular.woff2": "71d517d67827787cfabdf186914cc3358eda539e37931941f2b2fd4a21f68c0b",
     "assets/katex/katex.min.css": "0289a02cf451a44dd73add683a09644252363871ac11713a647b732cee8b1ee3",
     "assets/katex/katex.min.js": "a29d2961d3146de5949d78ac7c1a9d93ae54955bad22a6db4fbe836e88e8bf48",
-    "chapter-02-detailed.html": "d463e5ddab914848211fbd4276d6520e9f1698d856f3dcdaacfe1d39cbd10192",
-    "chapter-02-essentials.html": "8442f83d4cf9ca6a8a8ae21c602fca9f43e281b8d729a9b4a3ccf7b3fc9cb9fa",
-    "chapter-02-essentials.pdf": "b34cb13ade2ce12faa23719948aa469963546b01ec5d8a1dd4ed61b754146649",
+    "chapter-02-detailed.html": "2dfa4232e37a8e13ec69342f34015e0c3be89c4c6f1978f64ef530861f9b3e2c",
+    "chapter-02-essentials.html": "8d1c3100f0185365483029cebb021b91ad75b0bc59cf5680a8650ba271943499",
+    "chapter-02-essentials.pdf": "f8ba9c3ed1e521e0d7a819eec7849985fcf51254eee6e2db779688a8a351e89d",
     "demos.html": "89abd4d8a834d69f35bf5f3e59a4bb183088e268e9dce5fee952712dcd467f62",
     "demos.md": "845201d1f3fa0f471af663f2e11ca0e8fd9becfe586ce23be6b696a4d72f196a",
     "drake/02-gauss-newton-ik/gn_ik_panda.py": "1ec56f0d14336b63776dfc5d2f82f9485bfe579003c4d9ad03c01a24baf8a4cd",
@@ -2583,6 +2608,7 @@
     "lectures/04-D1-constrained-optimization/code/al_gauss_newton.py": "70227daf2ae6bfb66ece71b00893964ab0e9050db8500e0308f6e77043e01bdf",
     "lectures/04-D1-constrained-optimization/code/check_solvers.py": "41a3a964269485623aa4aed83a3eac35c1c9f4da9c0e12fae7d7dca950436964",
     "lectures/04-D1-constrained-optimization/code/constrained_ik.py": "ccd77897fcbb887dc16e61ed0284413cf12d189d383468c6fa428578ff311bc1",
+    "lectures/04-D1-constrained-optimization/fig/arm_ik_nlp.png": "3e7fd1e896182ff84d8dc1cd395244aeb87395c9f355dc1384cf333ee29ff147",
     "lectures/04-D1-constrained-optimization/fig/arm_joint_limit.png": "8e4f4c196508dd9a2c8067d51fba7d52fdd1c1e82a2c44b98ba756c7fb5d84f2",
     "lectures/04-D1-constrained-optimization/fig/drake-constrained-ik-al.png": "b85201eaee4288c8e0bbcd4425dd217a8e8e35376d4b6e8016a60545b50249ba",
     "lectures/04-D1-constrained-optimization/fig/drake-ik-nlp-al.png": "2212b16c579e7b338287bb1b5ce17ee2a1c63453fdd02a8783262c7429f6dc26",

@@ -1649,28 +1649,33 @@ bounds, clearance or exact task requirements:</p>
 \begin{aligned}
 g_{\mathrm{upper}}&amp;=q_j-q_j^{\max},&amp;
 g_{\mathrm{lower}}&amp;=q_j^{\min}-q_j,\\
-g_{\mathrm{clearance}}&amp;=r_o-\|\mathbf p(\mathbf q)-\mathbf
+g_{\mathrm{clear},p}&amp;=r_o+r_p-\|\mathbf p_p(\mathbf q)-\mathbf
 c_{\mathrm{obs}}\|,&amp;
 \mathbf h&amp;=\varphi(\mathbf q)-\mathbf y^*.
 \end{aligned}
 \tag{3.3}
 </span></p>
-<p>The clearance row protects the modeled point around a spherical
-obstacle with center <span class="math inline">\mathbf
+<p>The obstacle has center <span class="math inline">\mathbf
 c_{\mathrm{obs}}</span> and radius <span class="math inline">r_o</span>.
-Protecting a point does not establish whole-link clearance. Each
-component of the target error supplies a separate equality. Bounds have
-radian units, and the position constraints have meter units.</p>
+The robot’s collision sphere indexed by <span
+class="math inline">p</span> has center <span
+class="math inline">\mathbf p_p(\mathbf q)</span> and radius <span
+class="math inline">r_p</span>. One clearance row keeps that sphere
+outside the obstacle. A sampled point is the case <span
+class="math inline">r_p=0</span>; checking only that point leaves the
+surrounding robot body unprotected. Each component of the target error
+supplies a separate equality. Bounds have radian units, and the position
+constraints have meter units.</p>
 <p>For clearance, let <span class="math inline">\mathbf J_p</span> be
-the point’s position Jacobian in world axes. Away from the obstacle
-center, the outward unit direction is <span
+the sphere center’s position Jacobian in world axes. Away from the
+obstacle center, the outward unit direction is <span
 class="math inline">\hat{\mathbf n}</span>. Increasing distance
 decreases the constraint, so the chain rule gives its column
 gradient:</p>
 <p><span class="math display">
-\hat{\mathbf n}=\frac{\mathbf p-\mathbf c_{\mathrm{obs}}}
-{\|\mathbf p-\mathbf c_{\mathrm{obs}}\|},
-\qquad \nabla g_{\mathrm{clearance}}=-\mathbf J_p^\top\hat{\mathbf n}.
+\hat{\mathbf n}=\frac{\mathbf p_p-\mathbf c_{\mathrm{obs}}}
+{\|\mathbf p_p-\mathbf c_{\mathrm{obs}}\|},
+\qquad \nabla g_{\mathrm{clear},p}=-\mathbf J_p^\top\hat{\mathbf n}.
 \tag{3.4}
 </span></p>
 <p>The sign is important. Reversing it would direct the modeled
@@ -1873,6 +1878,37 @@ class="math inline">2.05\times10^{-4}</span> square meters. This is a
 local derivative, so a finite change is approximate. A branch change can
 invalidate the prediction. Rescaling a constraint also rescales its
 multiplier. Its units are cost units divided by constraint units.</p>
+<div class="keep">
+<p>An exact two-coordinate tip target would leave the two-link arm no
+choice once an elbow branch is fixed. To see a posture cost select among
+feasible answers, require only the tip height to be <span
+class="math inline">b=0.2</span> m. Keep the reference posture fixed at
+<span class="math inline">(30^\circ,45^\circ)</span> and solve</p>
+<p><span class="math display">
+\min_{\mathbf q}\ \tfrac12\|\mathbf q-\mathbf q_{\mathrm{ref}}\|^2
+\quad\text{subject to}\quad
+h(\mathbf q)=\varphi_2(\mathbf q)-b=0.
+</span></p>
+</div>
+<p>The equality leaves a curve of allowed configurations. The closest
+point on that curve to the reference is approximately <span
+class="math inline">(2.59^\circ,34.75^\circ)</span>, with cost <span
+class="math inline">0.130</span> squared radians and equality multiplier
+<span class="math inline">\kappa=0.750</span> squared radians per meter.
+There the posture-cost gradient is balanced by <span
+class="math inline">\kappa\nabla h</span>. Raising the required height
+by one centimeter predicts a cost change of <span
+class="math inline">-0.00750</span> squared radians; resolving gives
+<span class="math inline">-0.00742</span>. Figure 3.3 shows the allowed
+curve and both arm postures.</p>
+<figure>
+<img src="lectures/04-D1-constrained-optimization/fig/arm_ik_nlp.png"
+style="width:95.0%"
+alt="Figure 3.3. The height equality leaves a curve of two-link configurations. The posture cost selects its closest point to the fixed reference." />
+<figcaption aria-hidden="true">Figure 3.3. The height equality leaves a
+curve of two-link configurations. The posture cost selects its closest
+point to the fixed reference.</figcaption>
+</figure>
 <p>A redundant arm can instead reach an exact target while choosing a
 preferred posture. For the seven-joint Panda, place the flange origin at
 a specified position in world axes and minimize deviation from the fixed
@@ -1883,15 +1919,19 @@ ready posture:</p>
 q_{\mathrm{ref}}\|^2,\\
 \text{subject to}\quad &amp;\varphi(\mathbf q)-\mathbf y^*=\mathbf0,\\
 &amp;\mathbf q^{\min}-\mathbf q\le\mathbf0,
-\qquad \mathbf q-\mathbf q^{\max}\le\mathbf0.
+\qquad \mathbf q-\mathbf q^{\max}\le\mathbf0,\\
+&amp;r_o+r_p-\|\mathbf p_p(\mathbf q)-\mathbf c_{\mathrm{obs}}\|\le0.
 \end{aligned}
 \tag{3.14}
 </span></p>
-<p>The cost has squared-radian units. Three target rows have meter
-units, and fourteen bound rows have radian units. The fixed posture
-determines the objective throughout the solve. It is distinct from
-damping the current proposed step. Clearance rows can be added for
-modeled robot geometry.</p>
+<p>The cost has squared-radian units. Three target rows and the
+clearance rows have meter units; fourteen bound rows have radian units.
+The fixed posture determines the objective throughout the solve. It is
+distinct from damping the current proposed step. The last row applies to
+each modeled sphere. In the obstacle run, Drake represents links 1
+through 8 with 44 collision spheres, each with one clearance row. These
+spheres approximate the robot’s body; this example does not check
+self-collision.</p>
 <p>For a target at world coordinates 0.45, 0.10 and 0.45 meters, the
 local answer has posture cost 0.209 squared radians and no active joint
 bound. Nonzero target multipliers remain because the equality forces the
@@ -1899,6 +1939,35 @@ arm away from its preferred posture. Its world-x multiplier is about
 minus 2.071 squared radians per meter. Moving the target one millimeter
 in positive world x predicts a cost increase of 0.00207 squared radians;
 resolving on the same branch gives about 0.00208.</p>
+<p>Now put an obstacle sphere of radius <span
+class="math inline">0.08</span> m at world coordinates <span
+class="math inline">(0.175,0.15,0.75)</span> m, above the elbow. The
+free-space answer puts its forearm <span class="math inline">26.9</span>
+mm inside that sphere. With the 44 clearance rows, the local answer
+reaches the same target with posture cost <span
+class="math inline">0.364</span> squared radians. Two spheres on link 5
+touch the obstacle, with multipliers about <span
+class="math inline">0.793</span> and <span
+class="math inline">7.933</span> squared radians per meter. Figure 3.4
+shows the result. Increasing the obstacle radius by one millimeter
+predicts a cost increase of <span class="math inline">0.00873</span>
+squared radians from the sum of those multipliers; resolving gives <span
+class="math inline">0.00884</span>.</p>
+<figure>
+<img src="lectures/04-D1-constrained-optimization/fig/drake-ik-nlp.png"
+style="width:70.0%"
+alt="Figure 3.4. The Panda reaches the target while two modeled collision spheres on its forearm touch the obstacle." />
+<figcaption aria-hidden="true">Figure 3.4. The Panda reaches the target
+while two modeled collision spheres on its forearm touch the
+obstacle.</figcaption>
+</figure>
+<p>The active rows change when the target changes. At a target 15 cm
+lower, every inequality is inactive and the cost is <span
+class="math inline">0.408</span> squared radians. At a target near the
+base, joint 4 reaches its lower bound, with multiplier <span
+class="math inline">1.153</span> radians. These are separate
+configuration solves. The displayed postures do not define a checked
+motion between targets.</p>
 <p>For a target at world coordinates minus 0.20, 0 and 0.60 meters, the
 displayed local branch touches joint 2’s lower bound and has cost 1.499
 squared radians. Its bound multiplier is 1.053 radians. Tightening that
@@ -2091,10 +2160,11 @@ tolerances. It does not certify global optimality or safety of a
 physical motion.</p>
 <h3 id="follow-joint-updates-and-multiplier-updates-separately">3.6
 Follow joint updates and multiplier updates separately</h3>
-<p>The hard-target Panda program provides a complete example. Its
-posture reference stays fixed, its three target rows are in meters, and
-its fourteen joint-bound rows are in radians. Separate weights put the
-added terms in the posture cost’s squared-radian units:</p>
+<p>The following hard-target Panda replay uses the joint bounds without
+the obstacle sphere. The reference posture stays fixed. Its three target
+rows are in meters, and its fourteen joint-bound rows are in radians.
+Separate weights put the added terms in the posture cost’s
+squared-radian units:</p>
 <p><span class="math display">
 \begin{aligned}
 \mu_h&amp;=1000\ \mathrm{rad^2/m^2},\qquad \mu_g=100,\\
@@ -2105,14 +2175,14 @@ A&amp;=f+\boldsymbol\kappa^\top\mathbf h+\mu_h\|\mathbf h\|^2\\
 </span></p>
 <p>Each inner update changes the joints while multipliers stay fixed.
 Each outer update changes the multipliers while the joints stay fixed.
-Figure 3.3 plots both types of event. The iteration axis counts
+Figure 3.5 plots both types of event. The iteration axis counts
 numerical updates, not physical time.</p>
 <figure>
 <img
 src="lectures/04-D1-constrained-optimization/fig/drake-ik-nlp-al.png"
 style="width:95.0%"
-alt="Figure 3.3. The hard-target Panda solves reduce equality error while learning target and joint-bound multipliers. A multiplier update changes the stored balance at a fixed configuration." />
-<figcaption aria-hidden="true">Figure 3.3. The hard-target Panda solves
+alt="Figure 3.5. The hard-target Panda solves reduce equality error while learning target and joint-bound multipliers. A multiplier update changes the stored balance at a fixed configuration." />
+<figcaption aria-hidden="true">Figure 3.5. The hard-target Panda solves
 reduce equality error while learning target and joint-bound multipliers.
 A multiplier update changes the stored balance at a fixed
 configuration.</figcaption>
@@ -2666,10 +2736,11 @@ href="lectures/03-reading-optimization-planning-and-control/code/panda_runs_figu
 script</a> imports those runs and draws the figure at reading width. Its
 printout also gives the chain-length reachability bound. The <a
 href="drake/03-ik-as-nlp/ik_nlp_panda.py">second</a> formulates
-exact-target posture optimization and inspects active constraints and
-multipliers. Its sensitivity checks perturb the target, one active lower
-bound and the obstacle’s radius; their scope should be kept distinct
-from other printed multiplier conversions. The <a
+exact-target posture optimization with 44 modeled collision spheres in
+its obstacle run, and inspects active constraints and multipliers. Its
+sensitivity checks perturb the target, one active lower bound and the
+obstacle’s radius; their scope should be kept distinct from other
+printed multiplier conversions. The <a
 href="drake/05-ik-nlp-al/ik_nlp_al_panda.py">third</a> records both rail
 replay runs. Its <code>al_ik_nlp</code> function separates inner joint
 changes from outer multiplier changes, and its <code>--selftest</code>
@@ -2887,7 +2958,7 @@ the required correction.</p>
 accepted joint update crosses joint bounds, and the next model includes
 those violated rows. Follow the later multiplier event to see a positive
 stored lower-bound multiplier. An included constraint row and a newly
-learned multiplier are different events. Figure 3.3 is the static
+learned multiplier are different events. Figure 3.5 is the static
 fallback for both runs.</p>
 <p>For the prediction-versus-FK comparison on the Panda, the optional
 <strong>gn-ik-replay</strong> viewer shows both markers. The rail
@@ -2970,12 +3041,15 @@ detailed material and its sources</h3>
 <tr>
 <td>Constraint geometry and KKT (§§3.1–3.2)</td>
 <td>Reference §§3.1–3.4</td>
-<td>Optimization II, pages 2–15</td>
+<td>Optimization II, pages 2–15; the collision-sphere row returns on
+page 17</td>
 </tr>
 <tr>
-<td>Hard-target IK and constrained methods (§§3.3–3.4)</td>
+<td>Height rail, hard-target Panda IK and constrained methods
+(§§3.3–3.4)</td>
 <td>Reference §§3.5–3.6</td>
-<td>Optimization II, pages 17–24</td>
+<td>Optimization II, pages 17–24; the modeled whole-arm obstacle is on
+pages 18–19</td>
 </tr>
 <tr>
 <td>Constrained stopping and rail replay (§§3.5–3.6)</td>
