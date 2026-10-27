@@ -1,5 +1,5 @@
 """Session 4.1 Drake demo: constrained inverse kinematics on the Panda with the course's augmented-Lagrangian loop
-(lectures/04-D1-constraints-and-komo/code/constrained_ik.py, notes section 4.9) and one visible joint limit.
+(lectures/04-D1-constrained-optimization/code/constrained_ik.py, notes section 4.9) and one visible joint limit.
 
 Problem:   min_q  f(q) = 1/2 |phi(q) - y*|^2     s.t.   g(q) = q_4 - q_4max <= 0,    q_4max = -2.2 rad
 The stop is a software limit chosen for this demonstration, inside the hardware range [-3.07, -0.07] rad of joint 4:

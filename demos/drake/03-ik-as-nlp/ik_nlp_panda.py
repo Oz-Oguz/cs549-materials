@@ -51,7 +51,7 @@ Runs (print mode):
 --meshcat  the same solves with the sliders in Meshcat and one console line per solve, the default sphere, and a button
            that shows or hides the ready pose ("Stop" ends it).
 
-Run:  python ik_nlp_panda.py            prints the three runs and the live moves (notes §5 (k))
+Run:  python ik_nlp_panda.py            prints the three runs and the live moves (Deck 05 notes §5 (i))
       python ik_nlp_panda.py --app      the web page (scripts/demo_server.py id ik-nlp); check: drake/03-ik-as-nlp/check_ik_nlp.mjs
       python ik_nlp_panda.py --meshcat  Meshcat sliders and console lines only
       python ik_nlp_panda.py --png FILE renders run 3 offline from the front left (the arm with the obstacle in orange and the
@@ -282,7 +282,7 @@ def print_mode():
     if active:
         j, side = active[0]
         dual = res.GetDualSolution(b["limits"])[j]
-        lo_t, hi_t, delta = lo.copy(), hi.copy(), 0.001      # the verified sensitivity step; a larger step can change the active set (notes §5 (k))
+        lo_t, hi_t, delta = lo.copy(), hi.copy(), 0.001      # the verified sensitivity step; a larger step can change the active set (Deck 05 notes §5 (i))
         if side == "upper": hi_t[j] -= delta
         else:               lo_t[j] += delta
         res2, q2, _ = solve_ik(plant, pc, panda, y2, q_guess=q, extra_limits=(lo_t, hi_t))   # from the answer: the price check stays on the same branch

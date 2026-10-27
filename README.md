@@ -9,7 +9,7 @@ Everything else about the course (assignments, announcements, grades) is on Mood
 - `slides/02-D1-learning-overlay-and-frames.pdf`
 - `slides/02-D2-transforms-fk-jacobian.pdf`
 - `slides/03-D1-optimization-1.pdf`
-- `slides/04-D1-constraints-and-komo.pdf`
+- `slides/04-D1-constrained-optimization.pdf`
 - `slides/04-D2-motion-planning.pdf`
 
 The slides' "run it live" buttons open the demonstrations. A button for a browser module opens that module on
@@ -46,4 +46,4 @@ folder and open `http://localhost:8000/modules/opt-explorer/`.
 `demos/README.md` as their setup guide (also at https://oz-oguz.github.io/cs549-materials/demos/). They run in Python on Linux, on Apple-silicon
 Macs and under WSL on Windows, and they are optional: the slides carry their results.
 
-Updated 2026-10-26. © 2026 Özgür S. Öğüz, Bilkent University. Licensed under CC BY 4.0: use and adapt these materials freely, but credit the source as described in `LICENSE.md`. The FR3 robot model inside the reading package keeps its own Apache 2.0 license and notice.
+Updated 2026-10-27. © 2026 Özgür S. Öğüz, Bilkent University. Licensed under CC BY 4.0: use and adapt these materials freely, but credit the source as described in `LICENSE.md`. The FR3 robot model inside the reading package keeps its own Apache 2.0 license and notice.

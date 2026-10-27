@@ -42,8 +42,8 @@ a convenient way to open all the readings and preserve their app query strings.
 | Essentials | [two-link IK calculation](lectures/03-D1-optimization-1/code/gauss_newton_ik.py) |
 | Essentials | [history-direction calculation](lectures/03-D1-optimization-1/code/history_directions.py) |
 | Essentials | [line-search figure script](lectures/03-D1-optimization-1/code/make_solver_overview.py) |
-| Essentials | [constrained_ik.py](lectures/04-D1-constraints-and-komo/code/constrained_ik.py) |
-| Essentials | [solver checks](lectures/04-D1-constraints-and-komo/code/check_solvers.py) |
+| Essentials | [constrained_ik.py](lectures/04-D1-constrained-optimization/code/constrained_ik.py) |
+| Essentials | [solver checks](lectures/04-D1-constrained-optimization/code/check_solvers.py) |
 | Essentials | [first program](drake/02-gauss-newton-ik/gn_ik_panda.py) |
 | Essentials | [figure script](lectures/03-reading-optimization-planning-and-control/code/panda_runs_figure.py) |
 | Essentials | [second](drake/03-ik-as-nlp/ik_nlp_panda.py) |

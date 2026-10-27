@@ -4876,7 +4876,7 @@ target lies outside, the answer lies on the boundary. An inequality is
 <p>Figure 3.1 locates the optimum for targets inside and outside the
 disc.</p>
 <figure>
-<img src="lectures/04-D1-constraints-and-komo/fig/kkt_disc.png"
+<img src="lectures/04-D1-constrained-optimization/fig/kkt_disc.png"
 style="width:95.0%"
 alt="Figure 3.1. The disc problem distinguishes an active boundary from an unused constraint." />
 <figcaption aria-hidden="true">Figure 3.1. The disc problem
@@ -4937,7 +4937,8 @@ constraint correction points in. This is an optimization balance; its
 arrows do not represent measured physical contact forces.</p>
 <p>Figure 3.2 shows the opposing gradients at the boundary solution.</p>
 <figure>
-<img src="lectures/04-D1-constraints-and-komo/fig/kkt_disc_forces.png"
+<img
+src="lectures/04-D1-constrained-optimization/fig/kkt_disc_forces.png"
 style="width:65.0%"
 alt="Figure 3.2. The downhill arrow and the inward constraint correction cancel at the boundary solution." />
 <figcaption aria-hidden="true">Figure 3.2. The downhill arrow and the
@@ -5264,7 +5265,8 @@ f^*&amp;\approx2.433\times10^{-3}\ \mathrm{m^2}.
 <p>Figure 3.3 compares the exact-target and elbow-limited
 configurations.</p>
 <figure>
-<img src="lectures/04-D1-constraints-and-komo/fig/arm_joint_limit.png"
+<img
+src="lectures/04-D1-constrained-optimization/fig/arm_joint_limit.png"
 style="width:95.0%"
 alt="Figure 3.3. Both constrained solutions respect the sixty-degree elbow range and stop beyond the target. The unconstrained solutions show why the elbow bound matters." />
 <figcaption aria-hidden="true">Figure 3.3. Both constrained solutions
@@ -5458,7 +5460,7 @@ class="math inline">r_p=0</span>, which constrains only that point.</p>
 <p>Figure 3.4 shows the exact flange target and the forearm resting on
 the obstacle.</p>
 <figure>
-<img src="lectures/04-D1-constraints-and-komo/fig/drake-ik-nlp.png"
+<img src="lectures/04-D1-constrained-optimization/fig/drake-ik-nlp.png"
 style="width:70.0%"
 alt="Figure 3.4. The Panda reaches the target while its forearm rests on the obstacle sphere." />
 <figcaption aria-hidden="true">Figure 3.4. The Panda reaches the target
@@ -6034,7 +6036,7 @@ full joint box in a different program.</p>
 an active and an inactive bound.</p>
 <figure>
 <img
-src="lectures/04-D1-constraints-and-komo/fig/drake-constrained-ik-al.png"
+src="lectures/04-D1-constrained-optimization/fig/drake-constrained-ik-al.png"
 style="width:95.0%"
 alt="Figure 3.5. The one-limit Panda replay plot records task error, violation, multiplier and accepted inner steps. It provides a static comparison of its active and inactive runs." />
 <figcaption aria-hidden="true">Figure 3.5. The one-limit Panda replay
@@ -6489,7 +6491,8 @@ their thresholds.</p>
 <p>Figure 3.6 compares feasibility and multiplier histories in the
 hard-target runs.</p>
 <figure>
-<img src="lectures/04-D1-constraints-and-komo/fig/drake-ik-nlp-al.png"
+<img
+src="lectures/04-D1-constrained-optimization/fig/drake-ik-nlp-al.png"
 style="width:95.0%"
 alt="Figure 3.6. The hard-target Panda replay figure plots equality violation, posture cost, equality-multiplier norm and the active joint multiplier for both runs." />
 <figcaption aria-hidden="true">Figure 3.6. The hard-target Panda replay
@@ -6832,21 +6835,21 @@ sections.</p>
 <h3 id="a.3.1-numerical-example-for-3.1">A.3.1 Numerical example for
 §3.1</h3>
 <p>Run <a
-href="lectures/04-D1-constraints-and-komo/code/constrained_ik.py">constrained_ik.py</a>.
+href="lectures/04-D1-constrained-optimization/code/constrained_ik.py">constrained_ik.py</a>.
 Its example (f) repeats the clipped iteration and evaluates the
 free-joint derivative. The same file supplies the constrained solution
 used below.</p>
 <h3 id="a.3.2-numerical-example-for-3.2">A.3.2 Numerical example for
 §3.2</h3>
 <p>The function <code>disc_problem</code> in <a
-href="lectures/04-D1-constraints-and-komo/code/constrained_ik.py">constrained_ik.py</a>
+href="lectures/04-D1-constrained-optimization/code/constrained_ik.py">constrained_ik.py</a>
 evaluates the solution and prints its stationarity and complementarity
 checks.</p>
 <h3 id="a.3.4-numerical-example-for-3.4">A.3.4 Numerical example for
 §3.4</h3>
 <p>The functions <code>constrained_ik_by_hand</code>,
 <code>report_ik</code> and <code>sensitivity</code> in <a
-href="lectures/04-D1-constraints-and-komo/code/constrained_ik.py">constrained_ik.py</a>
+href="lectures/04-D1-constrained-optimization/code/constrained_ik.py">constrained_ik.py</a>
 print both branches, their gradients, the clipped comparison and the
 one-degree price check. The printed example also includes a target whose
 unconstrained elbow is only 56.49 degrees; there the limit is
@@ -6863,7 +6866,7 @@ above.</p>
 §3.6</h3>
 <p>The functions <code>penalty_method</code>,
 <code>barrier_method</code> and <code>augmented_lagrangian</code> in <a
-href="lectures/04-D1-constraints-and-komo/code/constrained_ik.py">constrained_ik.py</a>
+href="lectures/04-D1-constrained-optimization/code/constrained_ik.py">constrained_ik.py</a>
 implement the elbow tables. The complete Panda loop is
 <code>al_ik</code> in <a
 href="drake/04-constrained-ik-al/constrained_ik_panda.py">constrained_ik_panda.py</a>.
@@ -6872,7 +6875,7 @@ comparison.</p>
 <h3 id="a.3.7-numerical-example-for-3.7">A.3.7 Numerical example for
 §3.7</h3>
 <p>Run <a
-href="lectures/04-D1-constraints-and-komo/code/check_solvers.py">check_solvers.py</a>
+href="lectures/04-D1-constrained-optimization/code/check_solvers.py">check_solvers.py</a>
 with the course Python environment. It includes the clamped-multiplier
 counterexample and checks that rejected trials leave the accepted
 iterate unchanged. The outer loop in <code>constrained_ik.py</code>
@@ -7304,9 +7307,9 @@ href="chapter-02-detailed.html#constraints-and-constrained-inverse-kinematics">t
 corresponding detailed derivations</a>. Disc and rail geometry lead to
 KKT conditions, multiplier sensitivity and constrained IK. The lecture’s
 <a
-href="lectures/04-D1-constraints-and-komo/code/constrained_ik.py"><code>constrained_ik.py</code></a>
+href="lectures/04-D1-constrained-optimization/code/constrained_ik.py"><code>constrained_ik.py</code></a>
 and <a
-href="lectures/04-D1-constraints-and-komo/code/check_solvers.py"><code>check_solvers.py</code></a>
+href="lectures/04-D1-constrained-optimization/code/check_solvers.py"><code>check_solvers.py</code></a>
 provide the small computations. The existing Panda programs supply the
 hard-target example and both augmented-Lagrangian replays. Section 3.9
 closes the configuration problem before Deck 06 introduces

@@ -114,7 +114,7 @@ A web page, paused at the start. Step, Back and the slider walk through the Gaus
 
 ### Inverse kinematics as a nonlinear program
 
-Slides: `slides/04-D1-constraints-and-komo.pdf`, page 18 (Live demo: IK as a nonlinear program on the Panda).
+Slides: `slides/04-D1-constrained-optimization.pdf`, page 18 (Live demo: IK as a nonlinear program on the Panda).
 
 ```bash
 python drake/03-ik-as-nlp/ik_nlp_panda.py --app
@@ -124,7 +124,7 @@ Target sliders in the browser. After each move, the arm re-solves inverse kinema
 
 ### Constrained inverse kinematics: the multiplier is learned
 
-Slides: `slides/04-D1-constraints-and-komo.pdf`, page 24 (The augmented Lagrangian learns the multiplier).
+Slides: `slides/04-D1-constrained-optimization.pdf`, page 24 (The augmented Lagrangian learns the multiplier).
 
 ```bash
 python drake/04-constrained-ik-al/constrained_ik_panda.py --replay --app
@@ -134,7 +134,7 @@ A web page, paused at the start. Step through the augmented-Lagrangian loop with
 
 ### The target is a constraint; posture is the cost
 
-Slides: `slides/04-D1-constraints-and-komo.pdf`, page 27 (The target is a constraint; posture is the cost).
+Slides: `slides/04-D1-constrained-optimization.pdf`, page 27 (The target is a constraint; posture is the cost).
 
 ```bash
 python drake/05-ik-nlp-al/ik_nlp_al_panda.py --replay --app

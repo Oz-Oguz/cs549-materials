@@ -1725,7 +1725,8 @@ between the outward downhill direction and the inward correction. These
 arrows describe optimization; they do not represent measured contact
 forces.</p>
 <figure>
-<img src="lectures/04-D1-constraints-and-komo/fig/kkt_disc_forces.png"
+<img
+src="lectures/04-D1-constrained-optimization/fig/kkt_disc_forces.png"
 style="width:70.0%"
 alt="Figure 3.1. At the closest point in the disc, the downhill direction points outside. A nonnegative multiple of the inward constraint direction balances it." />
 <figcaption aria-hidden="true">Figure 3.1. At the closest point in the
@@ -1841,7 +1842,8 @@ solution has the same cost with the lower limit active. Both improve on
 the clipped answer because they optimize the remaining free
 coordinate.</p>
 <figure>
-<img src="lectures/04-D1-constraints-and-komo/fig/arm_joint_limit.png"
+<img
+src="lectures/04-D1-constrained-optimization/fig/arm_joint_limit.png"
 style="width:95.0%"
 alt="Figure 3.2. Both exact IK branches exceed the elbow range. The best allowed configurations use the two limits and retain a nonzero task error." />
 <figcaption aria-hidden="true">Figure 3.2. Both exact IK branches exceed
@@ -2106,7 +2108,8 @@ Each outer update changes the multipliers while the joints stay fixed.
 Figure 3.3 plots both types of event. The iteration axis counts
 numerical updates, not physical time.</p>
 <figure>
-<img src="lectures/04-D1-constraints-and-komo/fig/drake-ik-nlp-al.png"
+<img
+src="lectures/04-D1-constrained-optimization/fig/drake-ik-nlp-al.png"
 style="width:95.0%"
 alt="Figure 3.3. The hard-target Panda solves reduce equality error while learning target and joint-bound multipliers. A multiplier update changes the stored balance at a fixed configuration." />
 <figcaption aria-hidden="true">Figure 3.3. The hard-target Panda solves
@@ -2632,18 +2635,18 @@ checks the three classified trial scales of the caption.</p>
 <h3 id="b.4-reproduce-constraints-and-multiplier-updates">B.4 Reproduce
 constraints and multiplier updates</h3>
 <div class="sourceCode" id="cb5"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="va">lecture</span><span class="op">=</span>lectures/04-D1-constraints-and-komo</span>
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="va">lecture</span><span class="op">=</span>lectures/04-D1-constrained-optimization</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">.venv/bin/python</span> <span class="st">&quot;</span><span class="va">$lecture</span><span class="st">/code/constrained_ik.py&quot;</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">.venv/bin/python</span> <span class="st">&quot;</span><span class="va">$lecture</span><span class="st">/code/check_solvers.py&quot;</span></span></code></pre></div>
 <p>In <a
-href="lectures/04-D1-constraints-and-komo/code/constrained_ik.py">constrained_ik.py</a>,
+href="lectures/04-D1-constrained-optimization/code/constrained_ik.py">constrained_ik.py</a>,
 the functions <code>penalty_method</code>, <code>barrier_method</code>
 and <code>augmented_lagrangian</code> use the same arm and elbow
 restriction. Compare their allowed-side behavior, violation and
 multiplier estimates. The barrier’s default schedule starts at 0.01.
 Changing its start to 0.1 is a different local-solver experiment.</p>
 <p>The <a
-href="lectures/04-D1-constraints-and-komo/code/check_solvers.py">solver
+href="lectures/04-D1-constrained-optimization/code/check_solvers.py">solver
 checks</a> compare feasibility, stationarity and complementarity
 explicitly. In particular, inspect the projected-multiplier scalar case
 from §3.5 rather than treating an inner solve’s termination as outer

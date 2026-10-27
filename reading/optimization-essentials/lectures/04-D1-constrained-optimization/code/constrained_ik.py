@@ -242,7 +242,7 @@ def augmented_lagrangian(y, q2max, q0, mu=1.0, outer=6):
         if st == "stalled":
             print("   the inner solve stalled: its candidate was rejected and the outer loop stops here")
             break
-        if feas < 1e-9 and stat < 1e-8 and comp < 1e-11:        # the same triplet as komo_two_link.solve_komo
+        if feas < 1e-9 and stat < 1e-8 and comp < 1e-11:        # the same triplet as al_gauss_newton.solve
             print(f"   outer stop at iteration {i}: feasibility, Lagrangian stationarity and complementarity are all below tolerance 1e-9 / 1e-8 / 1e-11 (|grad f| = {np.linalg.norm(grad_f(q, y)):.4f} here, and it is not a test: it can be zero or not at a constrained optimum)")
             break
     return q, lam, rows
