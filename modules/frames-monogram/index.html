@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Frames and monogram notation — CS 549 module</title>
+<style>
+  :root { --maroon:#9b1b4b; --teal:#1f6f8b; --ink:#222; --muted:#777; --soft:#f6eef1; }
+  body { margin:0; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; color:var(--ink); background:#fff; }
+  header { padding:10px 18px; border-bottom:1px solid #ddd; display:flex; gap:18px; align-items:baseline; flex-wrap:wrap; }
+  header h1 { font-size:18px; margin:0; color:var(--maroon); }
+  header span { color:var(--muted); font-size:13px; }
+  main { display:grid; grid-template-columns: minmax(520px, 1fr) 420px; gap:16px; padding:14px 18px; }
+  @media (max-width: 980px) { main { grid-template-columns: 1fr; } }
+  svg { width:100%; height:auto; border:1px solid #ddd; border-radius:6px; background:#fff; touch-action:none; }
+  .panel { font-size:14px; line-height:1.4; }
+  .panel h2 { font-size:14px; margin:12px 0 6px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; }
+  .row { display:flex; gap:10px; align-items:center; margin:6px 0; flex-wrap:wrap; }
+  input[type=range] { flex:1; min-width:140px; }
+  button { padding:5px 10px; border:1px solid #aaa; border-radius:6px; background:#fafafa; cursor:pointer; }
+  .read { font-family: "SFMono-Regular", Menlo, Consolas, monospace; font-size:13px; background:var(--soft); border-radius:6px; padding:8px 10px; margin:6px 0; white-space:pre; overflow-x:auto; }
+  .read b { font-weight:700; }
+  .read sup, .read sub, .note sup, .note sub { font-size:0.72em; line-height:0; }
+  .read sup { vertical-align:0.55em; } .read sub { vertical-align:-0.35em; }
+  .read .v { font-weight:700; font-style:italic; }   /* a vector: bold, as in notation.md */
+  .read .mat { font-weight:700; }                    /* a matrix: bold upright */
+  .read .eq { display:grid; grid-template-columns:max-content max-content; column-gap:8px; row-gap:2px; align-items:baseline; }
+  .m { color:var(--maroon); } .t { color:var(--teal); } .g { color:var(--muted); }
+  .note { font-size:12.5px; color:var(--muted); }
+  .hidden { visibility:hidden; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Frames and monogram notation</h1>
+  <span>CS 549 · session 2.2 · drag the tray frame <b>T</b> or the mug <b>M</b>; turn the tray with the slider. Units: metres, degrees.</span>
+</header>
+<main>
+  <svg id="view" viewBox="0 0 660 520" aria-label="Top view of a table with a world frame, a tray frame, and a mug"></svg>
+  <div class="panel">
+    <h2>Controls</h2>
+    <div class="row"><label for="ang">θ<sub>T</sub> (rotation of T about the world z axis):</label>
+      <input id="ang" type="range" min="-180" max="180" step="1" value="30"><span id="angv">30°</span></div>
+    <div class="row"><label>Decompose the arrow T→M along:</label>
+      <label><input type="radio" name="dec" value="T" checked> T's axes</label>
+      <label><input type="radio" name="dec" value="W"> W's axes</label></div>
+    <div class="row"><label><input id="attach" type="checkbox" checked> mug attached to the tray (moves with it)</label></div>
+    <div class="row"><label><input id="quiz" type="checkbox"> quiz mode (hide the numbers of the arrow T→M)</label></div>
+    <div class="row"><button id="reset">Reset to the worked example</button></div>
+
+    <h2>Readouts</h2>
+    <div class="read" id="r1"></div>
+    <div class="read" id="r2"></div>
+    <div class="read" id="r3"></div>
+    <p class="note">The three readouts of the arrow tray→mug describe <b>one</b> arrow. Only the subscript, the frame whose axes the numbers are written in, changes. With the mug attached, turning the slider leaves <span class="m"><sup>T</sup><b><i>p</i></b><sup>M</sup><sub>T</sub></span> unchanged and changes <span class="m"><sup>T</sup><b><i>p</i></b><sup>M</sup><sub>W</sub></span> and <span class="t"><sup>W</sup><b><i>p</i></b><sup>M</sup></span>.</p>
+    <p class="note">Default state = the worked example of the session 2.2 notes §5: T at (0.40, 0.20), θ<sub>T</sub> = 30°, mug at (0.15, 0.05) in T. Companion notes: <code>notes.md</code>.</p>
+  </div>
+</main>
+<script>
+(() => {
+  // ---------- geometry of the drawing: 0.8 m x 0.6 m table, origin W at bottom-left
+  const SC = 700, OX = 60, OY = 470;               // pixels per metre; pixel position of W
+  const toPx = (x, y) => [OX + SC * x, OY - SC * y];
+  const toM  = (px, py) => [(px - OX) / SC, (OY - py) / SC];
+
+  // ---------- state (metres, degrees) — default = worked example
+  const DEF = { pWT: [0.40, 0.20], th: 30, pTM: [0.15, 0.05] };
+  let st = JSON.parse(JSON.stringify(DEF));
+  let decomp = 'T', attach = true, quiz = false;
+
+  const rad = d => d * Math.PI / 180;
+  const R = th => { const c = Math.cos(rad(th)), s = Math.sin(rad(th)); return [[c, -s], [s, c]]; };
+  const mul = (M, v) => [M[0][0]*v[0] + M[0][1]*v[1], M[1][0]*v[0] + M[1][1]*v[1]];
+  const tr  = M => [[M[0][0], M[1][0]], [M[0][1], M[1][1]]];
+  const add = (a, b) => [a[0]+b[0], a[1]+b[1]];
+  const sub = (a, b) => [a[0]-b[0], a[1]-b[1]];
+  const f3 = x => (Math.abs(x) < 5e-4 ? 0 : x).toFixed(3);
+  const vec = v => `(${f3(v[0])}, ${f3(v[1])})`;
+  // monogram notation as real super- and subscripts: mono('W','p','T') -> ^W p^T ; mono('T','p','M','W') -> ^T p^M_W
+  const mono = (A, sym, B, C, cls = 'v') => `<sup>${A}</sup><span class="${cls}">${sym}</span><sup>${B}</sup>${C ? `<sub>${C}</sub>` : ''}`;
+
+  const svg = document.getElementById('view');
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (tag, attrs, parent = svg) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent.appendChild(e); return e; };
+
+  // ---------- static background: table, grid, axis labels, arrow markers
+  const defs = el('defs', {});
+  for (const [id, col] of [['aK', '#222'], ['aM', '#9b1b4b'], ['aT', '#1f6f8b'], ['aG', '#999']]) {
+    const mk = el('marker', { id, viewBox: '0 0 10 10', refX: 9, refY: 5, markerWidth: 7, markerHeight: 7, orient: 'auto-start-reverse' }, defs);
+    el('path', { d: 'M0,0 L10,5 L0,10 z', fill: col }, mk);
+  }
+  const [tx0, ty0] = toPx(0, 0.6), [tx1, ty1] = toPx(0.8, 0);
+  el('rect', { x: tx0, y: ty0, width: tx1 - tx0, height: ty1 - ty0, fill: '#f3ede8', stroke: '#bbb' });
+  for (let i = 0; i <= 8; i++) { const [x] = toPx(i / 10, 0); el('line', { x1: x, y1: ty0, x2: x, y2: ty1, stroke: '#e2dcd6' });
+    el('text', { x, y: ty1 + 16, 'text-anchor': 'middle', 'font-size': 11, fill: '#555' }).textContent = (i / 10).toFixed(1); }
+  for (let j = 0; j <= 6; j++) { const [, y] = toPx(0, j / 10); el('line', { x1: tx0, y1: y, x2: tx1, y2: y, stroke: '#e2dcd6' });
+    el('text', { x: tx0 - 6, y: y + 4, 'text-anchor': 'end', 'font-size': 11, fill: '#555' }).textContent = (j / 10).toFixed(1); }
+  el('text', { x: (tx0 + tx1) / 2, y: ty1 + 34, 'text-anchor': 'middle', 'font-size': 12, fill: '#333' }).textContent = 'x [m]  (world frame W)';
+  el('text', { x: 14, y: (ty0 + ty1) / 2, 'text-anchor': 'middle', 'font-size': 12, fill: '#333', transform: `rotate(-90 14 ${(ty0 + ty1) / 2})` }).textContent = 'y [m]  (world frame W)';
+
+  // ---------- dynamic layer
+  const dyn = el('g', {});
+  const frame = (o, th, name, col, len, g) => {
+    const Rm = R(th); const ex = mul(Rm, [len, 0]), ey = mul(Rm, [0, len]);
+    const [ox, oy] = toPx(...o), [xx, xy] = toPx(...add(o, ex)), [yx, yy] = toPx(...add(o, ey));
+    const mk = col === '#222' ? 'aK' : col === '#9b1b4b' ? 'aM' : 'aT';
+    el('line', { x1: ox, y1: oy, x2: xx, y2: xy, stroke: col, 'stroke-width': 2.5, 'marker-end': `url(#${mk})` }, g);
+    el('line', { x1: ox, y1: oy, x2: yx, y2: yy, stroke: col, 'stroke-width': 2.5, 'marker-end': `url(#${mk})` }, g);
+    for (const [lab, px, py] of [['x', xx + (xx - ox) * 0.18, xy + (xy - oy) * 0.18 + 4], ['y', yx + (yx - ox) * 0.18, yy + (yy - oy) * 0.18 + 4]]) {
+      const txt = el('text', { x: px, y: py, 'font-size': 12, fill: col, 'text-anchor': 'middle' }, g);
+      const a = document.createElementNS(NS, 'tspan'); a.textContent = lab; txt.appendChild(a);
+      const b = document.createElementNS(NS, 'tspan'); b.setAttribute('baseline-shift', 'sub'); b.setAttribute('font-size', '9'); b.textContent = name; txt.appendChild(b);
+    }
+    el('text', { x: ox - 24, y: oy - 6, 'font-size': 15, 'font-weight': 700, fill: col }, g).textContent = name;   // above-left of the origin, clear of the axis tick labels
+  };
+  const arrow = (a, b, col, mk, g, dash) => { const [x1, y1] = toPx(...a), [x2, y2] = toPx(...b);
+    el('line', { x1, y1, x2, y2, stroke: col, 'stroke-width': 2, 'marker-end': `url(#${mk})`, 'stroke-dasharray': dash || 'none' }, g); };
+
+  // "0.150 along x_T, 0.050 along y_T" with the frame letters as true subscripts (SVG tspan)
+  const axisLabel = (x, y, col, vals, F) => {
+    const txt = el('text', { x, y, 'font-size': 12, fill: col }, dyn);
+    if (!vals) { txt.textContent = '?'; return; }
+    const piece = (s, sub) => { const a = document.createElementNS(NS, 'tspan'); a.textContent = s; txt.appendChild(a);
+      if (sub) { const b = document.createElementNS(NS, 'tspan'); b.setAttribute('baseline-shift', 'sub'); b.setAttribute('font-size', '9'); b.textContent = sub; txt.appendChild(b); } };
+    piece(`${vals[0]} along x`, F); piece(`, ${vals[1]} along y`, F);
+  };
+  // frame axis labels x_T, y_T drawn by frame(): same tspan trick
+  function draw() {
+    while (dyn.firstChild) dyn.removeChild(dyn.firstChild);
+    const Rm = R(st.th);
+    const pTM_W = mul(Rm, st.pTM);                 // ^T p^M_W  (same arrow, world axes)
+    const pWM = add(st.pWT, pTM_W);                // ^W p^M
+    // tray outline 0.40 x 0.24 centred on T
+    const corners = [[-0.2, -0.12], [0.2, -0.12], [0.2, 0.12], [-0.2, 0.12]].map(c => toPx(...add(st.pWT, mul(Rm, c))));
+    el('polygon', { points: corners.map(p => p.join(',')).join(' '), fill: '#e9d8b8', 'fill-opacity': 0.6, stroke: '#8a6d3b', 'stroke-width': 2 }, dyn);
+    // decomposition of the arrow T->C
+    if (decomp === 'T') {                          // along T's axes: go st.pTM[0] along x_T, then st.pTM[1] along y_T
+      const mid = add(st.pWT, mul(Rm, [st.pTM[0], 0]));
+      arrow(st.pWT, mid, '#9b1b4b', 'aM', dyn, '6 5'); arrow(mid, pWM, '#9b1b4b', 'aM', dyn, '6 5');
+      const [mx, my] = toPx(...mid); axisLabel(mx + 6, my + 16, '#9b1b4b', quiz ? null : [f3(st.pTM[0]), f3(st.pTM[1])], 'T');
+    } else {                                       // along W's axes
+      const mid = add(st.pWT, [pTM_W[0], 0]);
+      arrow(st.pWT, mid, '#999', 'aG', dyn, '6 5'); arrow(mid, pWM, '#999', 'aG', dyn, '6 5');
+      const [mx, my] = toPx(...mid); axisLabel(mx + 6, my + 16, '#777', quiz ? null : [f3(pTM_W[0]), f3(pTM_W[1])], 'W');
+    }
+    arrow([0, 0], st.pWT, '#222', 'aK', dyn, '4 4');           // ^W p^T
+    arrow(st.pWT, pWM, '#9b1b4b', 'aM', dyn);                 // ^T p^M
+    arrow([0, 0], pWM, '#1f6f8b', 'aT', dyn);                 // ^W p^M
+    // mug
+    const [cx, cy] = toPx(...pWM);
+    el('circle', { cx, cy, r: SC * 0.035, fill: '#1f6f8b', 'fill-opacity': 0.35, stroke: '#1f6f8b' }, dyn);
+    frame([0, 0], 0, 'W', '#222', 0.10, dyn);
+    frame(st.pWT, st.th, 'T', '#9b1b4b', 0.10, dyn);
+    frame(pWM, 0, 'M', '#1f6f8b', 0.06, dyn);
+    // drag handles (invisible, on top)
+    const [hx, hy] = toPx(...st.pWT);
+    el('circle', { cx: hx, cy: hy, r: 14, fill: 'transparent', stroke: 'none', 'data-drag': 'T', style: 'cursor:grab' }, dyn);
+    el('circle', { cx, cy, r: 18, fill: 'transparent', stroke: 'none', 'data-drag': 'M', style: 'cursor:grab' }, dyn);
+
+    // readouts
+    const c = Math.cos(rad(st.th)), s = Math.sin(rad(st.th));
+    const pWT = mono('W', 'p', 'T'), RWT = mono('W', 'R', 'T', '', 'mat'), pTM = mono('T', 'p', 'M');
+    document.getElementById('r1').innerHTML =
+      `<b>Tray pose</b>\n<div class="eq"><span>${pWT}</span><span>= ${vec(st.pWT)}      θ<sub>T</sub> = ${st.th}°</span>` +
+      `<span>${RWT}</span><span>= [ ${f3(c)}  ${f3(-s)} ]\n  [ ${f3(s)}   ${f3(c)} ]</span></div>`;
+    const q = v => quiz ? '(  ?  ,  ?  )' : vec(v);
+    document.getElementById('r2').innerHTML =
+      `<b>One arrow, tray → mug</b>\n<div class="eq"><span class="m">${mono('T', 'p', 'M', 'T')}</span><span class="m">= ${q(st.pTM)}   <span class="g">in T's axes</span></span>` +
+      `<span class="m">${mono('T', 'p', 'M', 'W')}</span><span class="m">= ${q(pTM_W)}   <span class="g">in W's axes</span></span>` +
+      `<span>|arrow|</span><span>= ${f3(Math.hypot(...st.pTM))} m in both</span></div>`;
+    document.getElementById('r3').innerHTML =
+      `<b>Mug in the world</b>\n<div class="eq"><span class="t">${mono('W', 'p', 'M')}</span><span class="t">= ${pWT} + ${RWT} ${pTM}</span>` +
+      `<span></span><span>= ${vec(st.pWT)} + ${q(pTM_W)}</span>` +
+      `<span></span><span class="t">= ${vec(pWM)}</span></div>`;
+  }
+
+  // ---------- interaction
+  let dragging = null;
+  const pt = evt => { const r = svg.getBoundingClientRect(); const sx = 660 / r.width, sy = 520 / r.height;
+    return toM((evt.clientX - r.left) * sx, (evt.clientY - r.top) * sy); };
+  svg.addEventListener('pointerdown', e => { const t = e.target.getAttribute && e.target.getAttribute('data-drag'); if (t) { dragging = t; svg.setPointerCapture(e.pointerId); } });
+  svg.addEventListener('pointerup', () => dragging = null);
+  svg.addEventListener('pointermove', e => {
+    if (!dragging) return;
+    const m = pt(e); const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+    const mm = [clamp(m[0], 0, 0.8), clamp(m[1], 0, 0.6)];
+    if (dragging === 'M') { st.pTM = mul(tr(R(st.th)), sub(mm, st.pWT)); }          // ^T p^M = R^T (^W p^M - ^W p^T)
+    else { if (attach) st.pWT = mm; else { const pWM = add(st.pWT, mul(R(st.th), st.pTM)); st.pWT = mm; st.pTM = mul(tr(R(st.th)), sub(pWM, st.pWT)); } }
+    draw();
+  });
+  const ang = document.getElementById('ang');
+  ang.addEventListener('input', () => { const old = st.th; st.th = +ang.value; document.getElementById('angv').textContent = `${st.th}°`;
+    if (!attach) { const pWM = add(st.pWT, mul(R(old), st.pTM)); st.pTM = mul(tr(R(st.th)), sub(pWM, st.pWT)); } draw(); });
+  document.querySelectorAll('input[name=dec]').forEach(r => r.addEventListener('change', () => { decomp = r.value; draw(); }));
+  document.getElementById('attach').addEventListener('change', e => { attach = e.target.checked; });
+  document.getElementById('quiz').addEventListener('change', e => { quiz = e.target.checked; draw(); });
+  document.getElementById('reset').addEventListener('click', () => { st = JSON.parse(JSON.stringify(DEF)); ang.value = st.th; document.getElementById('angv').textContent = `${st.th}°`; draw(); });
+  draw();
+})();
+</script>
+</body>
+</html>

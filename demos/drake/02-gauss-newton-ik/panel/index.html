@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gauss-Newton IK on the Panda: one accepted update at a time</title>
+<style>
+  :root { --ink: #222; --muted: #666; --maroon: #7a1f3d; --teal: #1f8b8b; --gold: #b8860b; --grey: #8a8a8a; --line: #ddd; --bg: #fafafa; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; color: var(--ink); background: #fff; font-size: 17px; line-height: 1.4; }
+  header { display: flex; align-items: baseline; gap: 16px; padding: 8px 16px; border-bottom: 1px solid var(--line); }
+  header h1 { font-size: 20px; margin: 0; color: var(--maroon); }
+  header .sub { color: var(--muted); font-size: 15px; }
+  header button { margin-left: auto; }
+  .workspace { display: grid; grid-template-columns: minmax(0, 1fr) 520px; height: calc(100vh - 46px); }
+  .workspace[data-panel-hidden="true"] { grid-template-columns: minmax(0, 1fr); }
+  .robot-view { position: relative; min-height: 360px; }
+  .robot-view iframe { width: 100%; height: 100%; border: 0; }
+  .panel { overflow: auto; border-left: 1px solid var(--line); padding: 12px 16px 24px; background: var(--bg); }
+  .panel[hidden] { display: none; }
+  section { margin-bottom: 14px; }
+  h2 { font-size: 16px; margin: 10px 0 6px; color: var(--maroon); }
+  p { margin: 4px 0; }
+  .controls { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .controls button, header button, .runs button { font: inherit; font-size: 16px; padding: 7px 8px; border: 1px solid #bbb; border-radius: 6px; background: #fff; cursor: pointer; }
+  .controls button:hover, .runs button:hover { background: #f0e8eb; }
+  .runs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 6px; }
+  .runs button[data-active="true"] { background: var(--maroon); color: #fff; border-color: var(--maroon); }
+  .slider { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+  .slider input { flex: 1; }
+  .toggles label { display: inline-block; margin-right: 14px; }
+  .markers { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 12px; }
+  .markers label { margin-right: 0; white-space: nowrap; }
+  .markers .swatch { margin-left: 3px; }
+  table.readouts { width: 100%; border-collapse: collapse; font-size: 17px; }
+  table.readouts td { padding: 4px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  table.readouts td:first-child { color: var(--muted); width: 46%; }
+  table.readouts td.big { font-size: 22px; font-weight: 600; }
+  .swatch { display: inline-block; width: 14px; height: 14px; border-radius: 50%; vertical-align: -2px; margin-right: 5px; border: 1px solid #999; }
+  table.eq { width: 100%; border-collapse: collapse; font-family: "Charter", Georgia, serif; font-size: 18px; background: #fff; border: 1px solid var(--line); border-radius: 6px; margin: 6px 0; }
+  .eq td { padding: 4px 8px; vertical-align: top; border-bottom: 1px solid #eee; }
+  .eq tr:last-child td { border-bottom: 0; }
+  .eq td:first-child { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 15px; color: var(--muted); white-space: nowrap; width: 1%; padding-top: 6px; }
+  .eq sup, .eq sub { font-size: 70%; }
+  svg.plot { width: 100%; height: 150px; background: #fff; border: 1px solid var(--line); border-radius: 6px; margin: 4px 0 8px; }
+  .plot-title { font-size: 14px; color: var(--muted); margin: 6px 0 0; }
+  .note { font-size: 15px; color: var(--muted); }
+  .warn { color: #a00; font-size: 15px; }
+  .seq ol { margin: 4px 0 0 20px; padding: 0; }
+  .seq li { margin: 3px 0; }
+  @media (max-width: 1366px) {
+    .workspace { grid-template-columns: minmax(0, 1fr) 440px; }
+    header h1 { font-size: 18px; } header .sub { font-size: 13px; }
+    body { font-size: 15px; } table.readouts { font-size: 15px; } table.readouts td.big { font-size: 20px; }
+    .controls button, .runs button { font-size: 14px; padding: 5px 6px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Gauss-Newton IK on the Panda, one accepted update at a time</h1>
+  <span class="sub">Deck 04 slide 30 · the robot never moves by itself; Step, Back, Reset and the slider move it</span>
+  <button id="panel-toggle" type="button" aria-expanded="true">Hide panel</button>
+</header>
+<main class="workspace" id="workspace" data-panel-hidden="false">
+  <div class="robot-view">
+    <iframe id="meshcat-view" src="__MESHCAT_URL__" title="Panda in Meshcat" allow="fullscreen"></iframe>
+  </div>
+  <aside class="panel" id="panel">
+    <section>
+      <h2>Controls</h2>
+      <div class="controls">
+        <button type="button" data-do="back">◀ Back</button>
+        <button type="button" data-do="reset">Reset</button>
+        <button type="button" data-do="step">Step ▶</button>
+      </div>
+      <div class="slider"><label for="iterate">iterate i</label><input id="iterate" type="range" min="0" max="18" step="1" value="0"><span id="iterate-max">of 18</span></div>
+      <div class="runs" id="runs"></div>
+      <div class="toggles" style="margin-top: 8px">
+        <label><input type="checkbox" id="trials"> show rejected Armijo trials<span class="swatch" style="background: var(--grey); margin-left: 5px"></span>(selected update only)</label>
+        <label><input type="checkbox" id="closeup"> flange close-up camera</label>
+      </div>
+      <div class="slider"><label for="arm-opacity">arm opacity</label><input id="arm-opacity" type="range" min="0" max="1" step="0.05" value="1"><span id="arm-opacity-value">1.00</span></div>
+      <div class="toggles markers" id="markers">
+        <span class="note">show:</span>
+        <label><input type="checkbox" data-show="target" checked><span class="swatch" style="background: var(--gold)"></span>target</label>
+        <label title="The line between the predicted and FK tips is drawn only while both are shown"><input type="checkbox" data-show="predicted" checked><span class="swatch" style="background: var(--teal)"></span>predicted tip<span class="note" id="predicted-none" hidden> (for update 1)</span></label>
+        <label title="The line between the predicted and FK tips is drawn only while both are shown"><input type="checkbox" data-show="actual" checked><span class="swatch" style="background: var(--maroon)"></span>FK tip</label>
+        <label><input type="checkbox" data-show="beads" checked><span class="swatch" style="background: var(--gold); width: 9px; height: 9px"></span>past tips</label>
+        <label><input type="checkbox" data-show="ghost" checked><span class="swatch" style="background: #ccc; opacity: .6"></span>ghost</label>
+      </div>
+      <p class="warn" id="connection" hidden>Waiting for the demo…</p>
+    </section>
+    <section>
+      <h2>Readouts</h2>
+      <table class="readouts">
+        <tr><td>run</td><td id="run-label">—</td></tr>
+        <tr><td>iterate</td><td class="big" id="iterate-label">—</td></tr>
+        <tr><td>event</td><td id="event">—</td></tr>
+        <tr><td>task error ‖φ(q<sup>(i)</sup>) − y*‖</td><td class="big" id="task-error">—</td></tr>
+        <tr><td>accepted joint step ‖q<sup>(i)</sup> − q<sup>(i−1)</sup>‖</td><td id="step">—</td></tr>
+        <tr><td>prediction gap</td><td class="big" id="gap">—</td></tr>
+        <tr><td>step length α · rejected trials</td><td id="alpha">—</td></tr>
+        <tr><td>damping ρ · iteration budget</td><td id="rho">—</td></tr>
+        <tr><td>outcome at the end</td><td id="outcome">—</td></tr>
+      </table>
+    </section>
+    <section>
+      <h2>What one Step shows</h2>
+      <p>At iterate <em>i</em> the solid arm is at <b>q<sup>(i)</sup></b> and the faded ghost at <b>q<sup>(i−1)</sup></b>. The linear model built at q<sup>(i−1)</sup> promised the flange at the <span class="swatch" style="background: var(--teal)"></span><b>teal</b> point; forward kinematics put it at the <span class="swatch" style="background: var(--maroon)"></span><b>maroon</b> point, the current flange. Their distance is the <b>prediction gap</b>: the local model's error for this update. The <span class="swatch" style="background: var(--gold)"></span><b>gold</b> sphere is the target; small gold beads mark every past flange position. At iterate 0 the teal sphere is already the model's promise for update 1, computed from J at the start; Step once to see where FK puts the flange. In run 3b that promise uses the step length Armijo accepted.</p>
+      <table class="eq">
+        <tr><td>objective</td><td>f(q) = ½ ‖φ(q) − y*‖²</td></tr>
+        <tr><td>step</td><td>Δq<sup>(i−1)</sup> = α (J<sup>⊤</sup>J + ρ I)<sup>−1</sup> J<sup>⊤</sup> (y* − φ(q<sup>(i−1)</sup>))</td></tr>
+        <tr><td>step length</td><td>α = 1 without a line search; Armijo shortens α until the cost drops enough</td></tr>
+        <tr><td>prediction</td><td>p<sup>(i−1)</sup> + J Δq<sup>(i−1)</sup>, with J and p<sup>(i−1)</sup> = φ(q<sup>(i−1)</sup>) taken at the previous iterate</td></tr>
+        <tr><td>result</td><td>φ(q<sup>(i)</sup>), with q<sup>(i)</sup> = q<sup>(i−1)</sup> + Δq<sup>(i−1)</sup></td></tr>
+      </table>
+      <p class="note">ρ damps the proposed joint increment inside the step; it is not part of the objective. J is the 3×7 translational Jacobian of the flange from Drake.</p>
+    </section>
+    <section>
+      <h2>Per accepted update (cursor = selected iterate)</h2>
+      <p class="plot-title">task error [m], log scale</p><svg class="plot" id="plot-error"></svg>
+      <p class="plot-title">accepted joint step [rad]</p><svg class="plot" id="plot-step"></svg>
+      <p class="plot-title">prediction gap [m], log scale (a measured value, not a bound)</p><svg class="plot" id="plot-gap"></svg>
+    </section>
+    <section class="seq">
+      <h2>Suggested sequence</h2>
+      <ol>
+        <li>Run 2, Step several times: the gap shrinks faster than the error; the model earns trust as the steps shrink.</li>
+        <li>Run 3b, slider to a late iterate: the gap is below one micrometer while the task error stays near 0.25 m. An accurate local prediction can go with a large remaining error.</li>
+        <li>Only when discussing Armijo: tick "show rejected trials" at an early iterate of run 3b. Grey beads are evaluated candidates the arm never moved through.</li>
+      </ol>
+    </section>
+  </aside>
+</main>
+<script>
+(() => {
+  const byId = id => document.getElementById(id);
+  const fmtE = x => { const s = x.toExponential(3); return s.replace(/e([-+])(\d)$/, 'e$10$2'); };   // Python's %.3e
+  let record = null, lastSeq = -1, latestState = null;
+  let actionChain = Promise.resolve(), queuedActions = 0, awaitingActionId = 0, sliderActive = false;
+  const pending = state => queuedActions > 0 || (state.applied_action_id || 0) < awaitingActionId;
+  const act = what => {
+    queuedActions++;
+    // Preserve the user's order even when HTTP requests have different delays. The queue response means
+    // received, not applied; /state acknowledges the command after the demo has drawn the resulting state.
+    actionChain = actionChain.then(async () => {
+      try {
+        const r = await fetch('/action?do=' + encodeURIComponent(what), { cache: 'no-store', signal: AbortSignal.timeout(5000) });
+        if (!r.ok) throw new Error('Action request failed');
+        const reply = await r.json();
+        if (!Number.isInteger(reply.action_id)) throw new Error('Missing action acknowledgment');
+        awaitingActionId = Math.max(awaitingActionId, reply.action_id);
+      } catch { byId('connection').hidden = false; }
+      finally { queuedActions--; if (latestState) render(latestState); }
+    });
+    return actionChain;
+  };
+  document.querySelectorAll('.controls button').forEach(b => b.addEventListener('click', () => act(b.dataset.do)));
+  byId('iterate').addEventListener('input', e => act('set:' + e.target.value));
+  byId('iterate').addEventListener('pointerdown', () => { sliderActive = true; });
+  const releaseSlider = () => { sliderActive = false; if (latestState) render(latestState); };
+  window.addEventListener('pointerup', releaseSlider);
+  window.addEventListener('pointercancel', releaseSlider);
+  window.addEventListener('blur', releaseSlider);
+  byId('trials').addEventListener('change', e => act('trials:' + (e.target.checked ? 1 : 0)));
+  byId('closeup').addEventListener('change', e => act('closeup:' + (e.target.checked ? 1 : 0)));
+  // The opacity slider sends its value at most every 100 ms while dragging, and once more on release.
+  let opacityActive = false, opacityTimer = null;
+  const sendOpacity = () => { opacityTimer = null; act('opacity:' + byId('arm-opacity').value); };
+  byId('arm-opacity').addEventListener('pointerdown', () => { opacityActive = true; });
+  window.addEventListener('pointerup', () => { opacityActive = false; });
+  byId('arm-opacity').addEventListener('input', e => {
+    byId('arm-opacity-value').textContent = Number(e.target.value).toFixed(2);
+    if (!opacityTimer) opacityTimer = setTimeout(sendOpacity, 100);
+  });
+  byId('arm-opacity').addEventListener('change', () => { if (opacityTimer) clearTimeout(opacityTimer); sendOpacity(); });
+  document.querySelectorAll('#markers input[data-show]').forEach(box =>
+    box.addEventListener('change', e => act('show:' + e.target.dataset.show + ':' + (e.target.checked ? 1 : 0))));
+  byId('panel-toggle').addEventListener('click', () => {
+    const panel = byId('panel'), hidden = !panel.hidden;
+    panel.hidden = hidden; byId('workspace').dataset.panelHidden = String(hidden);
+    byId('panel-toggle').textContent = hidden ? 'Show panel' : 'Hide panel';
+    byId('panel-toggle').setAttribute('aria-expanded', String(!hidden));
+  });
+  function buildRuns() {
+    const box = byId('runs'); box.innerHTML = '';
+    for (const [key, run] of Object.entries(record.runs)) {
+      const b = document.createElement('button'); b.type = 'button'; b.textContent = run.label; b.dataset.run = key;
+      b.addEventListener('click', () => act('run:' + key)); box.appendChild(b);
+    }
+  }
+  function plot(svgId, values, cursor, log) {
+    const svg = byId(svgId); const W = svg.clientWidth || 480, H = svg.clientHeight || 150;
+    const L = 52, R = 10, T = 10, B = 26;
+    const xs = values.map((_, i) => i + 1);
+    const vals = log ? values.map(v => Math.log10(Math.max(v, 1e-16))) : values;
+    const vmin = Math.min(...vals), vmax = Math.max(...vals); const span = (vmax - vmin) || 1;
+    const X = i => L + (W - L - R) * ((i - 1) / Math.max(xs.length - 1, 1));
+    const Y = v => T + (H - T - B) * (1 - (v - vmin) / span);
+    let d = '';
+    vals.forEach((v, k) => { d += (k ? 'L' : 'M') + X(xs[k]).toFixed(1) + ',' + Y(v).toFixed(1) + ' '; });
+    const ticks = [vmin, (vmin + vmax) / 2, vmax].map(v => `<text x="${L - 6}" y="${Y(v).toFixed(1)}" font-size="11" text-anchor="end" dominant-baseline="middle" fill="#666">${log ? '1e' + v.toFixed(0) : v.toFixed(2)}</text>`).join('');
+    const xt = [1, Math.round(xs.length / 2), xs.length].map(i => `<text x="${X(i).toFixed(1)}" y="${H - 8}" font-size="11" text-anchor="middle" fill="#666">${i}</text>`).join('');
+    const cur = cursor >= 1 ? `<line x1="${X(cursor).toFixed(1)}" y1="${T}" x2="${X(cursor).toFixed(1)}" y2="${H - B}" stroke="#7a1f3d" stroke-width="2"/><circle cx="${X(cursor).toFixed(1)}" cy="${Y(vals[cursor - 1]).toFixed(1)}" r="5" fill="#7a1f3d"/>` : '';
+    svg.innerHTML = `<line x1="${L}" y1="${H - B}" x2="${W - R}" y2="${H - B}" stroke="#bbb"/><line x1="${L}" y1="${T}" x2="${L}" y2="${H - B}" stroke="#bbb"/>${ticks}${xt}<path d="${d}" fill="none" stroke="#1f6f8b" stroke-width="2"/>${values.map((v, k) => `<circle cx="${X(xs[k]).toFixed(1)}" cy="${Y(vals[k]).toFixed(1)}" r="2.5" fill="#1f6f8b"/>`).join('')}${cur}`;
+  }
+  function render(state) {
+    const run = record.runs[state.run]; const i = state.i; const its = run.iterates; const n = its.length - 1;
+    document.querySelectorAll('#runs button').forEach(b => b.dataset.active = String(b.dataset.run === state.run));
+    if (!sliderActive && !pending(state)) {
+      byId('iterate').max = n; byId('iterate-max').textContent = 'of ' + n;
+      byId('iterate').value = i;
+    }
+    byId('trials').checked = !!state.trials; byId('closeup').checked = !!state.closeup;
+    byId('predicted-none').hidden = state.i !== 0;
+    if (!opacityActive && !opacityTimer && !pending(state) && typeof state.arm_opacity === 'number') {
+      byId('arm-opacity').value = state.arm_opacity; byId('arm-opacity-value').textContent = state.arm_opacity.toFixed(2);
+    }
+    if (state.show && !pending(state)) document.querySelectorAll('#markers input[data-show]').forEach(box => { box.checked = !!state.show[box.dataset.show]; });
+    byId('run-label').textContent = run.label;
+    byId('iterate-label').textContent = `i = ${i} of ${n}`;
+    byId('task-error').textContent = fmtE(its[i].residual) + ' m';
+    if (i >= 1) {
+      const u = run.accepted_updates[i - 1]; const trials = run.trial_evaluations.filter(t => t.i === i).length;
+      byId('event').textContent = `accepted update ${i}`;
+      byId('step').textContent = u.step_norm.toFixed(4) + ' rad';
+      byId('gap').textContent = fmtE(u.gap) + ' m';
+      byId('alpha').textContent = run.linesearch ? `α = ${u.alpha} · ${trials} rejected` : 'α = 1 (no line search) · none';
+    } else {
+      byId('event').textContent = 'start (no update yet)'; byId('step').textContent = 'none yet'; byId('gap').textContent = 'none yet'; byId('alpha').textContent = '—';
+    }
+    byId('rho').textContent = `ρ = ${run.rho} · ${run.iteration_budget} iterations at most`;
+    byId('outcome').textContent = `${run.outcome} after ${run.n_updates} updates`;
+    plot('plot-error', its.slice(1).map(x => x.residual), i, true);
+    plot('plot-step', run.accepted_updates.map(u => u.step_norm), i, false);
+    plot('plot-gap', run.accepted_updates.map(u => u.gap), i, true);
+  }
+  function receive(state) {
+    // A resize request or delayed poll must not overwrite a newer state.
+    if (state.sequence < lastSeq) return;
+    lastSeq = state.sequence; latestState = state; render(state);
+  }
+  async function poll() {
+    try {
+      const r = await fetch('/state', { cache: 'no-store' });
+      if (r.ok) { const state = await r.json(); byId('connection').hidden = true; receive(state); }
+      else byId('connection').hidden = false;
+    } catch { byId('connection').hidden = false; }
+    setTimeout(poll, 200);
+  }
+  fetch('/record', { cache: 'no-store' }).then(r => r.json()).then(rec => { record = rec; buildRuns(); poll(); });
+  window.addEventListener('resize', () => { if (record && lastSeq >= 0) fetch('/state').then(r => r.json()).then(receive).catch(() => {}); });
+})();
+</script>
+</body>
+</html>

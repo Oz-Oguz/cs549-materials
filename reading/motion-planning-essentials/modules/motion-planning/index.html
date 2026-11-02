@@ -1,0 +1,2197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sampling demo · a tree grows through the configuration space of the two-link arm</title>
+<style>
+  :root { --accent: #9b1b4b; --ink: #222; --muted: #777; --soft: #f6eef1; --ok: #2a7d2a; --bad: #b00020; --start: #1f5fbf; --goal: #2a7d2a; --sample: #e08a00; --near: #555; --path: #1f5fbf; }
+  body { margin: 0; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; color: var(--ink); background: #fff; }
+  header { padding: 12px 22px 4px; }
+  header h1 { margin: 0 0 4px; font-size: 21px; color: var(--accent); }
+  header p { margin: 0; color: var(--muted); font-size: 14px; max-width: 1100px; }
+  main { display: grid; grid-template-columns: minmax(300px, 1fr) minmax(300px, 1fr) 360px; gap: 16px; padding: 8px 22px 20px; align-items: start; }
+  .view h2 { font-size: 15px; margin: 0 0 4px; color: var(--accent); }
+  svg.plot { width: 100%; height: auto; border: 1px solid #ddd; border-radius: 8px; background: #fff; display: block; }
+  .panel { font-size: 14px; line-height: 1.4; }
+  .panel h2 { font-size: 15px; margin: 10px 0 4px; color: var(--accent); }
+  fieldset { border: 1px solid #ddd; border-radius: 8px; padding: 6px 10px; margin: 0 0 8px; }
+  legend { color: var(--muted); font-size: 12px; padding: 0 4px; }
+  button { font: inherit; font-size: 14px; padding: 5px 12px; margin: 2px 4px 2px 0; border: 1px solid #bbb; border-radius: 6px; background: #fafafa; cursor: pointer; }
+  button:hover { background: #eee; } button:disabled { color: #aaa; cursor: default; background: #f7f7f7; }
+  button.primary { background: var(--accent); color: #fff; border-color: var(--accent); } button.primary:hover { background: #7d1239; }
+  button.primary:disabled { background: #f7f7f7; color: #aaa; border-color: #ddd; }
+  input[type=number] { font: inherit; width: 5em; }
+  label { cursor: pointer; }
+  table { border-collapse: collapse; font-size: 13px; margin: 2px 0 6px; width: 100%; }
+  td { padding: 2px 8px 2px 0; vertical-align: top; } td.k { color: var(--muted); white-space: nowrap; width: 9em; }
+  .status { background: var(--soft); border-left: 4px solid var(--accent); padding: 6px 10px; border-radius: 6px; margin: 6px 0; min-height: 2.6em; }
+  .result { border-left-color: var(--ok); background: #eef7ee; } .result.fail { border-left-color: var(--bad); background: #fbeeee; }
+  .ok { color: var(--ok); font-weight: 600; } .bad { color: var(--bad); font-weight: 600; }
+  .legend { font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
+  .legend span { display: inline-block; margin-right: 10px; }
+  .sw { display: inline-block; width: 18px; height: 3px; vertical-align: middle; margin-right: 4px; }
+  .sw.box { height: 10px; border: 1px solid #aaa; }
+  code { font-size: 0.92em; background: #f4f4f4; padding: 0 4px; border-radius: 4px; }
+  .small { font-size: 12px; color: var(--muted); }
+  body.edge .rrt-only { display: none !important; } body:not(.edge) .edge-only { display: none !important; }
+  svg.clplot { width: 100%; height: auto; border: 1px solid #ddd; border-radius: 8px; background: #fff; display: block; margin: 2px 0 4px; }
+  /* ?mode=bidir (and later views of the second program): the first program's header and main are hidden */
+  body.alt > header, body.alt > main { display: none !important; }
+  table.claims td.k { width: 10em; } details { margin: 8px 0; font-size: 13px; } details label { display: inline-block; margin: 2px 0; }
+  @media (max-width: 1100px) { main { grid-template-columns: 1fr 1fr; } .panel { grid-column: 1 / -1; } }
+</style>
+</head>
+<body>
+<header>
+  <h1 id="h-title">Sampling demo: a tree grows through the configuration space of the two-link arm</h1>
+  <p id="h-text">This page grows a rapidly exploring random tree (RRT) from the start posture of the arm (links 0.4 m and 0.3 m) toward the goal posture, the positive-elbow solution of the tip target (0.5, 0.2) m.
+     In the default model no part of either link may come within 5 mm of the disc, and the straight edge between the two postures is invalid. Each <b>Step</b> draws one random configuration, finds the nearest tree node,
+     proposes a node at most 10° away in joint-space distance, then checks postures along the connecting edge at intervals of at most 1° per joint. Only a passing edge adds the proposed node; intermediate checking postures do not become tree nodes. Each posture drawn on the left is one point on the right.
+     Hover over the right view to see the posture at the mouse.</p>
+</header>
+<main>
+  <div class="view">
+    <h2>Workspace, in meters</h2>
+    <svg id="ws" class="plot" viewBox="0 0 520 520" role="img" aria-label="the two-link arm, the disc, the postures of this step"></svg>
+    <div class="legend" id="ws-legend">
+      <span><span class="sw" style="background:#1f5fbf"></span>start posture</span>
+      <span><span class="sw" style="background:#2a7d2a"></span>goal posture</span>
+      <span class="rrt-only"><span class="sw" style="background:#e08a00; border-top: 2px dashed #e08a00; height:0"></span>sampled posture</span>
+      <span class="rrt-only"><span class="sw" style="background:#555"></span>nearest tree node</span>
+      <span class="rrt-only"><span class="sw" style="background:#2a7d2a; height:4px"></span>accepted extension</span>
+      <span class="rrt-only"><span class="sw" style="border-top: 2px dotted #b00020; height:0; background:none"></span>rejected extension</span>
+      <span class="rrt-only"><span class="sw" style="background:#b00020; height:4px"></span>first invalid configuration on it, with a tie to the disc</span>
+      <span class="edge-only"><span class="sw" style="background:#9a9a9a"></span>postures already checked</span>
+      <span class="edge-only"><span class="sw" style="background:#d07a00; height:4px"></span>the current check, with a tie from its closest point to the disc center</span>
+      <span class="edge-only"><span class="sw" style="background:#b00020; height:4px"></span>a check that fails</span>
+      <span><span class="sw box" style="background:#bbb"></span>disc, radius 0.05 m</span>
+      <span><span class="sw" style="border-top: 2px dashed #888; height:0; background:none"></span>5 mm clearance ring</span>
+    </div>
+  </div>
+  <div class="view">
+    <h2>Configuration space, joint angles in degrees</h2>
+    <svg id="cs" class="plot" viewBox="0 0 520 520" role="img" aria-label="the joint box, the forbidden region, the tree, the sample and the extension"></svg>
+    <div class="legend" id="cs-legend">
+      <span><span class="sw box" style="background:#c9c9c9"></span><span id="cs-legend-forbidden">forbidden: part of a link would come within 5 mm of the disc</span></span>
+      <span id="cs-legend-missed" style="display:none"><span class="sw box" style="background:#f3c6c6"></span>also forbidden for the whole links, but allowed by the three-point checker</span>
+      <span class="rrt-only"><span class="sw" style="background:#9a9a9a"></span>tree edges</span>
+      <span class="rrt-only"><span class="sw" style="background:#1f5fbf; height:4px"></span>path found</span>
+      <span><span class="sw" style="border-top: 2px dashed #b00020; height:0; background:none"></span>direct edge start to goal</span>
+      <span class="rrt-only">× sample, ○ nearest node, · checked configurations, <span style="color:#b00020">×</span> first invalid one</span>
+      <span class="edge-only">○ scheduled check, ● checked and valid, <span style="color:#b00020">●</span> checked and invalid, <span style="color:#d07a00">◯</span> the current check</span>
+    </div>
+  </div>
+  <aside class="panel">
+    <div>
+      <button id="step" class="primary rrt-only">Step</button>
+      <button id="run" class="rrt-only">Run</button>
+      <button id="enext" class="primary edge-only">Next check</button>
+      <button id="erun" class="edge-only">Check until rejected</button>
+      <button id="reset">Reset</button>
+      <button id="play" class="rrt-only" disabled title="Move the arm along the path found, interpolated at 1° per joint, at an arbitrary display pace: no timing or speed is implied">Play path</button>
+    </div>
+    <fieldset>
+      <legend>what the edge check models</legend>
+      <label><input type="radio" name="checker" value="links" checked> <b>whole links</b> as line segments (the demo's model)</label><br>
+      <label><input type="radio" name="checker" value="points"> <b>three points</b>: tip, elbow, middle of link 2 (the older three-point reference model, here with the same 5 mm margin; the worked example constrains the whole links)</label>
+    </fieldset>
+    <div class="rrt-only">
+      <label>seed <input id="seed" type="number" min="0" max="4294967295" step="1" value="7" title="the seed of the random generator; Reset starts the same tree again"></label>
+      <label style="margin-left:10px">budget <input id="budget" type="number" min="1" max="100000" step="1" value="3000" title="iterations before the planner gives up"></label>
+    </div>
+    <div>
+      <label class="rrt-only" title="draw the straight edge from the start to the goal in the configuration space, and halfway along it the posture whose second link crosses the disc"><input type="checkbox" id="direct" checked> direct edge</label>
+      <label style="margin-left:10px" title="show only the 180° × 180° window around the start and the goal; samples outside it are cut off at the frame"><input type="checkbox" id="zoom"> zoom in on the start and the goal</label>
+    </div>
+    <div class="status" id="status" aria-live="polite"></div>
+    <div class="status result" id="result" style="display:none" aria-live="polite"></div>
+    <div class="edge-only">
+      <h2>Clearance at each check</h2>
+      <svg id="cl" class="clplot" viewBox="0 0 360 230" role="img" aria-label="clearance from the disc surface at each check of the direct edge"></svg>
+      <div class="legend"><span>● checked, <span style="color:#b00020">●</span> below the 5 mm requirement; shaded: invalid; open marks: not yet checked</span></div>
+      <h2>This check</h2>
+      <table id="echeck">
+        <tr><td class="k">check</td><td id="ec-j">—</td></tr>
+        <tr><td class="k">configuration</td><td id="ec-q">—</td></tr>
+        <tr><td class="k">closest part</td><td id="ec-part">—</td></tr>
+        <tr><td class="k">clearance</td><td id="ec-c">—</td></tr>
+        <tr><td class="k">verdict</td><td id="ec-v">—</td></tr>
+      </table>
+    </div>
+    <h2 class="rrt-only">This iteration</h2>
+    <table id="event" class="rrt-only">
+      <tr><td class="k">sample</td><td id="ev-sample">—</td></tr>
+      <tr><td class="k">nearest node</td><td id="ev-near">—</td></tr>
+      <tr><td class="k">extension</td><td id="ev-ext">—</td></tr>
+      <tr><td class="k">edge check</td><td id="ev-check">—</td></tr>
+      <tr><td class="k">result</td><td id="ev-result">—</td></tr>
+      <tr><td class="k">goal test</td><td id="ev-goal">—</td></tr>
+    </table>
+    <h2>Fixed settings</h2>
+    <table id="params">
+      <tr><td class="k">joint box</td><td>−180° ≤ q₁, q₂ ≤ 180°; the page treats −180° and 180° as far apart</td></tr>
+      <tr><td class="k">start, goal</td><td id="p-endpoints"></td></tr>
+      <tr><td class="k">disc</td><td>center (0.49, 0.35) m, radius 0.05 m, plus a 5 mm margin</td></tr>
+      <tr class="rrt-only"><td class="k">extension</td><td>at most 10° (Euclidean, in joint space)</td></tr>
+      <tr class="rrt-only"><td class="k">goal sampling</td><td>each sample is the goal itself with probability 0.1</td></tr>
+      <tr><td class="k">edge check</td><td>check postures along the connecting edge at intervals of at most 1° per joint, including its endpoint; stop at the first failure. This is checking resolution; tree nodes can be farther apart.</td></tr>
+      <tr class="rrt-only"><td class="k">generator</td><td>a seeded generator (mulberry32); Reset restarts it from the same seed, so the same tree grows again</td></tr>
+    </table>
+    <p class="small edge-only">Next in the lecture: a tree planner tests many such connections on the same scene. <a href="?seed=7&amp;budget=3000">Open the tree demo</a>.</p>
+    <p class="small">Companion notes: <code>modules/motion-planning/notes.md</code>. Reference implementation with the same numbers: <code>modules/motion-planning/rrt_two_link.py</code>. Lecture: Deck 06, sampling-based planning.</p>
+  </aside>
+</main>
+<div id="alt" hidden>
+<header>
+  <h1 id="a-title"></h1>
+  <p id="a-text"></p>
+  <details id="a-more"><summary>How an attempt works, and where the procedure comes from</summary><p id="a-more-text"></p></details>
+</header>
+<main class="alt-main">
+  <div class="view">
+    <h2>Workspace, in meters</h2>
+    <svg id="a-ws" class="plot" viewBox="0 0 520 520" role="img" aria-label="the two-link arm, the disc with its 5 mm ring, the postures of the current operation"></svg>
+    <div class="legend" id="a-ws-legend"></div>
+    <label class="small"><input type="checkbox" id="a-wzoom"> zoom the workspace on the disc</label>
+  </div>
+  <div class="view">
+    <h2>Configuration space, joint angles in degrees</h2>
+    <svg id="a-cs" class="plot" viewBox="0 0 520 520" role="img" aria-label="the joint box, the forbidden regions, the trees and the current operation"></svg>
+    <div class="legend" id="a-cs-legend"></div>
+    <label class="small"><input type="checkbox" id="a-czoom"> zoom on the start and the goal</label>
+  </div>
+  <aside class="panel">
+    <div>
+      <button id="a-step" class="primary">Step</button>
+      <button id="a-run">Run</button>
+      <button id="a-reset">Reset</button>
+    </div>
+    <div>
+      <button id="a-check" disabled>Check returned path</button>
+      <button id="a-scan" disabled>Diagnostic scan</button>
+      <button id="a-play" disabled title="Move the arm along the returned path at a display pace; this checks nothing and implies no timing">Play path</button>
+    </div>
+    <p class="small" id="a-playnote" hidden>Display only. The arm moves along the straight joint-space segments at an illustrative pace. Playback checks nothing and sets no timing.</p>
+    <div class="status" id="a-status" aria-live="polite"></div>
+    <table class="claims" id="a-claims">
+      <tr><td class="k">planner</td><td id="a-c-planner">—</td></tr>
+      <tr><td class="k">finite check</td><td id="a-c-check">—</td></tr>
+      <tr><td class="k">diagnostic scan</td><td id="a-c-scan">—</td></tr>
+      <tr><td class="k">continuous clearance</td><td id="a-c-cont">—</td></tr>
+    </table>
+    <p class="small" id="a-sclink"></p>
+    <h2 id="a-detail-h">This attempt</h2>
+    <table id="a-detail"></table>
+    <h2>Work so far</h2>
+    <table id="a-counts"></table>
+    <details id="a-params">
+      <summary>Parameters</summary>
+      <div id="a-param-fields"></div>
+    </details>
+    <p class="small" id="a-foot"></p>
+  </aside>
+</main>
+</div>
+<div id="sc" hidden>
+<header>
+  <h1 id="s-title"></h1>
+  <p id="s-text"></p>
+  <details id="s-more"><summary>How an attempt works, and where the numbers come from</summary><p id="s-more-text"></p></details>
+</header>
+<main class="alt-main">
+  <div class="view">
+    <h2>Workspace, in meters</h2>
+    <svg id="s-ws" class="plot" viewBox="0 0 520 520" role="img" aria-label="the two-link arm, the disc with its 5 mm ring, the postures of the current attempt"></svg>
+    <div class="legend" id="s-ws-legend"></div>
+    <label class="small"><input type="checkbox" id="s-wzoom"> zoom the workspace on the disc</label>
+  </div>
+  <div class="view">
+    <h2>Configuration space, joint angles in degrees</h2>
+    <svg id="s-cs" class="plot" viewBox="0 0 520 520" role="img" aria-label="the joint box, the forbidden regions, the path and the current shortcut attempt"></svg>
+    <div class="legend" id="s-cs-legend"></div>
+    <label class="small"><input type="checkbox" id="s-czoom"> zoom on the path</label>
+  </div>
+  <aside class="panel">
+    <div><label>Path to shorten: <select id="s-from"><option value="rrt">one-tree RRT</option><option value="bidir">RAI-style bidirectional RRT</option></select></label></div>
+    <div>
+      <button id="s-step" class="primary">Step</button>
+      <button id="s-run">Run</button>
+      <button id="s-reset">Reset</button>
+      <button id="s-scan">Diagnostic scan</button>
+      <button id="s-play" title="Move the arm along the current path at a display pace; this checks nothing and implies no timing">Play path</button>
+    </div>
+    <p class="small" id="s-playnote" hidden>Display only. The arm moves along the straight joint-space segments at an illustrative pace. Playback checks nothing and sets no timing.</p>
+    <div class="status" id="s-status" aria-live="polite"></div>
+    <table class="claims" id="s-claims">
+      <tr><td class="k">planner</td><td id="s-c-planner">—</td></tr>
+      <tr><td class="k">imported path</td><td id="s-c-import">—</td></tr>
+      <tr><td class="k">current path</td><td id="s-c-current">—</td></tr>
+      <tr><td class="k">diagnostic scan</td><td id="s-c-scan">—</td></tr>
+      <tr><td class="k">continuous clearance</td><td id="s-c-cont">—</td></tr>
+    </table>
+    <h2 id="s-detail-h">This attempt</h2>
+    <table id="s-detail"></table>
+    <h2>Work so far</h2>
+    <table id="s-counts"></table>
+    <details id="s-params">
+      <summary>Parameters</summary>
+      <div id="s-param-fields"></div>
+    </details>
+    <p class="small" id="s-foot"></p>
+  </aside>
+</main>
+</div>
+<div id="rs" hidden>
+<header>
+  <h1 id="r-title"></h1>
+  <p id="r-text"></p>
+  <details id="r-more"><summary>What this illustration fixes, and where it comes from</summary><p id="r-more-text"></p></details>
+</header>
+<main class="alt-main">
+  <div class="view">
+    <h2>Workspace, in meters</h2>
+    <svg id="r-ws" class="plot" viewBox="0 0 520 520" role="img" aria-label="the two-link arm, the disc with its 5 mm ring, the postures of the current candidate"></svg>
+    <div class="legend" id="r-ws-legend"></div>
+    <label class="small"><input type="checkbox" id="r-wzoom"> zoom the workspace on the disc</label>
+  </div>
+  <div class="view">
+    <h2>Configuration space, joint angles in degrees</h2>
+    <svg id="r-cs" class="plot" viewBox="0 0 520 520" role="img" aria-label="the tree, the new node, its neighborhood and the current candidate"></svg>
+    <div class="legend" id="r-cs-legend"></div>
+    <label class="small"><input type="checkbox" id="r-czoom"> zoom on the neighborhood</label>
+  </div>
+  <aside class="panel">
+    <div>
+      <button id="r-step" class="primary">Step</button>
+      <button id="r-back">Back</button>
+      <button id="r-run">Run</button>
+      <button id="r-reset">Reset</button>
+      <button id="r-play" title="Move the arm along the route to the goal shown at this step, at a display pace; this checks nothing and implies no timing">Play path</button>
+    </div>
+    <p class="small" id="r-playnote" hidden>Display only. The arm moves along the straight joint-space segments at an illustrative pace. Playback checks nothing and sets no timing. It follows the route to the goal shown at this step.</p>
+    <div class="status" id="r-status" aria-live="polite"></div>
+    <h2>Neighborhood of the new node</h2>
+    <table id="r-near"></table>
+    <h2>Route to the goal</h2>
+    <table id="r-route"></table>
+    <p class="small" id="r-foot"></p>
+  </aside>
+</main>
+</div>
+<script>
+(function () {
+  'use strict';
+  if (/^(bidir|shortcut|rrtstar)$/.test(new URLSearchParams(location.search).get('mode'))) return;   // the programs below draw these views
+  // ----------------------------------------------------------------- the scene (radians inside, degrees on screen)
+  const L1 = 0.4, L2 = 0.3, DEG = Math.PI / 180;
+  const Q_START = [30 * DEG, 45 * DEG], Y_STAR = [0.5, 0.2];
+  const OBS_C = [0.49, 0.35], OBS_R = 0.05, MARGIN = 0.005;
+  const BOUND = Math.PI, STEP = 10 * DEG, P_GOAL = 0.1, SUB = 1 * DEG;
+  function ikPositiveElbow(y) {
+    const c2 = (y[0] * y[0] + y[1] * y[1] - L1 * L1 - L2 * L2) / (2 * L1 * L2);
+    const q2 = Math.acos(c2);
+    return [Math.atan2(y[1], y[0]) - Math.atan2(L2 * Math.sin(q2), L1 + L2 * Math.cos(q2)), q2];
+  }
+  const Q_GOAL = ikPositiveElbow(Y_STAR);
+
+  // ----------------------------------------------------------------- the generator (the same bits as rrt_two_link.py)
+  function mulberry32(seed) {
+    let a = seed >>> 0;
+    return function () {
+      a = (a + 0x6D2B79F5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  // ----------------------------------------------------------------- kinematics and the two checkers
+  function points(q) {
+    const e = [L1 * Math.cos(q[0]), L1 * Math.sin(q[0])];
+    const t = [e[0] + L2 * Math.cos(q[0] + q[1]), e[1] + L2 * Math.sin(q[0] + q[1])];
+    const m = [e[0] + 0.5 * L2 * Math.cos(q[0] + q[1]), e[1] + 0.5 * L2 * Math.sin(q[0] + q[1])];
+    return { base: [0, 0], e, t, m };
+  }
+  function segmentDistance(a, b, c) {
+    const dx = b[0] - a[0], dy = b[1] - a[1], dd = dx * dx + dy * dy;
+    let s = dd > 0 ? ((c[0] - a[0]) * dx + (c[1] - a[1]) * dy) / dd : 0;
+    s = s < 0 ? 0 : s > 1 ? 1 : s;
+    const p = [a[0] + s * dx, a[1] + s * dy];
+    return { d: Math.sqrt((c[0] - p[0]) ** 2 + (c[1] - p[1]) ** 2), p };
+  }
+  function pointDistance(p, c) { return { d: Math.sqrt((p[0] - c[0]) ** 2 + (p[1] - c[1]) ** 2), p }; }
+  // smallest distance from the modelled arm to the disc's surface, minus the margin (negative: invalid), with the part
+  function clearance(q, checker) {
+    const P = points(q);
+    const cands = checker === 'links'
+      ? [['link 1', segmentDistance(P.base, P.e, OBS_C)], ['link 2', segmentDistance(P.e, P.t, OBS_C)]]
+      : [['tip', pointDistance(P.t, OBS_C)], ['elbow', pointDistance(P.e, OBS_C)], ['mid of link 2', pointDistance(P.m, OBS_C)]];
+    let best = cands[0];
+    for (const c of cands) if (c[1].d < best[1].d) best = c;
+    return { c: best[1].d - OBS_R - MARGIN, part: best[0], p: best[1].p };
+  }
+  const inBounds = q => q[0] >= -BOUND && q[0] <= BOUND && q[1] >= -BOUND && q[1] <= BOUND;
+  function valid(q, checker) {
+    if (!inBounds(q)) return { ok: false, part: 'outside the joint box', c: null, p: null };
+    const r = clearance(q, checker);
+    return { ok: r.c >= 0, part: r.part, c: r.c, p: r.p };
+  }
+  const dist = (a, b) => Math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2);
+  // the edge check: qa is valid; configurations at most SUB apart per joint, in order; the first invalid one rejects
+  // the direct edge start -> goal under a checker: its check, and the configuration along it with the least clearance
+  function directEdge(checker) {
+    if (DIRECT[checker]) return DIRECT[checker];
+    const edge = checkEdge(Q_START, Q_GOAL, checker);
+    let deepest = null;
+    for (let j = 0; j <= edge.n; j++) {
+      const q = [Q_START[0] + (j / edge.n) * (Q_GOAL[0] - Q_START[0]), Q_START[1] + (j / edge.n) * (Q_GOAL[1] - Q_START[1])];
+      const r = clearance(q, checker);
+      if (!deepest || r.c < deepest.c) deepest = { j, q, c: r.c, part: r.part, p: r.p };
+    }
+    return (DIRECT[checker] = { edge, deepest });
+  }
+  function checkEdge(qa, qb, checker) {
+    const n = Math.max(1, Math.ceil(Math.max(Math.abs(qb[0] - qa[0]), Math.abs(qb[1] - qa[1])) / SUB));
+    const checked = [];
+    let worst = Infinity;
+    for (let j = 1; j <= n; j++) {
+      const q = [qa[0] + (j / n) * (qb[0] - qa[0]), qa[1] + (j / n) * (qb[1] - qa[1])];
+      const v = valid(q, checker);
+      checked.push({ j, q, ok: v.ok, c: v.c, part: v.part, p: v.p });
+      if (v.c !== null) worst = Math.min(worst, v.c);
+      if (!v.ok) return { ok: false, n, j, q, part: v.part, c: v.c, p: v.p, worst, checked };
+    }
+    return { ok: true, n, j: null, worst, checked };
+  }
+
+  // ----------------------------------------------------------------- the tree
+  const S = { seed: 7, budget: 3000, checker: 'links', showDirect: true, zoom: false, mode: 'rrt' };   // mode 'edge': ?mode=edge
+  const DIRECT = { links: null, points: null };   // the direct edge's check and its deepest posture, per checker
+  let rng, nodes, parents, events, outcome, goalIndex, iteration, path, revalidation, timer = null, playTimer = null, playQ = null, hoverQ = null;
+  // ?mode=edge: every scheduled configuration of the direct edge, j = 0..n (0 is the start, which the edge check assumes
+  // valid); the edge check evaluates j = 1, 2, ... and stops at the first invalid one. eK is the check on screen.
+  const EDGE = { links: null, points: null };
+  function edgeRows(checker) {
+    if (EDGE[checker]) return EDGE[checker];
+    const n = Math.max(1, Math.ceil(Math.max(Math.abs(Q_GOAL[0] - Q_START[0]), Math.abs(Q_GOAL[1] - Q_START[1])) / SUB));
+    const rows = [];
+    for (let j = 0; j <= n; j++) {
+      const q = [Q_START[0] + (j / n) * (Q_GOAL[0] - Q_START[0]), Q_START[1] + (j / n) * (Q_GOAL[1] - Q_START[1])];
+      const r = clearance(q, checker);
+      rows.push({ j, q, c: r.c, part: r.part, p: r.p });
+    }
+    let first = null;
+    for (let j = 1; j <= n; j++) if (rows[j].c < 0) { first = j; break; }
+    let deepest = 0;
+    for (const r of rows) if (r.c < rows[deepest].c) deepest = r.j;
+    return (EDGE[checker] = { n, rows, first, deepest });
+  }
+  let eK = 0, eTimer = null;
+  function stopEdgeRun() { if (eTimer) { clearInterval(eTimer); eTimer = null; } }
+  function nextCheck() { const E = edgeRows(S.checker); if (eK >= E.n) return; eK++; draw(); describe(); }
+  // Check until rejected: on to the first failure at a pace one can follow; past it, a faster diagnostic scan to the goal
+  function startEdgeRun() {
+    const E = edgeRows(S.checker);
+    if (eK >= E.n) return;
+    const target = E.first !== null && eK < E.first ? E.first : E.n;
+    eTimer = setInterval(() => { if (eK < target) { eK++; draw(); } if (eK >= target) stopEdgeRun(); describe(); }, target === E.first ? 250 : 80);
+    describe();
+  }
+  function reset() {
+    stopRun(); stopPlay();
+    rng = mulberry32(S.seed);
+    nodes = [Q_START]; parents = [-1]; events = []; outcome = 'running'; goalIndex = null; iteration = 0; path = null; revalidation = null; playQ = null;
+    stopEdgeRun(); eK = 0;
+    document.getElementById('play').disabled = true;
+    draw(); describe();
+  }
+  function step() {
+    if (outcome !== 'running') return null;
+    const i = ++iteration;
+    const u = rng();
+    let qRand, kind;
+    if (u < P_GOAL) { qRand = Q_GOAL; kind = 'goal'; }
+    else { qRand = [-Math.PI + 2 * Math.PI * rng(), -Math.PI + 2 * Math.PI * rng()]; kind = 'uniform'; }
+    let near = 0, best = Infinity;
+    for (let k = 0; k < nodes.length; k++) { const d = dist(qRand, nodes[k]); if (d < best) { best = d; near = k; } }
+    const qNear = nodes[near], d = best;
+    const qNew = d <= STEP ? qRand : [qNear[0] + STEP * (qRand[0] - qNear[0]) / d, qNear[1] + STEP * (qRand[1] - qNear[1]) / d];
+    const edge = checkEdge(qNear, qNew, S.checker);
+    const ev = { i, kind, u, qRand, near, qNew, d, edge, index: null, goal: false, goalTry: null };
+    if (edge.ok) {
+      nodes.push(qNew); parents.push(near);
+      ev.index = nodes.length - 1;
+      if (qNew === Q_GOAL) { outcome = 'connected'; goalIndex = ev.index; ev.goal = true; }
+      else if (dist(qNew, Q_GOAL) <= STEP) {
+        ev.goalTry = checkEdge(qNew, Q_GOAL, S.checker);
+        if (ev.goalTry.ok) { nodes.push(Q_GOAL); parents.push(ev.index); outcome = 'connected'; goalIndex = nodes.length - 1; ev.goal = true; }
+      }
+    }
+    events.push(ev);
+    if (outcome === 'connected') finish();
+    else if (iteration >= S.budget) { outcome = 'budget'; stopRun(); }
+    draw(); describe();
+    return ev;
+  }
+  function finish() {
+    stopRun();
+    path = [];
+    for (let k = goalIndex; k >= 0; k = parents[k]) path.push(k);
+    path.reverse();
+    // check the whole path again with the same rule, and also with the whole-link model (the same thing in links mode):
+    // the planner's test is repeated (it stops at an edge's first invalid configuration; `checked` counts what it
+    // evaluated), and a complete scan of every scheduled configuration (j = 0..n, no early stop) gives `worst`
+    const again = checker => {
+      let worst = Infinity, checked = 0, scheduled = 0, fail = null;
+      for (let e = 0; e + 1 < path.length; e++) {
+        const a = nodes[path[e]], b = nodes[path[e + 1]];
+        const r = checkEdge(a, b, checker);
+        checked += r.ok ? r.n : r.j; scheduled += r.n;
+        for (let j = 0; j <= r.n; j++) worst = Math.min(worst, clearance([a[0] + (j / r.n) * (b[0] - a[0]), a[1] + (j / r.n) * (b[1] - a[1])], checker).c);
+        if (!r.ok && !fail) fail = { edge: [path[e], path[e + 1]], j: r.j, n: r.n, q: r.q, part: r.part, c: r.c };
+      }
+      return { worst, checked, scheduled, fail };
+    };
+    let length = 0;
+    for (let e = 0; e + 1 < path.length; e++) length += dist(nodes[path[e]], nodes[path[e + 1]]);
+    // the deepest whole-link configuration over EVERY checked configuration of every edge (j = 0..n), independent of the early stop
+    let deepest = null;
+    for (let e = 0; e + 1 < path.length; e++) {
+      const a = nodes[path[e]], b = nodes[path[e + 1]];
+      const n = Math.max(1, Math.ceil(Math.max(Math.abs(b[0] - a[0]), Math.abs(b[1] - a[1])) / SUB));
+      for (let j = 0; j <= n; j++) {
+        const q = [a[0] + (j / n) * (b[0] - a[0]), a[1] + (j / n) * (b[1] - a[1])];
+        const r = clearance(q, 'links');
+        if (!deepest || r.c < deepest.c) deepest = { c: r.c, part: r.part, p: r.p, q, e, j, n, where: j === n ? `node #${path[e + 1]}` : j === 0 ? `node #${path[e]}` : `configuration ${j} of ${n} on edge #${path[e]} → #${path[e + 1]}` };
+      }
+    }
+    revalidation = { same: again(S.checker), links: again('links'), length, deepest };
+    document.getElementById('play').disabled = false;
+  }
+  function stopRun() { if (timer) { clearInterval(timer); timer = null; } document.getElementById('run').textContent = 'Run'; }
+  function startRun() {
+    if (outcome !== 'running') return;
+    stopPlay();
+    timer = setInterval(() => { step(); if (outcome !== 'running') stopRun(); }, 40);
+    document.getElementById('run').textContent = 'Pause';
+  }
+  function stopPlay() { if (playTimer) { clearInterval(playTimer); playTimer = null; } playQ = null; document.getElementById('play').textContent = 'Play path'; }
+  function startPlay() {
+    if (!path) return;
+    stopRun();
+    const frames = [];
+    for (let e = 0; e + 1 < path.length; e++) {
+      const a = nodes[path[e]], b = nodes[path[e + 1]];
+      const n = Math.max(1, Math.ceil(Math.max(Math.abs(b[0] - a[0]), Math.abs(b[1] - a[1])) / SUB));
+      for (let j = e === 0 ? 0 : 1; j <= n; j++) frames.push([a[0] + (j / n) * (b[0] - a[0]), a[1] + (j / n) * (b[1] - a[1])]);
+    }
+    let f = 0;
+    document.getElementById('play').textContent = 'Stop';
+    playTimer = setInterval(() => { playQ = frames[f++]; draw(); if (f >= frames.length) { stopPlay(); draw(); } }, 30);
+  }
+
+  // ----------------------------------------------------------------- drawing
+  const NS = 'http://www.w3.org/2000/svg';
+  const ws = document.getElementById('ws'), cs = document.getElementById('cs');
+  function el(parent, tag, attrs, text) {
+    const e = document.createElementNS(NS, tag);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    if (text !== undefined) e.textContent = text;
+    parent.appendChild(e); return e;
+  }
+  const fixed = (v, digits) => { const t = (v / DEG).toFixed(digits); return /^-0(\.0+)?$/.test(t) ? t.slice(1) : t; };   // no '-0°'
+  const fmt = (q, digits = 2) => `(${fixed(q[0], digits)}°, ${fixed(q[1], digits)}°)`;
+  const mm = c => `${(c * 1000).toFixed(1)} mm`;
+  // the page stores c = d_clear − 5 mm; it prints d_clear, the clearance from the disc's surface, as the deck does
+  const clr = c => `${mm(c + MARGIN)} from the disc surface`;
+  // how far inside: the disc's surface is crossed only beyond the 5 mm margin
+  const surf = c => (c + MARGIN >= 0 ? `${mm(c + MARGIN)} from the disc surface` : `${mm(-c - MARGIN)} inside the disc`);
+  const depthWords = c => (-c - MARGIN > 0 ? `${mm(-c - MARGIN)} inside the disc` : `${mm(-c)} inside the 5 mm clearance ring, outside the disc`);
+  // workspace: [-0.75, 0.75] m -> 520 px, y up
+  const WR = 0.75, WS = 520;
+  const wx = x => (x + WR) / (2 * WR) * WS, wy = y => WS - (y + WR) / (2 * WR) * WS;
+  // configuration space: a plot area with margins, [-180, 180] degrees each way
+  const CM = { l: 46, r: 12, t: 12, b: 40 }, CW = 520 - CM.l - CM.r, CH = 520 - CM.t - CM.b;
+  // the window shown: the whole box, or (zoom) a 180° × 180° window around the start and the goal (the forbidden band continues below it)
+  // in the edge-check view (?mode=edge) the zoom is a 90° × 90° window, so that the 1° checks along the edge stay apart
+  const win = () => !S.zoom ? { x0: -180, y0: -180, w: 360, h: 360, tick: 90 } : S.mode === 'edge' ? { x0: -30, y0: 30, w: 90, h: 90, tick: 15 } : { x0: -60, y0: -30, w: 180, h: 180, tick: 30 };
+  const cx = q1 => { const W = win(); return CM.l + (q1 / DEG - W.x0) / W.w * CW; };
+  const cy = q2 => { const W = win(); return CM.t + CH - (q2 / DEG - W.y0) / W.h * CH; };
+  const cq = (px, py) => { const W = win(); return [((px - CM.l) / CW * W.w + W.x0) * DEG, ((CM.t + CH - py) / CH * W.h + W.y0) * DEG]; };
+
+  let rasterHref = { links: null, points: null };
+  function raster(checker) {
+    // one pixel per degree: 361 x 361 clearance evaluations of this checker (and of the whole links, for the difference)
+    if (rasterHref[checker]) return rasterHref[checker];
+    const n = 361, canvas = document.createElement('canvas'); canvas.width = n; canvas.height = n;
+    const ctx = canvas.getContext('2d'), img = ctx.createImageData(n, n);
+    for (let iy = 0; iy < n; iy++) for (let ix = 0; ix < n; ix++) {
+      const q = [(ix - 180) * DEG, (180 - iy) * DEG];
+      const bad = !valid(q, checker).ok;
+      const badLinks = checker === 'links' ? bad : !valid(q, 'links').ok;
+      const o = 4 * (iy * n + ix);
+      if (bad) { img.data[o] = 0xc9; img.data[o + 1] = 0xc9; img.data[o + 2] = 0xc9; img.data[o + 3] = 255; }
+      else if (badLinks) { img.data[o] = 0xf3; img.data[o + 1] = 0xc6; img.data[o + 2] = 0xc6; img.data[o + 3] = 255; }
+      else img.data[o + 3] = 0;
+    }
+    ctx.putImageData(img, 0, 0);
+    rasterHref[checker] = canvas.toDataURL();
+    return rasterHref[checker];
+  }
+
+  function arm(parent, q, color, width, dash, opacity) {
+    const P = points(q);
+    const g = el(parent, 'g', { stroke: color, 'stroke-width': width, fill: 'none', 'stroke-linecap': 'round', opacity: opacity === undefined ? 1 : opacity, ...(dash ? { 'stroke-dasharray': dash } : {}) });
+    el(g, 'polyline', { points: `${wx(0)},${wy(0)} ${wx(P.e[0])},${wy(P.e[1])} ${wx(P.t[0])},${wy(P.t[1])}` });
+    el(g, 'circle', { cx: wx(P.e[0]), cy: wy(P.e[1]), r: 3, fill: color, stroke: 'none' });
+    el(g, 'circle', { cx: wx(P.t[0]), cy: wy(P.t[1]), r: 3, fill: color, stroke: 'none' });
+    return g;
+  }
+  function drawWorkspace() {
+    ws.innerHTML = '';
+    // axes
+    const ax = el(ws, 'g', { stroke: '#ddd', 'stroke-width': 1 });
+    for (let v = -0.6; v <= 0.61; v += 0.3) {
+      el(ax, 'line', { x1: wx(v), y1: 0, x2: wx(v), y2: WS }); el(ax, 'line', { x1: 0, y1: wy(v), x2: WS, y2: wy(v) });
+      el(ws, 'text', { x: wx(v) + 2, y: WS - 4, 'font-size': 11, fill: '#999' }, v.toFixed(1));
+      el(ws, 'text', { x: 3, y: wy(v) - 2, 'font-size': 11, fill: '#999' }, v.toFixed(1));
+    }
+    el(ws, 'text', { x: WS - 36, y: WS - 16, 'font-size': 11, fill: '#777' }, 'x (m)');
+    el(ws, 'text', { x: 6, y: 14, 'font-size': 11, fill: '#777' }, 'y (m)');
+    // the disc and its margin
+    const rpx = OBS_R / (2 * WR) * WS;
+    el(ws, 'circle', { cx: wx(OBS_C[0]), cy: wy(OBS_C[1]), r: rpx, fill: '#bbb', stroke: '#888' });
+    el(ws, 'circle', { cx: wx(OBS_C[0]), cy: wy(OBS_C[1]), r: (OBS_R + MARGIN) / (2 * WR) * WS, fill: 'none', stroke: '#888', 'stroke-dasharray': '3 3' });
+    // the base
+    el(ws, 'circle', { cx: wx(0), cy: wy(0), r: 5, fill: '#333' });
+    // start and goal postures, always
+    arm(ws, Q_START, '#1f5fbf', 2.5, null, 0.9); arm(ws, Q_GOAL, '#2a7d2a', 2.5, null, 0.9);
+    el(ws, 'text', { x: wx(points(Q_START).t[0]) + 6, y: wy(points(Q_START).t[1]) - 6, 'font-size': 12, fill: '#1f5fbf' }, 'start');
+    el(ws, 'text', { x: wx(points(Q_GOAL).t[0]) + 6, y: wy(points(Q_GOAL).t[1]) + 12, 'font-size': 12, fill: '#2a7d2a' }, 'goal');
+    el(ws, 'circle', { cx: wx(Y_STAR[0]), cy: wy(Y_STAR[1]), r: 3.5, fill: 'none', stroke: '#2a7d2a' });
+    if (S.mode === 'edge') drawEdgeWorkspace();
+    else {
+    // the path found: every posture of the path, faint; in three-point mode also the posture where the whole links are deepest in the disc
+    if (path) for (const k of path) arm(ws, nodes[k], '#1f5fbf', 1.2, null, 0.35);
+    if (path && !playQ && revalidation && revalidation.links.fail) {
+      const D = revalidation.deepest;
+      failMark(ws, D);
+      el(ws, 'text', { x: 6, y: WS - 44, 'font-size': 12, fill: '#b00020' }, `whole links at ${D.where}: ${D.part} is ${depthWords(D.c)}`);
+    }
+    // before the first sample: the direct edge's deepest posture, the second link through the disc
+    const ev = events[events.length - 1];
+    if (!ev && S.showDirect && !playQ) {
+      const D = directEdge(S.checker).deepest;
+      failMark(ws, D);
+      el(ws, 'text', { x: 6, y: WS - 44, 'font-size': 12, fill: '#b00020' }, `the direct edge's deepest configuration, ${D.j} of ${directEdge(S.checker).edge.n}: ${D.part} is ${mm(-D.c - MARGIN)} inside the disc`);
+    }
+    // the latest event: sampled posture (dashed), nearest node, the proposed extension, the failing configuration
+    if (ev && !playQ) {
+      arm(ws, ev.qRand, '#e08a00', 1.5, '5 4', 0.8);
+      arm(ws, nodes[ev.near], '#555', 2, null, 0.8);
+      const edge = ev.edge;
+      if (edge.ok) {
+        arm(ws, ev.qNew, '#2a7d2a', 4, null, 0.95);
+        if (ev.goalTry && !ev.goalTry.ok) failMark(ws, ev.goalTry);
+      } else {
+        arm(ws, ev.qNew, '#b00020', 1.5, '2 3', 0.7);     // where the extension wanted to go
+        failMark(ws, edge);                                 // the first invalid configuration on the way
+      }
+    }
+    }
+    if (playQ) arm(ws, playQ, '#1f5fbf', 4, null, 1);
+    if (hoverQ && !playQ) {
+      const v = valid(hoverQ, S.checker);
+      arm(ws, hoverQ, v.ok ? '#7a3fb0' : '#b00020', 2, '6 3', 0.9);
+      el(ws, 'text', { x: 6, y: WS - 30, 'font-size': 11, fill: '#7a3fb0' }, `at the mouse: q = ${fmt(hoverQ, 1)}, ${v.c === null ? 'outside the box' : v.ok ? 'valid, clearance ' + clr(v.c) + ' (' + v.part + '), 5 mm needed' : 'invalid, ' + v.part + ' is ' + depthWords(v.c)}`);
+    }
+  }
+  // ?mode=edge: the postures already checked (faint), the current check with a tie from its closest point to the disc center
+  function drawEdgeWorkspace() {
+    const E = edgeRows(S.checker);
+    for (let j = 1; j < eK; j++) arm(ws, E.rows[j].q, E.rows[j].c < 0 ? '#e7a3a3' : '#9a9a9a', 1.2, null, 0.7);
+    if (eK === 0) return;                               // the start posture is already drawn
+    const R = E.rows[eK];
+    if (R.c < 0) failMark(ws, R);
+    else {
+      arm(ws, R.q, '#d07a00', 4, null, 0.95);
+      el(ws, 'line', { x1: wx(R.p[0]), y1: wy(R.p[1]), x2: wx(OBS_C[0]), y2: wy(OBS_C[1]), stroke: '#d07a00', 'stroke-width': 1.5, 'stroke-dasharray': '2 2' });
+      el(ws, 'circle', { cx: wx(R.p[0]), cy: wy(R.p[1]), r: 4, fill: 'none', stroke: '#d07a00', 'stroke-width': 2 });
+    }
+    el(ws, 'text', { x: 6, y: WS - 44, 'font-size': 12, fill: R.c < 0 ? '#b00020' : '#a35f00' }, `check ${eK} of ${E.n}: ${R.part} is ${surf(R.c)} (5 mm required)`);
+  }
+  function failMark(parent, edge) {
+    arm(parent, edge.q, '#b00020', 4, null, 0.95);
+    if (edge.p) {
+      el(parent, 'line', { x1: wx(edge.p[0]), y1: wy(edge.p[1]), x2: wx(OBS_C[0]), y2: wy(OBS_C[1]), stroke: '#b00020', 'stroke-width': 1.5, 'stroke-dasharray': '2 2' });
+      el(parent, 'circle', { cx: wx(edge.p[0]), cy: wy(edge.p[1]), r: 4, fill: 'none', stroke: '#b00020', 'stroke-width': 2 });
+    }
+  }
+  function drawCSpace() {
+    cs.innerHTML = '';
+    const W = win();
+    const defs = el(cs, 'defs', {});
+    el(el(defs, 'clipPath', { id: 'cs-clip' }), 'rect', { x: CM.l, y: CM.t, width: CW, height: CH });
+    el(cs, 'rect', { x: CM.l, y: CM.t, width: CW, height: CH, fill: '#fff', stroke: '#999' });
+    const inner = el(cs, 'g', { 'clip-path': 'url(#cs-clip)' });   // everything in joint coordinates is cut at the frame
+    // pixel ix of the raster samples the angle ix − 180°, so the image spans −180.5° to 180.5° and each pixel is centered on its sample
+    el(inner, 'image', { href: raster(S.checker), x: cx(-180.5 * DEG), y: cy(180.5 * DEG), width: 361 / W.w * CW, height: 361 / W.h * CH, preserveAspectRatio: 'none', style: 'image-rendering: pixelated' });
+    const ax = el(inner, 'g', { stroke: '#ddd', 'stroke-width': 1 });
+    for (let v = W.x0; v <= W.x0 + W.w; v += W.tick) {
+      if (v !== W.x0 && v !== W.x0 + W.w) el(ax, 'line', { x1: cx(v * DEG), y1: CM.t, x2: cx(v * DEG), y2: CM.t + CH });
+      el(cs, 'text', { x: cx(v * DEG), y: CM.t + CH + 14, 'font-size': 11, fill: '#777', 'text-anchor': 'middle' }, v + '°');
+    }
+    for (let v = W.y0; v <= W.y0 + W.h; v += W.tick) {
+      if (v !== W.y0 && v !== W.y0 + W.h) el(ax, 'line', { x1: CM.l, y1: cy(v * DEG), x2: CM.l + CW, y2: cy(v * DEG) });
+      el(cs, 'text', { x: CM.l - 4, y: cy(v * DEG) + 3, 'font-size': 11, fill: '#777', 'text-anchor': 'end' }, v + '°');
+    }
+    if (S.zoom) el(cs, 'text', { x: CM.l + CW - 4, y: CM.t + 12, 'font-size': 11, fill: '#777', 'text-anchor': 'end' }, `zoomed: a ${W.w}° × ${W.h}° window of the ±180° box`);
+    el(cs, 'text', { x: CM.l + CW / 2, y: 520 - 6, 'font-size': 12, fill: '#555', 'text-anchor': 'middle' }, 'q₁, shoulder angle (°)');
+    el(cs, 'text', { x: 12, y: CM.t + CH / 2, 'font-size': 12, fill: '#555', 'text-anchor': 'middle', transform: `rotate(-90 12 ${CM.t + CH / 2})` }, 'q₂, elbow angle (°)');
+    // the direct edge
+    if (S.showDirect || S.mode === 'edge') el(inner, 'line', { x1: cx(Q_START[0]), y1: cy(Q_START[1]), x2: cx(Q_GOAL[0]), y2: cy(Q_GOAL[1]), stroke: '#b00020', 'stroke-width': 1.5, 'stroke-dasharray': '5 4', opacity: 0.8 });
+    if (S.mode === 'edge') drawEdgeCSpace(inner);
+    else {
+    // the tree
+    const tg = el(inner, 'g', { stroke: '#9a9a9a', 'stroke-width': 1 });
+    for (let k = 1; k < nodes.length; k++) el(tg, 'line', { x1: cx(nodes[parents[k]][0]), y1: cy(nodes[parents[k]][1]), x2: cx(nodes[k][0]), y2: cy(nodes[k][1]) });
+    const ng = el(inner, 'g', { fill: '#777' });
+    for (let k = 1; k < nodes.length; k++) el(ng, 'circle', { cx: cx(nodes[k][0]), cy: cy(nodes[k][1]), r: 1.8 });
+    // the path found
+    if (path) el(inner, 'polyline', { points: path.map(k => `${cx(nodes[k][0])},${cy(nodes[k][1])}`).join(' '), fill: 'none', stroke: '#1f5fbf', 'stroke-width': 3.5, 'stroke-linejoin': 'round', opacity: 0.9 });
+    if (path && revalidation && revalidation.links.fail) cross(inner, cx(revalidation.deepest.q[0]), cy(revalidation.deepest.q[1]), 7, '#b00020', 2.5);
+    // the latest event
+    const ev = events[events.length - 1];
+    if (ev) {
+      const a = nodes[ev.near], b = ev.qNew, edge = ev.edge;
+      el(inner, 'line', { x1: cx(a[0]), y1: cy(a[1]), x2: cx(ev.qRand[0]), y2: cy(ev.qRand[1]), stroke: '#e08a00', 'stroke-width': 1, 'stroke-dasharray': '3 3', opacity: 0.7 });
+      el(inner, 'line', { x1: cx(a[0]), y1: cy(a[1]), x2: cx(b[0]), y2: cy(b[1]), stroke: edge.ok ? '#2a7d2a' : '#b00020', 'stroke-width': 3 });
+      for (const c of edge.checked) el(inner, 'circle', { cx: cx(c.q[0]), cy: cy(c.q[1]), r: 2.2, fill: c.ok ? '#333' : '#b00020' });
+      if (!edge.ok) cross(inner, cx(edge.q[0]), cy(edge.q[1]), 6, '#b00020', 2.5);
+      if (ev.goalTry) {
+        el(inner, 'line', { x1: cx(b[0]), y1: cy(b[1]), x2: cx(Q_GOAL[0]), y2: cy(Q_GOAL[1]), stroke: ev.goalTry.ok ? '#2a7d2a' : '#b00020', 'stroke-width': 3, 'stroke-dasharray': ev.goalTry.ok ? '' : '4 3' });
+        if (!ev.goalTry.ok) cross(inner, cx(ev.goalTry.q[0]), cy(ev.goalTry.q[1]), 6, '#b00020', 2.5);
+      }
+      el(inner, 'circle', { cx: cx(a[0]), cy: cy(a[1]), r: 6, fill: 'none', stroke: '#555', 'stroke-width': 2 });
+      cross(inner, cx(ev.qRand[0]), cy(ev.qRand[1]), 7, '#e08a00', 2.5);
+    }
+    }
+    // start and goal
+    el(cs, 'circle', { cx: cx(Q_START[0]), cy: cy(Q_START[1]), r: 5, fill: '#1f5fbf' });
+    el(cs, 'text', { x: cx(Q_START[0]) + 8, y: cy(Q_START[1]) - 6, 'font-size': 12, fill: '#1f5fbf' }, 'start');
+    const g = [cx(Q_GOAL[0]), cy(Q_GOAL[1])];
+    el(cs, 'polygon', { points: `${g[0]},${g[1] - 7} ${g[0] + 7},${g[1]} ${g[0]},${g[1] + 7} ${g[0] - 7},${g[1]}`, fill: '#2a7d2a' });
+    el(cs, 'text', { x: g[0] + 9, y: g[1] + 4, 'font-size': 12, fill: '#2a7d2a' }, 'goal');
+    if (playQ) el(inner, 'circle', { cx: cx(playQ[0]), cy: cy(playQ[1]), r: 5, fill: '#1f5fbf', stroke: '#fff', 'stroke-width': 1.5 });
+    if (hoverQ && !playQ) cross(inner, cx(hoverQ[0]), cy(hoverQ[1]), 5, '#7a3fb0', 1.5);
+  }
+  // ?mode=edge: the scheduled checks along the direct edge (open), those already checked (filled), the current one (ring)
+  function drawEdgeCSpace(g) {
+    const E = edgeRows(S.checker);
+    for (const R of E.rows) {
+      if (R.j === 0) continue;
+      if (R.j <= eK) el(g, 'circle', { cx: cx(R.q[0]), cy: cy(R.q[1]), r: 2, fill: R.c < 0 ? '#b00020' : '#333' });
+      else el(g, 'circle', { cx: cx(R.q[0]), cy: cy(R.q[1]), r: 1.8, fill: '#fff', stroke: '#888', 'stroke-width': 0.8 });
+    }
+    if (E.first !== null && eK >= E.first) cross(g, cx(E.rows[E.first].q[0]), cy(E.rows[E.first].q[1]), 6, '#b00020', 2.5);
+    if (eK > 0) el(g, 'circle', { cx: cx(E.rows[eK].q[0]), cy: cy(E.rows[eK].q[1]), r: 7, fill: 'none', stroke: '#d07a00', 'stroke-width': 2.5 });
+  }
+  // ?mode=edge: the clearance from the disc surface at each check, revealed as the checks are made
+  const cl = document.getElementById('cl');
+  function drawEdgePlot() {
+    cl.innerHTML = '';
+    const E = edgeRows(S.checker), M = { l: 44, r: 10, t: 10, b: 34 }, W = 360 - M.l - M.r, H = 230 - M.t - M.b, Y0 = -60, Y1 = 110;
+    const px = j => M.l + j / E.n * W, py = v => M.t + (Y1 - v) / (Y1 - Y0) * H, mmOf = R => (R.c + MARGIN) * 1000;
+    el(cl, 'rect', { x: M.l, y: py(5), width: W, height: py(Y0) - py(5), fill: '#fbeeee' });
+    for (const v of [-50, 0, 50, 100]) {
+      el(cl, 'line', { x1: M.l, y1: py(v), x2: M.l + W, y2: py(v), stroke: '#e6e6e6' });
+      el(cl, 'text', { x: M.l - 5, y: py(v) + 4, 'font-size': 11, fill: '#777', 'text-anchor': 'end' }, String(v));
+    }
+    for (const j of [0, 10, 20, 30, 40]) if (j <= E.n) el(cl, 'text', { x: px(j), y: M.t + H + 14, 'font-size': 11, fill: '#777', 'text-anchor': 'middle' }, String(j));
+    el(cl, 'rect', { x: M.l, y: M.t, width: W, height: H, fill: 'none', stroke: '#999' });
+    el(cl, 'line', { x1: M.l, y1: py(0), x2: M.l + W, y2: py(0), stroke: '#555', 'stroke-width': 1 });
+    el(cl, 'line', { x1: M.l, y1: py(5), x2: M.l + W, y2: py(5), stroke: '#b00020', 'stroke-width': 1.2, 'stroke-dasharray': '5 3' });
+    el(cl, 'text', { x: M.l + W - 4, y: py(5) - 5, 'font-size': 11, fill: '#b00020', 'text-anchor': 'end' }, '5 mm required');
+    el(cl, 'text', { x: M.l + W - 4, y: py(0) + 13, 'font-size': 11, fill: '#555', 'text-anchor': 'end' }, 'disc surface');
+    el(cl, 'text', { x: M.l + W / 2, y: 230 - 5, 'font-size': 12, fill: '#555', 'text-anchor': 'middle' }, `check index j (0 = start, ${E.n} = goal)`);
+    el(cl, 'text', { x: 12, y: M.t + H / 2, 'font-size': 12, fill: '#555', 'text-anchor': 'middle', transform: `rotate(-90 12 ${M.t + H / 2})` }, 'clearance (mm)');
+    const done = E.rows.filter(R => R.j <= eK);
+    if (done.length > 1) el(cl, 'polyline', { points: done.map(R => `${px(R.j)},${py(mmOf(R))}`).join(' '), fill: 'none', stroke: '#999', 'stroke-width': 1 });
+    for (const R of E.rows) {
+      if (R.j <= eK) el(cl, 'circle', { cx: px(R.j), cy: py(mmOf(R)), r: 3, fill: R.c < 0 ? '#b00020' : '#333' });
+      else el(cl, 'circle', { cx: px(R.j), cy: M.t + H - 4, r: 1.8, fill: '#fff', stroke: '#aaa', 'stroke-width': 0.8 });
+    }
+    const C = E.rows[eK];
+    el(cl, 'circle', { cx: px(C.j), cy: py(mmOf(C)), r: 6.5, fill: 'none', stroke: '#d07a00', 'stroke-width': 2.2 });
+  }
+  function cross(parent, x, y, r, color, w) {
+    el(parent, 'line', { x1: x - r, y1: y - r, x2: x + r, y2: y + r, stroke: color, 'stroke-width': w });
+    el(parent, 'line', { x1: x - r, y1: y + r, x2: x + r, y2: y - r, stroke: color, 'stroke-width': w });
+  }
+  function draw() { drawWorkspace(); drawCSpace(); if (S.mode === 'edge') drawEdgePlot(); }
+
+  // ----------------------------------------------------------------- words
+  const T = id => document.getElementById(id);
+  function describeEdge() {
+    const E = edgeRows(S.checker), R = E.rows[eK], f = E.first, d = E.rows[E.deepest];
+    T('result').style.display = 'none';
+    let html;
+    if (eK === 0) html = `<b>Paused at check 0 of ${E.n}</b>, the start posture, which the edge check assumes valid (${surf(R.c)}). The checks are numbered 0 at the start to ${E.n} at the goal. Predict which check fails first, then press <b>Next check</b>.`;
+    else if (f === null) html = eK < E.n ? `Check <b>${eK}</b> of ${E.n}: ${R.part} is ${surf(R.c)}; 5 mm is required, so it is <span class="ok">valid</span>.` : `All ${E.n} checks pass. That proves clearance only at the checked postures.`;
+    else if (eK < f) html = `Check <b>${eK}</b> of ${E.n}: ${R.part} is ${surf(R.c)}; 5 mm is required, so it is <span class="ok">valid</span>. Press <b>Next check</b>.`;
+    else if (eK === f) html = `<span class="bad">Check ${f} of ${E.n} fails.</span> ${R.part[0].toUpperCase() + R.part.slice(1)} is ${surf(R.c)}, below the 5 mm requirement. The edge check stops here and <b>rejects the connection</b>, so it never evaluates checks ${f + 1} to ${E.n}. Further presses only scan the rest as a diagnostic.`;
+    else if (eK < E.n) html = `Diagnostic scan, check ${eK} of ${E.n}: ${R.part} is ${surf(R.c)}. The edge check itself stopped at check ${f}.`;
+    else html = `Scan complete. The edge check rejected the connection at check ${f}. The deepest of the ${E.n + 1} checked postures is check ${d.j}, where ${d.part} is <b>${surf(d.c)}</b>.`;
+    T('status').innerHTML = html;
+    T('ec-j').textContent = `${eK} of ${E.n}, s = ${(eK / E.n).toFixed(3)}` + (eK === 0 ? ' (start)' : eK === E.n ? ' (goal)' : '');
+    T('ec-q').textContent = fmt(R.q);
+    T('ec-part').textContent = R.part;
+    T('ec-c').textContent = `${surf(R.c)}; 5 mm required`;
+    T('ec-v').innerHTML = eK === 0 ? 'the start, assumed valid by the edge check'
+      : (R.c < 0 ? '<span class="bad">invalid</span>' : '<span class="ok">valid</span>')
+        + (f !== null && eK === f ? ': the edge check rejects the connection here' : f !== null && eK > f ? ', not evaluated by the edge check' : '');
+    const running = !!eTimer;
+    T('enext').disabled = eK >= E.n;
+    T('enext').textContent = f !== null && eK >= f ? 'Next check (diagnostic)' : 'Next check';
+    T('erun').disabled = eK >= E.n && !running;
+    T('erun').textContent = running ? 'Stop checking' : f === null ? 'Check every posture' : eK < f ? 'Check until rejected' : 'Scan the rest (diagnostic)';
+  }
+  function describe() {
+    if (S.mode === 'edge') return describeEdge();
+    const status = T('status'), result = T('result');
+    const directLinks = directEdge(S.checker).edge;
+    const deep = directEdge(S.checker).deepest;
+    const direct = directLinks.ok ? 'valid' : `<span class="bad">invalid</span>. Its first failing check, configuration ${directLinks.j} of ${directLinks.n}, puts ${directLinks.part} ${mm(-directLinks.c)} inside the clearance ring; at configuration ${deep.j} of ${directLinks.n}, ${deep.part} is ${depthWords(deep.c)}`;
+    const ev = events[events.length - 1];
+    if (!ev) {
+      status.innerHTML = `<b>Paused.</b> The tree holds the start only. The direct edge from the start to the goal, checked at postures along the edge spaced by at most 1° per joint, is ${direct}. Press <b>Step</b> to draw the first sample.`;
+      for (const id of ['ev-sample', 'ev-near', 'ev-ext', 'ev-check', 'ev-result', 'ev-goal']) T(id).textContent = '—';
+    } else {
+      const edge = ev.edge;
+      status.innerHTML = `Iteration <b>${ev.i}</b> of ${S.budget}, <b>${nodes.length}</b> nodes in the tree. `
+        + (edge.ok ? `<span class="ok">Edge accepted</span>: node #${ev.index} joins the tree.` : `<span class="bad">Edge rejected</span> at checked configuration ${edge.j} of ${edge.n}: ${edge.part} is ${mm(-edge.c)} inside the clearance ring.`);
+      T('ev-sample').innerHTML = ev.kind === 'goal' ? `the goal itself ${fmt(ev.qRand)}, drawn with probability 0.1` : `uniform in the box: ${fmt(ev.qRand)}`;
+      T('ev-near').textContent = `#${ev.near} ${fmt(nodes[ev.near])}, ${(ev.d / DEG).toFixed(2)}° away`;
+      T('ev-ext').textContent = ev.d <= STEP ? `the sample is within 10°, so the extension ends at the sample: ${fmt(ev.qNew)}` : `10° from the nearest node toward the sample: ${fmt(ev.qNew)}`;
+      T('ev-check').textContent = edge.ok
+        ? `Checked the proposed edge at ${edge.n} postures, including its endpoint. Consecutive checks differ by at most 1° per joint. All checks pass; smallest clearance ${clr(edge.worst)} (5 mm needed).`
+        : `Checked ${edge.j} of ${edge.n} scheduled postures along the proposed edge, spaced by at most 1° per joint. Stopped at the first failure: ${fmt(edge.q)}, ${edge.part} is ${mm(-edge.c)} inside the clearance ring. Remaining checks were not evaluated.`;
+      T('ev-result').innerHTML = edge.ok ? `<span class="ok">accepted</span>, parent #${ev.near}` : `<span class="bad">rejected</span>, the tree is unchanged`;
+      T('ev-goal').innerHTML = !edge.ok ? 'not tried (no new node)'
+        : ev.qNew === Q_GOAL ? '<span class="ok">the new node is the goal</span>'
+        : ev.goalTry ? (ev.goalTry.ok ? `<span class="ok">the goal is within 10° and the edge to it is valid: connected</span>` : `the goal is within 10° but the edge to it is <span class="bad">invalid</span> at configuration ${ev.goalTry.j} of ${ev.goalTry.n} (${ev.goalTry.part} is ${mm(-ev.goalTry.c)} inside the clearance ring)`)
+        : `the goal is ${(dist(ev.qNew, Q_GOAL) / DEG).toFixed(2)}° away, more than 10°: not tried`;
+    }
+    if (outcome === 'connected') {
+      const r = revalidation, same = r.same, links = r.links;
+      result.style.display = ''; result.className = 'status result';
+      let html = `<b>Goal connected</b> at iteration ${iteration} with ${nodes.length} nodes. Path: ${path.length - 1} edges, ${(r.length / DEG).toFixed(2)}° long in joint space (the direct edge would be ${(dist(Q_START, Q_GOAL) / DEG).toFixed(2)}°).<br>`
+        + `Checked again with the same model, configurations at most 1° apart in each joint: ${same.fail ? `the repeated edge tests evaluated ${same.checked} of ${same.scheduled} scheduled configurations, each failing edge stopping at its first invalid one (first failure in path order at edge #${same.fail.edge[0]} → #${same.fail.edge[1]}, check ${same.fail.j} of ${same.fail.n}); over all ${same.scheduled} the` : `${same.scheduled} configurations,`} smallest clearance <b>${clr(same.worst)}</b> (5 mm needed) → ${same.fail ? '<span class="bad">invalid</span>' : '<span class="ok">valid</span>'}. This repeats the planner's own test; a finite check cannot prove that the continuous motion is clear.`;
+      if (S.checker === 'points') {
+        const D = r.deepest;
+        html += `<br>The same path with the <b>whole links</b> as segments: ` + (links.fail
+          ? `<span class="bad">invalid</span>. First failure at edge #${links.fail.edge[0]} → #${links.fail.edge[1]}, configuration ${links.fail.j} of ${links.fail.n} (${links.fail.part} is ${mm(-links.fail.c)} inside the clearance ring). Deepest over every checked configuration: ${D.where} at ${fmt(D.q)}, where ${D.part} is <b>${depthWords(D.c)}</b>. The three-point model accepted it.`
+          : `<span class="ok">valid</span> (smallest clearance ${clr(links.worst)}); with this seed the three points happened to be enough. Try another seed.`);
+        if (links.fail) result.className = 'status result fail';
+      }
+      result.innerHTML = html;
+    } else if (outcome === 'budget') {
+      result.style.display = ''; result.className = 'status result fail';
+      result.innerHTML = `<b>Budget exhausted</b>: ${iteration} iterations, ${nodes.length} nodes, no connection to the goal. This does not show that no path exists; the planner stopped because its budget ran out. Raise the budget or change the seed; either change starts a new tree.`;
+    } else result.style.display = 'none';
+    T('cs-legend-missed').style.display = S.checker === 'points' ? '' : 'none';
+    T('cs-legend-forbidden').textContent = S.checker === 'points' ? 'forbidden: the tip, the elbow or the middle of link 2 would come within 5 mm of the disc' : 'forbidden: part of a link would come within 5 mm of the disc';
+    T('step').disabled = outcome !== 'running'; T('run').disabled = outcome !== 'running';
+  }
+
+  // ----------------------------------------------------------------- controls and the address
+  T('p-endpoints').textContent = `start ${fmt(Q_START)}, goal ${fmt(Q_GOAL)}`;
+  const params = new URLSearchParams(location.search);
+  if (params.get('checker') === 'points') { S.checker = 'points'; document.querySelector('input[name=checker][value=points]').checked = true; }
+  // an absent, empty or malformed parameter keeps the default: only a plain decimal integer is read (Number(null) and Number('') are 0)
+  const intParam = k => (/^\d+$/.test(params.get(k) ?? '') ? Number(params.get(k)) : NaN);
+  const seedParam = intParam('seed'), budgetParam = intParam('budget');
+  if (Number.isInteger(seedParam) && seedParam >= 0 && seedParam <= 4294967295) { S.seed = seedParam; T('seed').value = seedParam; }
+  if (Number.isInteger(budgetParam) && budgetParam >= 1 && budgetParam <= 100000) { S.budget = budgetParam; T('budget').value = budgetParam; }
+  if (params.get('direct') === '0') { S.showDirect = false; T('direct').checked = false; }
+  if (params.get('zoom') === '1') { S.zoom = true; T('zoom').checked = true; }
+  if (params.get('mode') === 'edge') {
+    // the edge-check view: zoomed by default (?zoom=0 shows the whole box); the tree controls are hidden
+    S.mode = 'edge'; document.body.classList.add('edge');
+    S.zoom = params.get('zoom') !== '0'; T('zoom').checked = S.zoom;
+    document.title = 'Edge-check demo · one connection of the two-link arm, checked posture by posture';
+    T('h-title').textContent = 'Edge-check demo: one connection of the two-link arm, checked posture by posture';
+    T('h-text').innerHTML = 'This page checks the straight joint-space connection from the start posture of the arm (links 0.4 m and 0.3 m) to the goal posture, the positive-elbow solution of the tip target (0.5, 0.2) m. '
+      + 'The connection is divided into equal subintervals, so that no joint changes by more than 1° between checks. Each <b>Next check</b> tests one posture: no part of the modeled arm may come within 5 mm of the disc. '
+      + 'The edge check stops at the first posture that fails and rejects the connection. Passing every check would prove clearance only at the checked postures. Hover over the right view to see the posture at the mouse.';
+  }
+  T('step').addEventListener('click', () => { stopRun(); stopPlay(); step(); });
+  T('run').addEventListener('click', () => timer ? stopRun() : startRun());
+  T('reset').addEventListener('click', reset);
+  T('enext').addEventListener('click', () => { stopEdgeRun(); nextCheck(); });
+  T('erun').addEventListener('click', () => { if (eTimer) { stopEdgeRun(); describe(); } else startEdgeRun(); });
+  T('play').addEventListener('click', () => playTimer ? (stopPlay(), draw()) : startPlay());
+  for (const r of document.querySelectorAll('input[name=checker]')) r.addEventListener('change', e => { S.checker = e.target.value; reset(); });
+  const intField = t => (/^\d+$/.test(t.trim()) ? Number(t) : NaN);
+  T('seed').addEventListener('change', e => { const v = intField(e.target.value); if (Number.isInteger(v) && v >= 0 && v <= 4294967295) { S.seed = v; reset(); } else e.target.value = S.seed; });
+  T('budget').addEventListener('change', e => { const v = intField(e.target.value); if (Number.isInteger(v) && v >= 1 && v <= 100000) { S.budget = v; reset(); } else e.target.value = S.budget; });
+  T('direct').addEventListener('change', e => { S.showDirect = e.target.checked; draw(); });
+  T('zoom').addEventListener('change', e => { S.zoom = e.target.checked; draw(); });
+  cs.addEventListener('pointermove', e => {
+    const pt = new DOMPoint(e.clientX, e.clientY).matrixTransform(cs.getScreenCTM().inverse());   // viewBox units, border excluded
+    const px = pt.x, py = pt.y;
+    if (px < CM.l || px > CM.l + CW || py < CM.t || py > CM.t + CH) { if (hoverQ) { hoverQ = null; draw(); } return; }
+    hoverQ = cq(px, py); draw();
+  });
+  cs.addEventListener('pointerleave', () => { hoverQ = null; draw(); });
+  document.addEventListener('keydown', e => {
+    if (e.key !== ' ') return;
+    const t = e.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT')) return;   // typing or toggling a field
+    e.preventDefault();                                                                                 // a focused button must not fire
+    if (S.mode === 'edge') { stopEdgeRun(); nextCheck(); } else { stopRun(); step(); }
+  });
+
+  // for the scripted check (modules/motion-planning/check_module.mjs): read-only access to the state
+  window.__rrt = {
+    settings: () => ({ ...S }), directEdge: checker => { const D = directEdge(checker || S.checker); return { ok: D.edge.ok, n: D.edge.n, j: D.edge.j, part: D.edge.part, c: D.edge.c, deepest: D.deepest }; }, constants: { L1, L2, Q_START, Q_GOAL, OBS_C, OBS_R, MARGIN, STEP, P_GOAL, SUB },
+    state: () => ({ iteration, outcome, nodes: nodes.slice(), parents: parents.slice(), path: path && path.slice(), revalidation,
+      deepest: revalidation && revalidation.deepest, events: events.map(e => ({ i: e.i, kind: e.kind, u: e.u, qRand: e.qRand, near: e.near, qNew: e.qNew, d: e.d, n: e.edge.n, result: e.edge.ok ? 'accepted' : 'rejected', j: e.edge.j, part: e.edge.part, cFail: e.edge.c, worst: e.edge.worst, goal: e.goal, goalTry: e.goalTry && { n: e.goalTry.n, result: e.goalTry.ok ? 'accepted' : 'rejected', j: e.goalTry.j } })), running: !!timer, playing: !!playTimer }),
+    checkEdge: (a, b, checker) => { const r = checkEdge(a, b, checker || S.checker); return { ok: r.ok, n: r.n, j: r.j, q: r.q, part: r.part, c: r.c, worst: r.worst }; },
+    clearance: (q, checker) => clearance(q, checker || S.checker),
+    setHover: q => { hoverQ = q; draw(); },
+    edge: () => { const E = edgeRows(S.checker); return { mode: S.mode, k: eK, n: E.n, first: E.first, deepest: E.deepest, running: !!eTimer, rows: E.rows.map(R => ({ j: R.j, q: R.q, c: R.c, part: R.part })) }; },
+  };
+  reset();
+})();
+</script>
+<script>
+// ?mode=bidir: the RAI-style bidirectional RRT. A second, separate program on this page: the one-tree RRT and the
+// edge-check view above are unchanged and do not run in this mode. Reference: rai_bidir_rrt.py (same generator, same
+// decisions); native RAI evidence: rai_bidir_native.py. Its scene and planner (everything up to checkPath, no page
+// access) are shared with the shortcut view below as window.__mpCore; the drawing runs only in this mode.
+(function () {
+  'use strict';
+  const MODE = new URLSearchParams(location.search).get('mode');
+
+  // ----------------------------------------------------------------- the scene (the same as the one-tree demo)
+  const L1 = 0.4, L2 = 0.3, DEG = Math.PI / 180;
+  const Q_START = [30 * DEG, 45 * DEG], Y_STAR = [0.5, 0.2];
+  const OBS_C = [0.49, 0.35], OBS_R = 0.05, MARGIN = 0.005, BOUND = Math.PI;
+  function ikPositiveElbow(y) {
+    const c2 = (y[0] * y[0] + y[1] * y[1] - L1 * L1 - L2 * L2) / (2 * L1 * L2);
+    const q2 = Math.acos(c2);
+    return [Math.atan2(y[1], y[0]) - Math.atan2(L2 * Math.sin(q2), L1 + L2 * Math.cos(q2)), q2];
+  }
+  const Q_GOAL = ikPositiveElbow(Y_STAR);
+  function mulberry32(seed) {
+    let a = seed >>> 0;
+    return function () {
+      a = (a + 0x6D2B79F5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function points(q) {
+    const e = [L1 * Math.cos(q[0]), L1 * Math.sin(q[0])];
+    const t = [e[0] + L2 * Math.cos(q[0] + q[1]), e[1] + L2 * Math.sin(q[0] + q[1])];
+    return { base: [0, 0], e, t };
+  }
+  function segmentDistance(a, b, c) {
+    const dx = b[0] - a[0], dy = b[1] - a[1], dd = dx * dx + dy * dy;
+    let s = dd > 0 ? ((c[0] - a[0]) * dx + (c[1] - a[1]) * dy) / dd : 0;
+    s = s < 0 ? 0 : s > 1 ? 1 : s;
+    const p = [a[0] + s * dx, a[1] + s * dy], ex = c[0] - p[0], ey = c[1] - p[1];
+    return { d: Math.sqrt(ex * ex + ey * ey), p };
+  }
+  // the whole-link clearance from the disc SURFACE (m), its part and closest point; the requirement is MARGIN
+  function surface(q) {
+    const P = points(q), a = segmentDistance(P.base, P.e, OBS_C), b = segmentDistance(P.e, P.t, OBS_C);
+    return a.d <= b.d ? { s: a.d - OBS_R, part: 'link 1', p: a.p } : { s: b.d - OBS_R, part: 'link 2', p: b.p };
+  }
+  const dist = (a, b) => { const dx = a[0] - b[0], dy = a[1] - b[1]; return Math.sqrt(dx * dx + dy * dy); };
+  const lerp = (a, b, f) => [a[0] + f * (b[0] - a[0]), a[1] + f * (b[1] - a[1])];
+
+  // ----------------------------------------------------------------- RAI's procedure (rai::RRT_PathFinder, robotic 0.4.1)
+  // a query sums both links' deficit from the 5 mm requirement (RAI's penetration with its capsule/sphere geometry)
+  function penetration(q) {
+    const P = points(q);
+    const l1 = Math.max(0, OBS_R + MARGIN - segmentDistance(P.base, P.e, OBS_C).d), l2 = Math.max(0, OBS_R + MARGIN - segmentDistance(P.e, P.t, OBS_C).d);
+    return { sum: l1 + l2, per: [l1, l2] };
+  }
+  function corput(n) { let q = 0, bk = 0.5; while (n > 0) { q += (n % 2) * bk; n = Math.floor(n / 2); bk /= 2; } return q; }
+  const RAI = { stepsize: 0.1, subsamples: 4, maxIters: 5000, p_connect: 0.5, tol: 1e-4 };
+  function makeTree(name, root) { return { name, nodes: [root], parents: [0], pen: [penetration(root).sum], nearestId: null }; }
+  function nearest(T, q) { let best = 0, bd = dist(q, T.nodes[0]); for (let i = 1; i < T.nodes.length; i++) { const d = dist(q, T.nodes[i]); if (d < bd) { best = i; bd = d; } } return [best, bd]; }
+  function pathFrom(T, i) { const out = []; for (;;) { out.push({ tree: T.name, k: i, q: T.nodes[i] }); if (i === 0) return out; i = T.parents[i]; } }
+  function makePlanner(seed, opt) {
+    return { seed, opt, rng: mulberry32(seed), S: makeTree('start', Q_START), G: makeTree('goal', Q_GOAL), iter: 0, next: 'start',
+             queries: 2, events: [], status: 'running', join: null, path: null };
+  }
+  // one extension attempt (one call of RAI's growTreeToTree); a new iteration begins with the start tree's attempt
+  function attempt(P) {
+    if (P.status !== 'running') return null;
+    if (P.next === 'start') P.iter++;
+    const A = P.next === 'start' ? P.S : P.G, B = P.next === 'start' ? P.G : P.S, o = P.opt, rng = P.rng;
+    const ev = { i: P.iter, tree: A.name, order: P.next === 'start' ? 1 : 2 };
+    let target;
+    if (rng() < o.p_connect) { const k = Math.floor(rng() * B.nodes.length); target = B.nodes[k]; ev.source = 'node'; ev.targetNode = k; }
+    else { target = [-Math.PI + rng() * 2 * Math.PI, -Math.PI + rng() * 2 * Math.PI]; ev.source = 'uniform'; }
+    ev.target = target;
+    const [near, d] = nearest(A, target);
+    A.nearestId = near;
+    const qn = A.nodes[near], s = d > o.stepsize ? o.stepsize / d : 1.0;
+    const q = [qn[0] + s * (target[0] - qn[0]), qn[1] + s * (target[1] - qn[1])];
+    Object.assign(ev, { near, d, proposal: q, step: dist(q, qn) });
+    let tol = o.tol;
+    if (A.pen[near] > tol) tol = A.pen[near] + 1e-6;              // RAI's rule for a nearest node already in collision
+    const fracs = [1.0]; for (let i = 1; i < o.subsamples; i++) fracs.push(corput(i));
+    ev.queries = [];
+    let ok = true;
+    for (const f of fracs) {
+      const qf = f === 1.0 ? q : [qn[0] + f * (q[0] - qn[0]), qn[1] + f * (q[1] - qn[1])];
+      const pen = penetration(qf);
+      P.queries++;
+      const pass = pen.sum < tol;
+      ev.queries.push({ f, q: qf, pen: pen.sum, per: pen.per, pass });
+      if (!pass) { ok = false; break; }
+    }
+    if (!ok) {
+      ev.decision = ev.queries[ev.queries.length - 1].f === 1.0 ? 'endpoint rejected' : 'edge rejected';
+    } else {
+      A.nodes.push(q); A.parents.push(near); A.pen.push(ev.queries[0].pen);
+      ev.decision = 'added'; ev.newIndex = A.nodes.length - 1;
+      const [nb, db] = nearest(B, q);
+      B.nearestId = nb;
+      const thr = o.subsamples > 0 ? o.stepsize / o.subsamples : o.stepsize;
+      ev.join = { node: nb, dist: db, threshold: thr, joined: db < thr };
+    }
+    P.events.push(ev);
+    if (ev.join && ev.join.joined) {
+      P.status = 'joined';
+      // RAI's path: the start tree from its nearestId (q's parent if the start tree grew), reversed, then the goal tree
+      const p0 = pathFrom(P.S, P.S.nearestId).reverse(), pT = pathFrom(P.G, P.G.nearestId);
+      P.path = p0.concat(pT);
+      const par = A.parents[ev.newIndex];   // ev.queries all passed: the extension edge was queried this often
+      P.join = { tree: A.name, newIndex: ev.newIndex, q: q, parent: par, other: B.name, otherNode: ev.join.node, distNew: ev.join.dist,
+                 a: A.nodes[par], b: B.nodes[ev.join.node], length: dist(A.nodes[par], B.nodes[ev.join.node]), index: p0.length - 1, queried: ev.queries.length,
+                 coincide: ev.join.dist < 1e-12 };   // the new node landed on the other tree's node: the joining segment is the checked extension edge
+      // where the new node lies relative to the joining segment a -> b: its distance along it from the parent, and off it
+      const J = P.join, ux = (J.b[0] - J.a[0]) / J.length, uy = (J.b[1] - J.a[1]) / J.length;
+      J.along = (q[0] - J.a[0]) * ux + (q[1] - J.a[1]) * uy;
+      J.offset = Math.abs((q[1] - J.a[1]) * ux - (q[0] - J.a[0]) * uy);
+      // on the segment: the attempt's queries cover its first `along` rad, from the parent; off it: they lie off the segment
+      J.onSegment = !J.coincide && J.offset < 1e-9 && J.along > 0 && J.along < J.length;
+    } else if (P.next === 'goal' && P.iter >= o.maxIters) {
+      P.status = 'budget';                                         // RAI would report ret.evals = maxIters + 1
+    }
+    P.next = P.next === 'start' ? 'goal' : 'start';
+    return ev;
+  }
+
+  // ----------------------------------------------------------------- the course's independent finite check of a path
+  // every edge (the joining segment included) subdivided so that no joint changes by more than subDeg between checked
+  // configurations; each needs 5 mm from the disc surface. early: each edge stops at its first failure (the count is
+  // what was evaluated); otherwise a complete scan of every scheduled configuration. Neither certifies continuous clearance.
+  function checkPath(qs, subDeg, early) {
+    const out = { subDeg, early, first: null, evaluated: 0, scheduled: 0, below: 0, min: { s: Infinity }, pts: [] };
+    for (let e = 0; e + 1 < qs.length; e++) {
+      const a = qs[e], b = qs[e + 1];
+      const n = Math.max(1, Math.ceil(Math.max(Math.abs(b[0] - a[0]), Math.abs(b[1] - a[1])) / (subDeg * DEG)));
+      out.scheduled += n;
+      for (let j = 1; j <= n; j++) {
+        const q = lerp(a, b, j / n), r = surface(q), pass = r.s >= MARGIN;
+        out.evaluated++;
+        out.pts.push({ e, j, n, q, s: r.s, pass });
+        if (!pass) out.below++;
+        if (r.s < out.min.s) out.min = { e, j, n, q, s: r.s, part: r.part, p: r.p };
+        if (!pass && !out.first) out.first = { e, j, n, q, s: r.s, part: r.part, p: r.p };
+        if (!pass && early) break;
+      }
+    }
+    return out;
+  }
+
+  window.__mpCore = { L1, L2, DEG, Q_START, Q_GOAL, Y_STAR, OBS_C, OBS_R, MARGIN, BOUND, mulberry32, points, surface, dist, lerp, RAI, makePlanner, attempt };
+  if (MODE !== 'bidir') return;
+  document.body.classList.add('alt');
+  document.getElementById('alt').hidden = false;
+
+  // ----------------------------------------------------------------- state and controls
+  const T = id => document.getElementById(id);
+  const S = { seed: 7, czoom: true, wzoom: false, opt: { ...RAI } };   // zoomed on the start and the goal by default (?zoom=0: the whole box)
+  let P, timer = null, check = null, scan = null, hoverQ = null;
+  const fmtQ = q => `(${(q[0] / DEG).toFixed(1).replace('-0.0', '0.0')}°, ${(q[1] / DEG).toFixed(1).replace('-0.0', '0.0')}°)`;
+  const mm = m => `${(m * 1e3).toFixed(3)} mm`;
+  const num = x => String(+x.toFixed(6));   // a parameter-derived value without spurious rounding
+  const rad = (d, thr) => Math.abs(d - thr) < 5e-5 ? d.toFixed(7) : d.toFixed(4);   // enough digits to see which side of the threshold
+  const fracName = f => f === 1 ? 'endpoint' : f === 0.5 ? 'halfway' : f === 0.25 ? '1/4' : f === 0.75 ? '3/4' : f.toFixed(3);
+  function reset() {
+    stopRun(); stopPlay(); P = makePlanner(S.seed, S.opt); check = null; scan = null; headerText(); draw(); describe();
+  }
+  function step() { const ev = attempt(P); if (ev) stopPlay(); if (P.status !== 'running') stopRun(); draw(); describe(); return ev; }
+  function stopRun() { if (timer) { clearInterval(timer); timer = null; } T('a-run').textContent = 'Run'; }
+  function startRun() {
+    if (P.status !== 'running') return;
+    if (stopPlay()) draw();
+    T('a-run').textContent = 'Pause';
+    timer = setInterval(() => { attempt(P); if (P.status !== 'running') stopRun(); draw(); describe(); }, 40);
+  }
+  function runCheck() { if (!P.path) return; check = checkPath(P.path.map(v => v.q), 1, true); draw(); describe(); }
+  function runScan() { if (!P.path) return; scan = checkPath(P.path.map(v => v.q), 0.05, false); draw(); describe(); }
+
+
+  // ----------------------------------------------------------------- path playback (display only)
+  // The arm moves along the path's straight joint-space segments, at most 1° per joint between frames and one frame
+  // every 30 ms: an illustrative pace, as in the one-tree view. Every vertex is itself a frame, so playback starts and
+  // ends exactly on the path's ends. Playback only reads the path: no check, scan, count or status depends on it.
+  const PLAY_MS = 30;
+  let play = { timer: null, frames: [], f: 0, q: null };
+  function playFrames(qs) {
+    const out = [qs[0]];
+    for (let e = 0; e + 1 < qs.length; e++) {
+      const a = qs[e], b = qs[e + 1], n = Math.max(1, Math.ceil(Math.max(Math.abs(b[0] - a[0]), Math.abs(b[1] - a[1])) / DEG));
+      for (let j = 1; j < n; j++) out.push(lerp(a, b, j / n));
+      out.push(b);
+    }
+    return out;
+  }
+  function stopPlay() {
+    if (play.timer) clearInterval(play.timer);
+    const was = !!play.q;
+    play = { timer: null, frames: [], f: 0, q: null };
+    T('a-play').textContent = 'Play path'; T('a-playnote').hidden = true;
+    return was;
+  }
+  function startPlay(qs) {
+    stopPlay();
+    if (!qs || qs.length < 2) return;
+    play.frames = playFrames(qs); play.q = play.frames[0];
+    T('a-play').textContent = 'Stop'; T('a-playnote').hidden = false;
+    play.timer = setInterval(() => { play.f++; if (play.f < play.frames.length) play.q = play.frames[play.f]; else stopPlay(); draw(); }, PLAY_MS);
+    draw();
+  }
+  const playbackState = () => ({ playing: !!play.timer, q: play.q, f: play.f, frames: play.frames.length });
+
+  // ----------------------------------------------------------------- drawing
+  const NS = 'http://www.w3.org/2000/svg';
+  function el(parent, tag, attrs, text) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (text !== undefined) e.textContent = text; parent.appendChild(e); return e; }
+  const C = { start: '#1f5fbf', goal: '#2a7d2a', path: '#6a3d9a', join: '#d07a00', bad: '#b00020', target: '#e08a00', contact: '#a8a8a8', band: '#f2d39b', play: '#111' };
+  const TREE = { start: C.start, goal: C.goal };
+  // workspace window: the whole reach, or 0.3 m around the disc
+  const wwin = () => S.wzoom ? { x0: OBS_C[0] - 0.15, y0: OBS_C[1] - 0.15, w: 0.3 } : { x0: -0.75, y0: -0.75, w: 1.5 };
+  const WS = 520, wx = x => (x - wwin().x0) / wwin().w * WS, wy = y => WS - (y - wwin().y0) / wwin().w * WS, ws = d => d / wwin().w * WS;
+  const CM = { l: 46, r: 12, t: 12, b: 40 }, CW = 520 - CM.l - CM.r, CH = 520 - CM.t - CM.b;
+  const cwin = () => S.czoom ? { x0: -60, y0: -30, w: 180, h: 180, tick: 30 } : { x0: -180, y0: -180, w: 360, h: 360, tick: 90 };
+  const cx = q1 => CM.l + (q1 / DEG - cwin().x0) / cwin().w * CW, cy = q2 => CM.t + CH - (q2 / DEG - cwin().y0) / cwin().h * CH;
+  const cq = (px, py) => { const W = cwin(); return [((px - CM.l) / CW * W.w + W.x0) * DEG, ((CM.t + CH - py) / CH * W.h + W.y0) * DEG]; };
+  const rasters = {};
+  function raster() {
+    // 361 x 361 samples of the shown window: gray where a link would intersect the disc, amber where it would come within 5 mm
+    const W = cwin(), key = `${W.x0},${W.y0},${W.w}`;
+    if (rasters[key]) return rasters[key];
+    const n = 361, canvas = document.createElement('canvas'); canvas.width = n; canvas.height = n;
+    const ctx = canvas.getContext('2d'), img = ctx.createImageData(n, n);
+    for (let iy = 0; iy < n; iy++) for (let ix = 0; ix < n; ix++) {
+      const q = [(W.x0 + ix / (n - 1) * W.w) * DEG, (W.y0 + W.h - iy / (n - 1) * W.h) * DEG], s = surface(q).s, o = 4 * (iy * n + ix);
+      const col = s < 0 ? [0xa8, 0xa8, 0xa8] : s < MARGIN ? [0xf2, 0xd3, 0x9b] : null;
+      if (col) { img.data[o] = col[0]; img.data[o + 1] = col[1]; img.data[o + 2] = col[2]; img.data[o + 3] = 255; } else img.data[o + 3] = 0;
+    }
+    ctx.putImageData(img, 0, 0);
+    return (rasters[key] = canvas.toDataURL());
+  }
+  function arm(g, q, color, width, opacity, dash) {
+    const P_ = points(q);
+    el(g, 'polyline', { points: [P_.base, P_.e, P_.t].map(p => `${wx(p[0])},${wy(p[1])}`).join(' '), fill: 'none', stroke: color, 'stroke-width': width, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', opacity: opacity ?? 1, 'stroke-dasharray': dash || 'none' });
+    el(g, 'circle', { cx: wx(P_.e[0]), cy: wy(P_.e[1]), r: Math.max(1.5, width * 0.7), fill: color, opacity: opacity ?? 1 });
+  }
+  function tie(g, part, color) { el(g, 'line', { x1: wx(part.p[0]), y1: wy(part.p[1]), x2: wx(OBS_C[0]), y2: wy(OBS_C[1]), stroke: color, 'stroke-width': 1, 'stroke-dasharray': '2 2' }); }
+  function cross(g, x, y, r, color, w) { el(g, 'path', { d: `M${x - r},${y - r}L${x + r},${y + r}M${x - r},${y + r}L${x + r},${y - r}`, stroke: color, 'stroke-width': w || 2 }); }
+  function lastEvent() { return P.events.length ? P.events[P.events.length - 1] : null; }
+
+  function drawWorkspace() {
+    const svg = T('a-ws'); svg.textContent = '';
+    const clip = el(el(svg, 'defs', {}), 'clipPath', { id: 'a-wclip' }); el(clip, 'rect', { x: 0, y: 0, width: WS, height: WS });
+    const g = el(svg, 'g', { 'clip-path': 'url(#a-wclip)' });
+    const W = wwin(), tick = S.wzoom ? 0.05 : 0.25;
+    for (let v = Math.ceil(W.x0 / tick) * tick; v <= W.x0 + W.w + 1e-9; v += tick) { el(g, 'line', { x1: wx(v), y1: 0, x2: wx(v), y2: WS, stroke: '#eee' }); if (wx(v) > 30) el(g, 'text', { x: wx(v) + 2, y: WS - 4, 'font-size': 10, fill: '#999' }, v.toFixed(2)); }
+    for (let v = Math.ceil(W.y0 / tick) * tick; v <= W.y0 + W.w + 1e-9; v += tick) { el(g, 'line', { x1: 0, y1: wy(v), x2: WS, y2: wy(v), stroke: '#eee' }); if (wy(v) < WS - 20) el(g, 'text', { x: 3, y: wy(v) - 2, 'font-size': 10, fill: '#999' }, v.toFixed(2)); }
+    el(g, 'circle', { cx: wx(OBS_C[0]), cy: wy(OBS_C[1]), r: ws(OBS_R), fill: '#bbb', stroke: '#888' });
+    el(g, 'circle', { cx: wx(OBS_C[0]), cy: wy(OBS_C[1]), r: ws(OBS_R + MARGIN), fill: 'none', stroke: '#666', 'stroke-dasharray': '5 4' });
+    el(g, 'circle', { cx: wx(Y_STAR[0]), cy: wy(Y_STAR[1]), r: 4, fill: 'none', stroke: '#444' });
+    arm(g, Q_START, C.start, 3, 0.35); arm(g, Q_GOAL, C.goal, 3, 0.35);
+    if (P.path) {
+      for (const v of P.path) arm(g, v.q, C.path, 1.2, 0.25);
+      const J = P.join;
+      for (let k = 0; k <= 8; k++) arm(g, lerp(J.a, J.b, k / 8), C.join, 1.5, 0.6);
+    }
+    const ev = lastEvent();
+    if (ev && (!P.path || (!check && !scan))) drawAttemptWorkspace(g, ev);
+    if (check && check.first) { arm(g, check.first.q, C.bad, 4); tie(g, check.first, C.bad); }
+    if (scan) { arm(g, scan.min.q, scan.min.s < MARGIN ? C.bad : '#333', 2.5, 1, '6 3'); tie(g, scan.min, '#333'); }
+    if (hoverQ) arm(g, hoverQ, '#000', 2, 0.8, '4 3');
+    if (play.q) arm(g, play.q, C.play, 4.5);
+  }
+  function drawAttemptWorkspace(g, ev) {
+    const col = TREE[ev.tree];
+    const failed = ev.queries.find(x => !x.pass);
+    for (const x of ev.queries) if (x.pass) arm(g, x.q, col, 1.5, 0.55);
+    arm(g, ev.proposal, col, failed && failed.f === 1 ? 1.5 : 4, failed && failed.f === 1 ? 0.6 : 1, failed && failed.f === 1 ? '3 3' : undefined);
+    if (failed) { arm(g, failed.q, C.bad, 4); const r = surface(failed.q); tie(g, r, C.bad); }
+  }
+
+  function drawCSpace() {
+    const svg = T('a-cs'); svg.textContent = '';
+    const W = cwin();
+    const clip = el(el(svg, 'defs', {}), 'clipPath', { id: 'a-cclip' }); el(clip, 'rect', { x: CM.l, y: CM.t, width: CW, height: CH });
+    const half = CW / 360 / 2;
+    el(svg, 'image', { href: raster(), x: CM.l - half, y: CM.t - half, width: CW + 2 * half, height: CH + 2 * half, preserveAspectRatio: 'none', 'clip-path': 'url(#a-cclip)', style: 'image-rendering: pixelated' });
+    for (let v = W.x0; v <= W.x0 + W.w; v += W.tick) { el(svg, 'line', { x1: cx(v * DEG), y1: CM.t, x2: cx(v * DEG), y2: CM.t + CH, stroke: '#e6e6e6' }); el(svg, 'text', { x: cx(v * DEG), y: CM.t + CH + 14, 'font-size': 11, 'text-anchor': 'middle', fill: '#666' }, `${v}`); }
+    for (let v = W.y0; v <= W.y0 + W.h; v += W.tick) { el(svg, 'line', { x1: CM.l, y1: cy(v * DEG), x2: CM.l + CW, y2: cy(v * DEG), stroke: '#e6e6e6' }); el(svg, 'text', { x: CM.l - 6, y: cy(v * DEG) + 4, 'font-size': 11, 'text-anchor': 'end', fill: '#666' }, `${v}`); }
+    el(svg, 'rect', { x: CM.l, y: CM.t, width: CW, height: CH, fill: 'none', stroke: '#999' });
+    el(svg, 'text', { x: CM.l + CW / 2, y: 512, 'font-size': 12, 'text-anchor': 'middle', fill: '#444' }, 'q₁, shoulder [deg]');
+    el(svg, 'text', { x: 12, y: CM.t + CH / 2, 'font-size': 12, 'text-anchor': 'middle', fill: '#444', transform: `rotate(-90 12 ${CM.t + CH / 2})` }, 'q₂, elbow [deg]');
+    const g = el(svg, 'g', { 'clip-path': 'url(#a-cclip)' });
+    for (const Tr of [P.S, P.G]) {
+      const col = TREE[Tr.name];
+      for (let k = 1; k < Tr.nodes.length; k++) { const a = Tr.nodes[Tr.parents[k]], b = Tr.nodes[k]; el(g, 'line', { x1: cx(a[0]), y1: cy(a[1]), x2: cx(b[0]), y2: cy(b[1]), stroke: col, 'stroke-width': 1.2, opacity: 0.7 }); }
+      for (const q of Tr.nodes) el(g, 'circle', { cx: cx(q[0]), cy: cy(q[1]), r: 1.6, fill: col, opacity: 0.8 });
+    }
+    const ev = lastEvent();
+    if (ev && (!P.path || (!check && !scan))) drawAttemptCSpace(g, ev);   // the joining attempt stays visible under the path
+    if (P.path) {
+      el(g, 'polyline', { points: P.path.map(v => `${cx(v.q[0])},${cy(v.q[1])}`).join(' '), fill: 'none', stroke: C.path, 'stroke-width': 3.5, opacity: 0.55, 'stroke-linejoin': 'round' });
+      const J = P.join;
+      el(g, 'line', { x1: cx(J.a[0]), y1: cy(J.a[1]), x2: cx(J.b[0]), y2: cy(J.b[1]), stroke: C.join, 'stroke-width': 3.5 });
+      el(g, 'line', { x1: cx(J.q[0]), y1: cy(J.q[1]), x2: cx(J.b[0]), y2: cy(J.b[1]), stroke: '#555', 'stroke-width': 1, 'stroke-dasharray': '2 2' });
+      el(g, 'circle', { cx: cx(J.q[0]), cy: cy(J.q[1]), r: 4, fill: '#fff', stroke: TREE[J.tree], 'stroke-width': 1.5 });
+    }
+    if (check) for (const x of check.pts) el(g, 'circle', { cx: cx(x.q[0]), cy: cy(x.q[1]), r: 1.3, fill: x.pass ? '#fff' : C.bad, stroke: x.pass ? '#444' : 'none', 'stroke-width': 0.6 });
+    if (check && check.first) cross(g, cx(check.first.q[0]), cy(check.first.q[1]), 6, C.bad, 2.5);
+    if (scan) { el(g, 'circle', { cx: cx(scan.min.q[0]), cy: cy(scan.min.q[1]), r: 7, fill: 'none', stroke: '#333', 'stroke-width': 1.5, 'stroke-dasharray': '3 2' }); }
+    for (const [q, col, lab] of [[Q_START, C.start, 'start'], [Q_GOAL, C.goal, 'goal']]) { el(g, 'circle', { cx: cx(q[0]), cy: cy(q[1]), r: 5, fill: col, stroke: '#fff' }); el(g, 'text', { x: cx(q[0]) + 7, y: cy(q[1]) - 6, 'font-size': 11, fill: col }, lab); }
+    if (hoverQ) el(g, 'circle', { cx: cx(hoverQ[0]), cy: cy(hoverQ[1]), r: 4, fill: 'none', stroke: '#000' });
+    if (play.q) el(g, 'circle', { id: 'a-playmark', cx: cx(play.q[0]), cy: cy(play.q[1]), r: 5.5, fill: C.play, stroke: '#fff', 'stroke-width': 1.5 });
+  }
+  function drawAttemptCSpace(g, ev) {
+    const col = TREE[ev.tree], A = ev.tree === 'start' ? P.S : P.G, qn = A.nodes[ev.near];
+    if (ev.source === 'node') el(g, 'circle', { cx: cx(ev.target[0]), cy: cy(ev.target[1]), r: 7, fill: 'none', stroke: C.target, 'stroke-width': 2 });
+    else cross(g, cx(ev.target[0]), cy(ev.target[1]), 5, C.target, 2);
+    el(g, 'line', { x1: cx(qn[0]), y1: cy(qn[1]), x2: cx(ev.target[0]), y2: cy(ev.target[1]), stroke: C.target, 'stroke-width': 1, 'stroke-dasharray': '3 3', opacity: 0.8 });
+    el(g, 'circle', { cx: cx(qn[0]), cy: cy(qn[1]), r: 5.5, fill: 'none', stroke: col, 'stroke-width': 1.5 });
+    const added = ev.decision === 'added';
+    el(g, 'line', { x1: cx(qn[0]), y1: cy(qn[1]), x2: cx(ev.proposal[0]), y2: cy(ev.proposal[1]), stroke: added ? col : C.bad, 'stroke-width': added ? 3 : 1.5, 'stroke-dasharray': added ? 'none' : '2 2' });
+    ev.queries.forEach((x, n) => {
+      const px = cx(x.q[0]), py = cy(x.q[1]);
+      if (x.pass) el(g, 'circle', { cx: px, cy: py, r: 2.6, fill: col, stroke: '#fff', 'stroke-width': 0.8 });
+      else cross(g, px, py, 4.5, C.bad, 2.2);
+      el(g, 'text', { x: px + 4, y: py - 4, 'font-size': 10, fill: x.pass ? '#333' : C.bad }, String(n + 1));
+    });
+    if (ev.join) { const B = ev.tree === 'start' ? P.G : P.S, qb = B.nodes[ev.join.node]; el(g, 'line', { x1: cx(ev.proposal[0]), y1: cy(ev.proposal[1]), x2: cx(qb[0]), y2: cy(qb[1]), stroke: '#777', 'stroke-width': 1, 'stroke-dasharray': '1 3' }); }
+  }
+  function draw() { drawWorkspace(); drawCSpace(); }
+
+  // ----------------------------------------------------------------- the text
+  function row(k, v, cls) { return `<tr><td class="k">${k}</td><td${cls ? ` class="${cls}"` : ''}>${v}</td></tr>`; }
+  function describe() {
+    const ev = lastEvent(), o = P.opt;
+    let st;
+    if (!ev) st = `Paused before the first attempt. One tree is rooted at the start and one at the goal. <b>Step</b> makes one extension attempt; an iteration is the start tree's attempt followed, unless the trees join, by the goal tree's attempt.`;
+    else if (P.status === 'joined') {
+      const J = P.join, thr = num(o.stepsize / o.subsamples);
+      const head = `<b>The trees joined</b> in iteration ${P.iter}. The new node #${J.newIndex} of the ${J.tree} tree lies ${rad(J.distNew, o.stepsize / o.subsamples)} rad from node #${J.otherNode} of the ${J.other} tree, below the joining threshold ${thr} rad. RAI's returned vertex list omits the new node (open circle) and goes from its <i>parent</i> straight to that node. `;
+      st = J.coincide
+        ? `<b>The trees joined</b> in iteration ${P.iter}. The new node #${J.newIndex} of the ${J.tree} tree landed exactly on its target, node #${J.otherNode} of the ${J.other} tree, so their distance is 0. RAI's returned path goes from the new node's parent to that node. This orange joining segment, ${J.length.toFixed(4)} rad long, is the extension edge that the attempt just checked with ${J.queried} queries. Press <b>Check returned path</b> for an independent check.`
+        : J.onSegment
+        ? head + `The new node lies on this orange joining segment, so the attempt's ${J.queried} queries cover its first ${J.along.toFixed(4)} rad from the parent. The remaining ${(J.length - J.along).toFixed(4)} rad up to node #${J.otherNode} lies outside that attempt. RAI did not check this complete joining connection, which is ${J.length.toFixed(4)} rad long. Press <b>Check returned path</b> to check it independently.`
+        : head + `The new node lies ${J.offset.toFixed(4)} rad off this orange joining segment, so the attempt's queries lie off it too. RAI did not check this complete joining connection, which is ${J.length.toFixed(4)} rad long. Press <b>Check returned path</b> to check it independently.`;
+    }
+    else if (P.status === 'budget') st = `<b>Budget exhausted.</b> ${o.maxIters} iterations made no join, so RAI returns no path (feasible = false, and ret.evals = ${o.maxIters + 1}). This does not show that no path exists.`;
+    else {
+      const who = ev.tree === 'start' ? 'start tree' : 'goal tree', tgt = ev.source === 'node' ? `node #${ev.targetNode} of the ${ev.tree === 'start' ? 'goal' : 'start'} tree` : 'a uniform random configuration';
+      const res = ev.decision === 'added' ? `added as node #${ev.newIndex}; the nearest ${ev.tree === 'start' ? 'goal' : 'start'}-tree node is ${rad(ev.join.dist, ev.join.threshold)} rad away, and joining needs less than ${num(ev.join.threshold)} rad`
+        : ev.decision === 'endpoint rejected' ? 'rejected at the first query, the proposed endpoint' : `rejected at the ${fracName(ev.queries[ev.queries.length - 1].f)} point of the edge`;
+      st = `Iteration ${ev.i}, ${ev.order === 1 ? 'first' : 'second'} attempt: the <b>${who}</b> moves from its nearest node toward ${tgt}. Result: ${res}.`;
+    }
+    T('a-status').innerHTML = st;
+    // the four claims, kept apart
+    T('a-c-planner').innerHTML = P.status === 'joined' ? '<span class="ok">returned a path</span> (RAI-style success)' : P.status === 'budget' ? '<span class="bad">no path</span> within the budget' : 'searching';
+    T('a-c-check').innerHTML = !P.path ? 'needs a returned path' : !check ? 'not run' : check.first
+      ? `<span class="bad">fails</span> at edge ${check.first.e + 1} of ${P.path.length - 1}, check ${check.first.j} of ${check.first.n}${check.first.e === P.join.index ? ' (the joining segment)' : ''}: clearance ${mm(check.first.s)}, ${check.first.s >= 0 ? 'outside the disc but inside the 5 mm ring' : 'inside the disc'}. ${check.evaluated} of ${check.scheduled} configurations evaluated (each failing edge stops at its first failure).`
+      : `<span class="ok">passes</span>: all ${check.scheduled} configurations, at most 1° apart per joint, have at least 5 mm of clearance.`;
+    T('a-c-scan').innerHTML = !P.path ? 'needs a returned path' : !scan ? 'not run' : `every configuration at most 0.05° apart per joint (${scan.scheduled}): smallest clearance ${mm(scan.min.s)} on edge ${scan.min.e + 1}${scan.min.e === P.join.index ? ' (the joining segment)' : ''}; ${scan.below} below 5 mm.`;
+    T('a-c-cont').innerHTML = 'not certified: both checks test finitely many postures';
+    // the shortcut view replans this path from the seed with RAI's defaults, so it is offered only with those
+    const dflt = Object.keys(RAI).every(k => o[k] === RAI[k]);
+    T('a-sclink').innerHTML = P.status !== 'joined' ? '' : dflt
+      ? `<a id="a-sclink-a" href="?mode=shortcut&amp;from=bidir&amp;seed=${S.seed}">Shorten this path in the shortcut view</a>. That view checks the path first and shortens it only if it passes.`
+      : 'The shortcut view imports paths planned with the default parameters only.';
+    // this attempt
+    const attemptRows = ev => {
+      const qs = ev.queries.map((x, n) => `${n + 1}. ${fracName(x.f)}: ${x.pass ? '<span class="ok">pass</span>' : '<span class="bad">fail</span>'}, intrusion ${mm(x.pen)}`).join('<br>');
+      return row('tree', `${ev.tree} (attempt ${ev.order} of iteration ${ev.i})`) + row('target', ev.source === 'node' ? `node #${ev.targetNode} of the other tree (probability ${num(o.p_connect)})` : `uniform draw ${fmtQ(ev.target)} (probability ${num(1 - o.p_connect)})`)
+        + row('nearest node', `#${ev.near} ${fmtQ((ev.tree === 'start' ? P.S : P.G).nodes[ev.near])}, ${ev.d.toFixed(3)} rad from the target`) + row('proposal', `${fmtQ(ev.proposal)}, ${ev.step.toFixed(4)} rad from the nearest node`)
+        + row('queries', qs) + row('join test', ev.join ? `nearest other-tree node #${ev.join.node} at ${rad(ev.join.dist, ev.join.threshold)} rad: ${ev.join.joined ? 'joined' : 'not joined'}` : 'not reached');
+    };
+    if (ev && P.status === 'running' || ev && P.status === 'budget') {
+      T('a-detail-h').textContent = 'This attempt';
+      T('a-detail').innerHTML = attemptRows(ev);
+    } else if (P.path) {
+      const J = P.join;
+      T('a-detail-h').textContent = 'The joining attempt and the returned path';
+      T('a-detail').innerHTML = attemptRows(ev) + '<tr><td class="k"><b>returned path</b></td><td></td></tr>'
+        + row('vertices', `${P.path.length} (${P.path.filter(v => v.tree === 'start').length} from the start tree, ${P.path.filter(v => v.tree === 'goal').length} from the goal tree)`)
+        + row('length', `${P.path.slice(1).reduce((s, v, k) => s + dist(P.path[k].q, v.q), 0).toFixed(4)} rad in joint space`)
+        + row('joining segment', `edge ${J.index + 1} of ${P.path.length - 1}: ${J.tree}-tree node #${J.parent} to ${J.other}-tree node #${J.otherNode}, ${J.length.toFixed(4)} rad; ${J.coincide ? `the accepted extension edge, queried at ${J.queried} postures` : J.onSegment ? `the attempt's ${J.queried} queries cover its first ${J.along.toFixed(4)} rad; RAI did not check the complete connection` : 'the attempt\'s queries lie off it; RAI did not check this connection'}`)
+        + row('new node', J.coincide ? `#${J.newIndex} of the ${J.tree} tree, at the same configuration as ${J.other}-tree node #${J.otherNode}, which is on the path`
+          : `#${J.newIndex} of the ${J.tree} tree ${fmtQ(J.q)}, omitted from the returned vertex list; ${J.onSegment ? 'it lies on the joining segment' : `it lies ${J.offset.toFixed(4)} rad off the joining segment`}`);
+    } else { T('a-detail-h').textContent = 'This attempt'; T('a-detail').innerHTML = row('—', 'no attempt yet'); }
+    T('a-counts').innerHTML = row('iterations', `${P.iter}${P.status === 'budget' ? ` (RAI reports ${o.maxIters + 1})` : ''}`) + row('extension attempts', P.events.length)
+      + row('configuration evaluations', `${P.queries} planner queries, including the two roots`)
+      + row('tree nodes', `start ${P.S.nodes.length}, goal ${P.G.nodes.length}`)
+      + (check ? row('path check', `${check.evaluated} evaluations (1° rule)`) : '') + (scan ? row('diagnostic scan', `${scan.scheduled} evaluations (0.05°)`) : '');
+    T('a-step').disabled = T('a-run').disabled = P.status !== 'running';
+    T('a-check').disabled = !P.path || !!check; T('a-scan').disabled = !P.path || !!scan; T('a-play').disabled = !P.path;
+  }
+
+  // ----------------------------------------------------------------- the page text, the parameters, the address
+  T('a-title').textContent = 'RAI-style bidirectional RRT: two trees grow until they nearly meet';
+  document.title = 'RAI-style bidirectional RRT · two trees on the two-link arm';
+  function headerText() {
+    const o = S.opt, dflt = ['stepsize', 'subsamples', 'p_connect', 'tol', 'maxIters'].every(k => o[k] === RAI[k]);
+    const fr = []; for (let i = 1; i < o.subsamples; i++) fr.push(fracName(corput(i)));
+    const where = o.subsamples === 4 ? 'the points halfway, a quarter and three quarters along' : fr.length ? `the interior points at ${fr.join(', ')} of the edge` : '';
+    T('a-text').innerHTML = 'Two rapidly exploring random trees (RRTs) grow on the same arm, start, goal and disc, one from the start posture and one from the goal posture. Each <b>Step</b> shows one extension attempt by one tree. '
+      + `The trees join when a new node comes within ${num(o.stepsize / o.subsamples)} rad of the other tree, and RAI returns a path. Unless the two nodes coincide, RAI did not check the complete joining connection, so check the returned path independently. `
+      + (dflt ? 'The planner uses RAI\'s default parameters. Only link–disc collisions are checked.' : '<b>Non-default options are in force</b> (see Parameters).');
+    T('a-more-text').innerHTML = 'This view follows the procedure of RAI\'s path finder (<code>rai::RRT_PathFinder</code>, robotic 0.4.1). '
+      + `In each attempt a tree picks a target, with probability ${num(o.p_connect)} a random node of the other tree and otherwise a uniform random configuration, and moves at most ${num(o.stepsize)} rad from its nearest node toward it. `
+      + `RAI queries up to ${o.subsamples} posture${o.subsamples > 1 ? 's' : ''} of the new edge, the endpoint first${where ? `, then ${where}` : ''}, and the first posture that fails rejects the attempt. A posture passes when the two links together intrude less than ${num(o.tol * 1e3)} mm into the 5 mm clearance zone. `
+      + 'After a join, RAI\'s returned vertex list omits the new node and goes from its parent straight to the other tree\'s node. The new node can lie on that joining segment or off it, and the status says which. '
+      + 'The seed drives this page\'s own generator; it does not reproduce RAI\'s random numbers.';
+  }
+  T('a-ws-legend').innerHTML = `<span><span class="sw" style="background:${C.start}"></span>start tree / start posture</span><span><span class="sw" style="background:${C.goal}"></span>goal tree / goal posture</span>`
+    + `<span><span class="sw" style="background:${C.bad}; height:4px"></span>failing posture, tie to the disc center</span><span><span class="sw" style="background:${C.join}"></span>postures along the joining segment</span>`
+    + '<span><span class="sw box" style="background:#bbb"></span>disc, radius 0.05 m</span><span><span class="sw" style="border-top: 2px dashed #666; height:0; background:none"></span>5 mm clearance ring</span>';
+  T('a-cs-legend').innerHTML = `<span><span class="sw box" style="background:${C.contact}"></span>a link would intersect the disc</span><span><span class="sw box" style="background:${C.band}"></span>a link would come within 5 mm of it</span>`
+    + `<span><span class="sw" style="background:${C.start}"></span>start tree</span><span><span class="sw" style="background:${C.goal}"></span>goal tree</span>`
+    + `<span><span style="color:${C.target}">×</span> uniform target, <span style="color:${C.target}">○</span> node target, ○ nearest node, 1–4 query order, <span style="color:${C.bad}">×</span> failing query</span>`
+    + `<span><span class="sw" style="background:${C.path}; height:4px; opacity:0.6"></span>returned path</span><span><span class="sw" style="background:${C.join}; height:4px"></span>joining segment (RAI did not check all of it unless the new node landed on the other tree's node)</span><span>open circle: the new node of the joining attempt</span><span>black dot, black arm: the posture during Play path (display only)</span>`;
+  const fields = [['seed', 'seed', 0, 4294967295, 1, 'the seed of this page\'s generator; Reset returns to the roots, and the same seed grows the same trees again'], ['maxIters', 'budget (iterations)', 1, 100000, 1, 'RAI\'s maxIters'],
+    ['stepsize', 'step [rad]', 0.01, 1, 0.01, 'RAI\'s stepsize'], ['subsamples', 'queries per edge', 1, 16, 1, 'RAI\'s subsamples: the endpoint plus subsamples − 1 interior points'],
+    ['p_connect', 'node-target probability', 0, 1, 0.05, 'RAI\'s p_connect'], ['tol', 'tolerance [mm]', 0, 5, 0.01, 'RAI\'s collisionTolerance']];
+  T('a-param-fields').innerHTML = fields.map(([k, lab, lo, hi, st, tip]) => `<label title="${tip}">${lab} <input id="a-p-${k}" type="number" min="${lo}" max="${hi}" step="${st}"></label><br>`).join('')
+    + '<span class="small">RAI\'s defaults: step 0.1 rad, 4 queries per edge, probability 0.5, tolerance 0.1 mm, budget 5000. Changing a value resets the trees.</span>';
+  const getP = k => k === 'seed' ? S.seed : k === 'tol' ? +(S.opt.tol * 1e3).toFixed(6) : S.opt[k];
+  function showParams() { for (const [k] of fields) T(`a-p-${k}`).value = getP(k); }
+  for (const [k, , lo, hi] of fields) T(`a-p-${k}`).addEventListener('change', e => {
+    const v = Number(e.target.value), int = ['seed', 'maxIters', 'subsamples'].includes(k);
+    if (e.target.value.trim() === '' || !Number.isFinite(v) || v < lo || v > hi || (int && !Number.isInteger(v))) { e.target.value = getP(k); return; }
+    if (k === 'seed') S.seed = v; else if (k === 'tol') S.opt.tol = v / 1e3; else S.opt[k] = v;
+    reset();
+  });
+  T('a-foot').innerHTML = 'Companion notes: <code>modules/motion-planning/notes.md</code>. Reference implementation with the same numbers: <code>modules/motion-planning/rai_bidir_rrt.py</code>; native RAI runs: <code>rai_bidir_native.py</code>. '
+    + 'Seeds worth trying: 254 (an accepted tree edge fails the 1° check) and 1327 (the unchecked joining segment fails it). <a href="?seed=7&amp;budget=3000">The one-tree RRT</a>.';
+  const params = new URLSearchParams(location.search);
+  const intParam = k => (/^\d+$/.test(params.get(k) ?? '') ? Number(params.get(k)) : NaN);
+  const sp = intParam('seed'), bp = intParam('budget');
+  if (Number.isInteger(sp) && sp <= 4294967295) S.seed = sp;
+  if (Number.isInteger(bp) && bp >= 1 && bp <= 100000) S.opt.maxIters = bp;
+  if (params.get('zoom') === '0') S.czoom = false;
+  if (params.get('wzoom') === '1') S.wzoom = true;
+  T('a-czoom').checked = S.czoom; T('a-wzoom').checked = S.wzoom;
+  showParams();
+
+  T('a-step').addEventListener('click', () => { stopRun(); step(); });
+  T('a-run').addEventListener('click', () => timer ? stopRun() : startRun());
+  T('a-reset').addEventListener('click', reset);
+  T('a-check').addEventListener('click', runCheck);
+  T('a-scan').addEventListener('click', runScan);
+  T('a-play').addEventListener('click', () => { if (play.timer) { stopPlay(); draw(); } else if (P.path) { stopRun(); startPlay(P.path.map(v => v.q)); } });
+  T('a-czoom').addEventListener('change', e => { S.czoom = e.target.checked; draw(); });
+  T('a-wzoom').addEventListener('change', e => { S.wzoom = e.target.checked; draw(); });
+  const cs = T('a-cs');
+  cs.addEventListener('pointermove', e => {
+    const pt = new DOMPoint(e.clientX, e.clientY).matrixTransform(cs.getScreenCTM().inverse());
+    if (pt.x < CM.l || pt.x > CM.l + CW || pt.y < CM.t || pt.y > CM.t + CH) { if (hoverQ) { hoverQ = null; draw(); } return; }
+    hoverQ = cq(pt.x, pt.y); draw();
+  });
+  cs.addEventListener('pointerleave', () => { hoverQ = null; draw(); });
+  document.addEventListener('keydown', e => {
+    if (e.key !== ' ') return;
+    const t = e.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.tagName === 'SUMMARY')) return;
+    e.preventDefault(); stopRun(); step();
+  });
+
+  // for the scripted check (modules/motion-planning/check_bidir.mjs): read-only access and the page's own actions
+  const tree = Tr => ({ nodes: Tr.nodes.map(q => q.slice()), parents: Tr.parents.slice() });
+  window.__bidir = {
+    constants: { L1, L2, Q_START, Q_GOAL, OBS_C, OBS_R, MARGIN, RAI },
+    settings: () => ({ seed: S.seed, opt: { ...S.opt }, czoom: S.czoom, wzoom: S.wzoom }),
+    state: () => ({ status: P.status, iterations: P.iter, queries: P.queries, attempts: P.events.length, start: tree(P.S), goal: tree(P.G), events: P.events,
+      path: P.path && P.path.map(v => v.q), pathIds: P.path && P.path.map(v => [v.tree, v.k]), join: P.join, running: !!timer,
+      check: check && { first: check.first, evaluated: check.evaluated, scheduled: check.scheduled, below: check.below, min: check.min },
+      scan: scan && { first: scan.first, evaluated: scan.evaluated, scheduled: scan.scheduled, below: scan.below, min: scan.min } }),
+    runToEnd: () => { stopRun(); stopPlay(); while (P.status === 'running') attempt(P); draw(); describe(); return P.status; },
+    playback: () => ({ ...playbackState(), framesList: play.frames }), playFrames,
+    checkPath: (qs, subDeg, early) => { const r = checkPath(qs, subDeg, early); delete r.pts; return r; },
+    penetration, surface,
+    setHover: q => { hoverQ = q; draw(); },
+  };
+  reset();
+})();
+</script>
+<script>
+// ?mode=shortcut: shortening a returned path with checked shortcuts. A third, separate program on this page. It reuses
+// the scene and the RAI-style planner of the second program (window.__mpCore) and repeats the course's check of
+// rrt_two_link.py. Reference: shortcut_reference.py, which calls staged_two_link.shortcut and validate_path unchanged.
+(function () {
+  'use strict';
+  const params = new URLSearchParams(location.search);
+  if (params.get('mode') !== 'shortcut') return;
+  document.body.classList.add('alt');
+  document.getElementById('sc').hidden = false;
+  const K = window.__mpCore;
+  const { DEG, Q_START, Q_GOAL, Y_STAR, OBS_C, OBS_R, MARGIN, BOUND, mulberry32, points, surface, dist, lerp, RAI } = K;
+  const SUB = 1 * DEG, FINE = 0.05 * DEG;          // the course's rule and the diagnostic scan, at most this far per joint
+  const SAME_LENGTH = 1e-9;                         // rad: an accepted cut this small changed nothing measurable
+
+  // ----------------------------------------------------------------- the course's check (rrt_two_link.py, staged_two_link.validate_path)
+  // clearance beyond the 5 mm requirement [m]; negative means the posture fails
+  function clearance(q) { const r = surface(q); return { c: r.s - MARGIN, part: r.part, p: r.p }; }
+  const inBounds = q => -BOUND <= q[0] && q[0] <= BOUND && -BOUND <= q[1] && q[1] <= BOUND;
+  const nSub = (a, b, sub) => Math.max(1, Math.ceil(Math.max(Math.abs(b[0] - a[0]), Math.abs(b[1] - a[1])) / sub));
+  // the edge check: configurations j = 1..n at most `sub` apart per joint; the first failing one rejects the edge
+  function checkEdge(a, b, sub) {
+    const n = nSub(a, b, sub);
+    for (let j = 1; j <= n; j++) {
+      const q = lerp(a, b, j / n);
+      if (!inBounds(q)) return { ok: false, n, j, q, part: 'outside the joint box', c: -Infinity, p: null };
+      const r = clearance(q);
+      if (!(r.c >= 0)) return { ok: false, n, j, q, part: r.part, c: r.c, p: r.p };
+    }
+    return { ok: true, n };
+  }
+  function pathLength(pts) { let L = 0; for (let k = 0; k + 1 < pts.length; k++) L += dist(pts[k], pts[k + 1]); return L; }
+  // a path: the repeated edge checks (each failing edge stops at its first failure; `evaluated` counts what they
+  // evaluated) and a complete scan of every scheduled configuration, j = 0..n on every edge, for the smallest clearance
+  function validate(pts, sub) {
+    const out = { valid: true, fail: null, evaluated: 0, scheduled: 0, deepest: null, below: 0, length: pathLength(pts) };
+    for (let e = 0; e + 1 < pts.length; e++) {
+      const a = pts[e], b = pts[e + 1], r = checkEdge(a, b, sub);
+      out.evaluated += r.ok ? r.n : r.j; out.scheduled += r.n;
+      if (!r.ok && !out.fail) out.fail = { edge: e, j: r.j, n: r.n, q: r.q, part: r.part, c: r.c, p: r.p };
+      const n = nSub(a, b, sub);
+      for (let j = 0; j <= n; j++) {
+        const q = lerp(a, b, j / n), cl = clearance(q);
+        if (!out.deepest || cl.c < out.deepest.c) out.deepest = { c: cl.c, edge: e, j, n, q, part: cl.part, p: cl.p };
+        if (j > 0 && cl.c < 0) out.below++;
+      }
+    }
+    out.valid = !out.fail;
+    return out;
+  }
+
+  // ----------------------------------------------------------------- the paths to shorten
+  // the demo's one-tree RRT (rrt_two_link.rrt): 10 % goal sampling, extensions of at most 10°, the same edge check
+  function rrtPath(seed, budget) {
+    const rng = mulberry32(seed), STEP = 10 * DEG, P_GOAL = 0.1;
+    const nodes = [Q_START], parents = [-1];
+    let goal = null, iterations = 0;
+    for (let i = 1; i <= budget && goal === null; i++) {
+      iterations = i;
+      const u = rng();
+      const qr = u < P_GOAL ? Q_GOAL : [-Math.PI + 2 * Math.PI * rng(), -Math.PI + 2 * Math.PI * rng()];
+      let near = 0, bd = dist(qr, nodes[0]);
+      for (let k = 1; k < nodes.length; k++) { const d = dist(qr, nodes[k]); if (d < bd) { near = k; bd = d; } }
+      const qn = nodes[near], d = dist(qr, qn);
+      const qnew = d <= STEP ? qr : [qn[0] + STEP * (qr[0] - qn[0]) / d, qn[1] + STEP * (qr[1] - qn[1]) / d];
+      if (!checkEdge(qn, qnew, SUB).ok) continue;
+      nodes.push(qnew); parents.push(near);
+      const k = nodes.length - 1;
+      if (qnew[0] === Q_GOAL[0] && qnew[1] === Q_GOAL[1]) goal = k;
+      else if (dist(qnew, Q_GOAL) <= STEP && checkEdge(qnew, Q_GOAL, SUB).ok) { nodes.push(Q_GOAL); parents.push(k); goal = nodes.length - 1; }
+    }
+    if (goal === null) return { path: null, iterations, nodes: nodes.length };
+    const path = []; for (let k = goal; k >= 0; k = parents[k]) path.push(nodes[k]);
+    return { path: path.reverse(), iterations, nodes: nodes.length };
+  }
+  // the RAI-style bidirectional RRT of ?mode=bidir, with RAI's defaults
+  function bidirPath(seed) {
+    const P = K.makePlanner(seed, { ...RAI });
+    while (P.status === 'running') K.attempt(P);
+    return { path: P.path && P.path.map(v => v.q), iterations: P.iter, nodes: [P.S.nodes.length, P.G.nodes.length], joinIndex: P.join && P.join.index };
+  }
+
+  // ----------------------------------------------------------------- shortcutting (staged_two_link.shortcut)
+  function cumulative(pts) { const cum = [0]; for (let k = 0; k + 1 < pts.length; k++) cum.push(cum[k] + dist(pts[k], pts[k + 1])); return cum; }
+  // the configuration at arc length s along the path, the edge it lies on and the fraction along that edge
+  function pointOnPath(pts, cum, s) {
+    for (let e = 0; e < pts.length - 1; e++) {
+      if (s <= cum[e + 1] || e === pts.length - 2) {
+        const L = cum[e + 1] - cum[e], f = L === 0 ? 0 : Math.min(Math.max((s - cum[e]) / L, 0), 1);
+        return { q: lerp(pts[e], pts[e + 1], f), e, f };
+      }
+    }
+  }
+  // one attempt: two random positions along the current path; the chord between them is checked; if it passes, the
+  // whole candidate path is checked; only a passing candidate replaces the path
+  function attempt(X) {
+    if (!X.enabled || X.t >= X.budget) return null;
+    X.t++;
+    const pts = X.path, cum = cumulative(pts), total = cum[cum.length - 1];
+    const r1 = X.rng() * total, r2 = X.rng() * total;
+    const s1 = Math.min(r1, r2), s2 = Math.max(r1, r2);
+    const A = pointOnPath(pts, cum, s1), B = pointOnPath(pts, cum, s2);
+    const ev = { t: X.t, s: [s1, s2], e: [A.e, B.e], f: [A.f, B.f], q: [A.q, B.q], pathBefore: pts, lengthBefore: total };
+    if (A.e === B.e) ev.result = 'same edge';
+    else {
+      const ch = checkEdge(A.q, B.q, SUB);
+      ev.chord = { n: ch.n, evaluated: ch.ok ? ch.n : ch.j, pass: ch.ok, length: dist(A.q, B.q) };
+      if (!ch.ok) Object.assign(ev.chord, { j: ch.j, q: ch.q, part: ch.part, c: ch.c, p: ch.p });
+      X.chordEvals += ev.chord.evaluated;
+      if (!ch.ok) ev.result = 'chord rejected';
+      else {
+        const cand = pts.slice(0, A.e + 1).concat([A.q, B.q], pts.slice(B.e + 1));
+        const kept = cand.filter((p, i) => i === 0 || dist(p, cand[i - 1]) > 1e-12);   // a position on a vertex adds no edge
+        const vc = validate(kept, SUB), k1 = kept.indexOf(B.q) - 1;                     // the chord is kept[k1] -> kept[k1 + 1]
+        X.candEvals += vc.evaluated;
+        ev.candidate = { path: kept, evaluated: vc.evaluated, scheduled: vc.scheduled, valid: vc.valid, length: vc.length, chordEdge: k1 };
+        if (vc.valid) { ev.result = 'accepted'; X.path = kept; }
+        else {
+          const f = vc.fail, fe = f.edge;
+          const role = fe === k1 ? 'chord' : fe === k1 - 1 && kept[fe + 1] === A.q ? 'kept part of edge ' + (A.e + 1)
+            : fe === k1 + 1 && kept[fe] === B.q && kept[fe + 1] === pts[B.e + 1] ? 'kept part of edge ' + (B.e + 1) : 'unchanged edge';
+          ev.candidate.fail = { ...f, role };
+          ev.result = 'candidate rejected';
+        }
+      }
+    }
+    ev.pathAfter = X.path; ev.lengthAfter = pathLength(X.path);
+    X.counts[ev.result]++;
+    X.events.push(ev);
+    return ev;
+  }
+
+  // ----------------------------------------------------------------- state and controls
+  const T = id => document.getElementById(id);
+  const S = { from: 'rrt', seed: 7, attempts: 100, czoom: true, wzoom: false };
+  let X, timer = null, scan = null, hoverQ = null;
+  const dg = x => `${(x / DEG).toFixed(2)}°`;
+  const fmtQ = q => `(${(q[0] / DEG).toFixed(1).replace('-0.0', '0.0')}°, ${(q[1] / DEG).toFixed(1).replace('-0.0', '0.0')}°)`;
+  const mm = m => `${(m * 1e3).toFixed(3)} mm`;
+  const inside = c => { const d = -c * 1e3; return `${d < 0.001 ? d.toFixed(6) : d.toFixed(3)} mm inside the 5 mm ring`; };
+  const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+  function build() {
+    const src = S.from === 'rrt' ? { planner: 'one-tree RRT', ...rrtPath(S.seed, 3000) } : { planner: 'RAI-style bidirectional RRT', ...bidirPath(S.seed) };
+    const imp = src.path ? validate(src.path, SUB) : null;
+    X = { src, imp, enabled: !!(imp && imp.valid), path: src.path, rng: mulberry32(S.seed), t: 0, budget: S.attempts, events: [],
+          counts: { accepted: 0, 'chord rejected': 0, 'candidate rejected': 0, 'same edge': 0 }, chordEvals: 0, candEvals: 0 };
+  }
+  function reset() { stopRun(); stopPlay(); build(); scan = null; headerText(); draw(); describe(); }
+  function step() { const ev = attempt(X); if (ev) { scan = null; stopPlay(); } if (X.t >= X.budget) stopRun(); draw(); describe(); return ev; }   // a scan stays until an attempt changes the path
+  function stopRun() { if (timer) { clearInterval(timer); timer = null; } T('s-run').textContent = 'Run'; }
+  function startRun() {
+    if (!X.enabled || X.t >= X.budget) return;
+    if (stopPlay()) draw();
+    T('s-run').textContent = 'Pause';
+    timer = setInterval(() => { if (attempt(X)) scan = null; if (X.t >= X.budget) stopRun(); draw(); describe(); }, 120);
+  }
+  function runScan() { if (!X.path) return; scan = validate(X.path, FINE); draw(); describe(); }
+  const lastEvent = () => X.events.length ? X.events[X.events.length - 1] : null;
+
+
+  // ----------------------------------------------------------------- path playback (display only)
+  // The arm moves along the path's straight joint-space segments, at most 1° per joint between frames and one frame
+  // every 30 ms: an illustrative pace, as in the one-tree view. Every vertex is itself a frame, so playback starts and
+  // ends exactly on the path's ends. Playback only reads the path: no check, scan, count or status depends on it.
+  const PLAY_MS = 30;
+  let play = { timer: null, frames: [], f: 0, q: null };
+  function playFrames(qs) {
+    const out = [qs[0]];
+    for (let e = 0; e + 1 < qs.length; e++) {
+      const a = qs[e], b = qs[e + 1], n = Math.max(1, Math.ceil(Math.max(Math.abs(b[0] - a[0]), Math.abs(b[1] - a[1])) / DEG));
+      for (let j = 1; j < n; j++) out.push(lerp(a, b, j / n));
+      out.push(b);
+    }
+    return out;
+  }
+  function stopPlay() {
+    if (play.timer) clearInterval(play.timer);
+    const was = !!play.q;
+    play = { timer: null, frames: [], f: 0, q: null };
+    T('s-play').textContent = 'Play path'; T('s-playnote').hidden = true;
+    return was;
+  }
+  function startPlay(qs) {
+    stopPlay();
+    if (!qs || qs.length < 2) return;
+    play.frames = playFrames(qs); play.q = play.frames[0];
+    T('s-play').textContent = 'Stop'; T('s-playnote').hidden = false;
+    play.timer = setInterval(() => { play.f++; if (play.f < play.frames.length) play.q = play.frames[play.f]; else stopPlay(); draw(); }, PLAY_MS);
+    draw();
+  }
+  const playbackState = () => ({ playing: !!play.timer, q: play.q, f: play.f, frames: play.frames.length });
+
+  // ----------------------------------------------------------------- drawing
+  const NS = 'http://www.w3.org/2000/svg';
+  function el(parent, tag, attrs, text) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (text !== undefined) e.textContent = text; parent.appendChild(e); return e; }
+  const C = { start: '#1f5fbf', goal: '#2a7d2a', path: '#6a3d9a', old: '#999', cut: '#d07a00', chord: '#1f8a70', bad: '#b00020', contact: '#a8a8a8', band: '#f2d39b', play: '#111' };
+  const wwin = () => S.wzoom ? { x0: OBS_C[0] - 0.15, y0: OBS_C[1] - 0.15, w: 0.3 } : { x0: -0.75, y0: -0.75, w: 1.5 };
+  const WS = 520, wx = x => (x - wwin().x0) / wwin().w * WS, wy = y => WS - (y - wwin().y0) / wwin().w * WS, ws = d => d / wwin().w * WS;
+  const CM = { l: 46, r: 12, t: 12, b: 40 }, CW = 520 - CM.l - CM.r, CH = 520 - CM.t - CM.b;
+  // joint-space window: 60° around the paths of the demo's seeds if the path fits, else 180° if it fits, else the whole box
+  const NEAR = { x0: -20, y0: 40, w: 60, h: 60, tick: 10 }, MID = { x0: -60, y0: -30, w: 180, h: 180, tick: 30 }, WHOLE = { x0: -180, y0: -180, w: 360, h: 360, tick: 90 };
+  const fits = (W, pts) => pts.every(q => q[0] / DEG >= W.x0 + 1 && q[0] / DEG <= W.x0 + W.w - 1 && q[1] / DEG >= W.y0 + 1 && q[1] / DEG <= W.y0 + W.h - 1);
+  const cwin = () => !S.czoom || !X.src.path ? WHOLE : fits(NEAR, X.src.path) ? NEAR : fits(MID, X.src.path) ? MID : WHOLE;
+  const cx = q1 => CM.l + (q1 / DEG - cwin().x0) / cwin().w * CW, cy = q2 => CM.t + CH - (q2 / DEG - cwin().y0) / cwin().h * CH;
+  const cq = (px, py) => { const W = cwin(); return [((px - CM.l) / CW * W.w + W.x0) * DEG, ((CM.t + CH - py) / CH * W.h + W.y0) * DEG]; };
+  const line = (pts, attrs, g) => el(g, 'polyline', { points: pts.map(q => `${cx(q[0])},${cy(q[1])}`).join(' '), fill: 'none', 'stroke-linejoin': 'round', ...attrs });
+  const rasters = {};
+  function raster() {
+    // 361 x 361 samples of the shown window: gray where a link would intersect the disc, amber where it would come within 5 mm
+    const W = cwin(), key = `${W.x0},${W.y0},${W.w}`;
+    if (rasters[key]) return rasters[key];
+    const n = 361, canvas = document.createElement('canvas'); canvas.width = n; canvas.height = n;
+    const ctx = canvas.getContext('2d'), img = ctx.createImageData(n, n);
+    for (let iy = 0; iy < n; iy++) for (let ix = 0; ix < n; ix++) {
+      const q = [(W.x0 + ix / (n - 1) * W.w) * DEG, (W.y0 + W.h - iy / (n - 1) * W.h) * DEG], s = surface(q).s, o = 4 * (iy * n + ix);
+      const col = s < 0 ? [0xa8, 0xa8, 0xa8] : s < MARGIN ? [0xf2, 0xd3, 0x9b] : null;
+      if (col) { img.data[o] = col[0]; img.data[o + 1] = col[1]; img.data[o + 2] = col[2]; img.data[o + 3] = 255; } else img.data[o + 3] = 0;
+    }
+    ctx.putImageData(img, 0, 0);
+    return (rasters[key] = canvas.toDataURL());
+  }
+  function arm(g, q, color, width, opacity, dash) {
+    const P_ = points(q);
+    el(g, 'polyline', { points: [P_.base, P_.e, P_.t].map(p => `${wx(p[0])},${wy(p[1])}`).join(' '), fill: 'none', stroke: color, 'stroke-width': width, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', opacity: opacity ?? 1, 'stroke-dasharray': dash || 'none' });
+    el(g, 'circle', { cx: wx(P_.e[0]), cy: wy(P_.e[1]), r: Math.max(1.5, width * 0.7), fill: color, opacity: opacity ?? 1 });
+  }
+  function tie(g, part, color) { if (part.p) el(g, 'line', { x1: wx(part.p[0]), y1: wy(part.p[1]), x2: wx(OBS_C[0]), y2: wy(OBS_C[1]), stroke: color, 'stroke-width': 1, 'stroke-dasharray': '2 2' }); }
+  function cross(g, x, y, r, color, w) { el(g, 'path', { d: `M${x - r},${y - r}L${x + r},${y + r}M${x - r},${y + r}L${x + r},${y - r}`, stroke: color, 'stroke-width': w || 2 }); }
+  // the failing posture of the current attempt, if any: the chord's, or the candidate's
+  function failure(ev) { return !ev ? null : ev.result === 'chord rejected' ? ev.chord : ev.result === 'candidate rejected' ? ev.candidate.fail : null; }
+  function failureOfImport() { return X.imp && !X.imp.valid ? X.imp.fail : null; }
+
+  function drawWorkspace() {
+    const svg = T('s-ws'); svg.textContent = '';
+    const clip = el(el(svg, 'defs', {}), 'clipPath', { id: 's-wclip' }); el(clip, 'rect', { x: 0, y: 0, width: WS, height: WS });
+    const g = el(svg, 'g', { 'clip-path': 'url(#s-wclip)' });
+    const W = wwin(), tick = S.wzoom ? 0.05 : 0.25;
+    for (let v = Math.ceil(W.x0 / tick) * tick; v <= W.x0 + W.w + 1e-9; v += tick) { el(g, 'line', { x1: wx(v), y1: 0, x2: wx(v), y2: WS, stroke: '#eee' }); if (wx(v) > 30) el(g, 'text', { x: wx(v) + 2, y: WS - 4, 'font-size': 10, fill: '#999' }, v.toFixed(2)); }
+    for (let v = Math.ceil(W.y0 / tick) * tick; v <= W.y0 + W.w + 1e-9; v += tick) { el(g, 'line', { x1: 0, y1: wy(v), x2: WS, y2: wy(v), stroke: '#eee' }); if (wy(v) < WS - 20) el(g, 'text', { x: 3, y: wy(v) - 2, 'font-size': 10, fill: '#999' }, v.toFixed(2)); }
+    el(g, 'circle', { cx: wx(OBS_C[0]), cy: wy(OBS_C[1]), r: ws(OBS_R), fill: '#bbb', stroke: '#888' });
+    el(g, 'circle', { cx: wx(OBS_C[0]), cy: wy(OBS_C[1]), r: ws(OBS_R + MARGIN), fill: 'none', stroke: '#666', 'stroke-dasharray': '5 4' });
+    el(g, 'circle', { cx: wx(Y_STAR[0]), cy: wy(Y_STAR[1]), r: 4, fill: 'none', stroke: '#444' });
+    arm(g, Q_START, C.start, 3, 0.35); arm(g, Q_GOAL, C.goal, 3, 0.35);
+    if (X.path) for (const q of X.path) arm(g, q, C.path, 1.2, 0.3);
+    const ev = lastEvent();
+    if (ev && ev.chord && !scan) for (let k = 0; k <= 6; k++) arm(g, lerp(ev.q[0], ev.q[1], k / 6), C.chord, 1.5, 0.6);
+    const f = scan ? null : failure(ev) || failureOfImport();
+    if (f) { arm(g, f.q, C.bad, 4); tie(g, f, C.bad); }
+    if (scan) { arm(g, scan.deepest.q, scan.deepest.c < 0 ? C.bad : '#333', 2.5, 1, '6 3'); tie(g, scan.deepest, '#333'); }
+    if (hoverQ) arm(g, hoverQ, '#000', 2, 0.8, '4 3');
+    if (play.q) arm(g, play.q, C.play, 4.5);
+  }
+  function drawCSpace() {
+    const svg = T('s-cs'); svg.textContent = '';
+    const W = cwin();
+    const clip = el(el(svg, 'defs', {}), 'clipPath', { id: 's-cclip' }); el(clip, 'rect', { x: CM.l, y: CM.t, width: CW, height: CH });
+    const half = CW / 360 / 2;
+    el(svg, 'image', { href: raster(), x: CM.l - half, y: CM.t - half, width: CW + 2 * half, height: CH + 2 * half, preserveAspectRatio: 'none', 'clip-path': 'url(#s-cclip)', style: 'image-rendering: pixelated' });
+    for (let v = W.x0; v <= W.x0 + W.w; v += W.tick) { el(svg, 'line', { x1: cx(v * DEG), y1: CM.t, x2: cx(v * DEG), y2: CM.t + CH, stroke: '#e6e6e6' }); el(svg, 'text', { x: cx(v * DEG), y: CM.t + CH + 14, 'font-size': 11, 'text-anchor': 'middle', fill: '#666' }, `${v}`); }
+    for (let v = W.y0; v <= W.y0 + W.h; v += W.tick) { el(svg, 'line', { x1: CM.l, y1: cy(v * DEG), x2: CM.l + CW, y2: cy(v * DEG), stroke: '#e6e6e6' }); el(svg, 'text', { x: CM.l - 6, y: cy(v * DEG) + 4, 'font-size': 11, 'text-anchor': 'end', fill: '#666' }, `${v}`); }
+    el(svg, 'rect', { x: CM.l, y: CM.t, width: CW, height: CH, fill: 'none', stroke: '#999' });
+    el(svg, 'text', { x: CM.l + CW / 2, y: 512, 'font-size': 12, 'text-anchor': 'middle', fill: '#444' }, 'q₁, shoulder [deg]');
+    el(svg, 'text', { x: 12, y: CM.t + CH / 2, 'font-size': 12, 'text-anchor': 'middle', fill: '#444', transform: `rotate(-90 12 ${CM.t + CH / 2})` }, 'q₂, elbow [deg]');
+    const g = el(svg, 'g', { 'clip-path': 'url(#s-cclip)' });
+    if (X.src.path && X.path !== X.src.path) line(X.src.path, { stroke: C.old, 'stroke-width': 1.5, 'stroke-dasharray': '4 3' }, g);   // the path as the planner returned it
+    const ev = lastEvent();
+    if (ev && !scan) {
+      // the part of the path between the two positions: the part a passing candidate replaces
+      const pb = ev.pathBefore, cut = [ev.q[0], ...pb.slice(ev.e[0] + 1, ev.e[1] + 1), ev.q[1]];
+      if (ev.result !== 'same edge') line(cut, { stroke: C.cut, 'stroke-width': 8, opacity: 0.35, 'stroke-linecap': 'round' }, g);
+      if (ev.result === 'accepted') line(pb, { stroke: C.path, 'stroke-width': 1.5, 'stroke-dasharray': '3 3', opacity: 0.7 }, g);
+    }
+    if (X.path) {
+      line(X.path, { stroke: C.path, 'stroke-width': 3, opacity: 0.8 }, g);
+      for (const q of X.path) el(g, 'circle', { cx: cx(q[0]), cy: cy(q[1]), r: 2.4, fill: C.path });
+    }
+    if (ev && !scan) {
+      if (ev.chord) {
+        const ok = ev.chord.pass;
+        el(g, 'line', { x1: cx(ev.q[0][0]), y1: cy(ev.q[0][1]), x2: cx(ev.q[1][0]), y2: cy(ev.q[1][1]), stroke: ok ? C.chord : C.bad, 'stroke-width': ok ? 2.5 : 1.8, 'stroke-dasharray': ok ? 'none' : '4 3' });
+        for (let j = 1; j <= ev.chord.evaluated; j++) { const q = lerp(ev.q[0], ev.q[1], j / ev.chord.n); el(g, 'circle', { cx: cx(q[0]), cy: cy(q[1]), r: 1.6, fill: '#fff', stroke: '#333', 'stroke-width': 0.6 }); }
+      }
+      ev.q.forEach((q, k) => { el(g, 'circle', { cx: cx(q[0]), cy: cy(q[1]), r: 5, fill: '#fff', stroke: C.cut, 'stroke-width': 2 }); el(g, 'text', { x: cx(q[0]) + 6, y: cy(q[1]) - 6, 'font-size': 11, fill: C.cut }, String(k + 1)); });
+    }
+    const f = scan ? null : failure(ev) || failureOfImport();
+    if (f) cross(g, cx(f.q[0]), cy(f.q[1]), 6, C.bad, 2.5);
+    if (scan) el(g, 'circle', { cx: cx(scan.deepest.q[0]), cy: cy(scan.deepest.q[1]), r: 7, fill: 'none', stroke: scan.deepest.c < 0 ? C.bad : '#333', 'stroke-width': 1.5, 'stroke-dasharray': '3 2' });
+    for (const [q, col, lab] of [[Q_START, C.start, 'start'], [Q_GOAL, C.goal, 'goal']]) { el(g, 'circle', { cx: cx(q[0]), cy: cy(q[1]), r: 5, fill: col, stroke: '#fff' }); el(g, 'text', { x: cx(q[0]) + 7, y: cy(q[1]) + 14, 'font-size': 11, fill: col }, lab); }
+    if (hoverQ) el(g, 'circle', { cx: cx(hoverQ[0]), cy: cy(hoverQ[1]), r: 4, fill: 'none', stroke: '#000' });
+    if (play.q) el(g, 'circle', { id: 's-playmark', cx: cx(play.q[0]), cy: cy(play.q[1]), r: 5.5, fill: C.play, stroke: '#fff', 'stroke-width': 1.5 });
+  }
+  function draw() { drawWorkspace(); drawCSpace(); }
+
+  // ----------------------------------------------------------------- the text
+  function row(k, v) { return `<tr><td class="k">${k}</td><td>${v}</td></tr>`; }
+  function where(ev, k) { return `${dg(ev.s[k])} along the path, on edge ${ev.e[k] + 1} (${(ev.f[k] * 100).toFixed(0)}% of the way along it)`; }
+  function describe() {
+    const ev = lastEvent(), src = X.src, imp = X.imp;
+    let st;
+    if (!src.path) st = `The ${src.planner} returned no path at seed ${S.seed}, so there is nothing to shorten.`;
+    else if (!imp.valid) {
+      const f = imp.fail, join = S.from === 'bidir' && f.edge === src.joinIndex ? ', the joining segment' : '';
+      st = `<b>The imported path fails the course's check</b> on edge ${f.edge + 1}${join}, at check ${f.j} of ${f.n}: ${f.part} is ${inside(f.c)}. Shortcutting stays disabled for this path. This view shortens only paths that already pass, so that a shortened path is never taken for a repaired one.`;
+    } else if (!ev) st = `Paused before the first attempt. The path to shorten is the ${src.planner} path at seed ${S.seed}: ${plural(src.path.length - 1, 'edge')}, ${dg(imp.length)} of joint-space length, and it passes the course's check. <b>Step</b> makes one shortcut attempt.`;
+    else {
+      const head = `Attempt ${ev.t} of ${X.budget}. `;
+      if (ev.result === 'same edge') st = head + `Both positions fall on edge ${ev.e[0] + 1}, so there is nothing to cut. No posture is checked.`;
+      else {
+        const pos = `The two positions fall on edges ${ev.e[0] + 1} and ${ev.e[1] + 1}. `;
+        if (ev.result === 'chord rejected') st = head + pos + `The straight chord between them fails at check ${ev.chord.j} of ${ev.chord.n}: ${ev.chord.part} is ${inside(ev.chord.c)}. The path is kept.`;
+        else if (ev.result === 'candidate rejected') {
+          const f = ev.candidate.fail;
+          st = head + pos + `The chord passes all ${ev.chord.n} checks. The candidate path with the chord in place is then checked as a whole, and it fails on edge ${f.edge + 1}, the ${f.role}, at check ${f.j} of ${f.n}: ${f.part} is ${inside(f.c)}. `
+            + (f.role.startsWith('kept part') ? 'That shorter edge has its own check grid, so it tests postures that the old edge\'s checks did not. ' : '') + '<b>The path is kept.</b>';
+        } else {
+          const dl = ev.lengthBefore - ev.lengthAfter;
+          st = head + pos + `The chord passes all ${ev.chord.n} checks, and the whole candidate passes its ${ev.candidate.scheduled} checks. <b>The candidate replaces the path</b>: ${dg(ev.lengthBefore)} becomes ${dg(ev.lengthAfter)}, with ${plural(ev.pathAfter.length - 1, 'edge')} instead of ${ev.pathBefore.length - 1}.`
+            + (dl < SAME_LENGTH ? ' The replaced part was already almost straight, so the length does not change measurably.' : '');
+        }
+      }
+      if (X.t >= X.budget) st += ` <b>All ${X.budget} attempts are made.</b> The path is ${dg(pathLength(X.path))} long, down from ${dg(imp.length)}. It has ${plural(X.path.length - 1, 'edge')} instead of ${src.path.length - 1}, so the number of vertices says nothing about the length. It still has corners, where the arm must slow down or stop, and it has no timing yet.`;
+    }
+    T('s-status').innerHTML = st;
+    // the claims, kept apart
+    T('s-c-planner').innerHTML = src.path ? `<span class="ok">returned a path</span>: ${src.planner}, seed ${S.seed}, ${plural(src.path.length - 1, 'edge')}, ${dg(imp.length)}` : `<span class="bad">no path</span> (${src.planner}, seed ${S.seed})`;
+    T('s-c-import').innerHTML = !src.path ? '—' : imp.valid ? `<span class="ok">passes</span> the 1° check: all ${imp.scheduled} configurations have at least 5 mm of clearance`
+      : `<span class="bad">fails</span> the 1° check on edge ${imp.fail.edge + 1}; ${imp.evaluated} of ${imp.scheduled} configurations evaluated. Shortcutting is disabled.`;
+    T('s-c-current').innerHTML = !X.enabled ? '—' : X.counts.accepted === 0 ? 'the imported path; no shortcut accepted yet'
+      : `<span class="ok">passes</span> the 1° check: each of the ${X.counts.accepted} accepted candidates was checked as a whole`;
+    T('s-c-scan').innerHTML = !X.path ? '—' : !scan ? 'not run' : `the current path's configurations after the start, at most 0.05° apart per joint (${scan.scheduled}): smallest clearance ${mm(scan.deepest.c + MARGIN)} on edge ${scan.deepest.edge + 1}; ${scan.below} below 5 mm.`;
+    T('s-c-cont').innerHTML = 'not certified: every check tests finitely many postures';
+    // this attempt
+    if (ev) {
+      T('s-detail-h').textContent = 'This attempt';
+      let rows = row('attempt', `${ev.t} of ${X.budget}`) + row('position 1', where(ev, 0)) + row('position 2', where(ev, 1));
+      if (ev.chord) rows += row('chord', `${fmtQ(ev.q[0])} to ${fmtQ(ev.q[1])}, ${dg(ev.chord.length)}; ${ev.chord.pass ? `<span class="ok">passes</span> all ${ev.chord.n} checks` : `<span class="bad">fails</span> at check ${ev.chord.j} of ${ev.chord.n}`}`);
+      if (ev.candidate) rows += row('candidate', `${plural(ev.candidate.path.length - 1, 'edge')}, ${dg(ev.candidate.length)}; chord is edge ${ev.candidate.chordEdge + 1}; ${ev.candidate.valid ? `<span class="ok">passes</span> all ${ev.candidate.scheduled} checks` : `<span class="bad">fails</span> on edge ${ev.candidate.fail.edge + 1} (the ${ev.candidate.fail.role}); ${ev.candidate.evaluated} of ${ev.candidate.scheduled} configurations evaluated`}`);
+      rows += row('decision', ev.result === 'accepted' ? `replace: ${dg(ev.lengthBefore)} → ${dg(ev.lengthAfter)}` : ev.result === 'same edge' ? 'nothing to cut' : 'keep the path');
+      T('s-detail').innerHTML = rows;
+    } else { T('s-detail-h').textContent = 'This attempt'; T('s-detail').innerHTML = row('—', 'no attempt yet'); }
+    const c = X.counts;
+    T('s-counts').innerHTML = row('attempts', `${X.t} of ${X.budget}`) + row('outcomes', `${c.accepted} accepted, ${plural(c['chord rejected'], 'chord')} rejected, ${plural(c['candidate rejected'], 'candidate')} rejected, ${c['same edge']} on one edge`)
+      + row('chord checks', `${X.chordEvals} configurations evaluated`) + row('whole-path checks', `${X.candEvals} configurations evaluated`)
+      + (X.path ? row('path now', `${X.path.length} vertices, ${plural(X.path.length - 1, 'edge')}, ${dg(pathLength(X.path))}`) : '')
+      + (scan ? row('diagnostic scan', `${scan.scheduled} configurations after the start (0.05°)`) : '');
+    T('s-step').disabled = T('s-run').disabled = !X.enabled || X.t >= X.budget;
+    T('s-scan').disabled = !X.path || !!scan; T('s-play').disabled = !X.path;
+  }
+
+  // ----------------------------------------------------------------- the page text, the parameters, the address
+  T('s-title').textContent = 'Shortcutting: shorten a returned path with checked shortcuts';
+  document.title = 'Shortcutting · checked shortcuts on the two-link arm';
+  function headerText() {
+    T('s-text').innerHTML = 'A planner has returned a path, and shortcutting tries to make it shorter. Each <b>Step</b> picks two random positions along the path and checks the straight joint-space chord between them. '
+      + 'If the chord passes, the whole candidate path is checked again, and only a passing candidate replaces the path. '
+      + `The path to shorten comes from the ${S.from === 'rrt' ? 'one-tree RRT' : 'RAI-style bidirectional RRT'} at seed ${S.seed}${S.attempts !== 100 ? `, and <b>${S.attempts} attempts</b> are allowed instead of 100` : ''}.`;
+    T('s-more-text').innerHTML = 'Each attempt draws two positions uniformly by length along the current path. If both fall on the same edge, there is nothing to cut. '
+      + 'Otherwise the chord is checked with the course\'s rule: postures at most 1° apart per joint, each needing 5 mm from the disc surface, and the first failure rejects the chord. '
+      + 'The candidate keeps the path up to the first position, then the chord, then the path after the second position. The two edges that the positions cut become shorter edges with their own check grids, so the candidate is checked as a whole. '
+      + 'A chord between two points of a path is never longer than the part it replaces, so an accepted candidate never lengthens the path. '
+      + 'An imported path is checked first with the same rule, and a failing path is not shortened. '
+      + 'Lengths are joint-space lengths in degrees. The seed drives both the planner and the shortcut draws (mulberry32). The procedure is <code>shortcut()</code> in <code>staged_two_link.py</code>.';
+  }
+  T('s-ws-legend').innerHTML = `<span><span class="sw" style="background:${C.start}"></span>start posture</span><span><span class="sw" style="background:${C.goal}"></span>goal posture</span><span><span class="sw" style="background:${C.path}"></span>postures at the path's vertices</span>`
+    + `<span><span class="sw" style="background:${C.chord}"></span>postures along the chord</span><span><span class="sw" style="background:${C.bad}; height:4px"></span>failing posture, tie to the disc center</span>`
+    + '<span><span class="sw box" style="background:#bbb"></span>disc, radius 0.05 m</span><span><span class="sw" style="border-top: 2px dashed #666; height:0; background:none"></span>5 mm clearance ring</span>';
+  T('s-cs-legend').innerHTML = `<span><span class="sw box" style="background:${C.contact}"></span>a link would intersect the disc</span><span><span class="sw box" style="background:${C.band}"></span>a link would come within 5 mm of it</span>`
+    + `<span><span class="sw" style="background:${C.path}; height:4px"></span>current path</span><span><span class="sw" style="border-top: 2px dashed ${C.old}; height:0; background:none"></span>path as the planner returned it</span>`
+    + `<span><span class="sw" style="background:${C.cut}; height:6px; opacity:0.5"></span>part between positions 1 and 2</span><span><span class="sw" style="background:${C.chord}; height:3px"></span>passing chord, with its checked postures</span>`
+    + `<span><span class="sw" style="border-top: 2px dashed ${C.bad}; height:0; background:none"></span>failing chord</span><span><span style="color:${C.bad}">×</span> failing posture</span><span>dashed circle: smallest clearance in the diagnostic scan</span><span>black dot, black arm: the posture during Play path (display only)</span>`;
+  const fields = [['seed', 'seed', 0, 4294967295, 1, 'the seed of the planner and of the shortcut draws; Reset replans and restarts'], ['attempts', 'attempts', 1, 1000, 1, 'the number of shortcut attempts']];
+  T('s-param-fields').innerHTML = fields.map(([k, lab, lo, hi, st, tip]) => `<label title="${tip}">${lab} <input id="s-p-${k}" type="number" min="${lo}" max="${hi}" step="${st}"></label><br>`).join('')
+    + '<span class="small">Defaults: seed 7, 100 attempts. Changing a value replans the path and restarts the attempts.</span>';
+  function showParams() { for (const [k] of fields) T(`s-p-${k}`).value = S[k]; T('s-from').value = S.from; }
+  for (const [k, , lo, hi] of fields) T(`s-p-${k}`).addEventListener('change', e => {
+    const v = Number(e.target.value);
+    if (e.target.value.trim() === '' || !Number.isInteger(v) || v < lo || v > hi) { e.target.value = S[k]; return; }
+    S[k] = v; reset();
+  });
+  T('s-foot').innerHTML = 'Companion notes: <code>modules/motion-planning/notes.md</code>. Reference with the same numbers: <code>modules/motion-planning/shortcut_reference.py</code>. '
+    + 'Seeds worth trying: 15 (attempt 35 has a passing chord but a failing candidate), and the bidirectional path at seed 1327 (it fails the check, so it is not shortened). '
+    + '<a href="?seed=7&amp;budget=3000">The one-tree RRT</a>, <a href="?mode=bidir">the RAI-style bidirectional RRT</a>.';
+  const intParam = k => (/^\d+$/.test(params.get(k) ?? '') ? Number(params.get(k)) : NaN);
+  const sp = intParam('seed'), ap = intParam('attempts'), at = intParam('at');
+  if (Number.isInteger(sp) && sp <= 4294967295) S.seed = sp;
+  if (Number.isInteger(ap) && ap >= 1 && ap <= 1000) S.attempts = ap;
+  if (params.get('from') === 'bidir') S.from = 'bidir';
+  if (params.get('zoom') === '0') S.czoom = false;
+  if (params.get('wzoom') === '1') S.wzoom = true;
+  T('s-czoom').checked = S.czoom; T('s-wzoom').checked = S.wzoom;
+  showParams();
+
+  T('s-step').addEventListener('click', () => { stopRun(); step(); });
+  T('s-run').addEventListener('click', () => timer ? stopRun() : startRun());
+  T('s-reset').addEventListener('click', reset);
+  T('s-scan').addEventListener('click', runScan);
+  T('s-play').addEventListener('click', () => { if (play.timer) { stopPlay(); draw(); } else if (X.path) { stopRun(); startPlay(X.path); } });
+  T('s-from').addEventListener('change', e => { S.from = e.target.value; reset(); });
+  T('s-czoom').addEventListener('change', e => { S.czoom = e.target.checked; draw(); });
+  T('s-wzoom').addEventListener('change', e => { S.wzoom = e.target.checked; draw(); });
+  const cs = T('s-cs');
+  cs.addEventListener('pointermove', e => {
+    const pt = new DOMPoint(e.clientX, e.clientY).matrixTransform(cs.getScreenCTM().inverse());
+    if (pt.x < CM.l || pt.x > CM.l + CW || pt.y < CM.t || pt.y > CM.t + CH) { if (hoverQ) { hoverQ = null; draw(); } return; }
+    hoverQ = cq(pt.x, pt.y); draw();
+  });
+  cs.addEventListener('pointerleave', () => { hoverQ = null; draw(); });
+  document.addEventListener('keydown', e => {
+    if (e.key !== ' ') return;
+    const t = e.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.tagName === 'SUMMARY')) return;
+    e.preventDefault(); stopRun(); step();
+  });
+
+  // for the scripted check (modules/motion-planning/check_shortcut.mjs): read-only access and the page's own actions
+  const evOut = ev => ({ t: ev.t, result: ev.result, s: ev.s, e: ev.e, f: ev.f, q: ev.q, lengthBefore: ev.lengthBefore, lengthAfter: ev.lengthAfter,
+    pathAfter: ev.pathAfter, chord: ev.chord, candidate: ev.candidate && { ...ev.candidate } });
+  window.__shortcut = {
+    settings: () => ({ ...S }),
+    state: () => ({ from: S.from, seed: S.seed, budget: X.budget, t: X.t, enabled: X.enabled, running: !!timer, window: cwin(),
+      source: { planner: X.src.planner, path: X.src.path, iterations: X.src.iterations, joinIndex: X.src.joinIndex },
+      import: X.imp && { valid: X.imp.valid, fail: X.imp.fail, evaluated: X.imp.evaluated, scheduled: X.imp.scheduled, length: X.imp.length, deepest: X.imp.deepest },
+      path: X.path, length: X.path && pathLength(X.path), counts: { ...X.counts }, chordEvals: X.chordEvals, candEvals: X.candEvals,
+      events: X.events.map(evOut), scan: scan && { valid: scan.valid, evaluated: scan.evaluated, scheduled: scan.scheduled, below: scan.below, deepest: scan.deepest } }),
+    runToEnd: () => { stopRun(); stopPlay(); while (X.enabled && X.t < X.budget) attempt(X); scan = null; draw(); describe(); return X.t; },
+    playback: () => ({ ...playbackState(), framesList: play.frames }), playFrames,
+    validate: (pts, subDeg) => validate(pts, subDeg * DEG),
+    rrtPath, setHover: q => { hoverQ = q; draw(); },
+  };
+  reset();
+  if (Number.isInteger(at) && at > 0) { for (let k = 0; k < at && X.enabled && X.t < X.budget; k++) attempt(X); draw(); describe(); }
+})();
+</script>
+<script>
+// ?mode=rrtstar: the RRT* rewiring illustration. A fourth, separate program on this page. It inserts ONE new node into
+// a fixed tree the way RRT* does (Karaman and Frazzoli 2011, Algorithm 6) and shows one candidate per Step; it is not
+// a full RRT* planner. It reuses the scene of the second program (window.__mpCore) and repeats the course's check of
+// rrt_two_link.py. Reference: rrtstar_reference.py (same tree, same sample, same decisions).
+(function () {
+  'use strict';
+  const params = new URLSearchParams(location.search);
+  if (params.get('mode') !== 'rrtstar') return;
+  document.body.classList.add('alt');
+  document.getElementById('rs').hidden = false;
+  const K = window.__mpCore;
+  const { DEG, Q_START, Q_GOAL, Y_STAR, OBS_C, OBS_R, MARGIN, BOUND, mulberry32, points, surface, dist, lerp } = K;
+  const SUB = 1 * DEG, STEP = 10 * DEG, P_GOAL = 0.1, BUDGET = 3000;
+
+  // ----------------------------------------------------------------- the course's edge check (rrt_two_link.check_edge)
+  const inBounds = q => -BOUND <= q[0] && q[0] <= BOUND && -BOUND <= q[1] && q[1] <= BOUND;
+  function checkEdge(a, b) {
+    const n = Math.max(1, Math.ceil(Math.max(Math.abs(b[0] - a[0]), Math.abs(b[1] - a[1])) / SUB));
+    for (let j = 1; j <= n; j++) {
+      const q = lerp(a, b, j / n);
+      if (!inBounds(q)) return { ok: false, n, evaluated: j, j, q, part: 'outside the joint box', c: -Infinity, p: null };
+      const r = surface(q), c = r.s - MARGIN;
+      if (!(c >= 0)) return { ok: false, n, evaluated: j, j, q, part: r.part, c, p: r.p };
+    }
+    return { ok: true, n, evaluated: n };
+  }
+
+  // ----------------------------------------------------------------- the tree and the sample (rrtstar_reference.py)
+  // the demo's one-tree RRT (rrt_two_link.rrt) up to its connection, and the generator positioned after its last draw
+  const draw = rng => rng() < P_GOAL ? Q_GOAL : [-Math.PI + 2 * Math.PI * rng(), -Math.PI + 2 * Math.PI * rng()];
+  function treeAndStream(seed) {
+    const rng = mulberry32(seed), nodes = [Q_START], parents = [-1];
+    for (let i = 1; i <= BUDGET; i++) {
+      const qr = draw(rng);
+      let near = 0, bd = dist(qr, nodes[0]);
+      for (let k = 1; k < nodes.length; k++) { const d = dist(qr, nodes[k]); if (d < bd) { near = k; bd = d; } }
+      const qn = nodes[near], d = dist(qr, qn);
+      const qnew = d <= STEP ? qr : [qn[0] + STEP * (qr[0] - qn[0]) / d, qn[1] + STEP * (qr[1] - qn[1]) / d];
+      if (!checkEdge(qn, qnew).ok) continue;
+      nodes.push(qnew); parents.push(near);
+      const k = nodes.length - 1;
+      if (qnew[0] === Q_GOAL[0] && qnew[1] === Q_GOAL[1]) return { nodes, parents, iterations: i, rng };
+      if (dist(qnew, Q_GOAL) <= STEP && checkEdge(qnew, Q_GOAL).ok) { nodes.push(Q_GOAL); parents.push(k); return { nodes, parents, iterations: i, rng }; }
+    }
+    return null;
+  }
+  function routeCosts(nodes, parents) { const c = [0]; for (let k = 1; k < nodes.length; k++) c.push(c[parents[k]] + dist(nodes[parents[k]], nodes[k])); return c; }
+  const route = (parents, k) => { const r = []; for (let a = k; a !== -1; a = parents[a]) r.push(a); return r.reverse(); };
+
+  // one RRT* insertion: the events, and the tree after each event (snapshots for Step and Back)
+  function insertion(nodes0, parents0, qr, radius) {
+    const nodes = nodes0.slice(), parents = parents0.slice(), cost = routeCosts(nodes, parents), goal = nodes.length - 1;
+    const goalBefore = cost[goal];
+    const snaps = [{ nodes: nodes.slice(), parents: parents.slice(), cost: cost.slice() }], events = [];
+    const push = ev => { events.push(ev); snaps.push({ nodes: nodes.slice(), parents: parents.slice(), cost: cost.slice() }); };
+    let near = 0, bd = dist(qr, nodes[0]);
+    for (let k = 1; k < nodes.length; k++) { const d = dist(qr, nodes[k]); if (d < bd) { near = k; bd = d; } }
+    const qn = nodes[near], d = dist(qr, qn);
+    const x = d <= STEP ? qr : [qn[0] + STEP * (qr[0] - qn[0]) / d, qn[1] + STEP * (qr[1] - qn[1]) / d];
+    const e0 = checkEdge(qn, x);
+    // the nearest node lies within one step of the new node, so it belongs to any neighborhood at least that wide; it is
+    // included explicitly because a steered node can lie a rounding error beyond exactly one step from it
+    const X = nodes.map((q, k) => k).filter(k => dist(nodes[k], x) <= radius || (k === near && radius >= STEP)).sort((a, b) => dist(nodes[a], x) - dist(nodes[b], x) || a - b);
+    push({ kind: 'sample', sample: qr, nearest: near, x, step: dist(qn, x), edge: e0, near: X, radius, viaNearest: cost[near] + dist(qn, x) });
+    if (!e0.ok) { push({ kind: 'skipped' }); return { events, snaps, goal, goalBefore, x, X }; }
+    let best = near, cbest = cost[near] + dist(qn, x);
+    for (const k of X) {
+      if (k === near) continue;
+      const via = cost[k] + dist(nodes[k], x), ev = { kind: 'parent', k, cost: cost[k], dist: dist(nodes[k], x), via, best, bestCost: cbest };
+      if (!(via < cbest)) ev.result = 'costlier';
+      else { ev.edge = checkEdge(nodes[k], x); if (ev.edge.ok) { ev.result = 'better'; best = k; cbest = via; } else ev.result = 'invalid'; }
+      push(ev);
+    }
+    nodes.push(x); parents.push(best); cost.push(cbest);
+    const nw = nodes.length - 1;
+    push({ kind: 'connect', new: nw, parent: best, cost: cbest, saving: cost[near] + dist(qn, x) - cbest });
+    const anc = []; for (let a = best; a !== -1; a = parents[a]) anc.push(a);
+    for (const k of X) {
+      const ev = { kind: 'rewire', k, cost: cost[k], dist: dist(x, nodes[k]), via: cost[nw] + dist(x, nodes[k]) };
+      if (anc.includes(k)) ev.result = 'ancestor';
+      else if (!(ev.via < cost[k])) ev.result = 'not cheaper';
+      else {
+        ev.edge = checkEdge(x, nodes[k]);
+        if (!ev.edge.ok) ev.result = 'invalid';
+        else {
+          ev.result = 'rewired'; ev.oldParent = parents[k]; parents[k] = nw;
+          const before = cost.slice(), ch = {};
+          parents.forEach((p, i) => { if (p >= 0) (ch[p] = ch[p] || []).push(i); });
+          const order = [k];
+          for (let n = 0; n < order.length; n++) {                     // breadth first: parents before children
+            const i = order[n];
+            cost[i] = i === k ? ev.via : cost[parents[i]] + dist(nodes[parents[i]], nodes[i]);
+            order.push(...(ch[i] || []));
+          }
+          ev.descendants = order.slice(1).map(i => ({ k: i, before: before[i], after: cost[i] }));
+          ev.after = cost[k];
+        }
+      }
+      push(ev);
+    }
+    push({ kind: 'done', goal, goalBefore, goalAfter: cost[goal], route: route(parents, goal) });
+    return { events, snaps, goal, goalBefore, x, X };
+  }
+
+  // ----------------------------------------------------------------- state and controls
+  const T = id => document.getElementById(id);
+  const S = { seed: 17, sample: 141, radius: 20, czoom: true, wzoom: false };
+  let G, I, timer = null, hoverQ = null;                           // G: the computed example; I: events shown (0 = paused)
+  const dg = x => `${(x / DEG).toFixed(2)}°`;
+  const fmtQ = q => `(${(q[0] / DEG).toFixed(2).replace('-0.00', '0.00')}°, ${(q[1] / DEG).toFixed(2).replace('-0.00', '0.00')}°)`;
+  const inside = c => `${(-c * 1e3).toFixed(3)} mm inside the 5 mm ring`;
+  function build() {
+    const t = treeAndStream(S.seed);
+    G = { ok: false, seed: S.seed };
+    if (!t) { G.problem = `The one-tree RRT at seed ${S.seed} does not reach the goal within ${BUDGET} iterations.`; return; }
+    G.tree = t;
+    if (S.sample <= t.iterations) { G.problem = `The RRT at seed ${S.seed} reaches the goal at iteration ${t.iterations}, so the sample must come from a later iteration.`; return; }
+    for (let i = t.iterations + 1; i < S.sample; i++) draw(t.rng);
+    G.qr = draw(t.rng);
+    Object.assign(G, insertion(t.nodes, t.parents, G.qr, S.radius * DEG), { ok: true });
+  }
+  function reset() { stopRun(); stopPlay(); build(); I = 0; headerText(); draw_(); describe(); }
+  function go(i) { if (!G.ok) return; const j = Math.max(0, Math.min(G.events.length, i)); if (j !== I) stopPlay(); I = j; draw_(); describe(); }
+  function step() { if (G.ok && I < G.events.length) go(I + 1); if (!G.ok || I >= G.events.length) stopRun(); }
+  function stopRun() { if (timer) { clearInterval(timer); timer = null; } T('r-run').textContent = 'Run'; }
+  function startRun() { if (!G.ok || I >= G.events.length) return; if (stopPlay()) draw_(); T('r-run').textContent = 'Pause'; timer = setInterval(step, 900); }
+  const snap = () => G.snaps[I];
+  const ev = () => (I > 0 ? G.events[I - 1] : null);
+
+
+  // ----------------------------------------------------------------- path playback (display only)
+  // The arm moves along the path's straight joint-space segments, at most 1° per joint between frames and one frame
+  // every 30 ms: an illustrative pace, as in the one-tree view. Every vertex is itself a frame, so playback starts and
+  // ends exactly on the path's ends. Playback only reads the path: no check, scan, count or status depends on it.
+  const PLAY_MS = 30;
+  let play = { timer: null, frames: [], f: 0, q: null };
+  function playFrames(qs) {
+    const out = [qs[0]];
+    for (let e = 0; e + 1 < qs.length; e++) {
+      const a = qs[e], b = qs[e + 1], n = Math.max(1, Math.ceil(Math.max(Math.abs(b[0] - a[0]), Math.abs(b[1] - a[1])) / DEG));
+      for (let j = 1; j < n; j++) out.push(lerp(a, b, j / n));
+      out.push(b);
+    }
+    return out;
+  }
+  function stopPlay() {
+    if (play.timer) clearInterval(play.timer);
+    const was = !!play.q;
+    play = { timer: null, frames: [], f: 0, q: null };
+    T('r-play').textContent = 'Play path'; T('r-playnote').hidden = true;
+    return was;
+  }
+  function startPlay(qs) {
+    stopPlay();
+    if (!qs || qs.length < 2) return;
+    play.frames = playFrames(qs); play.q = play.frames[0];
+    T('r-play').textContent = 'Stop'; T('r-playnote').hidden = false;
+    play.timer = setInterval(() => { play.f++; if (play.f < play.frames.length) play.q = play.frames[play.f]; else stopPlay(); draw_(); }, PLAY_MS);
+    draw_();
+  }
+  const playbackState = () => ({ playing: !!play.timer, q: play.q, f: play.f, frames: play.frames.length });
+
+  // ----------------------------------------------------------------- drawing
+  const NS = 'http://www.w3.org/2000/svg';
+  function el(parent, tag, attrs, text) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (text !== undefined) e.textContent = text; parent.appendChild(e); return e; }
+  const C = { start: '#1f5fbf', goal: '#2a7d2a', tree: '#7a8fb0', route: '#6a3d9a', x: '#d07a00', ok: '#1f8a70', bad: '#b00020', gray: '#888', sub: '#0b6fb8', contact: '#a8a8a8', band: '#f2d39b', play: '#111' };
+  const wwin = () => S.wzoom ? { x0: OBS_C[0] - 0.15, y0: OBS_C[1] - 0.15, w: 0.3 } : { x0: -0.75, y0: -0.75, w: 1.5 };
+  const WS = 520, wx = x => (x - wwin().x0) / wwin().w * WS, wy = y => WS - (y - wwin().y0) / wwin().w * WS, ws = d => d / wwin().w * WS;
+  const CM = { l: 46, r: 12, t: 12, b: 40 }, CW = 520 - CM.l - CM.r, CH = 520 - CM.t - CM.b;
+  // joint-space window: 60° around the neighborhood when it fits, otherwise the whole box
+  const cwin = () => {
+    const W = { x0: -20, y0: 40, w: 60, h: 60, tick: 10 };
+    if (S.czoom && G.ok) {
+      const r = S.radius, x = G.x.map(v => v / DEG);
+      if (x[0] - r >= W.x0 && x[0] + r <= W.x0 + W.w && x[1] - r >= W.y0 && x[1] + r <= W.y0 + W.h) return W;
+    }
+    return { x0: -180, y0: -180, w: 360, h: 360, tick: 90 };
+  };
+  const cx = q1 => CM.l + (q1 / DEG - cwin().x0) / cwin().w * CW, cy = q2 => CM.t + CH - (q2 / DEG - cwin().y0) / cwin().h * CH;
+  const cq = (px, py) => { const W = cwin(); return [((px - CM.l) / CW * W.w + W.x0) * DEG, ((CM.t + CH - py) / CH * W.h + W.y0) * DEG]; };
+  const seg = (g, a, b, attrs) => el(g, 'line', { x1: cx(a[0]), y1: cy(a[1]), x2: cx(b[0]), y2: cy(b[1]), ...attrs });
+  const rasters = {};
+  function raster() {
+    // 361 x 361 samples of the shown window: gray where a link would intersect the disc, amber where it would come within 5 mm
+    const W = cwin(), key = `${W.x0},${W.y0},${W.w}`;
+    if (rasters[key]) return rasters[key];
+    const n = 361, canvas = document.createElement('canvas'); canvas.width = n; canvas.height = n;
+    const ctx = canvas.getContext('2d'), img = ctx.createImageData(n, n);
+    for (let iy = 0; iy < n; iy++) for (let ix = 0; ix < n; ix++) {
+      const q = [(W.x0 + ix / (n - 1) * W.w) * DEG, (W.y0 + W.h - iy / (n - 1) * W.h) * DEG], s = surface(q).s, o = 4 * (iy * n + ix);
+      const col = s < 0 ? [0xa8, 0xa8, 0xa8] : s < MARGIN ? [0xf2, 0xd3, 0x9b] : null;
+      if (col) { img.data[o] = col[0]; img.data[o + 1] = col[1]; img.data[o + 2] = col[2]; img.data[o + 3] = 255; } else img.data[o + 3] = 0;
+    }
+    ctx.putImageData(img, 0, 0);
+    return (rasters[key] = canvas.toDataURL());
+  }
+  function arm(g, q, color, width, opacity, dash) {
+    const P_ = points(q);
+    el(g, 'polyline', { points: [P_.base, P_.e, P_.t].map(p => `${wx(p[0])},${wy(p[1])}`).join(' '), fill: 'none', stroke: color, 'stroke-width': width, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', opacity: opacity ?? 1, 'stroke-dasharray': dash || 'none' });
+    el(g, 'circle', { cx: wx(P_.e[0]), cy: wy(P_.e[1]), r: Math.max(1.5, width * 0.7), fill: color, opacity: opacity ?? 1 });
+  }
+  function cross(g, x, y, r, color, w) { el(g, 'path', { d: `M${x - r},${y - r}L${x + r},${y + r}M${x - r},${y + r}L${x + r},${y - r}`, stroke: color, 'stroke-width': w || 2 }); }
+  // the candidate edge of the current event, its ends, and its result
+  function candidate() {
+    const e = ev();
+    if (!e) return null;
+    const N = snap().nodes;
+    if (e.kind === 'sample') return { a: N[e.nearest], b: e.x, edge: e.edge, checked: true, ok: e.edge.ok };
+    if (e.kind === 'skipped') { const s0 = G.events[0]; return { a: N[s0.nearest], b: s0.x, edge: s0.edge, checked: true, ok: false }; }   // the failing first edge stays in view
+    if (e.kind === 'parent') return { a: N[e.k], b: G.x, edge: e.edge, checked: !!e.edge, ok: e.result === 'better' };
+    if (e.kind === 'rewire') return { a: G.x, b: N[e.k], edge: e.edge, checked: !!e.edge, ok: e.result === 'rewired' };
+    return null;
+  }
+
+  function drawWorkspace() {
+    const svg = T('r-ws'); svg.textContent = '';
+    const clip = el(el(svg, 'defs', {}), 'clipPath', { id: 'r-wclip' }); el(clip, 'rect', { x: 0, y: 0, width: WS, height: WS });
+    const g = el(svg, 'g', { 'clip-path': 'url(#r-wclip)' });
+    const W = wwin(), tick = S.wzoom ? 0.05 : 0.25;
+    for (let v = Math.ceil(W.x0 / tick) * tick; v <= W.x0 + W.w + 1e-9; v += tick) { el(g, 'line', { x1: wx(v), y1: 0, x2: wx(v), y2: WS, stroke: '#eee' }); if (wx(v) > 30) el(g, 'text', { x: wx(v) + 2, y: WS - 4, 'font-size': 10, fill: '#999' }, v.toFixed(2)); }
+    for (let v = Math.ceil(W.y0 / tick) * tick; v <= W.y0 + W.w + 1e-9; v += tick) { el(g, 'line', { x1: 0, y1: wy(v), x2: WS, y2: wy(v), stroke: '#eee' }); if (wy(v) < WS - 20) el(g, 'text', { x: 3, y: wy(v) - 2, 'font-size': 10, fill: '#999' }, v.toFixed(2)); }
+    el(g, 'circle', { cx: wx(OBS_C[0]), cy: wy(OBS_C[1]), r: ws(OBS_R), fill: '#bbb', stroke: '#888' });
+    el(g, 'circle', { cx: wx(OBS_C[0]), cy: wy(OBS_C[1]), r: ws(OBS_R + MARGIN), fill: 'none', stroke: '#666', 'stroke-dasharray': '5 4' });
+    el(g, 'circle', { cx: wx(Y_STAR[0]), cy: wy(Y_STAR[1]), r: 4, fill: 'none', stroke: '#444' });
+    arm(g, Q_START, C.start, 3, 0.35); arm(g, Q_GOAL, C.goal, 3, 0.35);
+    if (G.ok) {
+      const s = snap();
+      for (const k of route(s.parents, G.goal)) arm(g, s.nodes[k], C.route, 1.2, 0.3);
+      if (I > 0) arm(g, G.x, C.x, 3, 0.9);
+      const c = candidate();
+      if (c) {
+        if (c.checked) for (let j = 1; j <= c.edge.evaluated; j++) arm(g, lerp(c.a, c.b, j / c.edge.n), c.edge.ok || j < c.edge.j ? C.ok : C.bad, 1.2, 0.45);
+        const e = ev();
+        if (e.kind === 'parent' || e.kind === 'rewire') arm(g, snap().nodes[e.k], '#333', 2.5, 0.8, '5 3');
+        if (c.edge && !c.edge.ok) { arm(g, c.edge.q, C.bad, 4); if (c.edge.p) el(g, 'line', { x1: wx(c.edge.p[0]), y1: wy(c.edge.p[1]), x2: wx(OBS_C[0]), y2: wy(OBS_C[1]), stroke: C.bad, 'stroke-width': 1, 'stroke-dasharray': '2 2' }); }
+      }
+    }
+    if (hoverQ) arm(g, hoverQ, '#000', 2, 0.8, '4 3');
+    if (play.q) arm(g, play.q, C.play, 4.5);
+  }
+  function drawCSpace() {
+    const svg = T('r-cs'); svg.textContent = '';
+    const W = cwin();
+    const clip = el(el(svg, 'defs', {}), 'clipPath', { id: 'r-cclip' }); el(clip, 'rect', { x: CM.l, y: CM.t, width: CW, height: CH });
+    const half = CW / 360 / 2;
+    el(svg, 'image', { href: raster(), x: CM.l - half, y: CM.t - half, width: CW + 2 * half, height: CH + 2 * half, preserveAspectRatio: 'none', 'clip-path': 'url(#r-cclip)', style: 'image-rendering: pixelated' });
+    for (let v = W.x0; v <= W.x0 + W.w; v += W.tick) { el(svg, 'line', { x1: cx(v * DEG), y1: CM.t, x2: cx(v * DEG), y2: CM.t + CH, stroke: '#e6e6e6' }); el(svg, 'text', { x: cx(v * DEG), y: CM.t + CH + 14, 'font-size': 11, 'text-anchor': 'middle', fill: '#666' }, `${v}`); }
+    for (let v = W.y0; v <= W.y0 + W.h; v += W.tick) { el(svg, 'line', { x1: CM.l, y1: cy(v * DEG), x2: CM.l + CW, y2: cy(v * DEG), stroke: '#e6e6e6' }); el(svg, 'text', { x: CM.l - 6, y: cy(v * DEG) + 4, 'font-size': 11, 'text-anchor': 'end', fill: '#666' }, `${v}`); }
+    el(svg, 'rect', { x: CM.l, y: CM.t, width: CW, height: CH, fill: 'none', stroke: '#999' });
+    el(svg, 'text', { x: CM.l + CW / 2, y: 512, 'font-size': 12, 'text-anchor': 'middle', fill: '#444' }, 'q₁, shoulder [deg]');
+    el(svg, 'text', { x: 12, y: CM.t + CH / 2, 'font-size': 12, 'text-anchor': 'middle', fill: '#444', transform: `rotate(-90 12 ${CM.t + CH / 2})` }, 'q₂, elbow [deg]');
+    const g = el(svg, 'g', { 'clip-path': 'url(#r-cclip)' });
+    if (!G.ok) return;
+    const s = snap(), e = ev(), N = s.nodes, P = s.parents, skipped = !G.events[0].edge.ok;
+    // the subtree whose costs changed in this step
+    const changed = new Set(e && e.kind === 'rewire' && e.result === 'rewired' ? [e.k, ...e.descendants.map(d => d.k)] : []);
+    for (let k = 1; k < N.length; k++) seg(g, N[P[k]], N[k], { stroke: changed.has(k) ? C.sub : C.tree, 'stroke-width': changed.has(k) ? 2.2 : 1.2, opacity: 0.85 });
+    const rt = route(P, G.goal);
+    el(g, 'polyline', { points: rt.map(k => `${cx(N[k][0])},${cy(N[k][1])}`).join(' '), fill: 'none', stroke: C.route, 'stroke-width': 3.5, opacity: 0.45, 'stroke-linejoin': 'round' });
+    for (let k = 0; k < N.length; k++) el(g, 'circle', { cx: cx(N[k][0]), cy: cy(N[k][1]), r: 2.2, fill: changed.has(k) ? C.sub : C.tree });
+    if (I > 0) {
+      const x = G.x, rpx = S.radius / W.w * CW;
+      if (!skipped) el(g, 'ellipse', { id: 'r-radius', cx: cx(x[0]), cy: cy(x[1]), rx: rpx, ry: S.radius / W.h * CH, fill: 'none', stroke: C.x, 'stroke-width': 1.2, 'stroke-dasharray': '6 4' });   // the axes' scales differ slightly
+      const s0 = G.events[0];
+      if (dist(s0.sample, x) > 0) { cross(g, cx(s0.sample[0]), cy(s0.sample[1]), 4, C.x, 1.5); seg(g, x, s0.sample, { stroke: C.x, 'stroke-width': 1, 'stroke-dasharray': '2 3' }); }
+      // the neighbors with their present costs
+      for (const k of skipped ? [] : G.X) {
+        const q = N[k];
+        el(g, 'circle', { cx: cx(q[0]), cy: cy(q[1]), r: 5, fill: 'none', stroke: '#333', 'stroke-width': e && e.k === k ? 2.2 : 1 });
+        el(g, 'text', { x: cx(q[0]) + 7, y: cy(q[1]) - 5, 'font-size': 11, fill: '#222' }, `#${k} ${(s.cost[k] / DEG).toFixed(2)}°`);
+      }
+      // a rewired node's old parent edge
+      if (e && e.kind === 'rewire' && e.result === 'rewired') { const a = G.snaps[I - 1].nodes[e.oldParent], b = N[e.k]; seg(g, a, b, { stroke: C.bad, 'stroke-width': 1.5, 'stroke-dasharray': '4 3' }); const m = lerp(a, b, 0.5); cross(g, cx(m[0]), cy(m[1]), 4, C.bad, 1.8); }
+      const c = candidate();
+      if (c) {
+        const col = !c.checked ? C.gray : c.ok ? C.ok : C.bad;
+        seg(g, c.a, c.b, { stroke: col, 'stroke-width': c.checked && c.ok ? 2.8 : 1.8, 'stroke-dasharray': c.checked && c.ok ? 'none' : '5 3' });
+        if (c.checked) for (let j = 1; j <= c.edge.evaluated; j++) { const q = lerp(c.a, c.b, j / c.edge.n); el(g, 'circle', { cx: cx(q[0]), cy: cy(q[1]), r: 1.5, fill: '#fff', stroke: '#333', 'stroke-width': 0.6 }); }
+        if (c.edge && !c.edge.ok) cross(g, cx(c.edge.q[0]), cy(c.edge.q[1]), 6, C.bad, 2.5);
+      }
+      const joined = !!e && (e.kind === 'connect' || e.kind === 'rewire' || e.kind === 'done');   // drawn filled once it is a tree node
+      el(g, 'circle', { id: 'r-new', cx: cx(x[0]), cy: cy(x[1]), r: 5, fill: joined ? C.x : '#fff', stroke: C.x, 'stroke-width': 2 });
+      el(g, 'text', { x: cx(x[0]) - 8, y: cy(x[1]) + 16, 'font-size': 11, fill: C.x, 'text-anchor': 'end' }, `new${joined ? ` #${N.length - 1} ${(s.cost[N.length - 1] / DEG).toFixed(2)}°` : ''}`);
+    }
+    for (const [q, col, lab] of [[Q_START, C.start, 'start'], [Q_GOAL, C.goal, 'goal']]) { el(g, 'circle', { cx: cx(q[0]), cy: cy(q[1]), r: 5, fill: col, stroke: '#fff' }); el(g, 'text', { x: cx(q[0]) + 7, y: cy(q[1]) + 14, 'font-size': 11, fill: col }, lab); }
+    if (hoverQ) el(g, 'circle', { cx: cx(hoverQ[0]), cy: cy(hoverQ[1]), r: 4, fill: 'none', stroke: '#000' });
+    if (play.q) el(g, 'circle', { id: 'r-playmark', cx: cx(play.q[0]), cy: cy(play.q[1]), r: 5.5, fill: C.play, stroke: '#fff', 'stroke-width': 1.5 });
+  }
+  const draw_ = () => { drawWorkspace(); drawCSpace(); };
+
+  // ----------------------------------------------------------------- the text
+  const row = (...cells) => `<tr>${cells.map((c, i) => `<td${i === 0 ? ' class="k"' : ''}>${c}</td>`).join('')}</tr>`;
+  const fails = e => `the edge fails at check ${e.j} of ${e.n}: ${e.part} is ${inside(e.c)}`;
+  const its = n => `its ${n} check${n === 1 ? '' : 's'}`;
+  const dg3 = x => `${(x / DEG).toFixed(3)}°`;   // a subtraction the reader may redo needs the third decimal
+  function describe() {
+    if (!G.ok) { T('r-status').innerHTML = G.problem; T('r-near').innerHTML = ''; T('r-route').innerHTML = ''; T('r-step').disabled = T('r-back').disabled = T('r-run').disabled = T('r-play').disabled = true; return; }
+    const e = ev(), s = snap(), n = G.events.length, head = I ? `Step ${I} of ${n}. ` : '';
+    let st;
+    if (!e) st = `Paused before the new sample. The tree is the one-tree RRT at seed ${S.seed} when it reached the goal: ${G.tree.nodes.length} nodes, and the route to the goal costs ${dg(G.goalBefore)}. The cost of a node is the joint-space length of its tree route from the start. <b>Step</b> shows one candidate at a time.`;
+    else if (e.kind === 'sample') st = head + `The sample ${fmtQ(e.sample)} lies ${dg(dist(e.sample, s.nodes[e.nearest]))} from its nearest node #${e.nearest}. `
+      + (e.step < dist(e.sample, s.nodes[e.nearest]) ? `The new node is placed 10° toward it. ` : 'That is within the 10° step, so the new node sits at the sample. ')
+      + (e.edge.ok ? `The edge from #${e.nearest} passes ${its(e.edge.n)}. RRT would make #${e.nearest} the parent, at a cost of ${dg(s.cost[e.nearest])} + ${dg(e.step)} = ${dg(e.viaNearest)}. `
+          + (e.near.length ? `RRT* first looks at every node within ${S.radius}° of the new node: ${e.near.map(k => '#' + k).join(', ')}.` : `No node lies within ${S.radius}° of the new node, so RRT* has no other parent to consider and nothing to rewire.`)
+        : `But ${fails(e.edge)}. RRT* skips this sample, as RRT would.`);
+    else if (e.kind === 'parent') {
+      const cmp = `Parent candidate #${e.k}: its cost ${dg(e.cost)} plus its distance ${dg(e.dist)} gives ${dg(e.via)}`;
+      st = head + (e.result === 'costlier' ? `${cmp}, which is not below the best so far, ${dg(e.bestCost)} through #${e.best}. The edge is not checked.`
+        : e.result === 'better' ? `${cmp}, below the best so far, ${dg(e.bestCost)} through #${e.best}. The edge from #${e.k} passes ${its(e.edge.n)}, so <b>#${e.k} becomes the best parent</b>.`
+        : `${cmp}, below the best so far, ${dg(e.bestCost)} through #${e.best}. But ${fails(e.edge)}. The best parent stays #${e.best}.`);
+    } else if (e.kind === 'connect') st = head + `<b>The new node #${e.new} joins the tree under #${e.parent}</b>, with cost ${dg(e.cost)}. `
+      + (e.parent === G.events[0].nearest ? 'No neighbor offered a cheaper connection, so the nearest node stays the parent. ' : `That is ${dg(e.saving)} below the cost through the nearest node. `)
+      + (G.X.length ? 'Next, each neighbor is asked whether a route through the new node would be cheaper for it.' : '');
+    else if (e.kind === 'rewire') {
+      const cmp = `Rewiring candidate #${e.k}: through the new node it would cost ${dg(G.events.find(x => x.kind === 'connect').cost)} + ${dg(e.dist)} = ${dg(e.via)}`;
+      st = head + (e.result === 'ancestor' ? `Rewiring candidate #${e.k} is an ancestor of the new node, on its route to the start. Making it a child of the new node would close a cycle, so it is skipped. ${e.via > e.cost ? `A route through the new node would also cost more: ${dg(e.via)} against ${dg(e.cost)}.` : `A route through the new node would cost the same, ${dg(e.via)}, so the cost test would not move it either.`}`
+        : e.result === 'not cheaper' ? `${cmp}, not below its present ${dg(e.cost)}. It keeps its parent, and the edge is not checked.`
+        : e.result === 'invalid' ? `${cmp}, below its present ${dg(e.cost)}. But ${fails(e.edge)}. #${e.k} keeps its parent.`
+        : `${cmp}, below its present ${dg(e.cost)}. The edge from the new node passes ${its(e.edge.n)}, so <b>#${e.k} changes its parent</b> from #${e.oldParent} to the new node. `
+          + (e.descendants.length ? `Its ${e.descendants.length} descendant${e.descendants.length > 1 ? 's' : ''} inherit the saving of ${dg3(e.cost - e.after)}: ${e.descendants.map(d => `#${d.k}${d.k === G.goal ? ' (the goal)' : ''} ${dg3(d.before)} → ${dg3(d.after)}`).join(', ')}.` : 'It has no descendants.'));
+    } else if (e.kind === 'done') st = head + (e.goalAfter < e.goalBefore ? `<b>Done.</b> The route to the goal now costs ${dg(e.goalAfter)}, down from ${dg(e.goalBefore)}, and it passes through the new node. ` : `<b>Done.</b> The route to the goal still costs ${dg(e.goalAfter)}. `)
+      + 'Every new or changed edge passed the 1° check. A full RRT* repeats this for every new sample, with a radius that shrinks as the tree grows.';
+    else st = head + 'RRT* adds nothing for this sample, and the tree is unchanged.';
+    T('r-status').innerHTML = st;
+    // the neighborhood: one row per neighbor, filled as the steps reveal decisions
+    if (!I) T('r-near').innerHTML = row('—', 'The neighborhood appears after the first step.');
+    else if (!G.events[0].edge.ok) T('r-near').innerHTML = row('—', 'Not computed: RRT* skips this sample before it looks for neighbors.');
+    else {
+      const shown = G.events.slice(0, I), word = { costlier: 'costlier, not checked', better: '<span class="ok">better, edge passes</span>', invalid: '<span class="bad">cheaper, edge fails</span>', ancestor: 'ancestor, skipped (cycle)', 'not cheaper': 'not cheaper, not checked', rewired: '<span class="ok">rewired, edge passes</span>' };
+      T('r-near').innerHTML = '<tr><td class="k">node</td><td>distance</td><td>cost now</td><td>as parent</td><td>rewiring</td></tr>'
+        + G.X.map(k => {
+          const p = shown.find(x => x.kind === 'parent' && x.k === k), r = shown.find(x => x.kind === 'rewire' && x.k === k);
+          const asParent = k === G.events[0].nearest ? 'nearest node, default' : p ? word[p.result] : '';
+          return row(`#${k}`, dg(dist(s.nodes[k], G.x)), dg(s.cost[k]), asParent, r ? word[r.result] : '');
+        }).join('');
+    }
+    const goalNow = s.cost[G.goal];
+    T('r-route').innerHTML = row('goal', `#${G.goal}: ${dg(goalNow)}${goalNow < G.goalBefore ? ` (was ${dg(G.goalBefore)})` : ''}`)
+      + row('route', route(s.parents, G.goal).map(k => k === s.nodes.length - 1 && I && s.nodes.length > G.tree.nodes.length ? '<b>new</b>' : `#${k}`).join(' → '))
+      + row('edge checks', (() => { const ch = G.events.slice(0, I).filter(x => x.edge); return `${ch.length} edge${ch.length === 1 ? '' : 's'}, ${ch.reduce((a, x) => a + x.edge.evaluated, 0)} configurations evaluated`; })());
+    T('r-step').disabled = I >= n; T('r-back').disabled = I === 0; T('r-run').disabled = I >= n; T('r-play').disabled = false;
+  }
+
+  // ----------------------------------------------------------------- the page text, the address
+  T('r-title').textContent = 'RRT* rewiring illustration: a new node picks a cheaper parent and rewires its neighbors';
+  document.title = 'RRT* rewiring illustration · the two-link arm';
+  function headerText() {
+    T('r-text').innerHTML = 'RRT* keeps adding samples after a route is found, and it uses each new node to lower route costs. '
+      + `This illustration inserts one new sample into the tree that the one-tree RRT at seed ${S.seed} had when it reached the goal. Each <b>Step</b> shows one candidate. `
+      + 'The cost of a node is the joint-space length of its tree route from the start.';
+    T('r-more-text').innerHTML = `The neighborhood is fixed at a radius of ${S.radius}° around the new node. Algorithm 6 of Karaman and Frazzoli (2011) uses the radius r = min(γ (log n / n)<sup>1/d</sup>, η) for n nodes in d dimensions. `
+      + 'Here η is the largest step of one extension, 10° on this page, and γ is a constant that must exceed a bound set by the area of the free space. For this tree the first term exceeds 130°, so the rule gives r = η = 10°. '
+      + (S.radius > 10 ? `This page widens the radius to ${S.radius}° so that one insertion can also show a cheaper connection whose edge fails. The address parameter <code>radius=10</code> shows the radius the algorithm would use. ` : '')
+      + 'The page shows neither the shrinking radius nor the asymptotic optimality of RRT*. '
+      + `The sample is the draw of iteration ${S.sample} of the same random stream that grew the tree. The draws in between are passed over without being inserted, so the tree is still the tree at the connection${S.seed === 17 && S.sample === 141 && S.radius === 20 ? '. This sample was chosen because it shows every operation with five neighbors' : ''}. `
+      + 'Each test compares costs first, and only a cheaper connection gets an edge check. The check uses the course\'s rule: postures at most 1° apart per joint, each with 5 mm of clearance, and it tests finitely many postures. '
+      + 'Apart from the fixed radius, the procedure is Algorithm 6. The reference with the same numbers is <code>rrtstar_reference.py</code>.';
+    T('r-foot').innerHTML = 'Companion notes: <code>modules/motion-planning/notes.md</code>. ' + `<a href="?seed=${S.seed}&amp;budget=3000">The one-tree RRT at seed ${S.seed}</a>, which grows this tree. `
+      + '<a href="?mode=shortcut">Shortcutting</a> is a separate operation on a returned path.';
+  }
+  T('r-ws-legend').innerHTML = `<span><span class="sw" style="background:${C.start}"></span>start posture</span><span><span class="sw" style="background:${C.goal}"></span>goal posture</span><span><span class="sw" style="background:${C.route}"></span>postures on the route to the goal</span>`
+    + `<span><span class="sw" style="background:${C.x}; height:4px"></span>the new node's posture</span><span><span class="sw" style="border-top: 2px dashed #333; height:0; background:none"></span>the candidate's posture</span>`
+    + `<span><span class="sw" style="background:${C.ok}"></span>checked postures</span><span><span class="sw" style="background:${C.bad}; height:4px"></span>failing posture, tie to the disc center</span>`
+    + '<span><span class="sw box" style="background:#bbb"></span>disc, radius 0.05 m</span><span><span class="sw" style="border-top: 2px dashed #666; height:0; background:none"></span>5 mm clearance ring</span>';
+  T('r-cs-legend').innerHTML = `<span><span class="sw box" style="background:${C.contact}"></span>a link would intersect the disc</span><span><span class="sw box" style="background:${C.band}"></span>a link would come within 5 mm of it</span>`
+    + `<span><span class="sw" style="background:${C.tree}"></span>tree</span><span><span class="sw" style="background:${C.route}; height:4px; opacity:0.5"></span>route to the goal</span>`
+    + `<span><span style="color:${C.x}">○</span> new node, dashed circle: its neighborhood</span><span>#k 40.00°: a neighbor and its cost</span>`
+    + `<span><span class="sw" style="background:${C.ok}; height:3px"></span>checked edge that passes</span><span><span class="sw" style="border-top: 2px dashed ${C.bad}; height:0; background:none"></span>edge that fails, <span style="color:${C.bad}">×</span> at the failing posture</span>`
+    + `<span><span class="sw" style="border-top: 2px dashed ${C.gray}; height:0; background:none"></span>connection rejected by cost, not checked</span><span><span class="sw" style="background:${C.sub}; height:3px"></span>subtree whose costs changed in this step</span><span>black dot, black arm: the posture during Play path (display only)</span>`;
+  const intParam = k => (/^\d+$/.test(params.get(k) ?? '') ? Number(params.get(k)) : NaN);
+  const sp = intParam('seed'), mp = intParam('sample'), rp = intParam('radius'), ip = intParam('step');
+  if (Number.isInteger(sp) && sp <= 4294967295) S.seed = sp;
+  if (Number.isInteger(mp) && mp >= 1 && mp <= 1000000) S.sample = mp;
+  if (Number.isInteger(rp) && rp >= 1 && rp <= 360) S.radius = rp;
+  if (params.get('zoom') === '0') S.czoom = false;
+  if (params.get('wzoom') === '1') S.wzoom = true;
+  T('r-czoom').checked = S.czoom; T('r-wzoom').checked = S.wzoom;
+
+  T('r-step').addEventListener('click', () => { stopRun(); step(); });
+  T('r-back').addEventListener('click', () => { stopRun(); go(I - 1); });
+  T('r-run').addEventListener('click', () => timer ? stopRun() : startRun());
+  T('r-reset').addEventListener('click', reset);
+  // the goal route of the displayed step, as configurations
+  const goalRoute = () => (G.ok ? route(snap().parents, G.goal).map(k => snap().nodes[k]) : null);
+  T('r-play').addEventListener('click', () => { if (play.timer) { stopPlay(); draw_(); } else if (G.ok) { stopRun(); startPlay(goalRoute()); } });
+  T('r-czoom').addEventListener('change', e => { S.czoom = e.target.checked; draw_(); });
+  T('r-wzoom').addEventListener('change', e => { S.wzoom = e.target.checked; draw_(); });
+  const cs = T('r-cs');
+  cs.addEventListener('pointermove', e => {
+    const pt = new DOMPoint(e.clientX, e.clientY).matrixTransform(cs.getScreenCTM().inverse());
+    if (pt.x < CM.l || pt.x > CM.l + CW || pt.y < CM.t || pt.y > CM.t + CH) { if (hoverQ) { hoverQ = null; draw_(); } return; }
+    hoverQ = cq(pt.x, pt.y); draw_();
+  });
+  cs.addEventListener('pointerleave', () => { hoverQ = null; draw_(); });
+  document.addEventListener('keydown', e => {
+    if (e.key !== ' ' && e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+    const t = e.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.tagName === 'SUMMARY')) return;
+    e.preventDefault(); stopRun();
+    if (e.key === 'ArrowLeft') go(I - 1); else step();
+  });
+
+  // for the scripted check (modules/motion-planning/check_rrtstar.mjs): read-only access and the page's own actions
+  window.__rrtstar = {
+    settings: () => ({ ...S }),
+    state: () => ({ ok: G.ok, problem: G.problem, shown: I, running: !!timer, window: cwin(), tree: G.tree && { nodes: G.tree.nodes, parents: G.tree.parents, iterations: G.tree.iterations },
+      sample: G.qr, x: G.x, near: G.X, events: G.events, goal: G.goal, goalBefore: G.goalBefore, now: G.ok ? snap() : null }),
+    go: i => { stopRun(); go(i); return I; },
+    playback: () => ({ ...playbackState(), framesList: play.frames }), playFrames, goalRoute: () => goalRoute(),
+    setHover: q => { hoverQ = q; draw_(); },
+  };
+  reset();
+  if (Number.isInteger(ip) && ip > 0) go(ip);
+})();
+</script>
+</body>
+</html>

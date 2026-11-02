@@ -1,0 +1,2759 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 3: motion planning</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <style>body{font-family:Charter,Georgia,serif;max-width:46em;margin:2em auto;padding:0 1em;line-height:1.5;color:#222}h1,h2,h3{font-family:Helvetica,Arial,sans-serif}img{max-width:100%}table{border-collapse:collapse;width:100%}td,th{border:1px solid #ddd;padding:.4em}pre{overflow:auto;background:#f6eef1;padding:1em}.katex-display{overflow-x:auto}.keep{break-inside:avoid}a{color:#1f6f8b}</style>
+  <script defer="" src="assets/katex/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <link rel="stylesheet" href="assets/katex/katex.min.css" />
+</head>
+<body>
+<h1 id="chapter-03-motion-planning-essentials">Chapter 03 · Motion
+planning essentials</h1>
+<p>Chapter 2 showed how to choose a robot configuration that reaches a
+target while satisfying geometric constraints. Here the robot starts at
+a different configuration and must move to that goal. We assume that you
+can evaluate forward kinematics, form a constrained optimization problem
+and check a numerical solution. We will use those tools to construct
+candidate motions, develop a search through checked connections and
+prepare a reference for a controller. The same planar arm lets us
+compare the methods under one geometry and one clearance
+requirement.</p>
+<h2 id="describe-and-check-a-connecting-motion">1. Describe and check a
+connecting motion</h2>
+<h3 id="a-waypoint-a-reference-motion-and-a-controller">1.1 A waypoint,
+a reference motion and a controller</h3>
+<p>Suppose the robot’s tip must reach a desired position at a chosen
+future time. Three responsibilities connect that request to robot
+commands.</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 75%" />
+</colgroup>
+<thead>
+<tr>
+<th>Stage</th>
+<th>What it supplies</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Waypoint</strong></td>
+<td>Inverse kinematics chooses an allowed goal configuration for the
+target.</td>
+</tr>
+<tr>
+<td><strong>Reference motion</strong></td>
+<td>Planning constructs and checks a route from the current
+configuration; timing specifies when each posture should be
+reached.</td>
+</tr>
+<tr>
+<td><strong>Controller</strong></td>
+<td>Feedback combines the reference with measurements of the robot to
+choose short-term commands.</td>
+</tr>
+</tbody>
+</table>
+<p>These stages operate over different horizons: a future goal, the
+motion leading to it and immediate corrections during execution. An
+allowed goal says nothing about the route to it. A geometrically clear
+route leaves its speed unspecified. A timed reference still requires a
+controller to track it on the physical robot. This chapter develops the
+middle stage and states what its checks establish. A controller’s
+ability to correct tracking error does not justify sending it a
+reference that crosses an obstacle.</p>
+<h3 id="clear-endpoints-can-have-a-colliding-connection">1.2 Clear
+endpoints can have a colliding connection</h3>
+<p>Consider the two-link planar arm from Chapter 2. Its link lengths are
+0.4 m and 0.3 m, and its base is fixed at the world origin. The shoulder
+angle is measured from the positive horizontal axis; the elbow angle is
+relative to the first link. The joint vector contains both angles.
+Calculations use radians; figures and the following endpoint values use
+degrees.</p>
+<p><span class="math display">
+\mathbf q_{\mathrm{start}}=
+\begin{bmatrix}30^\circ\\45^\circ\end{bmatrix},
+\qquad
+\mathbf y^*=\begin{bmatrix}0.5\\0.2\end{bmatrix}\ \mathrm m,
+\qquad
+\mathbf q_{\mathrm{goal}}\approx
+\begin{bmatrix}-11.517^\circ\\80.406^\circ\end{bmatrix}.
+\tag{1.1}
+</span></p>
+<p>The goal is the inverse-kinematics solution with a positive elbow
+angle. Holding that configuration fixed gives every planning method the
+same endpoint problem. Choosing another configuration that reaches the
+same tip target would change the motion-planning problem.</p>
+<p>The obstacle is a disc centered at world position (0.49, 0.35) m with
+radius 0.05 m. Model each link in Figure 1.1 as a complete line segment.
+Require at least 5 mm clearance from the disc surface. The model omits
+link thickness and self-collision. Both joint coordinates range from
+−180° to 180°, with no wrapping across the boundary. The earlier 60°
+elbow limit is absent; it would exclude the chosen goal.</p>
+<figure>
+<img src="lectures/04-D2-motion-planning/fig/endpoints.png"
+style="width:100.0%"
+alt="Figure 1.1. The start and selected goal both satisfy the whole-link clearance requirement. The dashed ring lies 5 mm outside the disc. The smallest link clearance is 49.9 mm at the start and 100.3 mm at the goal." />
+<figcaption aria-hidden="true">Figure 1.1. The start and selected goal
+both satisfy the whole-link clearance requirement. The dashed ring lies
+5 mm outside the disc. The smallest link clearance is 49.9 mm at the
+start and 100.3 mm at the goal.</figcaption>
+</figure>
+<p>To compute clearance for one link, let its world-frame endpoints be
+the two-dimensional position vectors <span class="math inline">\mathbf
+p_0</span> and <span class="math inline">\mathbf p_1</span>. Let <span
+class="math inline">\mathbf c</span> denote the disc center and <span
+class="math inline">r_o</span> its radius. Project the center onto the
+line through the link, then restrict the projection to the segment.</p>
+<div class="keep">
+<p>Dividing the along-link dot product by the squared link length gives
+a dimensionless fraction. Clipping it to the interval from zero to one
+keeps the closest point on the segment:</p>
+<p><span class="math display">
+\begin{aligned}
+u&amp;=\min\!\left(1,\max\!\left(0,
+\frac{(\mathbf c-\mathbf p_0)^\top(\mathbf p_1-\mathbf p_0)}
+{\|\mathbf p_1-\mathbf p_0\|^2}\right)\right),\\
+\mathbf p_{\mathrm{closest}}&amp;=\mathbf p_0+u(\mathbf p_1-\mathbf
+p_0),\\
+d_{\mathrm{link}}&amp;=\|\mathbf p_{\mathrm{closest}}-\mathbf c\|-r_o.
+\end{aligned}
+\tag{1.2}
+</span></p>
+</div>
+<p>The link has nonzero length, so the denominator is positive.
+Fractions zero and one select its endpoints; an intermediate fraction
+selects an interior point. Subtracting the disc radius converts center
+distance into signed clearance from its surface, in meters. A negative
+clearance means the link penetrates the disc. Evaluate (1.2) on both
+links and take the smaller value, written <span
+class="math inline">d_{\mathrm{clear}}(\mathbf q)</span>. The posture
+passes when this value is at least the required clearance, written <span
+class="math inline">d_{\mathrm{req}}</span>, which is 0.005 m here.</p>
+<p>At the start posture, we can see why the closest point may be an
+endpoint or lie inside a link. For link 2, forward kinematics gives the
+elbow and tip positions</p>
+<p><span class="math display">
+\mathbf p_0\approx\begin{bmatrix}0.3464\\0.2000\end{bmatrix}\ \mathrm m,
+\qquad
+\mathbf p_1\approx\begin{bmatrix}0.4241\\0.4898\end{bmatrix}\ \mathrm m.
+</span></p>
+<p>The projection’s numerator is approximately 0.05462 square meters and
+its denominator is 0.09 square meters. Their ratio lies between zero and
+one, so clipping leaves it unchanged. Substitution into (1.2) gives</p>
+<p><span class="math display">
+\begin{aligned}
+u&amp;\approx\frac{0.05462}{0.09}\approx0.607,\\
+\mathbf p_{\mathrm{closest}}
+&amp;\approx\begin{bmatrix}0.3935\\0.3758\end{bmatrix}\ \mathrm m,\\
+d_{\mathrm{link}}&amp;\approx(0.09987-0.05000)\ \mathrm m
+\approx49.9\ \mathrm{mm}.
+\end{aligned}
+</span></p>
+<p>For link 1, the same projection gives an unclipped fraction of 1.498.
+Clipping selects fraction one, so its closest point is the elbow. Its
+disc-surface clearance is 157.6 mm. The smaller link clearance is
+therefore 49.9 mm, and the start posture passes the 5 mm
+requirement.</p>
+<p>Now move both joint angles linearly from start to goal. At the
+halfway posture they are approximately 9.241° and 62.703°. The second
+link penetrates the disc by 47.7 mm, as Figure 1.2 shows. Clear
+endpoints therefore leave an invalid direct connection.</p>
+<figure>
+<img src="lectures/04-D2-motion-planning/fig/blocked-edge.png"
+style="width:85.0%"
+alt="Figure 1.2. Linear interpolation of the joint angles carries link 2 through the disc. The curve shows the smaller link clearance at 43 sampled postures. It first falls below the 5 mm requirement at check 9; the halfway posture, check 21, has the deepest sampled penetration." />
+<figcaption aria-hidden="true">Figure 1.2. Linear interpolation of the
+joint angles carries link 2 through the disc. The curve shows the
+smaller link clearance at 43 sampled postures. It first falls below the
+5 mm requirement at check 9; the halfway posture, check 21, has the
+deepest sampled penetration.</figcaption>
+</figure>
+<p>Starting an inverse-kinematics solve at the current posture produces
+a sequence of guesses that can look like a motion toward the goal. Its
+accepted guesses do not supply a checked motion. The acceptance test
+measures numerical progress in the stated optimization problem.
+Executing a connection between successive guesses would require checking
+the geometry along that connection.</p>
+<h3 id="represent-an-entire-posture-by-one-point">1.3 Represent an
+entire posture by one point</h3>
+<p>The pair of joint angles determines both links through forward
+kinematics. Plotting shoulder angle against elbow angle therefore
+represents an entire arm posture as one point. The set of configuration
+choices is called <strong>configuration space</strong>. For this bounded
+joint chart, expressed in radians,</p>
+<p><span class="math display">
+\mathcal Q=[-\pi,\pi]^2,
+\qquad
+\mathcal Q_{\mathrm{free}}=
+\{\mathbf q\in\mathcal Q:
+d_{\mathrm{clear}}(\mathbf q)\ge d_{\mathrm{req}}\}.
+\tag{1.3}
+</span></p>
+<p>The subset <span class="math inline">\mathcal
+Q_{\mathrm{free}}</span> contains the configurations that satisfy the
+clearance requirement. It excludes even nonpenetrating postures when
+their clearance is smaller than 5 mm. The subscript “free” always refers
+to the specified geometry, joint bounds and margin.</p>
+<figure>
+<img src="lectures/04-D2-motion-planning/fig/configuration-space.png"
+style="width:85.0%"
+alt="Figure 1.3. Arm postures A, B and C on the left correspond to the marked points on the right. The shaded configurations violate the 5 mm requirement. The direct connection crosses that region; a three-segment detour goes around it. The inset locates this enlarged view in the full bounded chart." />
+<figcaption aria-hidden="true">Figure 1.3. Arm postures A, B and C on
+the left correspond to the marked points on the right. The shaded
+configurations violate the 5 mm requirement. The direct connection
+crosses that region; a three-segment detour goes around it. The inset
+locates this enlarged view in the full bounded chart.</figcaption>
+</figure>
+<p>A circular obstacle in the workspace produces a different shape in
+configuration space because both links move with the angles. A straight
+segment in this plot changes both angles linearly; the tip generally
+follows a curved workspace path. For a seven-joint arm the same idea
+uses seven coordinates. We cannot draw all seven coordinates on two
+axes.</p>
+<p>The shaded boundary in Figure 1.3 comes from evaluating a grid of
+configurations. It is an illustration. At any proposed posture, the
+actual checker evaluates the segment geometry in (1.2). It does not read
+validity from the picture.</p>
+<p>The blue detour raises the elbow to 95°, changes the shoulder to its
+goal angle and then lowers the elbow to its goal angle. Its four
+waypoints are</p>
+<p><span class="math display">
+\begin{gathered}
+(30^\circ,45^\circ)^\top,\quad (30^\circ,95^\circ)^\top,\\
+(-11.517^\circ,95^\circ)^\top,\quad
+(-11.517^\circ,80.406^\circ)^\top.
+\end{gathered}
+\tag{1.4}
+</span></p>
+<p>These waypoints describe a candidate detour. To check it, we first
+need to specify the connections between adjacent waypoints.</p>
+<h3 id="separate-the-route-from-its-timing">1.4 Separate the route from
+its timing</h3>
+<p>A route assigns a posture to each value of a progress parameter. We
+call this a <strong>path</strong>. Let the scalar <span
+class="math inline">s</span> run from zero to one without time units. A
+valid geometric path is a continuous function satisfying</p>
+<p><span class="math display">
+\begin{gathered}
+\mathbf q_{\mathrm{path}}(s)\in\mathcal Q_{\mathrm{free}},
+\qquad 0\le s\le1,\\
+\mathbf q_{\mathrm{path}}(0)=\mathbf q_{\mathrm{start}},
+\qquad
+\mathbf q_{\mathrm{path}}(1)=\mathbf q_{\mathrm{goal}}.
+\end{gathered}
+\tag{1.5}
+</span></p>
+<p>A waypoint list specifies such a function only after we choose how to
+connect adjacent entries. The blue detour uses straight joint-space
+segments. On an edge with endpoint configurations <span
+class="math inline">\mathbf q_a</span> and <span
+class="math inline">\mathbf q_b</span>, local progress gives</p>
+<p><span class="math display">
+\mathbf q_{\mathrm{edge}}(s)
+=(1-s)\mathbf q_a+s\mathbf q_b,
+\qquad 0\le s\le1.
+\tag{1.6}
+</span></p>
+<p>Each segment includes both endpoints, so joining successive segments
+produces a continuous path. These connections respect the joint box
+because every interpolated coordinate lies between its endpoint values.
+They may still violate clearance, as the direct connection did.</p>
+<p>To describe the whole detour with one progress variable, we must
+assign a progress interval to each segment. One simple choice gives each
+of its three segments one third of the interval. For global progress
+<span class="math inline">s</span>, the corresponding local progress
+is</p>
+<p><span class="math display">
+\text{local progress}=\begin{cases}
+3s,&amp;0\le s&lt;1/3,\\
+3s-1,&amp;1/3\le s&lt;2/3,\\
+3s-2,&amp;2/3\le s\le1.
+\end{cases}
+</span></p>
+<p>Substitute this local value for <span class="math inline">s</span> in
+(1.6), using the current segment’s endpoint configurations. At each
+shared boundary, both segments give the same waypoint. Equal progress
+intervals need not represent equal joint-angle distances. This choice
+fixes the path parameterization; a time schedule then determines how
+quickly the robot progresses along it.</p>
+<p>Specifying when each posture is reached turns the path into a
+<strong>trajectory</strong>. Let <span class="math inline">t</span>
+denote time in seconds and <span class="math inline">t_{\mathrm
+f}</span> the duration. A continuous, nondecreasing progress schedule
+produces</p>
+<p><span class="math display">
+\mathbf q(t)=\mathbf q_{\mathrm{path}}(s(t)),
+\qquad s(0)=0,\qquad s(t_{\mathrm f})=1.
+\tag{1.7}
+</span></p>
+<p>Where the derivatives exist, the chain rule gives the joint angular
+velocity:</p>
+<p><span class="math display">
+\dot{\mathbf q}(t)=
+\frac{d\mathbf q_{\mathrm{path}}}{ds}\,\dot s(t).
+\tag{1.8}
+</span></p>
+<p>The path derivative measures angle change per unit progress, and the
+schedule derivative measures progress per second. Their product has
+units of rad/s. For uniform progress,</p>
+<p><span class="math display">
+s(t)=\frac{t}{t_{\mathrm f}},\qquad
+\dot s(t)=\frac1{t_{\mathrm f}}.
+</span></p>
+<p>Halving the duration doubles the progress rate. Equation (1.8) then
+doubles the joint angular velocity at each corresponding point along the
+path. At a corner in a piecewise linear path, the path direction changes
+abruptly. Motion with bounded acceleration may require slowing to a stop
+there or smoothing the corner. Thus a path’s geometric validity alone
+does not make its timing physically suitable.</p>
+<h3 id="check-the-connection-between-sampled-postures">1.5 Check the
+connection between sampled postures</h3>
+<p>A single posture is tested by a <strong>configuration check</strong>.
+Testing the connection between two postures is an <strong>edge
+check</strong>. For this course’s checker, choose enough subintervals
+along the straight joint-space edge in (1.6) that neither joint changes
+by more than one degree between checks. This rule sets the checking
+resolution. It does not limit the distance between a planner’s nodes.
+The RAI bidirectional planner introduced later uses different internal
+checks. We apply this course checker to its returned path separately.
+For example, if the largest coordinate change is 41.517°, then 41
+subintervals are too few and 42 suffice.</p>
+<div class="keep">
+<p>In radians, the general rule is</p>
+<p><span class="math display">
+\begin{gathered}
+N_{\mathrm{edge}}=
+\max\!\left(1,\left\lceil
+\frac{\|\mathbf q_b-\mathbf q_a\|_\infty}{\pi/180}
+\right\rceil\right),\\
+s_j=\frac{j}{N_{\mathrm{edge}}},
+\quad j=0,\ldots,N_{\mathrm{edge}}.
+\end{gathered}
+\tag{1.9}
+</span></p>
+</div>
+<p>The infinity norm selects the largest absolute joint-coordinate
+change. The ceiling rounds the ratio up to an integer. Taking the
+maximum with one also defines the check for identical endpoints. There
+is one more sampled posture than subintervals because both endpoints are
+included. Each <span class="math inline">s_j</span> measures progress
+along the current edge, starting from zero again on the next edge.</p>
+<p>The direct start-to-goal edge has coordinate changes of approximately
+−41.517° and 35.406°. Its 42 subintervals give 43 scheduled postures,
+indexed from zero at the start to 42 at the goal. At each sampled
+posture, reuse the same check of joint bounds and whole-link clearance.
+Reject the edge as soon as one check fails.</p>
+<div class="keep">
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">Check index</th>
+<th style="text-align: right;">Smallest clearance from the disc</th>
+<th>What it establishes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">49.9 mm</td>
+<td>The start passes.</td>
+</tr>
+<tr>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">4.3 mm</td>
+<td>The first failure rejects the edge.</td>
+</tr>
+<tr>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">−47.7 mm</td>
+<td>A later diagnostic scan finds penetration.</td>
+</tr>
+<tr>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">100.3 mm</td>
+<td>The goal passes.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The edge is rejected at check 9 because 4.3 mm is below the required
+5 mm margin. The robot has not yet touched the physical disc. That
+single failure settles the decision. A full scan to obtain Figure 1.2
+evaluates additional postures to explain the geometry. Those later
+evaluations are unnecessary for rejecting the edge. A planner can also
+reuse an already validated start posture; this example then evaluates
+checks 1 through 9 before stopping.</p>
+<p>Now apply the same rule separately to the detour’s three segments in
+(1.4). Every scheduled posture passes. The smallest checked clearance is
+49.9 mm, at the start; all later checked postures have greater
+clearance. Thus the detour passes the sampled test that rejected the
+direct connection.</p>
+<p>Passing every scheduled check establishes clearance at those
+postures. A violation could still occur between them. One degree
+controls the sampling spacing; 5 mm controls the clearance test. A
+continuous-clearance guarantee needs an additional bound on what can
+happen between checks or a method that checks the swept geometry.
+Section 4 states a sufficient clearance condition. Appendix C.2 derives
+the displacement bound used by that condition.</p>
+<p>We now have a common problem for two approaches: fixed endpoints, a
+robot model, allowed configurations and a connection rule. Trajectory
+optimization will choose a collection of configurations together.
+Sampling-based planning will search through candidate configurations and
+checked connections. Both approaches must be judged against the same
+motion-validity requirement.</p>
+<h2 id="optimize-the-configurations-together">2. Optimize the
+configurations together</h2>
+<p>The direct connection crosses the obstacle. We can let an optimizer
+bend it by choosing intermediate configurations together. To do so, we
+must specify the variables, a cost that ranks their motion and
+constraints that express the requirements. The resulting numerical
+solution still needs a check of the connections between its
+configurations.</p>
+<h3 id="collect-the-configurations-into-one-vector">2.1 Collect the
+configurations into one vector</h3>
+<p>Place 21 configurations along the motion, including the known start.
+These sampled configurations are called <strong>knots</strong>; RAI
+calls the 20 optimized configurations <em>time slices</em>. Each knot
+contains the shoulder and elbow angles. The start is fixed data, and we
+collect all remaining angles into one decision vector:</p>
+<p><span class="math display">
+\mathbf q_0=\mathbf q_{\mathrm{start}},\qquad
+\mathbf z=
+\begin{bmatrix}\mathbf q_1\\ \vdots\\ \mathbf q_T\end{bmatrix}
+\in\mathbb R^{nT},\qquad n=2,\quad T=20.
+\tag{2.1}
+</span></p>
+<p>There are forty decision coordinates. The goal configuration is
+known, but its knot remains in this vector and will be fixed by an
+equality constraint. An optimizer update can change every free knot at
+once. The optimizer’s iteration count is separate from the index of a
+configuration along the motion.</p>
+<p>In this section, <span class="math inline">t</span> is an
+<strong>integer knot index</strong>, from zero to <span
+class="math inline">T</span>. In the preceding section it denoted
+continuous physical time in seconds. We place the knots uniformly in a
+normalized interval of length one:</p>
+<p><span class="math display">
+\begin{aligned}
+\Delta t&amp;=\frac1T=0.05,\\
+\text{normalized time at knot }t&amp;=\frac{t}{T},\\
+\text{physical time at knot }t&amp;=t_{\mathrm f}\frac{t}{T}.
+\end{aligned}
+\tag{2.2}
+</span></p>
+<p>The last expression assumes a later uniform scaling to a duration
+<span class="math inline">t_{\mathrm f}</span> seconds. The optimization
+below does not choose that duration. Its differences are measured per
+normalized time unit. Choosing a physical duration and checking what the
+robot can execute remain necessary.</p>
+<h3 id="construct-the-joint-motion-features">2.2 Construct the
+joint-motion features</h3>
+<p>For a revolute joint, an angle difference divided by an interval
+gives an average angular velocity over that interval. Apply the
+operation to both coordinates:</p>
+<p><span class="math display">
+\mathbf v_t=\frac{\mathbf q_t-\mathbf q_{t-1}}{\Delta t}.
+\tag{2.3}
+</span></p>
+<div class="keep">
+<p>The change between consecutive angular velocities gives an angular
+acceleration estimate. Substituting the two first differences explains
+the coefficient on the middle configuration:</p>
+<p><span class="math display">
+\begin{aligned}
+\mathbf a_t
+&amp;=\frac{\mathbf v_t-\mathbf v_{t-1}}{\Delta t}\\
+&amp;=\frac{(\mathbf q_t-\mathbf q_{t-1})
+-(\mathbf q_{t-1}-\mathbf q_{t-2})}{\Delta t^2}\\
+&amp;=\frac{\mathbf q_{t-2}-2\mathbf q_{t-1}+\mathbf q_t}{\Delta t^2}.
+\end{aligned}
+\tag{2.4}
+</span></p>
+</div>
+<p>Both vectors have two components. These are joint angular quantities;
+a tip velocity would require a kinematic map. With the normalized
+interval, their units are radians per normalized time unit and radians
+per normalized time unit squared. Uniform scaling to a physical duration
+divides them by <span class="math inline">t_{\mathrm f}</span> and <span
+class="math inline">t_{\mathrm f}^2</span>, respectively.</p>
+<p>For one joint, consider three angles at intervals of 0.05. Equal
+angle increments give equal velocities and zero second difference:</p>
+<p><span class="math display">
+\begin{aligned}
+(q_{t-2},q_{t-1},q_t)&amp;=(0,0.05,0.10)\ \mathrm{rad},\\
+v_{t-1}&amp;=\frac{0.05-0}{0.05}=1,\qquad
+v_t=\frac{0.10-0.05}{0.05}=1,\\
+a_t&amp;=\frac{1-1}{0.05}=0.
+\end{aligned}
+</span></p>
+<p>Replacing the last angle by 0.15 rad changes the second velocity to 2
+and the acceleration estimate to 20, in the same normalized-time units.
+The first-difference feature measures movement; the second-difference
+feature measures how that movement changes.</p>
+<p>At the first free knot, (2.4) needs a configuration before the start.
+For an initially resting robot, repeat the known start as a fixed
+prefix:</p>
+<p><span class="math display">
+\mathbf q_{-1}:=\mathbf q_0,\qquad
+\mathbf v_0=\mathbf 0,\qquad
+\mathbf a_1=\frac{\mathbf q_1-\mathbf q_0}{\Delta t^2}.
+\tag{2.5}
+</span></p>
+<p>The prefix supplies zero incoming velocity. It does not impose zero
+outgoing movement. A cost on the first acceleration penalizes moving
+away from the start, while still allowing the optimizer to choose that
+movement. If the robot is already moving, the prefix must represent its
+incoming motion. Repeating the start would then specify the wrong
+initial condition.</p>
+<section id="rank-motions-by-their-angular-movement" class="keep">
+<h3>2.3 Rank motions by their angular movement</h3>
+<p>We can discourage large angular accelerations by approximating the
+integral of squared acceleration. Each interval contributes its width
+times the squared feature:</p>
+<p><span class="math display">
+\begin{aligned}
+f_a(\mathbf z)
+&amp;=\sum_{t=1}^{T}\Delta t\,\|\mathbf a_t\|^2
+\approx\int_0^1\|\mathbf a(\xi)\|^2\,d\xi,\\
+\mathbf r_t&amp;=\sqrt{\Delta t}\,\mathbf a_t,\qquad
+f_a(\mathbf z)=\sum_{t=1}^{T}\|\mathbf r_t\|^2.
+\end{aligned}
+\tag{2.6}
+</span></p>
+</section>
+<p>Here <span class="math inline">\xi</span> denotes continuous
+normalized time. We define the discrete cost by the final sum. The
+integral motivates its interval weighting; it does not assign a
+continuous acceleration to an unspecified interpolating curve. Putting
+the square root of the interval inside each residual recovers the
+interval width after squaring.</p>
+<p>RAI’s control objective uses this plain sum of squares. Unlike the
+half-squared-residual convention used for many derivations in Chapter 2,
+there is no factor of one half. Stack the two-component residuals into
+<span class="math inline">\mathbf r\in\mathbb R^{40}</span> and write
+their Jacobian as <span class="math inline">\mathbf J_r</span>. Then</p>
+<p><span class="math display">
+\begin{gathered}
+f_a=\mathbf r^\top\mathbf r,\qquad
+\nabla f_a=2\mathbf J_r^\top\mathbf r,\\
+\mathbf r_t=
+\frac{\sqrt{\Delta t}}{\Delta t^2}
+(\mathbf q_{t-2}-2\mathbf q_{t-1}+\mathbf q_t).
+\end{gathered}
+\tag{2.7}
+</span></p>
+<p>At the chosen interval, the coefficient on a raw second difference is
+approximately 89.443. Its square is 8000. Thus omitting the interval
+factors would change the numerical objective substantially. Multiplying
+the only objective by a positive constant preserves its exact
+constrained minimizers, but changes its gradient, multiplier scale and
+balance against any other soft cost. Numerical solver settings must
+respect the chosen scaling.</p>
+<p>Replacing acceleration by velocity gives a different objective:</p>
+<p><span class="math display">
+f_v(\mathbf z)=\sum_{t=1}^{T}\Delta t\,\|\mathbf v_t\|^2,
+\qquad
+\mathbf r_t=\sqrt{\Delta t}\,\mathbf v_t.
+\tag{2.8}
+</span></p>
+<p>To isolate this choice, temporarily remove the obstacle. Keep the
+same start and positive-elbow goal, and require the final two knots to
+coincide. That last condition sets the final difference velocity to
+zero. Both costs are quadratic in the free angles and both endpoint
+conditions are linear, so these two comparisons can be solved directly
+as equality-constrained quadratic problems.</p>
+<figure>
+<img src="lectures/04-reading-motion-planning/fig/cost-comparison.png"
+style="width:100.0%"
+alt="Figure 2.1. Two objectives with the same start, positive-elbow goal and final rest, with the obstacle removed. The left panel plots the Euclidean size of each joint-angle step. The right panel shows the common tip route and the different tip positions at knot indices 4, 10 and 16. Squares mark the velocity-cost motion and circles the acceleration-cost motion. Markers with the same number show both motions at the same normalized time." />
+<figcaption aria-hidden="true">Figure 2.1. Two objectives with the same
+start, positive-elbow goal and final rest, with the obstacle removed.
+The left panel plots the Euclidean size of each joint-angle step. The
+right panel shows the common tip route and the different tip positions
+at knot indices 4, 10 and 16. Squares mark the velocity-cost motion and
+circles the acceleration-cost motion. Markers with the same number show
+both motions at the same normalized time.</figcaption>
+</figure>
+<p>Figure 2.1 shows what the choice of objective changes. Both
+objectives move the arm along the same geometric route, but they
+progress along it at different speeds. The left panel shows this speed
+profile as the size of each joint step. The right panel shows where the
+tip is at a few matching knots.</p>
+<p>In the left panel, the velocity cost gives nineteen equal joint
+steps, each with Euclidean size 2.872°. The twentieth step is zero
+because of terminal rest. To see why equal steps are favored, keep their
+sum fixed at the required start-to-goal displacement. Making one step
+larger and another smaller increases the sum of squared step sizes. The
+optimum distributes movement equally among the nineteen available
+steps.</p>
+<p>Acceleration cost instead penalizes changes between steps, including
+the change from the zero incoming step. The step sizes rise from 0.779°
+to 4.103° at knot 10, then decrease to zero. This motion starts slowly,
+moves fastest in the middle and slows down before the goal.</p>
+<p>Both solutions lie on the same straight segment in joint space, so
+the right panel shows one tip route for both. Matching knot indices
+identify the same normalized time through (2.2). Knot 4, for example, is
+normalized time 0.2, and knot 16 is 0.8. At knot 4, the velocity-cost
+motion has covered about 21% of the joint-space displacement and the
+acceleration-cost motion about 13%. At knot 16 the order reverses, with
+about 84% against 92%. The largest tip separation at a matching knot is
+about 2.6 cm.</p>
+<p>The two minimized costs are 0.9547 for velocity and 10.9104 for
+acceleration. These values measure different quantities; their
+magnitudes do not rank the two solutions against each other. Neither
+solution solves the original avoidance problem. Their common route is
+the direct connection that crossed the disc. Restoring the obstacle
+requires explicit clearance constraints.</p>
+<section id="assemble-the-trajectory-problem" class="keep">
+<h3>2.4 Assemble the trajectory problem</h3>
+<p>We now restore the disc and select acceleration cost. The motion must
+meet three physical requirements. The arm must reach the fixed goal
+posture at the last knot, and it must come to rest there. At every free
+knot, every point of both links must stay at least 5 mm from the disc.
+The first two requirements are equalities. Two rows fix the goal angles,
+and two more make the final discrete angular velocity zero:</p>
+<p><span class="math display">
+\mathbf h(\mathbf z)=
+\begin{bmatrix}
+\mathbf q_T-\mathbf q_{\mathrm{goal}}\\[2pt]
+(\mathbf q_T-\mathbf q_{T-1})/\Delta t
+\end{bmatrix}=\mathbf 0\in\mathbb R^4.
+\tag{2.9}
+</span></p>
+</section>
+<p>The first pair is measured in radians; the second in radians per
+normalized time unit. Terminal rest makes the last two configurations
+coincide. It does not force the preceding steps to vanish, or impose
+zero terminal acceleration. These are discrete boundary conditions.
+Physical smoothness also depends on how the robot will interpolate and
+time the returned configurations.</p>
+<p>For the clearance requirement, apply the segment geometry from (1.2)
+separately to each link at every free knot. Let <span
+class="math inline">\mathbf p_{t,\ell}</span> be the closest point on
+link <span class="math inline">\ell</span> to the disc center at
+configuration <span class="math inline">\mathbf q_t</span>. Write the
+margin requirement with the same nonpositive sign convention as Chapter
+2:</p>
+<p><span class="math display">
+\begin{gathered}
+g_{t,\ell}(\mathbf z)
+=r_o+d_{\mathrm{req}}-\|\mathbf p_{t,\ell}-\mathbf c\|\le0,\\
+t=1,\ldots,T,\qquad \ell\in\{1,2\}.
+\end{gathered}
+\tag{2.10}
+</span></p>
+<p>Each row is measured in meters. A positive value is the clearance
+deficit; a negative value is the clearance beyond the required margin.
+For example, a center-to-link distance of 0.053 m gives a positive row
+of 0.002 m: the link is outside the physical disc but misses the margin
+by 2 mm. A distance of 0.060 m gives a row of −0.005 m and passes with 5
+mm to spare.</p>
+<p>There are forty inequality rows: twenty free knots times two links.
+The fixed start was checked in Section 1 and needs no decision-dependent
+row. The complete program is</p>
+<p><span class="math display">
+\begin{aligned}
+\min_{\mathbf z\in\mathbb R^{40}}\quad&amp;
+\sum_{t=1}^{20}\left\|
+\frac{\sqrt{\Delta t}}{\Delta t^2}
+(\mathbf q_{t-2}-2\mathbf q_{t-1}+\mathbf q_t)\right\|^2\\
+\text{subject to}\quad&amp;\mathbf h(\mathbf z)=\mathbf0,\\
+&amp;g_{t,\ell}(\mathbf z)\le0,
+\quad t=1,\ldots,20,\quad\ell=1,2,\\
+&amp;\mathbf q_{-1}=\mathbf q_0=\mathbf q_{\mathrm{start}}
+\quad\text{(fixed data)}.
+\end{aligned}
+\tag{2.11}
+</span></p>
+<p>This program has forty decision coordinates, four equality rows and
+forty inequality rows. It omits joint-bound rows. We check the returned
+angles against the joint box afterward; success on (2.11) alone does not
+establish that requirement. It also checks clearance only at the knots.
+No row yet constrains the interior of a connection between adjacent
+knots.</p>
+<p>An exact constraint and a numerical acceptance tolerance serve
+different roles. The mathematical requirement remains 5 mm clearance. A
+solver may return a small positive inequality residual within its
+stopping tolerance. Report its size and units before deciding whether it
+is acceptable for a particular application. Rounding a displayed
+clearance to 5.0 mm can conceal both tiny numerical errors and more
+substantial errors in other checks.</p>
+<h3 id="use-the-dependence-on-neighboring-configurations">2.5 Use the
+dependence on neighboring configurations</h3>
+<p>All forty variables are solved together. Each motion feature uses
+only a few neighboring knots. For an acceleration residual away from the
+fixed prefix, its nonzero Jacobian blocks are</p>
+<p><span class="math display">
+\begin{aligned}
+\frac{\partial\mathbf r_t}{\partial\mathbf q_{t-2}}
+&amp;=\frac{\sqrt{\Delta t}}{\Delta t^2}\mathbf I_2,\\
+\frac{\partial\mathbf r_t}{\partial\mathbf q_{t-1}}
+&amp;=-2\frac{\sqrt{\Delta t}}{\Delta t^2}\mathbf I_2,\\
+\frac{\partial\mathbf r_t}{\partial\mathbf q_t}
+&amp;=\frac{\sqrt{\Delta t}}{\Delta t^2}\mathbf I_2.
+\end{aligned}
+\tag{2.12}
+</span></p>
+<p>Every other knot block in that row is zero. Blocks for fixed
+configurations are omitted from the decision Jacobian. A clearance row
+depends only on its own configuration, while the terminal-rest row
+couples the last two. Figure 2.2 marks the knot blocks that each feature
+can depend on. Its acceleration rows shift by one column block from one
+knot to the next.</p>
+<figure>
+<img src="lectures/04-D2-motion-planning/fig/knot-locality.png"
+style="width:80.0%"
+alt="Figure 2.2. A feature of order zero uses one configuration; first and second differences use two and three neighboring configurations. These local dependencies make most blocks of the trajectory Jacobian zero." />
+<figcaption aria-hidden="true">Figure 2.2. A feature of order zero uses
+one configuration; first and second differences use two and three
+neighboring configurations. These local dependencies make most blocks of
+the trajectory Jacobian zero.</figcaption>
+</figure>
+<div class="keep">
+<p>For the clearance derivative, first hold the projection fraction
+<span class="math inline">u</span> fixed. Let <span
+class="math inline">\mathbf J_0</span> and <span
+class="math inline">\mathbf J_1</span> be the two link-endpoint position
+Jacobians, each with two rows and two columns. The closest-point
+position Jacobian with this fraction fixed is</p>
+<p><span class="math display">
+\overline{\mathbf J}_p=(1-u)\mathbf J_0+u\mathbf J_1.
+\tag{2.13}
+</span></p>
+</div>
+<div class="keep">
+<p>Define the unit direction from the disc center toward that point.
+Applying the derivative of a norm gives the row</p>
+<p><span class="math display">
+\begin{gathered}
+\mathbf n=\frac{\mathbf p-\mathbf c}{\|\mathbf p-\mathbf c\|},\\
+\frac{\partial g_{t,\ell}}{\partial\mathbf q_t}
+=-\mathbf n^\top\overline{\mathbf J}_p
+\in\mathbb R^{1\times2}.
+\end{gathered}
+\tag{2.14}
+</span></p>
+</div>
+<p>The fraction <span class="math inline">u</span> can change with the
+configuration, but its change contributes no first-order change to the
+distance. At an interior projection, the vector from the center to the
+closest point is perpendicular to the link. A change in <span
+class="math inline">u</span> slides that point along the link, so it
+contributes zero to the distance derivative. While a clipped endpoint
+remains selected, <span class="math inline">u</span> is constant at zero
+or one. At a transition between an interior projection and an endpoint,
+the first derivatives agree when the center distance is positive; second
+derivatives can change there. Appendix B gives the omitted term
+explicitly.</p>
+<p>The normalized direction in (2.14) is undefined when the center lies
+on the segment. Also distinguish a row for one link from the minimum
+clearance across both links. That minimum can be nonsmooth when two
+links tie with different gradients. Our program retains one inequality
+per link, so it does not differentiate through a minimum across
+links.</p>
+<p>These features involve the current knot and at most two preceding
+knots. This temporal structure is called <strong>k-order Markov
+optimization</strong>, or <strong>KOMO</strong>, with order two here.
+The name describes how the features depend on the configurations; it
+does not select a particular optimization algorithm. The Jacobian is
+sparse, and products of its local blocks couple only nearby knots. This
+structure permits sparse linear algebra as the motion gets longer. It
+does not make every update local: solving the coupled linear system can
+change the entire sequence.</p>
+<p>We can now use Chapter 2’s augmented-Lagrangian construction. During
+an inner solve, keep the multipliers and penalty weight fixed. RAI uses
+damped Newton steps with a Gauss–Newton curvature model for these
+residual features and a line search. After the inner solve, it updates
+the multipliers and increases the penalty weight, up to a cap. Its
+stopping rules are separate from the feasibility, stationarity and
+complementarity checks introduced in Chapter 2. We evaluate those
+residuals on the returned sequence. The clearance geometry makes the
+full problem nonlinear, so this is a local solve. A stopping test is not
+evidence of global optimality.</p>
+<p>The same formulation can be expressed in RAI by adding an order-two
+control objective, the two endpoint objectives and a distance inequality
+for each link. The matched implementation and numerical checks are in
+Appendix B. The derivation above specifies the problem independently of
+a particular software interface.</p>
+<h3 id="check-what-the-solution-establishes">2.6 Check what the solution
+establishes</h3>
+<p>We now solve (2.11) and examine what the returned sequence
+establishes and what it leaves unchecked.</p>
+<h4 id="compare-two-initial-guesses">Compare two initial guesses</h4>
+<p>The robot’s start and goal postures stay fixed. The optimizer also
+needs an initial guess for the entire sequence of free configurations,
+and that guess can change. We supply two. The first places equally
+spaced configurations on the direct start-to-goal line, and some of them
+put link 2 inside the disc. The second redistributes configurations
+along a supplied detour. All knots of the second satisfy the clearance
+rows initially. Their connections still need checking. We will develop
+the sampling construction of that detour later.</p>
+<p>Figure 2.3 shows the default solver results in joint-angle space. The
+horizontal axis is the shoulder angle and the vertical axis is the elbow
+angle, so each point is one posture of the whole arm. The fixed start
+lies at the lower right and the fixed goal at the upper left. The red
+dashed line is the direct guess, and the purple dotted line is the
+detour. The blue dots are the knots returned with default solver
+options. Knots 12 and 13 are enlarged; the red square marks the
+clearance violation at knot 13.</p>
+<p>The shaded regions show the clearance requirement in these
+coordinates. For each pair of joint angles, take the smallest distance
+from either link to the disc surface. The solid gray curve joins the
+postures where this distance is zero, so a link just touches the disc.
+Inside that curve, a link intersects the disc. The dashed curve joins
+the postures with exactly 5 mm of clearance. In the pale band between
+the two curves, the arm misses the disc but leaves less than the
+required 5 mm. These curves are contours of a clearance function of the
+two joint angles. They are not a drawing of the circular disc, which
+exists in the workspace. The contours approximate the boundaries from a
+grid of clearance values. The constraint rows evaluate the clearance at
+each knot directly. Figure 1.3 shaded the same 5 mm region without
+separating the contact boundary.</p>
+<figure>
+<img
+src="lectures/04-D2-motion-planning/fig/komo-shapes-initial-guesses.png"
+style="width:100.0%"
+alt="Figure 2.3. Default solver options return the same knots from both initial guesses. The red square marks knot 13, where link 2 misses the required clearance by 2.0 mm. The gray region contains postures that intersect the disc; the pale band contains postures that clear it by less than 5 mm." />
+<figcaption aria-hidden="true">Figure 2.3. Default solver options return
+the same knots from both initial guesses. The red square marks knot 13,
+where link 2 misses the required clearance by 2.0 mm. The gray region
+contains postures that intersect the disc; the pale band contains
+postures that clear it by less than 5 mm.</figcaption>
+</figure>
+<p>Both initial guesses give the same default result to numerical
+accuracy, with acceleration cost 16.19. At knot 13, link 2 misses the
+required clearance by 2.00 mm. RAI reports <code>feasible</code> as
+true, but its residual threshold allows this violation. Its small-step
+stopping rule does not establish that every constraint has been met.
+Starting from a detour with clear knots does not prevent this
+result.</p>
+<p>To examine the motion between accurate knots, solve the same program
+with scaled constraint rows and tighter stopping options. This reference
+run reaches cost 16.14 from either initial guess. Link 2 at knots 12 and
+13 has the only active clearance rows. Both knots meet the 5 mm
+requirement to numerical accuracy, with a tiny nonzero deficit. The
+other clearance rows have slack. The endpoint and final-velocity
+residuals are also tiny, and the returned angles lie inside the joint
+box. Appendix B.3 gives the settings, initialization details and exact
+residuals.</p>
+<p>These results concern this problem and these initial guesses. They do
+not imply that initialization never matters in trajectory
+optimization.</p>
+<h4 id="check-the-connecting-motion">Check the connecting motion</h4>
+<p>The reference knots meet every requirement written in (2.11) to
+numerical tolerance. The robot also passes through the postures between
+them. Connect adjacent returned configurations by the straight
+joint-space edges used in Section 1. The endpoints of each edge lie
+within the joint box, so the interpolated coordinates remain within it.
+Clearance requires its own test.</p>
+<p>Figure 2.4 shows the accurate reference in the physical workspace,
+with positions in meters. It enlarges the part of link 2 that passes the
+disc. The gray circle is the physical disc, and the dashed circle is the
+ring 5 mm outside it. The blue and green links show link 2 at knots 12
+and 13. Each reaches the dashed ring, as its active clearance row
+requires. The red link is the posture halfway between them, found by
+interpolating the joint angles linearly. Its nearest point to the disc,
+marked by the cross, lies 1.84 mm inside the ring. The link stays
+outside the physical disc, so this posture does not collide. It still
+violates the 5 mm clearance that the task requires.</p>
+<figure>
+<img src="lectures/04-D2-motion-planning/fig/komo-shapes-gap.png"
+style="width:60.0%"
+alt="Figure 2.4. Accurate reference. Workspace close-up of link 2 at knots 12 (blue) and 13 (green), and halfway between them (red). The gray circle is the physical disc and the dashed circle lies 5 mm outside it. The cross marks the intermediate posture’s nearest point, 1.84 mm inside the ring and still outside the disc." />
+<figcaption aria-hidden="true">Figure 2.4. Accurate reference. Workspace
+close-up of link 2 at knots 12 (blue) and 13 (green), and halfway
+between them (red). The gray circle is the physical disc and the dashed
+circle lies 5 mm outside it. The cross marks the intermediate posture’s
+nearest point, 1.84 mm inside the ring and still outside the
+disc.</figcaption>
+</figure>
+<div class="keep">
+<p>Apply Section 1’s one-degree sampling rule to interval 12→13. It
+gives four subintervals and five scheduled postures, including the
+endpoints. A diagnostic scan evaluates all five to show the clearance
+along the connection. Every interior sample misses the 5 mm
+requirement:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th style="text-align: right;">Local edge progress</th>
+<th style="text-align: right;">Clearance from the disc</th>
+<th style="text-align: right;">Deficit from the 5 mm requirement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">0.25</td>
+<td style="text-align: right;">3.620 mm</td>
+<td style="text-align: right;">1.380 mm</td>
+</tr>
+<tr>
+<td style="text-align: right;">0.50</td>
+<td style="text-align: right;">3.156 mm</td>
+<td style="text-align: right;">1.844 mm</td>
+</tr>
+<tr>
+<td style="text-align: right;">0.75</td>
+<td style="text-align: right;">3.626 mm</td>
+<td style="text-align: right;">1.374 mm</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The strict checker first rejects knot 12 because of its tiny nonzero
+deficit. The table comes from a separate diagnostic scan after that
+rejection. The numerical knot error and the millimeter-scale gap between
+knots are different reasons for rejection. Tolerating the former leaves
+the connecting motion invalid.</p>
+<p>The checks between knots 12 and 13 found this violation without
+changing the motion. They evaluated more postures along the same
+straight joint-space segment. Adding checks can reveal a violation in
+this way, but it cannot repair one. A repair requires a different
+motion, for example from more knots or additional constraints in the
+program. That revised motion has new connections, and each of them needs
+fresh checks.</p>
+<p>The optimized sequence therefore solves the sampled program to the
+stated tolerances but does not provide a motion that meets the original
+clearance requirement.</p>
+<h4 id="interpret-the-active-constraints">Interpret the active
+constraints</h4>
+<p>The accurate reference has two active clearance rows, on link 2 at
+knots 12 and 13, shown in Figure 2.4. Each has a positive multiplier.
+The reference solve multiplies every constraint row by ten. A positive
+scale preserves the exact feasible set, but changes the numerical
+problem. To interpret its multipliers in physical units, multiply the
+returned duals for the scaled rows by ten:</p>
+<p><span class="math display">
+\lambda=10\lambda&#39;.
+</span></p>
+<div class="keep">
+<p>The active multipliers, about 146.96 and 87.14, estimate the increase
+in locally optimized cost per meter of added clearance. Raising the
+common margin tightens both active rows, so their contributions add. For
+a small change along the same smooth local solution with the same active
+rows, raising the margin from 5.0 to 5.1 mm predicts</p>
+<p><span class="math display">
+\text{cost increase}\approx(146.96+87.14)\times0.0001=0.02341.
+</span></p>
+</div>
+<p>Re-solving gives an increase of 0.02347, close to this local
+estimate. The multipliers do not predict the cost of a large change or a
+switch to another local solution.</p>
+<h4 id="check-solver-accuracy-in-physical-units">Check solver accuracy
+in physical units</h4>
+<p>A solver flag does not state how accurately each physical requirement
+was met. Both runs report <code>feasible</code> as true, but their
+clearance residuals differ:</p>
+<div class="keep">
+<table>
+<thead>
+<tr>
+<th>Run</th>
+<th>Largest clearance deficit at a knot</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Default options</td>
+<td>2.00 mm</td>
+</tr>
+<tr>
+<td>Accurate reference</td>
+<td>About <span class="math inline">10^{-7}</span> mm (nonzero)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The reference combines constraint scaling with tighter stopping
+options. Scaling alone did not reliably give this accuracy in the
+recorded runs. Appendix B.3 gives those comparisons. They do not
+establish preferred settings for other problems.</p>
+<p>Check each residual in its own units. Report clearance deficits in
+millimeters, goal residuals in radians and final-velocity residuals in
+radians per normalized time unit. Then check the connecting motion. A
+failed sample proves a violation. A finite check that passes does not
+certify clearance along the whole motion. Repeat both checks after
+changing the path or solving with different settings.</p>
+<p>Execution also requires suitable timing, motion limits and a physical
+robot model. The acceleration cost alone does not establish those
+requirements.</p>
+<h2 id="search-through-checked-connections">3. Search through checked
+connections</h2>
+<p>The optimizer needs an initial guess for the whole motion. We can
+instead search for a route by proposing postures and testing connections
+between them. The start, goal, joint limits and 5 mm whole-link
+clearance requirement stay the same. We do not need to construct the
+full forbidden region shown in the figures. We evaluate geometry only
+where the search needs it.</p>
+<h3 id="define-the-operations-used-by-the-search">3.1 Define the
+operations used by the search</h3>
+<p>Each proposed posture is a pair of joint angles. Our sampler draws
+each angle uniformly from its allowed interval. The two draws are
+independent. A sample can violate the clearance requirement; the planner
+decides whether to use it.</p>
+<p>To choose nearby postures, measure the difference between their
+joint-angle vectors. For this arm we give both angles the same
+weight:</p>
+<p><span class="math display">
+d(\mathbf q_a,\mathbf q_b)
+=\|\mathbf q_b-\mathbf q_a\|_2
+=\sqrt{(q_{b,1}-q_{a,1})^2+(q_{b,2}-q_{a,2})^2}.
+\tag{3.1}
+</span></p>
+<p>The second subscript identifies the joint. This distance is measured
+in radians. It is not the distance traveled by the tip. As in Section 1,
+the joint chart does not wrap at its boundaries. A robot with both
+angular and translational coordinates would need a stated scaling before
+combining their coordinate differences.</p>
+<p>Connect two postures by interpolating their joint angles as in (1.6).
+Apply the course edge check from (1.9) to the resulting segment. Every
+checked posture must respect the joint limits and give both complete
+links at least 5 mm clearance. Nearby endpoints still need this
+check.</p>
+<p>These operations separate four choices: where to sample, how to
+measure proximity, how to connect postures and how to check the
+connection. They also define what a route’s cost means. Index the route
+vertices from zero through <span class="math inline">M</span>. The
+joint-space length is</p>
+<p><span class="math display">
+L=\sum_{i=0}^{M-1}d(\mathbf q_i,\mathbf q_{i+1}).
+\tag{3.2}
+</span></p>
+<p>Here the indices enumerate route vertices, not the uniform-time knots
+of Section 2. We compute lengths in radians and report some totals in
+degrees. A smaller total means less joint-space travel. It does not
+establish a shorter execution time or a smoother motion.</p>
+<h3 id="build-a-roadmap-and-attach-a-query">3.2 Build a roadmap and
+attach a query</h3>
+<p>Suppose the same robot will make several motions among fixed
+obstacles. We can store checked postures and connections in a graph,
+then reuse them for different start–goal queries. This is the idea of a
+<strong>probabilistic roadmap</strong>, or <strong>PRM</strong>,
+introduced by <a
+href="https://www.kavrakilab.org/publications/kavraki-svestka1996probabilistic-roadmaps-for.html">Kavraki,
+Švestka, Latombe and Overmars</a>. A graph node stores a configuration.
+An edge stores an accepted connection.</p>
+<p>The following algorithm separates building the graph from using
+it.</p>
+<div class="keep">
+<p><strong>Algorithm 3.1. Build and query a probabilistic
+roadmap.</strong></p>
+<p>The inputs are the robot and obstacle geometry, joint limits,
+required clearance, sampling budget and neighbor-selection rule. The
+query supplies start and goal configurations. The output is a route
+through checked edges, or a report that this roadmap contains no
+route.</p>
+<ol type="1">
+<li>Sample configurations and keep those that pass the configuration
+check as nodes.</li>
+<li>Select nearby pairs of nodes. Check their connections and store
+accepted edges, with joint-space length as cost.</li>
+<li>Check the query’s start and goal. Attach them through checked
+connections to nearby roadmap nodes.</li>
+<li>Search the graph for a route of minimum total edge cost.</li>
+</ol>
+</div>
+<p>For this geometric arm, a connection can be traversed in either
+direction, so the graph edges are undirected. A longer edge has a larger
+cost. A route with more edges can still cost less if those edges avoid
+an unnecessary detour.</p>
+<p>Figure 3.1 shows one roadmap and the selected route. The left panel
+uses joint-angle coordinates. Amber marks postures with less than the
+required clearance. The blue route follows five accepted edges through
+four intermediate postures. The right panel shows those same postures in
+the workspace and the tip’s route under joint-angle interpolation.</p>
+<figure>
+<img src="lectures/04-D2-motion-planning/fig/prm-slide.png"
+style="width:100.0%"
+alt="Figure 3.1. A roadmap supplies several checked connections. Graph search selects the blue five-edge route. Matching labels identify its four intermediate postures in joint space and in the workspace." />
+<figcaption aria-hidden="true">Figure 3.1. A roadmap supplies several
+checked connections. Graph search selects the blue five-edge route.
+Matching labels identify its four intermediate postures in joint space
+and in the workspace.</figcaption>
+</figure>
+<p>This example draws 400 samples and retains 395 valid configurations.
+Adding the start and goal gives 397 nodes. Each node selects its five
+nearest other nodes as connection candidates. Five is a
+neighbor-selection count, not the final degree of every node: other
+nodes can also select it. The displayed route has joint-space length
+69.89°. The implementation includes the endpoints before building this
+single-query graph. It does not measure the benefit of reusing a
+previously built roadmap.</p>
+<p>Reuse requires the same scene, robot model, joint limits, clearance
+requirement and checking rule. Increasing the required margin can
+invalidate stored edges without moving an obstacle. A failed graph
+search means that this graph has no route. It does not prove that the
+continuous planning problem has none.</p>
+<h3 id="find-the-shortest-route-in-the-graph">3.3 Find the shortest
+route in the graph</h3>
+<p>At each node, store the cheapest route found so far from the start.
+Call its length the tentative cost <span
+class="math inline">D(v)</span>, where <span
+class="math inline">v</span> is a node label. Also store the preceding
+node on that route. Initially the start has cost zero and all other
+nodes have infinite cost.</p>
+<p>Suppose the search has reached node <span
+class="math inline">u</span> and considers an edge to node <span
+class="math inline">v</span>. Let <span
+class="math inline">w(u,v)</span> be that edge’s joint-space length. The
+route through <span class="math inline">u</span> has cost equal to the
+cost of reaching <span class="math inline">u</span> plus the new edge
+length. Keep it if it improves the current value:</p>
+<p><span class="math display">
+D(v)\leftarrow\min\{D(v),\ D(u)+w(u,v)\}.
+\tag{3.3}
+</span></p>
+<p>When the second expression is smaller, record <span
+class="math inline">u</span> as the predecessor of <span
+class="math inline">v</span>. This update is called <strong>edge
+relaxation</strong>. The scalar cost <span class="math inline">D</span>
+is distinct from the matrix with the same letter used for optimization
+weights.</p>
+<p>All edge costs are nonnegative. This lets us repeatedly choose the
+smallest tentative cost and declare it final. The resulting procedure is
+<strong>Dijkstra’s algorithm</strong> (<a
+href="https://doi.org/10.1007/BF01386390">Dijkstra, 1959</a>).</p>
+<div class="keep">
+<p><strong>Algorithm 3.2. Search a graph with nonnegative edge
+costs.</strong></p>
+<p>The inputs are the checked graph, its edge costs, and the start and
+goal nodes. The output is a minimum-cost route in this graph, or no
+route.</p>
+<ol type="1">
+<li>Set the start’s tentative cost to zero and all others to
+infinity.</li>
+<li>Choose the unsettled node with the smallest finite tentative cost.
+Settle it, meaning that its cost is now final.</li>
+<li>If it is the goal, stop. Otherwise relax its edges to unsettled
+neighbors and update their predecessors when a cost improves.</li>
+<li>Repeat from step 2. If no finite tentative cost remains, report no
+route. After reaching the goal, follow predecessors backward and reverse
+the list.</li>
+</ol>
+</div>
+<p>To see why settling works, suppose a cheaper route to the chosen node
+existed. Consider the first unsettled node on that cheaper route. Its
+predecessor has already been settled. Relaxing their edge must therefore
+have given this unsettled node a cost no larger than that route’s
+prefix. The remaining edges cannot reduce the cost because their lengths
+are nonnegative. This contradicts choosing the smallest tentative cost.
+Thus a settled cost cannot later improve.</p>
+<p>In Figure 3.1, the selected route reaches its last intermediate node
+with cost 58.2709°. The edge from there to the goal costs 11.6150°.
+Their sum is</p>
+<p><span class="math display">
+D(\text{goal})\approx58.2709^\circ+11.6150^\circ=69.8859^\circ.
+\tag{3.4}
+</span></p>
+<p>Finding this candidate does not yet settle the goal. Other nodes with
+smaller tentative costs must be considered first. Stop when the goal is
+selected as the cheapest unsettled node. The result is shortest among
+the graph’s routes; it need not be shortest among all motions in
+configuration space.</p>
+<h3 id="grow-a-tree-toward-sampled-configurations">3.4 Grow a tree
+toward sampled configurations</h3>
+<p>For a single query, we can grow connections outward from the start.
+Each new node stores one parent, so every node has a unique route back
+to the root. This structure is a tree. A <strong>rapidly exploring
+random tree</strong>, or <strong>RRT</strong>, grows toward randomly
+selected configurations (<a
+href="https://lavalle.pl/rrtpubs.html">LaValle</a>).</p>
+<p>A sample first identifies the nearest existing tree node under (3.1).
+The planner then proposes a step from that node toward the sample. Limit
+its length by the positive parameter <span
+class="math inline">d_{\mathrm{step}}</span>. For a nonzero
+sample-to-node distance, the proposal is</p>
+<p><span class="math display">
+\mathbf q_{\mathrm{new}}=\mathbf q_{\mathrm{near}}+
+\min\!\left(1,\frac{d_{\mathrm{step}}}
+{\|\mathbf q_{\mathrm{rand}}-\mathbf q_{\mathrm{near}}\|_2}\right)
+(\mathbf q_{\mathrm{rand}}-\mathbf q_{\mathrm{near}}).
+\tag{3.5}
+</span></p>
+<p>The difference vector points toward the sample. Dividing by its norm
+gives a unit direction. Multiplication by the step limit gives the
+maximum move. The minimum in (3.5) prevents overshooting a closer
+sample. If the sample already equals the nearest node, no extension is
+needed.</p>
+<p>The sample guides the search; it need not be a valid posture. The
+proposed node enters the tree only when its connection passes the edge
+check. Configurations evaluated inside that edge do not become tree
+nodes.</p>
+<div class="keep">
+<p><strong>Algorithm 3.3. Grow an RRT for one start–goal
+query.</strong></p>
+<p>The inputs are checked endpoints, the planning operations, an
+extension limit, a goal-sampling probability and an attempt budget. The
+output is a route through accepted edges, or no route found within the
+budget.</p>
+<ol type="1">
+<li>Create a tree rooted at the start.</li>
+<li>Sample a target. With probability <span
+class="math inline">p_{\mathrm{goal}}</span>, use the goal; otherwise
+draw uniformly from the joint limits.</li>
+<li>Find the nearest tree node and propose the capped extension in
+(3.5).</li>
+<li>Check the proposed edge. If it fails, keep the tree unchanged. If it
+passes, add the new node with the nearest node as its parent.</li>
+<li>When the goal is within the extension limit, try a checked
+connection to it. If the tree reaches the goal, recover its parent
+route. Otherwise repeat until the budget is exhausted.</li>
+</ol>
+</div>
+<div class="keep">
+<p>For a numerical extension, suppose the nearest node and sampled
+target are</p>
+<p><span class="math display">
+\mathbf q_{\mathrm{near}}\approx
+\begin{bmatrix}53.21^\circ\\9.27^\circ\end{bmatrix},\qquad
+\mathbf q_{\mathrm{rand}}\approx
+\begin{bmatrix}94.27^\circ\\-153.17^\circ\end{bmatrix}.
+</span></p>
+<p>Their Euclidean separation is about 167.56°. A 10° extension
+therefore uses about 0.05968 of the difference vector and proposes</p>
+<p><span class="math display">
+\mathbf q_{\mathrm{new}}\approx
+\begin{bmatrix}55.66^\circ\\-0.42^\circ\end{bmatrix}.
+</span></p>
+<p>The largest coordinate change is about 9.70°. The course checker
+divides this extension into ten subintervals. It reuses the already
+checked parent and evaluates ten further postures, including the
+proposed endpoint. The proposal passes and becomes a child of that
+parent. The 10° extension limit and the 1° checking resolution serve
+different purposes. A different extension can need fewer than ten
+subintervals.</p>
+</div>
+<p>Figure 3.2 shows the completed tree’s selected route. Follow the
+goal’s parents back to the start, then reverse the order to obtain the
+motion route. The other branches remain search history. The eight-edge
+route has length 78.71° and passes the course’s finite edge checks.</p>
+<figure>
+<img src="lectures/04-D2-motion-planning/fig/rrt-connected-slide.png"
+style="width:100.0%"
+alt="Figure 3.2. Following parents extracts the highlighted start-to-goal route from the RRT. The workspace panel shows its arm postures; the joint-space panel also shows branches that are not part of the returned route." />
+<figcaption aria-hidden="true">Figure 3.2. Following parents extracts
+the highlighted start-to-goal route from the RRT. The workspace panel
+shows its arm postures; the joint-space panel also shows branches that
+are not part of the returned route.</figcaption>
+</figure>
+<p>Uniform sampling gives nodes facing larger unsampled regions more
+chances to be selected as nearest. This encourages exploration. It does
+not prevent wasted proposals against obstacles or guarantee quick
+discovery of a narrow passage. Sampling the goal sometimes directs the
+search toward the query’s endpoint, but a goal-directed edge still needs
+its geometry check.</p>
+<h3 id="grow-from-both-endpoints">3.5 Grow from both endpoints</h3>
+<p>A second tree can grow from the goal while the first grows from the
+start. When a connection joins them, the two parent chains supply a
+complete route. The goal-rooted chain must be traversed toward its root.
+Reversing a geometric joint-space edge is valid for this arm model. A
+system with directional motion constraints would need a suitable
+connection method.</p>
+<p>The following procedure describes the RAI-style bidirectional planner
+used here. Its extension and joining rules differ from textbook
+RRT-Connect; Appendix C.1 explains that distinction.</p>
+<div class="keep">
+<p><strong>Algorithm 3.4. Grow two trees and check the returned
+route.</strong></p>
+<p>The inputs are the endpoints, geometry, planning parameters and an
+iteration budget. The output is a returned route together with its
+independent check result, or no route found within the budget.</p>
+<ol type="1">
+<li>Root one tree at the start and the other at the goal.</li>
+<li>For a start-tree attempt, sample a target uniformly from the joint
+box or choose a random node in the goal tree. Extend toward it and add
+the proposed node only if the extension passes the planner’s
+checks.</li>
+<li>If the trees are close enough to join, construct the returned route.
+Otherwise let the goal tree make an analogous attempt toward the start
+tree. Repeat while the budget permits.</li>
+<li>Follow the two parent chains and form their joining segment. Apply
+the course checker to every segment of this returned route.</li>
+</ol>
+</div>
+<p>RAI’s internal checks use a fixed set of postures and a numerical
+collision tolerance. They are different from the course’s one-degree
+check. Also, the segment joining the returned parent chains may differ
+from the extension just checked during growth. Checking the actual
+returned route tests the motion that the output specifies.</p>
+<p>Figure 3.3 separates the two trees from the selected route. The
+orange segment joins their parent chains. This example returns a route
+that passes the course check. That passing finite test still does not
+certify clearance at every intermediate posture.</p>
+<figure>
+<img src="lectures/04-D2-motion-planning/fig/bidir-route-slide.png"
+style="width:100.0%"
+alt="Figure 3.3. Blue and green trees grow from opposite endpoints. Their parent chains form the purple route through the orange joining segment. The workspace panel shows postures along that returned route." />
+<figcaption aria-hidden="true">Figure 3.3. Blue and green trees grow
+from opposite endpoints. Their parent chains form the purple route
+through the orange joining segment. The workspace panel shows postures
+along that returned route.</figcaption>
+</figure>
+<p>Growing two trees does not by itself establish a speedup. The
+one-tree and RAI-style examples use different step lengths, internal
+checks and random streams. Comparing their iteration counts would mix
+those choices with the search method. A controlled comparison must state
+the same problem and validation requirements, and measure the work
+actually performed.</p>
+<h3 id="distinguish-finding-a-route-from-improving-it">3.6 Distinguish
+finding a route from improving it</h3>
+<p>A finite search can end without a route. For example, the one-tree
+run in Figure 3.2 finds none within twenty attempts but reaches the goal
+by attempt 42 when allowed to continue. The earlier failure reports a
+budget outcome; it does not prove that no valid path exists.</p>
+<p>For a planner with suitable sampling, connections and sound validity
+tests, a stronger statement may hold. If a valid route with clearance to
+spare exists, the probability of finding a valid route approaches one as
+the number of samples grows. This property is called
+<strong>probabilistic completeness</strong>. It gives no finite
+deadline. The assumptions matter: a theorem about exact validity tests
+does not certify the course’s finite checks or a particular
+fixed-five-neighbor roadmap.</p>
+<p>Finding a route and minimizing its cost are separate aims. RRT*
+improves routes by allowing parent changes. For a proposed new node,
+compare the costs of reaching it through nearby nodes. Choose the
+cheapest connection that passes the check. Then consider whether a
+neighboring node can be reached more cheaply through the new node.
+Replacing that neighbor’s parent is called <strong>rewiring</strong>.
+Every adopted connection must pass its check.</p>
+<p>A parent’s cost reduction also reduces the costs of its descendants
+by the same amount, because their remaining edges are unchanged. Figure
+3.4 shows one insertion into an existing tree. Rewiring one neighbor
+saves about 1.63° for that node and its four descendants. The goal is
+among those descendants, so its route shortens from 78.60° to
+76.98°.</p>
+<figure>
+<img src="lectures/04-D2-motion-planning/fig/rrtstar-rewire-slide.png"
+style="width:100.0%"
+alt="Figure 3.4. One RRT* insertion creates a cheaper route to the marked neighbor. Its descendants inherit the saving, including the goal. Orange marks the adopted connections. This illustration uses a 10° neighborhood and shows one insertion, not a complete RRT* run." />
+<figcaption aria-hidden="true">Figure 3.4. One RRT* insertion creates a
+cheaper route to the marked neighbor. Its descendants inherit the
+saving, including the goal. Orange marks the adopted connections. This
+illustration uses a 10° neighborhood and shows one insertion, not a
+complete RRT* run.</figcaption>
+</figure>
+<p>Under the required sampling, neighborhood, cost and validity
+assumptions, RRT* is <strong>asymptotically optimal</strong>: its best
+route cost converges to the optimal value as sampling continues. This
+does not make the first route optimal. The single insertion above
+illustrates parent selection and rewiring; it does not demonstrate the
+limiting result. <a href="https://arxiv.org/abs/1105.1186">Karaman and
+Frazzoli</a> give the algorithms, assumptions and proofs.</p>
+<p>The route can also be improved after search has stopped. That
+separate operation need not retain or modify the search tree.</p>
+<h2 id="refine-a-route-and-check-the-change">4. Refine a route and check
+the change</h2>
+<p>A planner’s first route can contain unnecessary turns. We can shorten
+it, then use it to initialize trajectory optimization. Each operation
+creates new connections. The previous check results apply only to the
+motion that was checked.</p>
+<h3 id="replace-a-detour-with-a-checked-shortcut">4.1 Replace a detour
+with a checked shortcut</h3>
+<p>Choose two positions along the current route. They can lie inside
+edges; they need not be existing vertices. A straight joint-space
+connection between them may remove an unnecessary turn. Replacing the
+intervening route in this way is called <strong>shortcutting</strong>.
+It can follow PRM, RRT or another planner. It does not require the
+planner’s search tree.</p>
+<p>The direct connection cannot be longer than the removed subpath under
+the same Euclidean metric. Applying the triangle inequality along that
+subpath gives</p>
+<p><span class="math display">
+\|\mathbf q_b-\mathbf q_a\|_2
+\le \sum_{\text{edges along the removed subpath}}
+\|\mathbf q_{i+1}-\mathbf q_i\|_2.
+\tag{4.1}
+</span></p>
+<p>The first and last terms use the selected positions if they lie
+inside edges. This inequality concerns length. The direct connection may
+still cross a forbidden region, so it needs a geometry check.</p>
+<div class="keep">
+<p><strong>Algorithm 4.1. Shorten a route with checked
+shortcuts.</strong></p>
+<p>The inputs are a route that passes the connection check, the same
+checker and an attempt budget. The output is the final accepted
+route.</p>
+<ol type="1">
+<li>Draw two positions along the current route, uniformly in joint-space
+distance, and order them along the route. Skip the attempt if both lie
+on the same straight edge.</li>
+<li>Check their direct connection. If it fails, keep the current
+route.</li>
+<li>Otherwise construct the complete candidate route with that shortcut.
+Replace the current route only if the candidate passes its checks.
+Repeat for the chosen budget.</li>
+</ol>
+</div>
+<p>The complete candidate check includes the retained portions of old
+edges. Splitting an edge changes where the finite checker samples it.
+The new grid can expose a violation missed by the old grid. A passing
+chord alone therefore does not establish that the complete candidate
+passes this checker.</p>
+<p>Starting from the eight-edge RRT route in Figure 3.2, one hundred
+attempts accept 37 replacements. The joint-space length falls from
+78.71° to 58.34°. The final route has ten edges. Adding the two selected
+positions can increase the number of vertices while decreasing length.
+Vertex count is not a measure of travel distance.</p>
+<p>The shortened route passes the course’s one-degree check. It still
+has corners and no execution schedule. A finer scan can also find a
+clearance violation that the original check missed. Appendix C.2
+examines that remaining gap.</p>
+<h3 id="place-optimization-knots-along-the-route">4.2 Place optimization
+knots along the route</h3>
+<p>Section 2 needs twenty free configurations and the fixed start. To
+supply that initial guess, place 21 configurations at equal joint-space
+distances along the shortened route. Equal distance here refers to
+progress along the polyline, not the distance directly from the
+start.</p>
+<p>Let <span class="math inline">L_i</span> be the accumulated length
+from the start to route vertex <span class="math inline">i</span>. Let
+<span class="math inline">L</span> be the total length. The distance
+assigned to knot <span class="math inline">t</span> is</p>
+<p><span class="math display">
+\begin{gathered}
+L_0=0,\qquad L_{i+1}=L_i+d(\mathbf q_i,\mathbf q_{i+1}),\\
+\text{distance at knot }t=\frac{tL}{T},\qquad T=20.
+\end{gathered}
+\tag{4.2}
+</span></p>
+<div class="keep">
+<p>Here <span class="math inline">i</span> indexes the route vertices,
+while <span class="math inline">t</span> indexes the new knots. Find the
+edge containing that target distance, then interpolate within it:</p>
+<p><span class="math display">
+\begin{gathered}
+L_i\le\frac{tL}{T}\le L_{i+1},\qquad
+\alpha=\frac{tL/T-L_i}{L_{i+1}-L_i},\\
+\mathbf q_t^{\mathrm{init}}
+=(1-\alpha)\mathbf q_i+\alpha\mathbf q_{i+1}.
+\end{gathered}
+\tag{4.3}
+</span></p>
+</div>
+<p>Ignore zero-length edges when applying this formula. The scalar <span
+class="math inline">\alpha</span> is local progress along the selected
+edge, as in (1.6). For the 58.34° route, the target distances differ by
+about 2.92°. This determines an initial configuration at every knot; it
+does not assign physical execution times.</p>
+<p>Figure 4.1 shows why placing knots on the old route does not preserve
+all of its connections. Two successive knots can lie on opposite sides
+of a corner. Joining them directly skips that corner and creates a new
+edge. The close-up shows one such edge entering the 5 mm clearance
+buffer.</p>
+<figure>
+<img src="modules/motion-planning/fig/refine-34-initialize.png"
+style="width:100.0%"
+alt="Figure 4.1. The sampled route supplies 21 initial configurations. Connecting successive knots can cut across an old corner. The new connection in the close-up misses the required clearance by 0.30 mm." />
+<figcaption aria-hidden="true">Figure 4.1. The sampled route supplies 21
+initial configurations. Connecting successive knots can cut across an
+old corner. The new connection in the close-up misses the required
+clearance by 0.30 mm.</figcaption>
+</figure>
+<p>All prepared knots satisfy the clearance rows, but the new connecting
+motion has a checked deficit of 0.30 mm. This initial guess also fails
+the final-rest equality. It is input to optimization, not an executable
+reference. Keeping every old corner would avoid this particular change
+in geometry, but it would require retaining those vertices when choosing
+the knot sequence.</p>
+<h3 id="optimize-the-knots-and-check-the-connections-again">4.3 Optimize
+the knots and check the connections again</h3>
+<p>Use the prepared sequence as the initial guess for the program in
+(2.11). The goal, whole-link geometry, 5 mm requirement and acceleration
+objective are unchanged. We use the accurate reference settings from
+Section 2 so that a large knot residual does not obscure the
+between-knot lesson.</p>
+<p>Figure 4.2 compares the results from the prepared route and the
+direct line. The returned knots coincide to numerical accuracy, and both
+costs are 16.14. The sampled initial guess provides a different route to
+start from. It does not produce a different optimized answer in this
+example. Other problems can have different local solutions, so this
+observation does not remove the need to consider initialization.</p>
+<figure>
+<img src="modules/motion-planning/fig/refine-35-compare.png"
+style="width:100.0%"
+alt="Figure 4.2. The direct and sampled initial guesses lead to the same optimized knots in this example. The overlapping markers show agreement between the two results; they do not establish global optimality or a speed advantage." />
+<figcaption aria-hidden="true">Figure 4.2. The direct and sampled
+initial guesses lead to the same optimized knots in this example. The
+overlapping markers show agreement between the two results; they do not
+establish global optimality or a speed advantage.</figcaption>
+</figure>
+<p>Now compare the prepared sequence with its optimized result. Figure
+4.3 shows two separate measurements. The acceleration cost falls from
+28.78 to 16.14. The largest between-knot clearance deficit found by the
+one-degree diagnostic scan grows from 0.30 to 1.84 mm.</p>
+<figure>
+<img src="modules/motion-planning/fig/refine-36-cost-clearance.png"
+style="width:100.0%"
+alt="Figure 4.3. Optimization lowers the sampled acceleration cost but increases the largest scanned clearance deficit between knots. Neither cost reduction nor accurate knot constraints establish clearance along the connecting motion." />
+<figcaption aria-hidden="true">Figure 4.3. Optimization lowers the
+sampled acceleration cost but increases the largest scanned clearance
+deficit between knots. Neither cost reduction nor accurate knot
+constraints establish clearance along the connecting
+motion.</figcaption>
+</figure>
+<p>The optimizer constrains clearance at the knots. It does not
+constrain the interior of their straight connections. Reducing its
+objective therefore need not improve clearance there. At the halfway
+posture between knots 12 and 13, link 2 still clears the physical disc
+by 3.16 mm. It misses the required 5 mm buffer by 1.84 mm. The tiny
+nonzero residual at a knot remains a separate numerical issue, as
+explained in §2.6.</p>
+<p>More checks can reveal this failure, but they do not change the
+motion. Repair requires changing the path or the optimization problem.
+The resulting connections need fresh checks. Adding more knots is one
+possible change; it does not guarantee a repair. Appendix C.3 gives the
+forty-interval result.</p>
+<h3 id="state-what-the-clearance-check-establishes">4.4 State what the
+clearance check establishes</h3>
+<p>A finite scan supplies clear evidence when it finds a failing
+posture. Passing every scheduled posture leaves a different question:
+how far could a link move between checks? A bound on that movement can
+supply a sufficient clearance condition.</p>
+<p>For this arm, let two adjacent checked postures differ by the
+joint-angle increments <span class="math inline">\Delta q_1</span> and
+<span class="math inline">\Delta q_2</span>, in radians. Every material
+point on either link moves by no more than</p>
+<p><span class="math display">
+b_{\mathrm{move}}=(l_1+l_2)|\Delta q_1|+l_2|\Delta q_2|.
+\tag{4.4}
+</span></p>
+<p>This bound has units of meters. Distance to the fixed disc cannot
+decrease by more than that displacement. Along the straight joint-space
+connection, any intermediate posture is within half the angular
+increment of one of the endpoints. Thus it is sufficient that both
+endpoint clearances satisfy</p>
+<p><span class="math display">
+\min\{d_{\mathrm{clear}}(\mathbf q_a),d_{\mathrm{clear}}(\mathbf q_b)\}
+\ge d_{\mathrm{req}}+\frac{b_{\mathrm{move}}}{2}.
+\tag{4.5}
+</span></p>
+<p>Here the endpoints are consecutive checked postures, which may lie
+inside a route edge. Appendix C.2 derives the bound. Failure to meet
+this sufficient condition does not prove a collision; the bound can be
+conservative.</p>
+<p>For the original RRT route, a scan with at most 0.05° per joint
+between checks gives a smallest clearance of 10.562 mm. At that spacing,
+half the maximum displacement bound is 0.436 mm. Subtracting it leaves a
+continuous clearance lower bound of about 10.13 mm, greater than the
+required 5 mm. This conclusion applies to the original route under the
+static disc, complete line-segment links and straight joint-space
+interpolation. It does not apply automatically to the shortcut or
+optimized routes.</p>
+<p>We will use that original RRT route when discussing timing. Its
+geometric check does not yet establish a suitable speed or
+acceleration.</p>
+<h2 id="prepare-the-controllers-reference">5. Prepare the controller’s
+reference</h2>
+<p>Use the original RRT route whose geometric clearance was established
+in §4.4. The optimized motion still violates the requirement. Assigning
+times to that violating motion would not remove its geometric
+failure.</p>
+<h3 id="choose-when-the-robot-reaches-each-posture">5.1 Choose when the
+robot reaches each posture</h3>
+<p>We now return to continuous physical time <span
+class="math inline">t</span>, measured in seconds. It is no longer the
+integer knot index used in the optimization program. Section 1
+introduced a dimensionless progress schedule along the route:</p>
+<p><span class="math display">
+\mathbf q(t)=\mathbf q_{\mathrm{path}}(s(t)),\qquad
+s(0)=0,\qquad s(t_{\mathrm f})=1.
+\tag{5.1}
+</span></p>
+<p>The schedule is nondecreasing. Its derivatives determine the joint
+speeds and accelerations. Where the path and schedule have the required
+derivatives, the chain rule gives</p>
+<p><span class="math display">
+\dot{\mathbf q}(t)=\mathbf q&#39;_{\mathrm{path}}(s(t))\,\dot s(t).
+\tag{5.2}
+</span></p>
+<p>Primes differentiate the path with respect to progress. Dots
+differentiate with respect to seconds. Differentiate (5.2) using the
+product rule:</p>
+<p><span class="math display">
+\begin{aligned}
+\ddot{\mathbf q}(t)
+&amp;=\frac{d}{dt}\bigl[\mathbf q&#39;_{\mathrm{path}}(s(t))\bigr]\dot
+s(t)
++\mathbf q&#39;_{\mathrm{path}}(s(t))\ddot s(t)\\
+&amp;=\mathbf q&#39;&#39;_{\mathrm{path}}(s(t))\,\dot s(t)^2
++\mathbf q&#39;_{\mathrm{path}}(s(t))\,\ddot s(t).
+\end{aligned}
+\tag{5.3}
+</span></p>
+<p>The first term accounts for changes in the path’s tangent as the
+robot progresses. The second accounts for changes in the progress rate.
+Both have units of rad/s² for this revolute-joint arm. A constant
+progress rate can therefore produce nonzero joint acceleration along a
+curved path.</p>
+<p>Joint speed and acceleration limits restrict the schedule. To see how
+duration matters, stretch a fixed smooth trajectory uniformly by a
+factor <span class="math inline">a</span> greater than one. If the new
+trajectory is defined from the old one by</p>
+<p><span class="math display">
+\mathbf q_{\mathrm{slow}}(t)=\mathbf q_{\mathrm{old}}(t/a),
+\tag{5.4}
+</span></p>
+<p>its velocity and acceleration at corresponding postures become</p>
+<p><span class="math display">
+\dot{\mathbf q}_{\mathrm{slow}}(t)
+=\frac1a\dot{\mathbf q}_{\mathrm{old}}(t/a),\qquad
+\ddot{\mathbf q}_{\mathrm{slow}}(t)
+=\frac1{a^2}\ddot{\mathbf q}_{\mathrm{old}}(t/a).
+\tag{5.5}
+</span></p>
+<p>Doubling the duration halves velocity and quarters acceleration. This
+statement assumes uniform rescaling of the same smooth motion. Changing
+the route or interpolation gives a different comparison.</p>
+<p>The RRT route is piecewise linear in joint space. At a genuine
+corner, its direction changes abruptly. Traversing that corner at
+nonzero speed would require a velocity jump. A bounded-acceleration
+motion can instead slow to zero at the corner and then leave along the
+next edge. Another option is to smooth the route. Smoothing changes the
+geometry, so the new curve needs clearance checks. A larger duration
+alone does not remove a corner crossed at nonzero speed.</p>
+<h3 id="distinguish-fixed-route-timing-from-trajectory-optimization">5.2
+Distinguish fixed-route timing from trajectory optimization</h3>
+<p>Choosing timing after route search is one workflow. Trajectory
+optimization can also choose the route and its timing together. The
+formulation must state which time quantities are fixed and which are
+decision variables.</p>
+<p>KOMO already uses intervals between configurations when evaluating
+velocity and acceleration features. Our example fixes twenty intervals
+over one normalized time unit. It does not optimize the physical
+duration or enforce joint speed and acceleration limits. Interpreting
+that unit as one second would therefore need additional checks.</p>
+<p>RAI also supports time optimization. Drake supports both joint
+optimization of a path and its duration, and time parameterization of a
+fixed path. Those capabilities do not change what the program in Section
+2 actually contains. Appendix D points to the corresponding interfaces
+and their documentation.</p>
+<p>A demo’s animation speed is separate from these choices. Playback
+illustrates the geometric motion. It does not establish an execution
+schedule, enforce actuator limits or add collision checks.</p>
+<h3 id="check-the-motion-the-robot-interface-will-use">5.3 Check the
+motion the robot interface will use</h3>
+<p>Before execution, specify the interpolation and timing that the
+interface will follow. A waypoint list alone does not specify them. For
+example, a spline through the same waypoints can leave the straight
+segments checked by the planner.</p>
+<p>Check clearance along that actual interpolation. Use the relevant
+robot shapes, obstacle model and self-collision pairs. The planar
+line-segment example establishes none of the omitted three-dimensional
+geometry. A changed interpolation or collision model needs a new
+geometry check.</p>
+<p>Then check joint positions, velocities and accelerations under the
+selected schedule. Changing timing changes the last two while the route
+can stay the same. Required forces and torques need a dynamics model and
+actuator limits. A kinematic check alone cannot establish that the robot
+can supply them. Slowing a motion can reduce inertial demands, but it
+does not remove gravity loads or a collision with a fixed obstacle.</p>
+<p>These checks have different inputs. Clearance depends on geometry and
+the interpolating path. Motion limits also depend on timing. Actuator
+demands add physical parameters and loads. State those assumptions when
+reporting that a reference is ready for execution.</p>
+<h3 id="hand-the-reference-to-a-feedback-controller">5.4 Hand the
+reference to a feedback controller</h3>
+<p>The planned trajectory specifies where the robot should be and when.
+The physical robot can depart from it because of disturbances, model
+error or imperfect actuation. A controller receives the reference and
+measurements of the robot’s state, then computes commands through a
+stated interface. A position interface, velocity interface and torque
+interface require different commands and leave different work to the
+downstream controller.</p>
+<p>Measurements close the feedback loop. The controller uses the
+observed tracking error to adjust its commands. This does not make an
+invalid reference safe. Tracking deviations can consume the planned
+clearance, so execution also needs suitable margins and monitoring or
+replanning. Deriving the dynamics and designing that controller are
+separate tasks.</p>
+<p>This completes the middle stage of the waypoint–reference–controller
+map in §1.1. The reference includes a route, timing and checks under a
+stated model. The next topic, learned planning, can change how
+configurations are proposed or how search is guided. A learned sampler
+proposes postures; a feasibility predictor estimates which connections
+are promising; a heuristic ranks search choices. These components can
+guide computation, but their predictions do not replace the stated
+motion checks.</p>
+<section id="appendix-a.-reproduce-the-opening-example" class="keep">
+<h2>Appendix A. Reproduce the opening example</h2>
+<p>The figures are reused from the <a
+href="README.html#course-records">motion-planning lecture</a>. Its <a
+href="lectures/04-D2-motion-planning/code/make_figures.py">figure
+generator</a> prints the endpoint, midpoint, sampling and detour
+calculations before drawing the figures. Run the following shell command
+from the course repository root in the course Python environment. It
+prints those calculations without regenerating the images:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">.venv/bin/python</span> <span class="at">-</span> <span class="op">&lt;&lt;&#39;PY&#39;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="st">import runpy</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="st">opening = runpy.run_path(</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="st">    &quot;lectures/04-D2-motion-planning/code/make_figures.py&quot;)</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="st">opening[&quot;print_calculations&quot;]()</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="op">PY</span></span></code></pre></div>
+</section>
+<div class="keep">
+<p>The <a href="modules/motion-planning/rrt_two_link.py">sampling
+reference</a> independently implements the same scene and edge
+check:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">.venv/bin/python</span> modules/motion-planning/rrt_two_link.py <span class="at">--edge</span></span></code></pre></div>
+</div>
+<p>The printed column already gives clearance from the physical disc
+surface in millimeters, matching the chapter’s table. Compare those
+values directly. The <a
+href="modules/motion-planning/index.html?mode=edge">edge
+demonstration</a> shows the same rejection one posture at a time; the
+figures and equations above contain the reasoning without requiring the
+demonstration.</p>
+<h2 id="appendix-b.-trajectory-derivatives-and-reproduction">Appendix B.
+Trajectory derivatives and reproduction</h2>
+<h3 id="b.1-assemble-the-feature-jacobian">B.1 Assemble the feature
+Jacobian</h3>
+<div class="keep">
+<p>Let every matrix block below be <span
+class="math inline">2\times2</span>. The forty acceleration rows are
+affine in the forty variables:</p>
+<p><span class="math display">
+\begin{gathered}
+\mathbf r=\mathbf A\mathbf z+\mathbf b,\qquad
+c_a=\frac{\sqrt{\Delta t}}{\Delta t^2},\\
+\mathbf A=c_a
+\begin{bmatrix}
+\mathbf I&amp;\mathbf0&amp;\mathbf0&amp;\cdots&amp;\mathbf0\\
+-2\mathbf I&amp;\mathbf I&amp;\mathbf0&amp;\cdots&amp;\mathbf0\\
+\mathbf I&amp;-2\mathbf I&amp;\mathbf I&amp;\cdots&amp;\mathbf0\\
+&amp;\ddots&amp;\ddots&amp;\ddots&amp;\\
+\mathbf0&amp;\cdots&amp;\mathbf I&amp;-2\mathbf I&amp;\mathbf I
+\end{bmatrix},\qquad
+\mathbf b=c_a
+\begin{bmatrix}-\mathbf q_0\\\mathbf
+q_0\\\mathbf0\\\vdots\\\mathbf0\end{bmatrix}.
+\end{gathered}
+\tag{B.1}
+</span></p>
+</div>
+<p>The first two entries of the offset follow from the repeated start.
+In the remaining rows all three configurations are free. Consequently
+the motion cost has exact Hessian <span class="math inline">2\mathbf
+A^\top\mathbf A</span>. A Gauss–Newton matrix for the full augmented
+residual also contains linearized clearance rows; it is not generally
+that nonlinear inner objective’s exact Hessian.</p>
+<p>Stack the two clearance derivatives at knot <span
+class="math inline">t</span> into a matrix <span
+class="math inline">\mathbf G_t\in\mathbb R^{2\times2}</span>. The full
+feature Jacobian, before selecting inequality rows for an inner solve,
+has 84 rows and 40 columns:</p>
+<p><span class="math display">
+\begin{gathered}
+\mathbf J=
+\begin{bmatrix}\mathbf A\\\mathbf J_h\\\mathbf J_g\end{bmatrix},\qquad
+\mathbf J_h=
+\begin{bmatrix}
+\mathbf0&amp;\cdots&amp;\mathbf0&amp;\mathbf I\\
+\mathbf0&amp;\cdots&amp;-\mathbf I/\Delta t&amp;\mathbf I/\Delta t
+\end{bmatrix},\\
+\mathbf J_g=\operatorname{diag}(\mathbf G_1,\ldots,\mathbf G_T).
+\end{gathered}
+\tag{B.2}
+</span></p>
+<p>This assembly has forty cost-feature rows, four equality rows and
+forty inequality rows. The augmented-Lagrangian least-squares
+representation rescales these blocks and selects its inequality rows, so
+its working Jacobian need not have all 84 rows.</p>
+<div class="keep">
+<p>For either obstacle-free cost, construct the appropriate first- or
+second-difference matrix in (B.1). Write the endpoint equalities as
+<span class="math inline">\mathbf E\mathbf z=\mathbf e</span>, where</p>
+<p><span class="math display">
+\mathbf E=\mathbf J_h,\qquad
+\mathbf e=(\mathbf q_{\mathrm{goal}}^\top,0,0)^\top.
+</span></p>
+<p>The quadratic solve in the figure generator uses</p>
+<p><span class="math display">
+\begin{bmatrix}
+2\mathbf A^\top\mathbf A&amp;\mathbf E^\top\\
+\mathbf E&amp;\mathbf0
+\end{bmatrix}
+\begin{bmatrix}\mathbf z\\\boldsymbol\kappa\end{bmatrix}
+=
+\begin{bmatrix}-2\mathbf A^\top\mathbf b\\\mathbf e\end{bmatrix}.
+\tag{B.3}
+</span></p>
+</div>
+<p>The fixed start makes each difference matrix full rank. Its quadratic
+Hessian is positive definite, so these equality-constrained comparisons
+have unique minimizers. The script checks both equality residuals and
+quadratic stationarity, as well as collinearity with the common
+joint-space route and the step profiles described in the text.</p>
+<h3 id="b.2-differentiate-distance-to-a-segment">B.2 Differentiate
+distance to a segment</h3>
+<div class="keep">
+<p>Write the segment direction as <span class="math inline">\mathbf
+d=\mathbf p_1-\mathbf p_0</span>. Away from a clipping transition, the
+total closest-point derivative is</p>
+<p><span class="math display">
+\mathbf J_p=(1-u)\mathbf J_0+u\mathbf J_1
++\mathbf d\,\frac{\partial u}{\partial\mathbf q}.
+\tag{B.4}
+</span></p>
+</div>
+<p>Premultiplication by the distance gradient <span
+class="math inline">\mathbf n^\top</span> eliminates the last term at an
+interior projection because</p>
+<p><span class="math display">
+\mathbf n^\top\mathbf d=0.
+</span></p>
+<p>On an endpoint branch, the derivative of the clipped fraction is
+zero. At the branch boundary, the perpendicularity condition also holds,
+so the positive-distance first derivative matches from both sides. The
+closest point on a nonzero-length segment is unique. There is no choice
+between two distinct closest points on that segment. A minimum over
+different links can have a tie, and the center-to-segment distance can
+reach zero; these are separate issues from clipping an interior
+projection to an endpoint.</p>
+<p>For explicit planar-arm Jacobians, define the column vector</p>
+<p><span class="math display">
+\mathbf e_\perp(\alpha)=
+\begin{bmatrix}-\sin\alpha\\\cos\alpha\end{bmatrix}.
+</span></p>
+<p>Holding <span class="math inline">u</span> fixed gives the following
+two columns for each link:</p>
+<p><span class="math display">
+\begin{aligned}
+\overline{\mathbf J}_{p,1}
+&amp;=\begin{bmatrix}uL_1\mathbf
+e_\perp(q_1)&amp;\mathbf0\end{bmatrix},\\
+\overline{\mathbf J}_{p,2}
+&amp;=\begin{bmatrix}
+L_1\mathbf e_\perp(q_1)+uL_2\mathbf e_\perp(q_1+q_2)
+&amp;uL_2\mathbf e_\perp(q_1+q_2)
+\end{bmatrix}.
+\end{aligned}
+\tag{B.5}
+</span></p>
+<p>Here <span class="math inline">q_1</span> and <span
+class="math inline">q_2</span> are the shoulder and elbow coordinates of
+one configuration; they are not knot indices. Substitution into (2.14)
+gives the two clearance rows. The reproduction check compares these
+derivatives with centered finite differences at interior projections,
+clipped endpoints and positive-distance endpoint transitions. It does
+not evaluate the undefined normal at zero center distance.</p>
+<h3 id="b.3-recompute-the-solutions-and-check-rai">B.3 Recompute the
+solutions and check RAI</h3>
+<div class="keep">
+<p>From the repository root, using the course Python environment:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="va">chapter</span><span class="op">=</span>lectures/04-reading-motion-planning</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">.venv/bin/python</span> <span class="st">&quot;</span><span class="va">$chapter</span><span class="st">/code/cost_comparison.py&quot;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">.venv/bin/python</span> <span class="st">&quot;</span><span class="va">$chapter</span><span class="st">/code/check_section2.py&quot;</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="ex">.venv/bin/python</span> modules/motion-planning/check_staged.py</span></code></pre></div>
+</div>
+<p>The <a
+href="lectures/04-reading-motion-planning/code/cost_comparison.py">cost
+comparison</a> writes the chapter’s new figure and prints its numerical
+checks. The <a
+href="lectures/04-reading-motion-planning/code/check_section2.py">section
+check</a> prints derivatives, both solver logs, the margin-sensitivity
+check and the independent edge scan. The <a
+href="modules/motion-planning/staged_two_link.py">whole-link
+implementation</a> supplies the constrained program. Its NumPy solver
+follows the RAI loop in <a
+href="lectures/04-D2-motion-planning/code/rai_nlp.py"><code>rai_nlp.py</code></a>.
+The native RAI records, including starts, options, returned vectors and
+residuals, are in <a
+href="modules/motion-planning/fixtures/stage4_rai.json"><code>stage4_rai.json</code></a>.
+The supplied direct and detour sequences have initial costs 18.1385 and
+28.7777. RAI’s plain call perturbs them before solving.</p>
+<p>Figure 2.3 uses the exact supplied direct and detour starts with
+default options. Figure 2.4 uses the exact direct start with the
+reference options. The shaded boundaries in Figure 2.3 were traced on a
+0.1° joint-angle grid. They illustrate the clearance function; they do
+not supply its constraint rows.</p>
+<p>The following numbers use native seeded calls. The default runs
+return cost 16.1906. Their returned coordinates agree within <span
+class="math inline">10^{-8}</span> rad. For the native reference, the
+largest positive clearance row is about <span
+class="math inline">9.7\times10^{-11}</span> m. The goal and
+final-velocity residuals are below <span
+class="math inline">2\times10^{-11}</span> in the separate units defined
+in (2.9). The returned angles lie inside the joint box.</p>
+<p>For the recorded native reference, the strict course checker first
+rejects edge 11→12 at knot 12, check 4 of 4 after the edge start. Its
+deficit is about <span class="math inline">9.7\times10^{-11}</span> m.
+The interior deficits in the §2.6 table come from a complete diagnostic
+scan of the next edge, 12→13. That scan does not change the checker’s
+early-stop decision.</p>
+<div class="keep">
+<table>
+<colgroup>
+<col style="width: 27%" />
+<col style="width: 36%" />
+<col style="width: 36%" />
+</colgroup>
+<thead>
+<tr>
+<th>Accurate reference result</th>
+<th style="text-align: right;">Direct initialization</th>
+<th style="text-align: right;">Supplied detour</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Multiplier updates</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">9</td>
+</tr>
+<tr>
+<td>Function evaluations</td>
+<td style="text-align: right;">131</td>
+<td style="text-align: right;">131</td>
+</tr>
+<tr>
+<td>Acceleration cost</td>
+<td style="text-align: right;">16.1382</td>
+<td style="text-align: right;">16.1382</td>
+</tr>
+<tr>
+<td>Largest positive clearance row, m</td>
+<td style="text-align: right;"><span
+class="math inline">9.7\times10^{-11}</span></td>
+<td style="text-align: right;"><span
+class="math inline">9.7\times10^{-11}</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The solver starts the penalty weight at 1, multiplies it by 5 per
+update and caps it at 10000. It uses damping 1, a maximum step of 0.2
+rad per coordinate and a Wolfe line search. The reference retains that
+schedule, multiplies all constraint rows by ten and changes three
+stopping options: <code>stopTolerance=1e-8</code>,
+<code>stopFTolerance=1e-12</code> and <code>stopEvals=5000</code>. These
+are numerical settings, not changes to the exact constraints.</p>
+<p>The following log records the ends of the inner loops for the direct
+reference run. Its last column sums positive clearance rows in physical
+millimeters. It converts RAI’s logged scaled sum by dividing by ten and
+multiplying by 1000. The final inner solve stops before evaluating a
+trial point because the largest absolute component of its proposed step
+is below one tenth of the step tolerance.</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th style="text-align: right;">Outer index</th>
+<th style="text-align: right;">Cumulative evaluations</th>
+<th style="text-align: right;">Acceleration cost</th>
+<th style="text-align: right;">Summed knot deficits, mm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">31</td>
+<td style="text-align: right;">8.34498</td>
+<td style="text-align: right;">157</td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">52</td>
+<td style="text-align: right;">11.81720</td>
+<td style="text-align: right;">73.1</td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">77</td>
+<td style="text-align: right;">13.87660</td>
+<td style="text-align: right;">25</td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">96</td>
+<td style="text-align: right;">15.46020</td>
+<td style="text-align: right;">5.41</td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">107</td>
+<td style="text-align: right;">16.12200</td>
+<td style="text-align: right;">1.9</td>
+</tr>
+<tr>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">116</td>
+<td style="text-align: right;">16.19440</td>
+<td style="text-align: right;">0.144</td>
+</tr>
+<tr>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">123</td>
+<td style="text-align: right;">16.13800</td>
+<td style="text-align: right;">0.00252</td>
+</tr>
+<tr>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">128</td>
+<td style="text-align: right;">16.13820</td>
+<td style="text-align: right;"><span
+class="math inline">6.98\times10^{-6}</span></td>
+</tr>
+<tr>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">131</td>
+<td style="text-align: right;">16.13820</td>
+<td style="text-align: right;"><span
+class="math inline">9.66\times10^{-8}</span></td>
+</tr>
+<tr>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">131</td>
+<td style="text-align: right;">16.13820</td>
+<td style="text-align: right;"><span
+class="math inline">9.66\times10^{-8}</span></td>
+</tr>
+</tbody>
+</table>
+<p>This step-based stop differs from a KKT stopping test. The replay
+check independently evaluates feasibility, stationarity and
+complementarity. For the exact-start reference, the Lagrangian-gradient
+norm is about <span class="math inline">3.4\times10^{-6}</span>,
+compared with an objective-gradient norm of 411.7. The largest absolute
+multiplier–constraint product is about <span
+class="math inline">1.3\times10^{-8}</span>. Those checks use the
+physical multipliers, which are ten times the duals for the scaled rows.
+Equality residuals keep the separate angular units defined in (2.9).</p>
+<p>The <a href="modules/motion-planning/stage4_komo_rai.py">native RAI
+program</a> uses capsules of radius 0.0001 m for the links and a sphere
+of radius 0.0549 m for the obstacle. Their summed radii equal the disc
+radius plus the 5 mm margin, so RAI’s negative-distance row equals
+(2.10) for this planar geometry. This representation matches the
+chapter’s line segments; it does not introduce additional physical link
+thickness or joint-bound rows.</p>
+<p>Using the configured RAI container, run:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="va">RAI_NOVNC</span><span class="op">=</span>0 <span class="ex">scripts/rai_run.sh</span> <span class="dt">\</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  modules/motion-planning/stage4_komo_rai.py</span></code></pre></div>
+<p>The <a href="README.html#rai">RAI runtime guide</a> describes the
+setup. The script compares feature values and Jacobians on the supplied
+sequences and a returned reference. Differences are approximately <span
+class="math inline">10^{-14}</span> for values and <span
+class="math inline">6\times10^{-14}</span> for Jacobian entries. It also
+compares the NumPy port with RAI from the same exact vectors. Most
+recorded cases replay to rounding precision. Some line-search decisions
+differ near floating-point ties, so evaluation counts can differ. The
+replay check reports those cases separately. Capped, nonconverged runs
+do not have the same agreement guarantee.</p>
+<div class="keep">
+<p>The fixture writer records the native seeded calls. This complete
+solver call uses the helpers in <code>stage4_komo_rai.py</code>, after
+supplying either initial sequence as <code>z0</code>:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>C <span class="op">=</span> build()</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>komo <span class="op">=</span> make_komo(C, constraint_scale<span class="op">=</span><span class="fl">1.0</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>komo.initWithPath(z0.reshape(T, <span class="dv">2</span>))</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>solver <span class="op">=</span> ry.NLP_Solver(komo.nlp(), verbose<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>ry.rnd_seed(<span class="dv">1</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>ret <span class="op">=</span> solver.solve()</span></code></pre></div>
+</div>
+<p>No numerical option is overridden. In this version, the plain call
+adds Gaussian initialization noise with standard deviation 0.01 rad. To
+use the exact supplied vector instead, call
+<code>solver.setInitialization(z0.copy())</code> before
+<code>solve(0)</code>. The NumPy port requires an explicit start and
+adds no noise.</p>
+<p>For the reference, use <code>constraint_scale=10.0</code> when
+constructing KOMO and set these options after constructing the solver
+and before seeding:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>solver.setOptions(verbose<span class="op">=</span><span class="dv">0</span>, stopTolerance<span class="op">=</span><span class="fl">1e-8</span>,</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>                  stopFTolerance<span class="op">=</span><span class="fl">1e-12</span>, stopEvals<span class="op">=</span><span class="dv">5000</span>)</span></code></pre></div>
+<p>The default numerical options include
+<code>stopTolerance=0.01</code>, <code>stopFTolerance=0.0001</code> and
+<code>stopEvals=1000</code>. Both default seeded runs return after 28
+evaluations with a largest knot deficit of 2.003 mm. Their largest
+endpoint-coordinate error is about <span
+class="math inline">4.36\times10^{-5}</span> rad. Both reference seeded
+runs take 131 evaluations and meet the knot rows to the accuracy
+reported above. The exact-start native reference takes 132.</p>
+<p>Scaling every constraint row by ten is an illustrative choice. RAI
+has no universal feature scale for every task. An earlier seed study
+with scale ten and untouched stopping options found these outcomes:</p>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 21%" />
+<col style="width: 21%" />
+<col style="width: 28%" />
+<col style="width: 28%" />
+</colgroup>
+<thead>
+<tr>
+<th>Initial sequence</th>
+<th>Initialization noise seed</th>
+<th style="text-align: right;">Evaluations</th>
+<th style="text-align: right;">Largest knot deficit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Direct</td>
+<td>1</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">0.032 mm</td>
+</tr>
+<tr>
+<td>Direct</td>
+<td>2–5</td>
+<td style="text-align: right;">12 each</td>
+<td style="text-align: right;">About 1.87 mm each</td>
+</tr>
+<tr>
+<td>Detour</td>
+<td>1</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">1.869 mm</td>
+</tr>
+</tbody>
+</table>
+<p>Suppressing initialization noise also gave about 1.87 mm from either
+start. These recorded results show why a favorable single run does not
+establish reliable accuracy. The reference combines scaling with tighter
+stops.</p>
+<p>RAI’s <code>feasible</code> flag requires two separate sums to be
+below 0.1. One sums positive scaled inequality rows; the other sums
+absolute scaled equality rows. With unit-scale clearance rows, the first
+threshold corresponds to 0.1 m of summed clearance deficit. The equality
+sum combines endpoint and rest rows in their specified units. Neither
+test is a per-row physical accuracy requirement. A <code>done</code>
+flag does not establish such accuracy or clearance between knots.</p>
+<p>The earlier study also tested unit-scale rows with the default
+penalty schedule, the three tight stopping options and exact
+initialization. Both runs exhausted 5000 evaluations with knot deficits
+of 2.2 and 2.7 mm. The largest absolute equality rows were <span
+class="math inline">7.7\times10^{-4}</span> and <span
+class="math inline">2.8\times10^{-4}</span> in their respective units.
+These were not untouched-default runs. Their cycling behavior has no
+established explanation here. The study’s fixed-weight comparison used a
+penalty of 160000 and returned after 59 and 52 evaluations with accurate
+knots. That configuration is retained only as a historical comparison;
+the current examples use RAI’s penalty schedule. The <a
+href="lectures/05-motion-planning/sampling-demo/evidence/rai-stage4/run4-before-defaults.txt">archived
+run records</a> preserve the earlier fixed-weight experiment, and the <a
+href="lectures/05-motion-planning/sampling-demo/evidence/rai-stage4/seed-run.txt">seed-study
+record</a> preserves the scale-ten seed comparison.</p>
+<p>All compared sequences fail the course edge check. The script’s
+<code>--report</code> option saves its options, returned vectors and
+residual checks to a JSON file.</p>
+<h2
+id="appendix-c.-planning-variants-clearance-bounds-and-reproduction">Appendix
+C. Planning variants, clearance bounds and reproduction</h2>
+<h3 id="c.1-distinguish-the-rai-style-procedure-from-rrt-connect">C.1
+Distinguish the RAI-style procedure from RRT-Connect</h3>
+<p>The following settings describe the RAI-style procedure used for
+Figure 3.3. They are implementation choices, not the definition of
+bidirectional RRT. The supplied <a
+href="modules/motion-planning/rai_bidir_rrt.py">Python reference</a>
+implements them on this arm’s geometry.</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Choice</th>
+<th>Setting in this example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Target selection</td>
+<td>Choose a random node of the other tree with probability 0.5;
+otherwise sample the joint box uniformly.</td>
+</tr>
+<tr>
+<td>Extension length</td>
+<td>Move at most 0.1 rad in Euclidean joint-space distance.</td>
+</tr>
+<tr>
+<td>Internal edge queries</td>
+<td>Check the proposed endpoint, then fractions 1/2, 1/4 and 3/4 along
+the extension. Stop at a failed query.</td>
+</tr>
+<tr>
+<td>Collision tolerance</td>
+<td>Pass when the sum of positive link-clearance deficits is below 0.1
+mm, relative to the 5 mm requirement.</td>
+</tr>
+<tr>
+<td>Joining threshold</td>
+<td>Join when the proposed node is less than 0.025 rad from the nearest
+node of the other tree.</td>
+</tr>
+</tbody>
+</table>
+<p>One iteration gives the start tree an attempt, then gives the goal
+tree an attempt only if the first did not join them. These counts differ
+from the single-extension iterations in the one-tree example.</p>
+<p>The returned joining segment connects the new node’s parent directly
+to the other tree’s nearest node. The new node itself is omitted from
+the vertex list. This gives three cases:</p>
+<ul>
+<li>If the new node coincides with the other node, the joining segment
+is the extension whose scheduled postures were checked.</li>
+<li>If it lies on the joining segment, only the part reaching the new
+node was checked during that attempt.</li>
+<li>If it lies off the joining segment, the extension queries do not
+check the joining segment’s interior.</li>
+</ul>
+<p>The actual output therefore needs an independent path check. For the
+page’s seed 7, the joining attempt tests only part of that segment, but
+the returned route passes the course’s one-degree check. The page’s seed
+1327 supplies a counterexample: the first failed posture on the joining
+segment has clearance 4.423 mm. It misses the margin while remaining
+outside the physical disc.</p>
+<p>The page and its Python reference use their own seeded random
+generator. A seed number does not identify the same random sequence in
+native RAI. The reference also has a native-stream replay mode. Its
+supplied native records establish agreement for recorded runs, not a
+mathematical guarantee about every run or every version. The <a
+href="README.html#course-records">module notes</a> record the inspected
+implementation and replay evidence.</p>
+<p>Textbook <strong>RRT-Connect</strong> repeatedly extends the other
+tree toward a newly added node until it reaches the target or becomes
+blocked. It then exchanges the trees’ roles if they have not connected.
+This repeated extension is absent from the RAI-style procedure above.
+See <a href="https://lavalle.pl/papers/KufLav00.pdf">Kuffner and
+LaValle</a> for the original method. The supplied
+<code>rrt_connect</code> function in <a
+href="modules/motion-planning/staged_two_link.py"><code>staged_two_link.py</code></a>
+implements that separate comparison. Its results do not describe Figure
+3.3.</p>
+<h3 id="c.2-bound-clearance-between-checked-postures">C.2 Bound
+clearance between checked postures</h3>
+<p>The displacement bound in (4.4) compares the same material point at
+two configurations. It does not follow the closest point, which can
+slide along the link. Let <span
+class="math inline">u_{\mathrm{link}}</span> be a fixed fraction from
+zero to one along link 2. The point’s world position is</p>
+<p><span class="math display">
+\mathbf p(\mathbf q,u_{\mathrm{link}})
+=l_1\begin{bmatrix}\cos q_1\\\sin q_1\end{bmatrix}
++u_{\mathrm{link}}l_2
+\begin{bmatrix}\cos(q_1+q_2)\\\sin(q_1+q_2)\end{bmatrix}.
+\tag{C.1}
+</span></p>
+<p>A unit vector rotated by angle <span
+class="math inline">\theta</span> moves through a chord of length</p>
+<p><span class="math display">
+2|\sin(\theta/2)|\le|\theta|.
+\tag{C.2}
+</span></p>
+<p>The inequality uses radians. Apply it separately to the two terms in
+(C.1), then use the triangle inequality:</p>
+<p><span class="math display">
+\begin{gathered}
+\|\mathbf p(\mathbf q+\Delta\mathbf q,u_{\mathrm{link}})
+-\mathbf p(\mathbf q,u_{\mathrm{link}})\|\\
+\le l_1|\Delta q_1|
++u_{\mathrm{link}}l_2|\Delta q_1+\Delta q_2|\\
+\le (l_1+l_2)|\Delta q_1|+l_2|\Delta q_2|.
+\end{gathered}
+\tag{C.3}
+</span></p>
+<p>The last line uses the upper bound of one on the fraction and the
+triangle inequality for the sum of angles. Link 1 has no second-link
+contribution, so the same upper bound covers all points of both
+links.</p>
+<p>Distance from a material point to the fixed disc can decrease by no
+more than that point moves. The displacement bound holds for every
+material point, so it also bounds the decrease in minimum whole-link
+clearance. Along a joint-linear subinterval, every posture is within
+half its coordinate increments of one of the two endpoints. Requiring
+sufficient clearance at both endpoints therefore gives (4.5).</p>
+<div class="keep">
+<p>At the maximum one-degree coordinate increments, the bound is</p>
+<p><span class="math display">
+b_{\mathrm{move}}
+=0.7\frac{\pi}{180}+0.3\frac{\pi}{180}
+\approx17.45\ \mathrm{mm}.
+\tag{C.4}
+</span></p>
+</div>
+<p>The sufficient surplus at each checked endpoint is half of this,
+about 8.73 mm above the required 5 mm. A passing check with clearance
+only slightly above 5 mm does not meet that condition. It may still be
+clear; this particular bound cannot establish it.</p>
+<p>For the current roadmap and original RRT route, the scans give
+positive certificates under the stated geometric model:</p>
+<table>
+<colgroup>
+<col style="width: 15%" />
+<col style="width: 21%" />
+<col style="width: 21%" />
+<col style="width: 21%" />
+<col style="width: 21%" />
+</colgroup>
+<thead>
+<tr>
+<th>Route</th>
+<th style="text-align: right;">Maximum check spacing per joint</th>
+<th style="text-align: right;">Smallest checked clearance</th>
+<th style="text-align: right;">Half-bound</th>
+<th style="text-align: right;">Continuous clearance lower bound</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Five-edge PRM route</td>
+<td style="text-align: right;">1°</td>
+<td style="text-align: right;">23.577 mm</td>
+<td style="text-align: right;">8.727 mm</td>
+<td style="text-align: right;">14.85 mm</td>
+</tr>
+<tr>
+<td>Original RRT route</td>
+<td style="text-align: right;">0.05°</td>
+<td style="text-align: right;">10.562 mm</td>
+<td style="text-align: right;">0.436 mm</td>
+<td style="text-align: right;">10.13 mm</td>
+</tr>
+</tbody>
+</table>
+<p>Both endpoints of every subinterval are included. These lower bounds
+exceed 5 mm. A different robot shape, moving obstacle or interpolating
+curve requires a bound for that model. Tracking error is not included
+here.</p>
+<p>The shortcut route gives a contrasting result. Its one-degree scan
+passes, with a smallest checked clearance of 5.086 mm. A 0.05°
+diagnostic scan finds 4.912 mm, about 0.09 mm short of the requirement.
+Figure C.1 shows the shorter route and the close approach to the disc.
+The physical disc is not touched.</p>
+<figure>
+<img src="modules/motion-planning/fig/staged-3-shortcut.png"
+style="width:100.0%"
+alt="Figure C.1. Shortcutting reduces route length, but its passing coarse check misses a small buffer violation. The close-up shows the arm approaching the 5 mm boundary; the finer scan finds about 0.09 mm missing clearance." />
+<figcaption aria-hidden="true">Figure C.1. Shortcutting reduces route
+length, but its passing coarse check misses a small buffer violation.
+The close-up shows the arm approaching the 5 mm boundary; the finer scan
+finds about 0.09 mm missing clearance.</figcaption>
+</figure>
+<p>Reducing a fixed checking interval provides more samples, not a proof
+by itself. An adaptive procedure can use the bound to certify a
+subinterval, subdivide it when the bound is inconclusive, or reject it
+when a checked posture fails. A near-boundary path may require further
+refinement without obtaining a certificate.</p>
+<h3 id="c.3-recheck-after-increasing-the-knot-count">C.3 Recheck after
+increasing the knot count</h3>
+<p>Halving the normalized interval gives forty free configurations and
+twice as many clearance rows. Using the direct initial guess and
+accurate reference settings gives the following comparison:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th style="text-align: right;">Number of intervals</th>
+<th style="text-align: right;">Acceleration cost</th>
+<th style="text-align: right;">Largest scanned interior clearance
+deficit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">16.14</td>
+<td style="text-align: right;">1.84 mm</td>
+</tr>
+<tr>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">16.39</td>
+<td style="text-align: right;">0.43 mm</td>
+</tr>
+</tbody>
+</table>
+<p>Both sets of knot constraints are satisfied to numerical accuracy.
+The forty-interval result has a smaller interior deficit, but it still
+fails the clearance requirement. The discretization and its difference
+features have also changed, so these two costs should not be read as an
+improvement on one fixed finite program. Increasing the knot count
+requires solving and checking the new motion.</p>
+<h3 id="c.4-reproduce-the-chapters-continuation">C.4 Reproduce the
+chapter’s continuation</h3>
+<p>The following command recomputes the chapter’s examples and prints a
+JSON record. It writes no figures or native fixtures:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">.venv/bin/python</span> lectures/04-reading-motion-planning/code/check_continuation.py</span></code></pre></div>
+<p>The <a
+href="lectures/04-reading-motion-planning/code/check_continuation.py">chapter
+check</a> uses the following supplied functions. It also checks the
+graph optimum with a separate edge-relaxation calculation, includes both
+endpoints in its clearance scans and verifies the timing derivatives by
+finite differences.</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Topic</th>
+<th>Supplied function</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Roadmap and Dijkstra</td>
+<td><code>prm</code> in <a
+href="modules/motion-planning/staged_two_link.py">staged_two_link.py</a>,
+with 400 samples and five neighbors</td>
+</tr>
+<tr>
+<td>One-tree RRT</td>
+<td><code>rrt</code> in <a
+href="modules/motion-planning/rrt_two_link.py">rrt_two_link.py</a>, seed
+7</td>
+</tr>
+<tr>
+<td>Bidirectional RRT</td>
+<td><code>plan</code> and <code>check_path</code> in <a
+href="modules/motion-planning/rai_bidir_rrt.py">rai_bidir_rrt.py</a>,
+page seeds 7 and 1327</td>
+</tr>
+<tr>
+<td>RRT* insertion</td>
+<td><code>run</code> in <a
+href="modules/motion-planning/rrtstar_reference.py">rrtstar_reference.py</a>,
+seed 17, sample 141, radius 10°</td>
+</tr>
+<tr>
+<td>Shortcut and knot preparation</td>
+<td><code>shortcut</code> and <code>resample</code> in <a
+href="modules/motion-planning/staged_two_link.py">staged_two_link.py</a>,
+seed 7 and 100 attempts</td>
+</tr>
+<tr>
+<td>Refinement figures and reference checks</td>
+<td><code>compute</code> and <code>check_against_native</code> in <a
+href="modules/motion-planning/refine_figures.py">refine_figures.py</a></td>
+</tr>
+</tbody>
+</table>
+<p>The RRT* illustration inserts only the selected sample into an
+existing RRT tree. Earlier draws used to select that example are not
+inserted. It is not a simulation of 141 RRT* growth steps.</p>
+<p>The refinement figures use exact supplied initial vectors. The
+program and solver options are those of Appendix B’s accurate reference.
+Native RAI records for these exact starts are in <a
+href="modules/opt-explorer/fixtures/refine_rai.json"><code>refine_rai.json</code></a>.
+The forty-interval comparison uses case
+<code>W-auglag-tight-line-s10-T40-seed1</code> in <a
+href="modules/motion-planning/fixtures/stage4_rai.json"><code>stage4_rai.json</code></a>.
+That record uses the native seeded initialization; the exact-start port
+agrees at the precision shown in the table. Evaluation counts and the
+first digit of tiny residuals can vary with floating-point line-search
+decisions.</p>
+<p>The interactive <a href="modules/motion-planning/index.html">sampling
+views</a> show tree growth, parent changes and shortcut attempts. The <a
+href="modules/opt-explorer/index.html">optimization explorer</a> has the
+Motion refinement tab for knot placement, solution comparison and motion
+checking. They illustrate the same examples used by the static figures.
+Their classroom button sequences belong to the speaker guide.</p>
+<p>For further reading, <a
+href="https://research-portal.uu.nl/en/publications/creating-high-quality-paths-for-motion-planning/">Geraerts
+and Overmars</a> study path length and clearance as distinct quality
+criteria. Their partial shortcut method changes individual degrees of
+freedom. The simple method here replaces a subpath with a straight
+connection in the full joint vector.</p>
+<section id="appendix-d.-timing-interfaces" class="keep">
+<h2>Appendix D. Timing interfaces</h2>
+<p>The interfaces below locate the timing choices described in §5.2.
+They do not supply an execution certificate for the chapter’s paths.</p>
+<p>RAI’s <a href="https://marctoussaint.github.io/robotic/api.html">KOMO
+API</a> includes <code>addTimeOptimization</code>. The chapter’s worked
+program fixes its normalized duration and does not enable that option.
+Adding a time decision also requires objectives and constraints that
+express the intended task.</p>
+<p>RAI’s BotOp interface follows a timed spline reference. Its <a
+href="https://marctoussaint.github.io/robotic/tutorials/botop_1_intro.html">official
+tutorial</a> uses <code>move(path, [4.])</code> to request a four-second
+motion. The <a
+href="https://marctoussaint.github.io/robotic/api.html"><code>moveAutoTimed</code>
+helper</a> chooses equal time spacing using supplied maximum velocity
+and acceleration values. The resulting spline must still be checked
+against the collision model. It can differ from the joint-linear path
+used by the planner.</p>
+<p>Drake’s <a
+href="https://drake.mit.edu/doxygen_cxx/classdrake_1_1planning_1_1trajectory__optimization_1_1_kinematic_trajectory_optimization.html"><code>KinematicTrajectoryOptimization</code></a>
+uses a normalized B-spline path and a separate duration variable. It can
+optimize both under the supplied costs and constraints. Drake’s <a
+href="https://drake.mit.edu/doxygen_cxx/classdrake_1_1multibody_1_1_toppra.html"><code>Toppra</code></a>
+instead computes timing for a fixed path using specified limits. Those
+can include joint velocity, acceleration and torque limits. These are
+different formulations; neither follows merely from playing a list of
+configurations.</p>
+</section>
+</body>
+</html>

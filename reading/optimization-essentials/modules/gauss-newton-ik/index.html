@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gauss-Newton inverse kinematics — CS 549 module</title>
+<!--
+  URL parameters for lecture links and checks: ?y=<x>,<y> sets the target in metres (x from −0.85 to 0.85, y from −0.75 to 0.85, the drawn area); ?method=gn|lm|gd selects the method (gradient descent always uses Armijo, so its box shows ticked and greyed out); ?run, ?run=, ?run=1 or ?run=true presses Run once on load (at most 60 iterations), and run=0 or run=false does not. The joints always start at (30°, 45°), and with no query string the page is the default view. A repeated parameter keeps its first value. A lecture link sets only the starting state and does not run. Examples: ?y=0.5,0.2&method=gd, ?run
+  ?view=local-step opens Chapter 02's staged local-prediction / FK-check example, paused at (30°,45°), target (0.5,0.2). In this view y, method and run are ignored and reported. The original solver view and defaults are unchanged.
+-->
+<style>
+  :root { --maroon:#9b1b4b; --teal:#1f6f8b; --gold:#c9a400; --ink:#222; --muted:#777; --soft:#f6eef1; }
+  body { margin:0; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; color:var(--ink); background:#fff; }
+  header { padding:10px 18px; border-bottom:1px solid #ddd; display:flex; gap:18px; align-items:baseline; flex-wrap:wrap; }
+  header h1 { font-size:18px; margin:0; color:var(--maroon); }
+  header span { color:var(--muted); font-size:13px; }
+  main { display:grid; grid-template-columns: minmax(520px, 1fr) 440px; gap:16px; padding:14px 18px; }
+  @media (max-width: 980px) { main { grid-template-columns: 1fr; } }
+  svg { width:100%; height:auto; border:1px solid #ddd; border-radius:6px; background:#fff; touch-action:none; }
+  .panel { font-size:14px; line-height:1.4; }
+  .panel h2 { font-size:14px; margin:12px 0 6px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; }
+  .row { display:flex; gap:10px; align-items:center; margin:6px 0; flex-wrap:wrap; }
+  input[type=range] { flex:1; min-width:120px; }
+  button { padding:5px 10px; border:1px solid #aaa; border-radius:6px; background:#fafafa; cursor:pointer; }
+  .read { font-family: "SFMono-Regular", Menlo, Consolas, monospace; font-size:12.5px; background:var(--soft); border-radius:6px; padding:8px 10px; margin:6px 0; white-space:pre; overflow-x:auto; max-height: 190px; overflow-y:auto; }
+  .m { color:var(--maroon); } .t { color:var(--teal); } .g { color:#8a7000; }
+  .note { font-size:12.5px; color:var(--muted); }
+  .warn { color:var(--maroon); font-weight:600; }
+  #urlnote { flex-basis:100%; font-size:12.5px; }
+  canvas { width:100%; height:120px; border:1px solid #eee; border-radius:6px; }
+  [hidden] { display:none !important; }
+  button:disabled { color:#777; cursor:default; opacity:.65; }
+  #local-panel { font-size:16px; }
+  #local-panel h2 { margin-top:0; font-size:17px; color:var(--maroon); text-transform:none; letter-spacing:0; }
+  #local-panel p { margin:10px 0; }
+  #local-panel table { border-collapse:collapse; width:100%; margin:12px 0; font-size:14px; }
+  #local-panel th, #local-panel td { text-align:left; padding:7px 5px; border-bottom:1px solid #ddd; }
+  #local-panel th { background:#f6eef1; }
+  #local-panel .value { font-variant-numeric:tabular-nums; white-space:nowrap; }
+  #local-step-equation { background:#f6eef1; padding:10px; border-radius:6px; }
+  #local-status { min-height:3em; }
+  #local-legend { display:flex; flex-wrap:wrap; gap:6px 16px; font-size:14px; margin-top:8px; }
+  .initial-key { color:#555; } .predicted-key { color:#1f6f8b; } .checked-key { color:#9b1b4b; }
+  body.local-step main { grid-template-columns:minmax(400px, 1fr) minmax(360px, 470px); }
+  @media (max-width:980px) { body.local-step main { grid-template-columns:minmax(0,1fr); } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Inverse kinematics by damped Gauss-Newton</h1>
+  <span>CS 549 · session 3.2 · two-link arm, l<sub>1</sub> = 0.4 m, l<sub>2</sub> = 0.3 m · drag the target ★, press Step or Run.</span>
+  <span id="urlnote" class="warn" hidden></span>
+</header>
+<main>
+  <div>
+    <svg id="view" viewBox="0 0 660 560" aria-label="Two-link arm iterating toward a target"></svg>
+    <svg id="local-view" viewBox="0 0 660 560" aria-label="The local tip prediction and the forward-kinematics check" hidden></svg>
+    <div id="local-legend" hidden><span class="initial-key">● Initial arm and tip</span><span class="predicted-key">○ Predicted tip</span><span class="checked-key">● FK-checked arm and tip</span><span>★ Target</span></div>
+  </div>
+  <div id="solver-panel" class="panel">
+    <h2>Controls</h2>
+    <div class="row"><label>Method:</label>
+      <label><input type="radio" name="method" value="gn" checked> Gauss-Newton (ρ = 0)</label>
+      <label><input type="radio" name="method" value="lm"> damped Gauss-Newton (fixed ρ)</label>
+      <label><input type="radio" name="method" value="gd"> gradient descent</label></div>
+    <div class="row"><label for="rho">damping ρ = 10<sup id="rhoexp">-3</sup></label><input id="rho" type="range" min="-4" max="1" step="0.25" value="-3"><span id="rhov">0.001</span></div>
+    <div class="row"><label><input id="ls" type="checkbox"> Armijo line search on the step</label><span id="lsnote" class="note" hidden>always on for gradient descent</span></div>
+    <div class="row"><button id="step">Step</button><button id="run">Run to convergence (≤ 60)</button><button id="reset">Reset q to (30°, 45°)</button></div>
+    <div class="row"><label>Target presets:</label>
+      <button data-y="0.5,0.2">reachable (0.5, 0.2)</button>
+      <button data-y="0.7,0">boundary (0.7, 0)</button>
+      <button data-y="0.75,0.05">unreachable (0.75, 0.05)</button>
+      <button data-y="0.8,0.1">unreachable (0.8, 0.1), the deck's</button></div>
+
+    <h2>Readouts</h2>
+    <div class="read" id="r1"></div>
+    <canvas id="chart" width="440" height="120"></canvas>
+    <div class="read" id="r2"></div>
+    <p class="note">The update is <span class="t">q ← q + J♯(q)(y* − φ(q))</span> with <span class="t">J♯ = (JᵀJ + ρI)⁻¹Jᵀ</span> (Spring 2026 deck 03 p.56 with K = I, D = ρI). ρ = 0 is Gauss-Newton; ρ &gt; 0 is damped Gauss-Newton (Levenberg–Marquardt methods adapt ρ); the gradient-descent option replaces J♯ by αJᵀ with Armijo. Ghost arms are the iterates; the chart is log₁₀ of the residual ‖φ(q) − y*‖ per iteration.</p>
+    <p class="note">Default state: the unreachable target (0.75, 0.05) with plain Gauss-Newton. Press Run: the steps blow up as the arm straightens (det J → 0). Then raise ρ, or tick Armijo, and Run again: the arm settles on the boundary, pointing at the target.</p>
+  </div>
+  <div id="local-panel" class="panel" hidden>
+    <h2>One proposed joint-position change</h2>
+    <p>Start at q⁽⁰⁾ = (30°, 45°). The target is y* = (0.50, 0.20) m. Angles in the calculation use radians.</p>
+    <p>Predict whether a step that reaches the target in the local model will also reach it when checked with forward kinematics.</p>
+    <div class="row"><button id="local-predict">1. Predict with J</button><button id="local-check" disabled>2. Check with FK</button><button id="local-reset">Reset</button></div>
+    <div id="local-step-equation" hidden></div>
+    <table aria-label="Initial, predicted and FK-checked tip positions"><thead><tr><th>Tip position</th><th>x [m]</th><th>y [m]</th></tr></thead><tbody>
+      <tr><th>Initial</th><td id="local-p0-x" class="value"></td><td id="local-p0-y" class="value"></td></tr>
+      <tr id="local-pred-row" hidden><th>Local prediction</th><td id="local-pred-x" class="value"></td><td id="local-pred-y" class="value"></td></tr>
+      <tr id="local-check-row" hidden><th>FK check</th><td id="local-p1-x" class="value"></td><td id="local-p1-y" class="value"></td></tr>
+    </tbody></table>
+    <table aria-label="Distance to target and half squared-distance cost"><thead><tr><th></th><th>Distance [m]</th><th>Cost [m²]</th></tr></thead><tbody>
+      <tr><th>Initial</th><td id="local-e0" class="value"></td><td id="local-f0" class="value"></td></tr>
+      <tr id="local-pred-cost-row" hidden><th>Local prediction</th><td id="local-ep" class="value"></td><td id="local-fp" class="value"></td></tr>
+      <tr id="local-check-cost-row" hidden><th>FK check</th><td id="local-e1" class="value"></td><td id="local-f1" class="value"></td></tr>
+    </tbody></table>
+    <p>Distance = ‖tip − target‖.<br>Cost = ½ × distance².</p>
+    <p id="local-status" aria-live="polite"></p>
+    <p class="note">The FK check evaluates the proposed joint angles in the robot's kinematic model. It is not a physical measurement or a motion simulation. No damping or line search is used.</p>
+    <p class="note"><a href="?y=0.5,0.2&amp;method=gn">Open the iterative solver from the same starting pose</a> when the next sections introduce it.</p>
+  </div>
+</main>
+<script>
+(() => {
+  const L1 = 0.4, L2 = 0.3;
+  const SC = 330, OX = 300, OY = 300;
+  const toPx = (x, y) => [OX + SC * x, OY - SC * y];
+  const toM = (px, py) => [(px - OX) / SC, (OY - py) / SC];
+  const rad = d => d * Math.PI / 180, deg = r => r * 180 / Math.PI;
+  const f3 = x => (Math.abs(x) < 5e-4 ? 0 : x).toFixed(3);
+  const phi = q => [L1*Math.cos(q[0]) + L2*Math.cos(q[0]+q[1]), L1*Math.sin(q[0]) + L2*Math.sin(q[0]+q[1])];
+  const jac = q => { const s1=Math.sin(q[0]), c1=Math.cos(q[0]), s12=Math.sin(q[0]+q[1]), c12=Math.cos(q[0]+q[1]);
+    return [[-L1*s1 - L2*s12, -L2*s12], [L1*c1 + L2*c12, L2*c12]]; };
+  const sub = (a,b) => [a[0]-b[0], a[1]-b[1]], add = (a,b) => [a[0]+b[0], a[1]+b[1]], norm = a => Math.hypot(a[0], a[1]);
+  const cost = (q, y) => { const r = sub(phi(q), y); return 0.5*(r[0]*r[0] + r[1]*r[1]); };
+  const solve2 = (M, b) => { const det = M[0][0]*M[1][1] - M[0][1]*M[1][0]; return [( M[1][1]*b[0] - M[0][1]*b[1])/det, (-M[1][0]*b[0] + M[0][0]*b[1])/det]; };
+
+  const Q0 = [rad(30), rad(45)];
+  let localStepMode = false, localStage = 0;
+  let st = { q: Q0.slice(), y: [0.75, 0.05], method: 'gn', rho: 1e-3, ls: false, hist: [], alpha: 1.0, stalled: false, capped: false };
+  // Gradient descent always backtracks with Armijo (stepOnce), so its box shows ticked and greyed out; st.ls keeps the
+  // user's choice for the Gauss-Newton directions and comes back when one of them is selected again (2026-10-05).
+  const syncLs = () => { const box = document.getElementById('ls'), note = document.getElementById('lsnote'), gd = st.method === 'gd';
+    box.disabled = gd; box.checked = gd ? true : st.ls; note.hidden = !gd; };
+  const reset = () => { st.q = Q0.slice(); st.hist = [{q: st.q.slice(), res: norm(sub(phi(st.q), st.y)), step: 0}]; st.alpha = 1.0; st.stalled = false; st.capped = false; };
+  // the outcome word of Deck 04's code and slide 27: solved / stationary (the relative gradient test |J^T r| <= 1e-8 |J|_F |r|, K = I) / stalled / limit (a Run used its cap of 60) / running (after single Steps)
+  const normF = J => Math.hypot(J[0][0], J[0][1], J[1][0], J[1][1]);
+  function outcomeOf() {
+    const q = st.q, J = jac(q), r = sub(phi(q), st.y), res = norm(r), n = st.hist.length;
+    const gnorm = norm([J[0][0]*r[0] + J[1][0]*r[1], J[0][1]*r[0] + J[1][1]*r[1]]);
+    const word = st.stalled ? 'stalled' : res < 1e-6 ? 'solved' : (n > 1 && gnorm <= 1e-8 * normF(J) * res) ? 'stationary' : st.capped ? 'limit' : (n > 1 ? 'running' : '');
+    const text = { stalled: '<span class="warn">stalled: the trial step at this page\'s floor (10⁻⁸) fails the Armijo test; the direction is rejected here (a smaller trial could still pass; the gradient is not zero)</span>',
+                   solved: 'solved: |φ(q) − y*| < 10⁻⁶ m',
+                   stationary: '<span class="warn">stationary: |Jᵀ(φ − y*)| ≤ 10⁻⁸ ‖J‖ |φ − y*| with the residual not small — the least-squares compromise if this is a minimum, or a bad stationary point; not proof that y* is unreachable</span>',
+                   limit: 'limit: this Run\'s cap of 60 iterations was reached (press Run again to continue)',
+                   running: 'running: neither the residual nor the gradient is small yet', '': '' }[word];
+    return { word, text, gnorm };
+  }
+  const runLoop = () => { st.capped = false; let i = 0; for (; i < 60; i++) { stepOnce(); const w = outcomeOf().word; if (w === 'stalled' || w === 'solved' || w === 'stationary') break; } if (i === 60) st.capped = true; };
+  // Armijo backtracking from alpha0 on direction d: returns the accepted alpha, or -1 if no alpha above the floor passes
+  // (the step is then REJECTED, as in the deck's code; taking it anyway would make the end point depend on rounding).
+  const armijo = (q, y, g, d, alpha0) => { let a = alpha0; const c0 = cost(q, y), slope = g[0]*d[0] + g[1]*d[1];
+    while (cost(add(q, [a*d[0], a*d[1]]), y) > c0 + 0.01*a*slope && a > 1e-8) a *= 0.5;
+    return cost(add(q, [a*d[0], a*d[1]]), y) <= c0 + 0.01*a*slope ? a : -1; };
+
+  function stepOnce() {
+    const q = st.q, y = st.y, J = jac(q), r = sub(y, phi(q));
+    let step;
+    if (st.method === 'gd') {
+      const g = [-(J[0][0]*r[0] + J[1][0]*r[1]), -(J[0][1]*r[0] + J[1][1]*r[1])];    // grad of 1/2|phi - y|^2 = J^T (phi - y)
+      const d = [-g[0], -g[1]], a = armijo(q, y, g, d, st.alpha);
+      if (a < 0) { st.stalled = true; return; }
+      step = [a*d[0], a*d[1]]; st.alpha = 1.2*a;                         // grow for the next step; no cap (Deck 04 slide 12)
+    } else {
+      const rho = st.method === 'lm' ? st.rho : 0.0;
+      const JtJ = [[J[0][0]*J[0][0] + J[1][0]*J[1][0] + rho, J[0][0]*J[0][1] + J[1][0]*J[1][1]], [J[0][0]*J[0][1] + J[1][0]*J[1][1], J[0][1]*J[0][1] + J[1][1]*J[1][1] + rho]];
+      const Jtr = [J[0][0]*r[0] + J[1][0]*r[1], J[0][1]*r[0] + J[1][1]*r[1]];
+      step = solve2(JtJ, Jtr);
+      if (st.ls) { const g = [-Jtr[0], -Jtr[1]], a = armijo(q, y, g, step, 1.0);
+        if (a < 0) { st.stalled = true; return; }                       // no length of this direction passes the test: stop here
+        step = [a*step[0], a*step[1]]; }
+    }
+    if (!isFinite(step[0]) || !isFinite(step[1])) step = [0, 0];
+    st.q = add(q, step);
+    st.hist.push({ q: st.q.slice(), res: norm(sub(phi(st.q), y)), step: norm(step) });
+  }
+
+  const svg = document.getElementById('view');
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (tag, attrs, parent = svg) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent.appendChild(e); return e; };
+  for (let x = -0.8; x <= 0.8001; x += 0.2) { const [px] = toPx(x, 0); el('line', { x1: px, y1: 20, x2: px, y2: 560, stroke: '#eee' }); el('text', { x: px, y: 555, 'text-anchor': 'middle', 'font-size': 11, fill: '#666' }).textContent = x.toFixed(1); }
+  for (let y = -0.8; y <= 0.8001; y += 0.2) { const [, py] = toPx(0, y); if (py < 20 || py > 545) continue; el('line', { x1: 30, y1: py, x2: 660, y2: py, stroke: '#eee' }); el('text', { x: 26, y: py + 4, 'text-anchor': 'end', 'font-size': 11, fill: '#666' }).textContent = y.toFixed(1); }
+  el('text', { x: 345, y: 22, 'text-anchor': 'middle', 'font-size': 12, fill: '#333' }).textContent = 'x [m] along the bottom, y [m] on the left · grey arms: iterates · dark arm: current q · ★ target (drag it)';
+  const dyn = el('g', {});
+
+  function drawArm(q, color, width, opacity) {
+    const p1 = [L1*Math.cos(q[0]), L1*Math.sin(q[0])], p2 = phi(q);
+    const [bx, by] = toPx(0, 0), [jx, jy] = toPx(...p1), [tx, ty] = toPx(...p2);
+    el('polyline', { points: `${bx},${by} ${jx},${jy} ${tx},${ty}`, fill: 'none', stroke: color, 'stroke-width': width, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', opacity }, dyn);
+    return [tx, ty];
+  }
+
+  function draw() {
+    if (localStepMode) { drawLocalStep(); return; }
+    while (dyn.firstChild) dyn.removeChild(dyn.firstChild);
+    const [bx, by] = toPx(0, 0);
+    el('circle', { cx: bx, cy: by, r: SC*(L1+L2), fill: '#f3ede8', stroke: '#ddd' }, dyn);
+    el('circle', { cx: bx, cy: by, r: SC*Math.abs(L1-L2), fill: '#fff', stroke: '#ddd' }, dyn);
+    const n = st.hist.length;
+    st.hist.forEach((h, i) => { if (i < n - 1) drawArm(h.q, '#999', 3, 0.25 + 0.5 * i / Math.max(1, n - 1)); });
+    const tips = st.hist.map(h => toPx(...phi(h.q)).join(','));
+    if (n > 1) el('polyline', { points: tips.join(' '), fill: 'none', stroke: '#9b1b4b', 'stroke-width': 1.2, 'stroke-dasharray': '4 3' }, dyn);
+    const [tx, ty] = drawArm(st.q, '#444', 9, 1);
+    el('circle', { cx: tx, cy: ty, r: 6, fill: '#1f6f8b' }, dyn);
+    const [sx, sy] = toPx(...st.y);
+    el('text', { x: sx, y: sy + 9, 'text-anchor': 'middle', 'font-size': 26, fill: '#c9a400', stroke: '#000', 'stroke-width': 0.6 }, dyn).textContent = '★';
+    el('circle', { cx: sx, cy: sy, r: 18, fill: 'transparent', 'data-drag': 'y', style: 'cursor:grab' }, dyn);
+    el('circle', { cx: bx, cy: by, r: 7, fill: '#fff', stroke: '#555', 'stroke-width': 2 }, dyn);
+
+    const q = st.q, J = jac(q), det = J[0][0]*J[1][1] - J[0][1]*J[1][0], last = st.hist[n-1];
+    const reach = norm(st.y) <= L1 + L2 + 1e-9 && norm(st.y) >= Math.abs(L1 - L2) - 1e-9;
+    const oc = outcomeOf(), gnorm = oc.gnorm, outcome = oc.text;
+    document.getElementById('r1').innerHTML =
+      `<b>State after ${n-1} iteration${n-1 === 1 ? '' : 's'}</b>   target y* = (${f3(st.y[0])}, ${f3(st.y[1])}), |y*| = ${f3(norm(st.y))} ${reach ? '(reachable)' : '<span class="warn">(unreachable)</span>'}\n` +
+      `q = (${deg(q[0]).toFixed(2)}°, ${deg(q[1]).toFixed(2)}°)   φ(q) = (${f3(phi(q)[0])}, ${f3(phi(q)[1])})\n` +
+      `<span class="t">|φ(q) − y*| = ${last.res.toExponential(2)} m</span>   last |step| = ${last.step.toFixed(4)} rad\ndet J = ${det.toFixed(4)}   |Jᵀ(φ − y*)| = ${gnorm.toExponential(1)}` + (outcome ? '\n' + outcome : '');
+    const rows = st.hist.map((h, i) => `${String(i).padStart(3)}   ${deg(h.q[0]).toFixed(2).padStart(9)}   ${deg(h.q[1]).toFixed(2).padStart(9)}   ${h.res.toExponential(2)}   ${i ? h.step.toFixed(4) : ''}`);
+    document.getElementById('r2').innerHTML = `<b>  k    q1 [deg]    q2 [deg]   |φ − y*|    |step|</b>\n` + rows.join('\n');
+    const box = document.getElementById('r2'); box.scrollTop = box.scrollHeight;
+
+    // residual chart, log10 scale
+    const cv = document.getElementById('chart'), ctx = cv.getContext('2d'); ctx.clearRect(0, 0, cv.width, cv.height);
+    ctx.strokeStyle = '#ddd'; ctx.lineWidth = 1; ctx.beginPath();
+    for (let e = 0; e >= -12; e -= 3) { const yy = 10 + (0 - e) / 12 * 100; ctx.moveTo(40, yy); ctx.lineTo(cv.width - 8, yy); ctx.fillStyle = '#666'; ctx.font = '10px sans-serif'; ctx.fillText(`1e${e}`, 2, yy + 3); }
+    ctx.stroke();
+    ctx.strokeStyle = '#1f6f8b'; ctx.lineWidth = 2; ctx.beginPath();
+    // the chart's width follows the run (at least 10 iterations)
+    st.hist.forEach((h, i) => { const xx = 40 + i / Math.max(10, n - 1) * (cv.width - 48); const v = Math.max(-12, Math.min(0.5, Math.log10(Math.max(h.res, 1e-16)))); const yy = 10 + (0 - v) / 12 * 100; i ? ctx.lineTo(xx, yy) : ctx.moveTo(xx, yy); });
+    ctx.stroke(); ctx.fillStyle = '#666'; ctx.fillText(`log10 |φ(q) − y*| vs iteration (0–${Math.max(10, n - 1)})`, 44, cv.height - 4);
+  }
+
+  // A staged view of one square-Jacobian solve. It shares FK and J with the solver,
+  // but never runs or mutates the iterative solver when the learner reveals a stage.
+  function drawLocalStep() {
+    const target = [0.5, 0.2], p0 = phi(Q0), J0 = jac(Q0);
+    const delta = solve2(J0, sub(target, p0)), q1 = add(Q0, delta), p1 = phi(q1);
+    const predicted = add(p0, J0.map(row => row[0]*delta[0] + row[1]*delta[1]));
+    const plot = document.getElementById('local-view');
+    plot.replaceChildren();
+    const point = p => [90 + 650*p[0], 385 - 650*p[1]];
+    const node = (tag, attrs, text) => { const n = el(tag, attrs, plot); if (text) n.textContent = text; return n; };
+    const label = (x,y,text,color='#444') => node('text', {x,y,fill:color,'font-size':17},text);
+    for (let x=0; x<=0.7001; x+=0.1) {
+      const [px]=point([x,0]); node('line',{x1:px,y1:25,x2:px,y2:515,stroke:'#eee'});
+      label(px-10,540,x.toFixed(1));
+    }
+    for (let y=-0.2; y<=0.5001; y+=0.1) {
+      const [,py]=point([0,y]); node('line',{x1:75,y1:py,x2:610,y2:py,stroke:'#eee'});
+      label(30,py+6,y.toFixed(1));
+    }
+    label(610,540,'x [m]'); label(20,22,'y [m]');
+    const arm = (q,color,width) => {
+      const pts=[[0,0],[L1*Math.cos(q[0]),L1*Math.sin(q[0])],phi(q)].map(point);
+      node('polyline',{points:pts.map(p=>p.join(',')).join(' '),fill:'none',stroke:color,'stroke-width':width,'stroke-linecap':'round','stroke-linejoin':'round'});
+      pts.forEach(([cx,cy])=>node('circle',{cx,cy,r:5,fill:'#fff',stroke:color,'stroke-width':2}));
+    };
+    const segment = (a,b,color,dash) => {
+      const [x1,y1]=point(a),[x2,y2]=point(b);
+      return node('line',{x1,y1,x2,y2,stroke:color,'stroke-width':3,...(dash?{'stroke-dasharray':'7 5'}:{})});
+    };
+    arm(Q0,'#777',localStage===2?5:8);
+    const [ix,iy]=point(p0), [tx,ty]=point(target);
+    node('circle',{cx:ix,cy:iy,r:7,fill:'#555'});
+    label(ix+14,iy-4,'Initial tip','#555');
+    if (localStage>=1) {
+      segment(p0,predicted,'#1f6f8b',true);
+      const [px,py]=point(predicted);
+      node('circle',{cx:px,cy:py,r:15,fill:'none',stroke:'#1f6f8b','stroke-width':3});
+      label(tx+22,ty-15,'Prediction','#1f6f8b');
+      label(tx+22,ty+7,'= target','#1f6f8b');
+    }
+    if (localStage===2) {
+      arm(q1,'#9b1b4b',8);
+      const [cx,cy]=point(p1);
+      node('circle',{cx,cy,r:7,fill:'#9b1b4b'});
+      segment(p1,target,'#9b1b4b',true);
+      label(cx+15,cy+32,'FK-checked tip','#9b1b4b');
+      label(tx+22,ty+52,`Remaining: ${norm(sub(p1,target)).toFixed(4)} m`,'#9b1b4b');
+    }
+    node('text',{x:tx,y:ty+9,'text-anchor':'middle','font-size':28,fill:'#c9a400',stroke:'#333','stroke-width':.5},'★');
+    if (!localStage) label(tx+19,ty+7,'Target');
+    const put = (id,value) => { document.getElementById(id).textContent=value.toFixed(6); };
+    [['p0',p0],['pred',predicted],['p1',p1]].forEach(([id,p])=>{put(`local-${id}-x`,p[0]);put(`local-${id}-y`,p[1]);});
+    [['0',p0],['p',predicted],['1',p1]].forEach(([id,p])=>{const e=norm(sub(p,target));put(`local-e${id}`,e);put(`local-f${id}`,.5*e*e);});
+    document.getElementById('local-step-equation').innerHTML=`Solve J(q⁽⁰⁾) δ = y* − φ(q⁽⁰⁾).<br>δ = (${delta.map(x=>x.toFixed(6)).join(', ')}) rad<br>= (${delta.map(x=>deg(x).toFixed(4)+'°').join(', ')}).<br>` +
+      (localStage===2 ? `q⁽¹⁾ = q⁽⁰⁾ + δ = (${q1.map(x=>deg(x).toFixed(4)+'°').join(', ')}).` : 'Predicted tip = φ(q⁽⁰⁾) + J(q⁽⁰⁾) δ.');
+    ['local-step-equation','local-pred-row','local-pred-cost-row'].forEach(id=>document.getElementById(id).hidden=localStage<1);
+    ['local-check-row','local-check-cost-row'].forEach(id=>document.getElementById(id).hidden=localStage<2);
+    document.getElementById('local-predict').disabled=localStage>=1;
+    document.getElementById('local-check').disabled=localStage!==1;
+    document.getElementById('local-panel').dataset.stage=String(localStage);
+    document.getElementById('local-status').textContent=[
+      'First use the Jacobian to predict the effect of a joint-position change.',
+      'The local model predicts the target exactly. Next, substitute the proposed joint angles into forward kinematics.',
+      'The cost decreased, but the tip did not reach the target. The finite joint change exceeded what the local prediction could describe accurately.'
+    ][localStage];
+  }
+  document.getElementById('local-predict').addEventListener('click',()=>{localStage=1;draw();});
+  document.getElementById('local-check').addEventListener('click',()=>{localStage=2;draw();});
+  document.getElementById('local-reset').addEventListener('click',()=>{localStage=0;draw();});
+
+  // interaction
+  let dragging = false;
+  const pt = evt => { const r = svg.getBoundingClientRect(); return toM((evt.clientX - r.left) * 660 / r.width, (evt.clientY - r.top) * 560 / r.height); };
+  svg.addEventListener('pointerdown', e => { if (e.target.getAttribute && e.target.getAttribute('data-drag')) { dragging = true; svg.setPointerCapture(e.pointerId); } });
+  svg.addEventListener('pointerup', () => dragging = false);
+  svg.addEventListener('pointermove', e => { if (!dragging) return; st.y = pt(e); reset(); draw(); });
+  document.querySelectorAll('input[name=method]').forEach(r => r.addEventListener('change', () => { st.method = r.value; syncLs(); reset(); draw(); }));
+  const rho = document.getElementById('rho');
+  rho.addEventListener('input', () => { st.rho = Math.pow(10, +rho.value); document.getElementById('rhoexp').textContent = (+rho.value).toString(); document.getElementById('rhov').textContent = st.rho.toPrecision(2); if (st.method === 'gn') { document.querySelector('input[value=lm]').checked = true; st.method = 'lm'; } syncLs(); reset(); draw(); });
+  document.getElementById('ls').addEventListener('change', e => { st.ls = e.target.checked; reset(); draw(); });
+  document.getElementById('step').addEventListener('click', () => { stepOnce(); draw(); });
+  document.getElementById('run').addEventListener('click', () => { runLoop(); draw(); });
+  document.getElementById('reset').addEventListener('click', () => { reset(); draw(); });
+  document.querySelectorAll('button[data-y]').forEach(b => b.addEventListener('click', () => { st.y = b.dataset.y.split(',').map(Number); reset(); draw(); }));
+  // The page address may set the starting target and method (see the comment at the top). Invalid,
+  // unknown or repeated parameters are ignored and named above the plot. Only run, run=, run=1 or
+  // run=true runs on load.
+  const params = new URLSearchParams(location.search), ignored = [], seen = new Set();
+  const NUM = /^\s*[-+]?(\d+\.?\d*|\.\d+)(e[-+]?\d+)?\s*$/i;
+  let runOnLoad = false;
+  params.forEach((v, k) => {
+    if (seen.has(k)) { ignored.push(`${k}=${v} (repeated; the first value is used)`); return; }
+    seen.add(k);
+    if (k === 'y') {
+      const y = v.split(',').map(t => NUM.test(t) ? Number(t) : NaN);
+      if (y.length === 2 && Math.abs(y[0]) <= 0.85 && y[1] >= -0.75 && y[1] <= 0.85) st.y = y;
+      else ignored.push(`y=${v} (x from −0.85 to 0.85 and y from −0.75 to 0.85 in metres, separated by a comma)`);
+    } else if (k === 'method') {
+      const radio = document.querySelector(`input[name=method][value="${CSS.escape(v)}"]`);
+      if (radio) { radio.checked = true; st.method = v; }
+      else ignored.push(`method=${v} (gn, lm or gd)`);
+    } else if (k === 'view') {
+      if (v === 'local-step') localStepMode = true;
+      else ignored.push(`view=${v} (local-step)`);
+    } else if (k === 'run') {
+      if (['', '1', 'true'].includes(v)) runOnLoad = true;
+      else if (!['0', 'false'].includes(v)) ignored.push(`run=${v} (1, true, 0 or false)`);
+    } else ignored.push(`${k}=${v} (unknown parameter)`);
+  });
+  if (localStepMode) {
+    ['y','method','run'].filter(k=>seen.has(k)).forEach(k=>ignored.push(`${k}=${params.get(k)} (the local-step view uses its fixed example and starts paused)`));
+    runOnLoad=false;
+    document.body.classList.add('local-step');
+    document.title='Predict a joint step, then check it with FK — CS 549';
+    document.querySelector('header h1').textContent='Predict a joint step, then check it with FK';
+    document.querySelector('header span').textContent='CS 549 · Chapter 02 §1.1 · two-link arm, l₁ = 0.4 m, l₂ = 0.3 m · world x right, y up';
+    document.getElementById('view').setAttribute('hidden','');
+    document.getElementById('solver-panel').hidden=true;
+    ['local-view','local-panel','local-legend'].forEach(id=>document.getElementById(id).removeAttribute('hidden'));
+  }
+  if (ignored.length) { const note = document.getElementById('urlnote'); note.textContent = 'Ignored in the page address: ' + ignored.join('; '); note.hidden = false; }
+  syncLs();
+  reset();
+  if (runOnLoad) runLoop();   // ?run for the slide screenshot
+  draw();
+})();
+</script>
+</body>
+</html>

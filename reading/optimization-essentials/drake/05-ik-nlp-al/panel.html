@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IK as Deck 05's program on the Panda: the augmented-Lagrangian loop, one event at a time</title>
+<style>
+  :root { --ink: #222; --muted: #666; --maroon: #7a1f3d; --teal: #1f8b8b; --gold: #b8860b; --grey: #8a8a8a; --red: #c8261a; --green: #1a9a33; --line: #ddd; --bg: #fafafa; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; color: var(--ink); background: #fff; font-size: 17px; line-height: 1.4; }
+  header { display: flex; align-items: baseline; gap: 16px; padding: 8px 16px; border-bottom: 1px solid var(--line); }
+  header h1 { font-size: 20px; margin: 0; color: var(--maroon); }
+  header .sub { color: var(--muted); font-size: 15px; }
+  header button { margin-left: auto; }
+  .workspace { display: grid; grid-template-columns: minmax(0, 1fr) 520px; height: calc(100vh - 46px); }
+  .workspace[data-panel-hidden="true"] { grid-template-columns: minmax(0, 1fr); }
+  .robot-view { position: relative; min-height: 360px; }
+  .robot-view iframe { width: 100%; height: 100%; border: 0; }
+  .panel { overflow: auto; border-left: 1px solid var(--line); padding: 10px 16px 24px; background: var(--bg); }
+  .panel[hidden] { display: none; }
+  section { margin-bottom: 12px; }
+  h2 { font-size: 16px; margin: 10px 0 6px; color: var(--maroon); }
+  p { margin: 4px 0; }
+  .badge { display: block; padding: 6px 10px; border-radius: 6px; font-weight: 600; font-size: 16px; color: #fff; background: var(--grey); }
+  .badge[data-kind="joint"] { background: var(--teal); }
+  .badge[data-kind="multiplier"] { background: var(--maroon); }
+  .key-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 6px; }
+  .key-grid div { background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; }
+  .key-grid .k { display: block; font-size: 13px; color: var(--muted); }
+  .key-grid .v { display: block; font-size: 19px; font-weight: 600; line-height: 1.25; }
+  .key-grid .v small { font-size: 13px; font-weight: normal; color: var(--muted); }
+  .controls { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .outer { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 6px; }
+  .controls button, .outer button, header button, .runs button { font: inherit; font-size: 16px; padding: 6px 8px; border: 1px solid #bbb; border-radius: 6px; background: #fff; cursor: pointer; }
+  .controls button:hover, .outer button:hover, .runs button:hover { background: #f0e8eb; }
+  .runs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 6px; }
+  .runs button { font-size: 14px; padding: 5px 6px; }
+  .runs button[data-active="true"] { background: var(--maroon); color: #fff; border-color: var(--maroon); }
+  .slider { display: flex; align-items: center; gap: 10px; margin-top: 6px; }
+  .slider input { flex: 1; }
+  .toggles label { display: block; margin: 1px 0; font-size: 15px; }
+  details.help { font-size: 14px; color: var(--muted); margin: 0 0 2px 22px; } details.help summary { cursor: pointer; }
+  .kkt-mini { margin-top: 6px; font-size: 14px; background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 4px 8px; line-height: 1.35; }
+  .kkt-mini .k { color: var(--muted); }
+  .stickybar { display: none; position: sticky; top: 0; z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); margin: -10px -16px 8px; padding: 6px 16px; }
+  .stickybar[data-show="true"] { display: block; }
+  .stickybar .row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .stickybar button { font: inherit; font-size: 14px; padding: 3px 7px; border: 1px solid #bbb; border-radius: 6px; background: #fff; cursor: pointer; }
+  .stickybar .e { font-size: 13px; color: var(--muted); }
+  .stickybar input { flex: 1; min-width: 120px; }
+  .tablewrap { overflow-x: auto; }
+  .gauges { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 8px; align-items: start; }
+  svg.gauge, svg.strip { width: 100%; height: 150px; background: #fff; border: 1px solid var(--line); border-radius: 6px; }
+  table.readouts { width: 100%; border-collapse: collapse; font-size: 16px; }
+  table.readouts td { padding: 3px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  table.readouts td:first-child { color: var(--muted); width: 42%; }
+  table.outer-table { width: 100%; border-collapse: collapse; font-size: 14px; background: #fff; }
+  table.outer-table th, table.outer-table td { padding: 3px 5px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; vertical-align: top; }
+  table.outer-table td.kap { line-height: 1.15; } table.outer-table .stop { color: var(--muted); font-size: 12px; }
+  table.outer-table th { color: var(--muted); font-weight: normal; white-space: normal; line-height: 1.15; }
+  table.outer-table tr[data-current="true"] td { background: #f0e8eb; font-weight: 600; }
+  .legend span { display: inline-block; margin: 2px 12px 2px 0; }
+  .swatch { display: inline-block; width: 14px; height: 14px; border-radius: 50%; vertical-align: -2px; margin-right: 5px; border: 1px solid #999; }
+  .bar { display: inline-block; width: 18px; height: 4px; vertical-align: 3px; margin-right: 5px; }
+  table.eq { width: 100%; border-collapse: collapse; font-family: "Charter", Georgia, serif; font-size: 18px; background: #fff; border: 1px solid var(--line); border-radius: 6px; margin: 6px 0; }
+  .eq td { padding: 4px 8px; vertical-align: top; border-bottom: 1px solid #eee; }
+  .eq tr:last-child td { border-bottom: 0; }
+  .eq td:first-child { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 15px; color: var(--muted); white-space: nowrap; width: 1%; padding-top: 6px; }
+  .eq sup, .eq sub { font-size: 70%; }
+  svg.plot { width: 100%; height: 140px; background: #fff; border: 1px solid var(--line); border-radius: 6px; margin: 4px 0 8px; }
+  .plot-title { font-size: 14px; color: var(--muted); margin: 6px 0 0; }
+  .note { font-size: 15px; color: var(--muted); }
+  .warn { color: #a00; font-size: 15px; }
+  .seq ol, .rec ul { margin: 4px 0 0 20px; padding: 0; }
+  .seq li, .rec li { margin: 3px 0; }
+  .rec { font-size: 15px; }
+  .pass { color: var(--green); } .fail { color: var(--red); }
+  @media (max-width: 1366px) {
+    .workspace { grid-template-columns: minmax(0, 1fr) 440px; }
+    header h1 { font-size: 18px; } header .sub { font-size: 13px; }
+    body { font-size: 15px; } table.readouts { font-size: 14px; } .key-grid .v { font-size: 17px; } .badge { font-size: 14px; }
+    .controls button, .outer button { font-size: 14px; padding: 4px 6px; } .runs button { font-size: 13px; }
+    .gauges { grid-template-columns: 170px minmax(0, 1fr); } svg.gauge, svg.strip { height: 102px; }
+    table.outer-table { font-size: 13px; } table.outer-table th, table.outer-table td { padding: 3px 4px; } .kkt-mini { font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>IK as Deck 05's program: the target as a rail, the posture as the objective, one event at a time</h1>
+  <span class="sub">Deck 05 slide 27 · the robot never moves by itself; Step, Back, Reset, the multiplier-update jumps and the slider move it</span>
+  <button id="panel-toggle" type="button" aria-expanded="true">Hide panel</button>
+</header>
+<main class="workspace" id="workspace" data-panel-hidden="false">
+  <div class="robot-view">
+    <iframe id="meshcat-view" src="__MESHCAT_URL__" title="Panda in Meshcat" allow="fullscreen"></iframe>
+  </div>
+  <aside class="panel" id="panel">
+    <div class="stickybar" id="stickybar" data-show="false">
+      <div class="row"><span class="e" id="sticky-event">—</span>
+        <button type="button" data-go="back">◀ Back</button><button type="button" data-go="step">Step ▶</button>
+        <button type="button" data-go="prev-outer">◀ update</button><button type="button" data-go="next-outer">update ▶</button>
+        <button type="button" id="sticky-top">▲ controls</button></div>
+      <div class="row"><input id="event-sticky" type="range" min="0" max="21" step="1" value="0" aria-label="event e"><span class="e" id="kkt-sticky">—</span></div>
+    </div>
+    <section>
+      <span class="badge" id="badge" data-kind="start">—</span>
+      <div class="key-grid">
+        <div><span class="k">rail violation ‖φ(q) − y*‖ (a constraint, not the objective)</span><span class="v" id="key-rail">—</span></div>
+        <div><span class="k">posture cost f = ½‖q − q<sub>ref</sub>‖² (the objective)</span><span class="v" id="key-f">—</span></div>
+        <div><span class="k">multipliers in force</span><span class="v" id="key-mult">—</span></div>
+      </div>
+      <div class="kkt-mini" id="kkt-mini"><span class="k">stopping marks (slide 25's residuals), stored by the latest multiplier update:</span> none yet</div>
+    </section>
+    <section>
+      <div class="controls">
+        <button type="button" data-do="back">◀ Back</button>
+        <button type="button" data-do="reset">Reset</button>
+        <button type="button" data-do="step">Step ▶</button>
+      </div>
+      <div class="outer">
+        <button type="button" data-do="prev-outer">◀ previous multiplier update</button>
+        <button type="button" data-do="next-outer">next multiplier update ▶</button>
+      </div>
+      <div class="slider"><label for="event">event e</label><input id="event" type="range" min="0" max="21" step="1" value="0"><span id="event-max">of 21</span></div>
+      <div class="runs" id="runs"></div>
+      <div class="toggles" style="margin-top: 6px">
+        <label><input type="checkbox" id="trials"> show rejected Armijo trials (selected inner step only)</label>
+        <label><input type="checkbox" id="arrow"> show the optional multiplier arrow −κ̂ at the flange</label>
+        <details class="help"><summary>what the arrow is</summary>−κ̂ = −(κ + 2μ<sub>h</sub> h) drawn from the flange, 0.02 m per rad²/m and clamped at 0.30 m; an estimate until convergence and never a force; at convergence the optimal cost rises fastest when the target moves along it.</details>
+        <label><input type="checkbox" id="closeup"> flange close-up camera</label>
+      </div>
+      <p class="warn" id="connection" hidden>Waiting for the demo…</p>
+    </section>
+    <section>
+      <div class="gauges">
+        <svg class="gauge" id="gauge" data-q=""></svg>
+        <svg class="strip" id="strip" data-outside=""></svg>
+      </div>
+      <p class="note" id="gauge-note">Left: the gauge of the run's fence joint (run B: joint 2 against its lower limit; run A has no fence active and shows none). Right: every joint inside its hardware range; the fence rows are those limits, so a red marker is a violated fence row.</p>
+    </section>
+    <section>
+      <h2>Readouts</h2>
+      <table class="readouts">
+        <tr><td>run</td><td id="run-label">—</td></tr>
+        <tr><td>start and reference</td><td id="start">—</td></tr>
+        <tr><td>event</td><td id="event-label">—</td></tr>
+        <tr><td>what happened</td><td id="what">—</td></tr>
+        <tr><td>rail rows h = φ(q) − y* [m]</td><td id="h">—</td></tr>
+        <tr><td>rail state (tolerance 10<sup>−6</sup> m)</td><td id="rail-state">—</td></tr>
+        <tr><td>κ frozen in this inner solve [rad²/m]</td><td id="kappa">—</td></tr>
+        <tr><td>κ̂ = κ + 2μ<sub>h</sub> h at this iterate (the value the update would store if the inner solve stopped here)</td><td id="kappa-hat">—</td></tr>
+        <tr><td id="fences-label">fence rows used by this step (g &gt; 0 or λ &gt; 0 at the previous iterate) · their λ [rad]</td><td id="fences">—</td></tr>
+        <tr><td>augmented objective A · objective f [rad²]</td><td id="af">—</td></tr>
+        <tr><td>accepted joint step ‖Δq‖ = α‖d‖ · α · rejected trials</td><td id="step">—</td></tr>
+        <tr><td>KKT after the latest multiplier update: max|h| · max g⁺ · stationarity · complementarity</td><td id="kkt">—</td></tr>
+        <tr><td>joints outside the hardware range (violated fence rows) at this event</td><td id="hardware">—</td></tr>
+        <tr><td>outcome at the end</td><td id="outcome">—</td></tr>
+        <tr><td>compared with (each solver's max|h| · max g⁺ · stationarity · complementarity against the loop's stops; the solvers' tolerances tightened)</td><td id="check">—</td></tr>
+      </table>
+      <p class="legend"><span><span class="swatch" style="background: var(--gold)"></span>target (the rail)</span><span><span class="swatch" style="background: var(--maroon)"></span>flange</span><span><span class="bar" style="background: #222"></span>rail violation line</span><span><span class="bar" style="background: var(--teal)"></span>arrow −κ̂ (optional, clamped)</span><span><span class="swatch" style="background: var(--green)"></span>allowed arc</span><span><span class="swatch" style="background: var(--red)"></span>forbidden side</span><span><span class="bar" style="background: var(--maroon)"></span>the bound</span><span><span class="swatch" style="background: #ccc; opacity: .6"></span>ghost = previous iterate</span><span><span class="swatch" style="background: var(--grey)"></span>rejected trials</span></p>
+    </section>
+    <section>
+      <h2>Per outer iteration (the row of the selected event is highlighted)</h2>
+      <div class="tablewrap"><table class="outer-table" id="outer-table"></table></div>
+      <p class="note">inner stop: ∇ = ‖∇A‖ below 3 × 10<sup>−7</sup>; floor = the precision floor (the predicted decrease −∇A<sup>⊤</sup>d below 10<sup>−13</sup> max(1, |A|), tested before the Armijo backtracking); cap = 100 steps</p>
+    </section>
+    <section>
+      <h2>What changed, and what one event shows</h2>
+      <p id="what-changed"><b>What changed against the earlier demos.</b> There the squared target error was the objective and the distance a displayed diagnostic. Here the target is a rail: h(q) = φ(q) − y* = 0 must hold at a successful answer within tolerance, and the distance ‖h‖ measures its violation. The objective is the posture deviation ½‖q − q<sub>ref</sub>‖². The joint limits are fence rows that must also hold at the answer. Intermediate iterates may violate the rail and the fences, and neither the posture cost nor a violation need change monotonically through the solve.</p>
+      <p>An <b>accepted joint update</b> is one inner step of the damped Gauss-Newton solve of the augmented objective with κ and λ frozen: the solid arm is the new iterate, the faded ghost the previous one. A <b>multiplier update</b> moves nothing: the loop holds q and stores κ̂ = κ + 2μ<sub>h</sub> h and max(0, λ + 2μ<sub>g</sub> g). The badge names the operation of the selected event and the quantity it kept fixed.</p>
+      <table class="eq">
+        <tr><td>objective</td><td>f(q) = ½ ‖q − q<sub>ref</sub>‖² [rad²], q<sub>ref</sub> = the ready pose</td></tr>
+        <tr><td>rail (equality)</td><td>h(q) = φ(q) − y* = 0 [m], three rows</td></tr>
+        <tr><td>fences (inequalities)</td><td>g(q) = (q<sub>lo</sub> − q, q − q<sub>hi</sub>) ≤ 0 [rad], 14 rows</td></tr>
+        <tr><td>augmented objective</td><td>A = f + κ<sup>⊤</sup>h + μ<sub>h</sub>‖h‖² + Σ<sub>i</sub>[g<sub>i</sub> &gt; 0 or λ<sub>i</sub> &gt; 0](λ<sub>i</sub> g<sub>i</sub> + μ<sub>g</sub> g<sub>i</sub>²), μ<sub>h</sub> = 1000 rad²/m², μ<sub>g</sub> = 100</td></tr>
+        <tr><td>inner direction (multipliers frozen)</td><td>d = −(I + 2μ<sub>h</sub> J<sup>⊤</sup>J + 2μ<sub>g</sub> Σ<sub>incl</sub> e<sub>i</sub>e<sub>i</sub><sup>⊤</sup> + ρI)<sup>−1</sup> ∇A(q), ρ = 10<sup>−3</sup></td></tr>
+        <tr><td>accepted step</td><td>Δq = α d, α = 1 first, halved by Armijo until A(q + αd) ≤ A(q) + 0.01 α ∇A(q)<sup>⊤</sup>d; the inner solve stops at ‖∇A‖ &lt; 3 × 10<sup>−7</sup>, or at its precision floor (predicted decrease −∇A<sup>⊤</sup>d below 10<sup>−13</sup> max(1, |A|)), or after 100 steps</td></tr>
+        <tr><td>multiplier update (q fixed)</td><td>κ ← κ + 2μ<sub>h</sub> h(q), λ<sub>i</sub> ← max(0, λ<sub>i</sub> + 2μ<sub>g</sub> g<sub>i</sub>(q)); stop when max|h| &lt; 10<sup>−6</sup> m, max g⁺ &lt; 10<sup>−6</sup> rad, ‖∇f + J<sup>⊤</sup>κ + Σλ<sub>i</sub>∇g<sub>i</sub>‖ &lt; 10<sup>−6</sup> rad and max|λ<sub>i</sub>g<sub>i</sub>| &lt; 10<sup>−8</sup> rad² (a fixed threshold)</td></tr>
+      </table>
+      <p class="note">The rail rows are in metres and the fence rows in radians, so the two penalty weights are separate and the two feasibility residuals are reported separately. The weights were measured (μ<sub>h</sub> = 1 does not converge in 30 outer iterations; 1000/100 converges in 3 and 5). The complementarity threshold 10<sup>−8</sup> rad² is a fixed value; in run B stationarity and complementarity both fail at outer iteration 3 and both pass at iteration 4. An inner solve that ends at the precision floor is labelled so, not "stationary". κ is the price of moving the rail: a 1 mm shift of the target in x changes f* by about −κ<sub>x</sub> × 0.001 (checked by re-solving on the same branch). At convergence, moving the target along the arrow −κ̂ raises f* fastest, at about ‖κ*‖ rad² per metre (2.3 in run A, 7.7 in run B); before convergence the arrow shows only the loop's current estimate, clamped at 0.30 m while ‖κ̂‖ exceeds 15 rad²/m. Outer iterations are numbered from 0 as in Deck 05; the inner steps within each from 1.</p>
+      <p class="note" id="local-note"><b>Local results.</b> The loop finds a KKT point from its start. Run B's target lies on the robot's symmetry plane. From the exactly symmetric ready pose, SNOPT stops at a KKT point that is not a minimum (cost 1.729, λ = 4.196): turning joints 1, 3 and 5 together, with the flange kept on the target and joint 2 on its limit, lowers the cost (curvature −1.40); such a point is called a constrained saddle. The loop leaves that point, but rounding would decide which mirror image it reaches, so run B starts with joint 1 at +0.01 rad, which makes the run repeatable; the whole run decides the side (the first steps cross the plane), and a larger offset can reach the mirror answer. The answer (cost 1.499, λ = 1.053) and its mirror image have the same cost. Solver answers are compared on cost, feasibility, stationarity and complementarity; multipliers and prices on the same branch; nothing here claims a global minimum.</p>
+    </section>
+    <section>
+      <h2>Per event (cursor = selected event; dashed lines = multiplier updates)</h2>
+      <p class="plot-title">rail violation ‖h‖ [m], log scale (1e-12 means 0 or below)</p><svg class="plot" id="plot-rail"></svg>
+      <p class="plot-title">posture cost f [rad²]</p><svg class="plot" id="plot-f"></svg>
+      <p class="plot-title">‖κ‖ in force after the event [rad²/m]</p><svg class="plot" id="plot-kappa"></svg>
+      <p class="plot-title">λ of the run's fence joint in force after the event [rad] (run A: none)</p><svg class="plot" id="plot-lambda"></svg>
+    </section>
+    <section class="rec">
+      <h2>Record</h2>
+      <ul>
+        <li>solver: <span id="rec-solver">—</span></li>
+        <li>event source: <span id="rec-source">—</span></li>
+        <li>multiplier estimator: <span id="rec-estimator">—</span></li>
+        <li>limitations: <ul id="rec-limitations"></ul></li>
+        <li>files: <span id="rec-files">—</span></li>
+      </ul>
+    </section>
+    <section class="seq">
+      <h2>Suggested sequence</h2>
+      <ol>
+        <li>Run A, paused at the ready pose: the posture cost is zero and the flange is 22 cm off the rail. Ask what the loop will do from here now that the target is a rail and the posture is the cost.</li>
+        <li>Step through outer iteration 0: the penalty pulls the flange toward the rail while the posture cost rises; the penalty alone stops 1.14 mm short; the next update stores κ = 2μ<sub>h</sub> h exactly, and slide 24's reading of the shortfall as ‖κ*‖/(2μ<sub>h</sub>) (1.15 mm) is approximate on this nonlinear arm. Next multiplier update: nothing moves, κ becomes 2μ<sub>h</sub> h and the KKT row appears with the rail mark still ✗; tick the arrow if useful (−κ̂ at the flange, an estimate).</li>
+        <li>Step through outer iteration 1: its first step cuts the violation from 1.1 mm to about 9 µm, still above the 1e-6 m tolerance, so the rail mark stays ✗ at the next update; outer iteration 2 brings it below the tolerance and the third update turns the mark ✓. Slider to the end: on the rail within tolerance, κ* beside slide 19's column, f* = 0.209 beside its cost.</li>
+        <li>Run B: the start is the ready pose with joint 1 turned by 0.01 rad, so the posture cost begins small and positive (5e-5 rad²). Joint 2 reaches its lower limit; a fence row joins the rail with its own λ (1.053). Say the local-result sentence: the symmetric answer is a saddle, the mirror minimum has the same cost.</li>
+      </ol>
+      <p class="note">Camera: drag rotates, right-drag pans, scroll zooms; Step keeps your view. Selecting a run resets its wide view; showing the rejected trials widens the view to include them; the close-up follows the flange. The timeline walks accepted joint updates and multiplier updates only.</p>
+    </section>
+  </aside>
+</main>
+<script>
+(() => {
+  const byId = id => document.getElementById(id);
+  const fmtE = x => { const s = x.toExponential(3); return s.replace(/e([-+])(\d)$/, 'e$10$2'); };
+  const vec = (v, d = 4) => '(' + v.map(x => x.toFixed(d)).join(', ') + ')';
+  let record = null, lastSeq = -1, latestState = null;
+  let actionChain = Promise.resolve(), queuedActions = 0, awaitingActionId = 0, sliderActive = false;
+  const pending = state => queuedActions > 0 || (state.applied_action_id || 0) < awaitingActionId;
+  const act = what => {
+    queuedActions++;
+    actionChain = actionChain.then(async () => {
+      try {
+        const r = await fetch('/action?do=' + encodeURIComponent(what), { cache: 'no-store', signal: AbortSignal.timeout(5000) });
+        if (!r.ok) throw new Error('Action request failed');
+        const reply = await r.json();
+        if (!Number.isInteger(reply.action_id)) throw new Error('Missing action acknowledgment');
+        awaitingActionId = Math.max(awaitingActionId, reply.action_id);
+      } catch { byId('connection').hidden = false; }
+      finally { queuedActions--; if (latestState) render(latestState); }
+    });
+    return actionChain;
+  };
+  document.querySelectorAll('.controls button, .outer button').forEach(b => b.addEventListener('click', () => act(b.dataset.do)));
+  document.querySelectorAll('.stickybar button[data-go]').forEach(b => b.addEventListener('click', () => act(b.dataset.go)));   // data-go, so that [data-do] selectors keep finding the main controls
+  for (const id of ['event', 'event-sticky']) {
+    byId(id).addEventListener('input', e => act('set:' + e.target.value));
+    byId(id).addEventListener('pointerdown', () => { sliderActive = true; });
+  }
+  byId('sticky-top').addEventListener('click', () => byId('panel').scrollTo({ top: 0, behavior: 'smooth' }));
+  new IntersectionObserver(entries => { byId('stickybar').dataset.show = String(!entries[0].isIntersecting); }, { root: byId('panel'), threshold: 0 })
+    .observe(document.querySelector('.controls'));
+  const releaseSlider = () => { sliderActive = false; if (latestState) render(latestState); };
+  window.addEventListener('pointerup', releaseSlider);
+  window.addEventListener('pointercancel', releaseSlider);
+  window.addEventListener('blur', releaseSlider);
+  byId('trials').addEventListener('change', e => act('trials:' + (e.target.checked ? 1 : 0)));
+  byId('arrow').addEventListener('change', e => act('arrow:' + (e.target.checked ? 1 : 0)));
+  byId('closeup').addEventListener('change', e => act('closeup:' + (e.target.checked ? 1 : 0)));
+  byId('panel-toggle').addEventListener('click', () => {
+    const panel = byId('panel'), hidden = !panel.hidden;
+    panel.hidden = hidden; byId('workspace').dataset.panelHidden = String(hidden);
+    byId('panel-toggle').textContent = hidden ? 'Show panel' : 'Hide panel';
+    byId('panel-toggle').setAttribute('aria-expanded', String(!hidden));
+  });
+  function buildRuns() {
+    const box = byId('runs'); box.innerHTML = '';
+    for (const [key, run] of Object.entries(record.runs)) {
+      const b = document.createElement('button'); b.type = 'button'; b.textContent = run.label; b.dataset.run = key; b.title = run.note;
+      b.addEventListener('click', () => act('run:' + key)); box.appendChild(b);
+    }
+    byId('rec-solver').textContent = record.solver; byId('rec-source').textContent = record.event_source; byId('rec-estimator').textContent = record.estimator;
+    byId('rec-limitations').innerHTML = record.limitations.map(t => `<li>${t.replace(/</g, '&lt;')}</li>`).join('');
+    byId('rec-files').textContent = Object.entries(record.source.files).map(([p, h]) => `${p} ${h.slice(0, 12)}`).join(' · ') + ` (git ${record.source.git}${record.source.dirty ? ', uncommitted changes' : ''})`;
+  }
+  function plot(svgId, values, cursor, log, marks, step) {
+    const svg = byId(svgId); const W = svg.clientWidth || 480, H = svg.clientHeight || 140;
+    const L = 52, R = 10, T = 10, B = 26; const n = values.length - 1;
+    const tr = v => log ? Math.log10(Math.max(v, 1e-12)) : v;
+    const pts = values.map((v, e) => v === null ? null : [e, tr(v)]).filter(Boolean);
+    const vs = pts.map(p => p[1]); const vmin = Math.min(...vs), vmax = Math.max(...vs); const span = (vmax - vmin) || 1;
+    const X = e => L + (W - L - R) * (e / Math.max(n, 1));
+    const Y = v => T + (H - T - B) * (1 - (v - vmin) / span);
+    let d = '';
+    pts.forEach((p, k) => { const x = X(p[0]).toFixed(1), y = Y(p[1]).toFixed(1); d += k === 0 ? `M${x},${y} ` : (step ? `H${x} V${y} ` : `L${x},${y} `); });
+    const ticks = [vmin, (vmin + vmax) / 2, vmax].map(v => `<text x="${L - 6}" y="${Y(v).toFixed(1)}" font-size="11" text-anchor="end" dominant-baseline="middle" fill="#666">${log ? '1e' + v.toFixed(0) : v.toFixed(3)}</text>`).join('');
+    const xt = [0, Math.round(n / 2), n].map(e => `<text x="${X(e).toFixed(1)}" y="${H - 8}" font-size="11" text-anchor="middle" fill="#666">${e}</text>`).join('');
+    const mk = marks.map(e => `<line x1="${X(e).toFixed(1)}" y1="${T}" x2="${X(e).toFixed(1)}" y2="${H - B}" stroke="#999" stroke-dasharray="3,3"/>`).join('');
+    const sel = values[cursor] === null ? null : [cursor, tr(values[cursor])];
+    const cur = `<line x1="${X(cursor).toFixed(1)}" y1="${T}" x2="${X(cursor).toFixed(1)}" y2="${H - B}" stroke="#7a1f3d" stroke-width="2"/>` + (sel ? `<circle cx="${X(sel[0]).toFixed(1)}" cy="${Y(sel[1]).toFixed(1)}" r="5" fill="#7a1f3d"/>` : '');
+    svg.innerHTML = `<line x1="${L}" y1="${H - B}" x2="${W - R}" y2="${H - B}" stroke="#bbb"/><line x1="${L}" y1="${T}" x2="${L}" y2="${H - B}" stroke="#bbb"/>${ticks}${xt}${mk}<path d="${d}" fill="none" stroke="#1f6f8b" stroke-width="2"/>${pts.map(p => `<circle cx="${X(p[0]).toFixed(1)}" cy="${Y(p[1]).toFixed(1)}" r="2.5" fill="#1f6f8b"/>`).join('')}${cur}`;
+  }
+  function gauge(run, ev) {
+    const svg = byId('gauge'); const W = svg.clientWidth || 200, H = svg.clientHeight || 150;
+    if (run.gauge === null) { svg.innerHTML = `<text x="${W / 2}" y="${H / 2}" font-size="12" text-anchor="middle" fill="#666">no fence active in this run</text>`; svg.dataset.q = ''; svg.dataset.state = 'none'; return; }
+    const j = run.gauge.index; const [lo, hi] = run.gauge.hardware_range; const q = ev.q[j];
+    const violated = ev.violated_bounds.includes(j) || ev.violated_bounds.includes(j + 7); const active = ev.active_bounds.includes(j) || ev.active_bounds.includes(j + 7);
+    const state = violated ? 'violated' : active ? 'on the bound' : 'inside';
+    const cx = W / 2, cy = 34, r = Math.min(W / 2 - 24, H - 50);
+    const P = (th, rr = r) => [cx + rr * Math.cos(th), cy - rr * Math.sin(th)];
+    const arc = (a, b, col, w) => { let d = ''; for (let k = 0; k <= 40; k++) { const [x, y] = P(a + (b - a) * k / 40); d += (k ? 'L' : 'M') + x.toFixed(1) + ',' + y.toFixed(1) + ' '; } return `<path d="${d}" fill="none" stroke="${col}" stroke-width="${w}" stroke-linecap="round"/>`; };
+    const deg = th => (th * 180 / Math.PI).toFixed(0) + '°';
+    const col = violated ? '#c8261a' : '#222';
+    const [nx, ny] = P(q, r * 0.92), [sx1, sy1] = P(lo, r * 0.8), [sx2, sy2] = P(lo, r * 1.15);
+    const lab = (th, text, rr = r * 1.22) => { const [x, y] = P(th, rr); return `<text x="${Math.max(34, Math.min(W - 34, x)).toFixed(1)}" y="${y.toFixed(1)}" font-size="11" text-anchor="middle" dominant-baseline="middle" fill="#666">${text}</text>`; };
+    svg.innerHTML = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#eee"/>${arc(lo, hi, '#1a9a33', 7)}${arc(lo - 0.6, lo, '#c8261a', 4)}` +
+      `<line x1="${sx1.toFixed(1)}" y1="${sy1.toFixed(1)}" x2="${sx2.toFixed(1)}" y2="${sy2.toFixed(1)}" stroke="#7a1f3d" stroke-width="3"/>` +
+      `<line x1="${cx}" y1="${cy}" x2="${nx.toFixed(1)}" y2="${ny.toFixed(1)}" stroke="${col}" stroke-width="${violated ? 4 : 2.5}"/><circle cx="${nx.toFixed(1)}" cy="${ny.toFixed(1)}" r="${violated ? 6 : 4}" fill="${col}"/>` +
+      `<circle cx="${cx}" cy="${cy}" r="3" fill="#222"/>${lab(lo, 'bound ' + lo.toFixed(4) + ' (' + deg(lo) + ')')}` +
+      `<text x="${cx}" y="12" font-size="12" text-anchor="middle" fill="#444">q${'₁₂₃₄₅₆₇'[j]} = ${q.toFixed(4)} rad (${deg(q)})</text><text x="${cx}" y="29" font-size="12" font-weight="600" text-anchor="middle" fill="${col}">${state}</text>`;
+    svg.dataset.q = q.toFixed(6); svg.dataset.state = state;
+  }
+  function strip(q, outside, active) {
+    const svg = byId('strip'); const W = svg.clientWidth || 300, H = svg.clientHeight || 150;
+    const ranges = record.hardware_ranges; const x0 = 30, x1 = W - 112, rowH = (H - 16) / 7;
+    let out = `<text x="${W / 2}" y="10" font-size="11" text-anchor="middle" fill="#444">hardware ranges = the fence rows</text>`;
+    for (let j = 0; j < 7; j++) {
+      const [lo, hi] = ranges[j]; const y = 20 + rowH * j + rowH / 2; const X = v => x0 + (x1 - x0) * (v - lo) / (hi - lo);
+      const isOut = outside.includes(j + 1); const isActive = active.includes(j) || active.includes(j + 7); const xq = Math.max(x0 - 8, Math.min(x1 + 8, X(q[j])));
+      out += `<text x="${x0 - 6}" y="${y}" font-size="11" text-anchor="end" dominant-baseline="middle" fill="#666">q${'₁₂₃₄₅₆₇'[j]}</text>`;
+      out += `<line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}" stroke="#bbb" stroke-width="4" stroke-linecap="round"/>`;
+      out += `<circle cx="${xq.toFixed(1)}" cy="${y}" r="${isOut || isActive ? 6 : 4}" fill="${isOut ? '#c8261a' : isActive ? '#7a1f3d' : '#222'}"/>`;
+      out += `<text x="${x1 + 8}" y="${y}" font-size="11" dominant-baseline="middle" fill="${isOut ? '#c8261a' : isActive ? '#7a1f3d' : '#666'}">${q[j].toFixed(3)}${isOut ? (q[j] > hi ? ' > ' + hi.toFixed(3) : ' < ' + lo.toFixed(3)) : isActive ? ' at bound' : ''}</text>`;
+    }
+    svg.innerHTML = out; svg.dataset.outside = outside.join(','); svg.dataset.active = active.join(',');
+  }
+  function outerTable(run, current) {
+    const j = run.gauge ? run.gauge.index : 1;
+    const head = `<tr><th>outer</th><th>inner steps</th><th>‖h‖ [m]</th><th>κ after [rad²/m]</th><th>λ${'₁₂₃₄₅₆₇'[j]} after [rad]</th><th>f [rad²]</th></tr>`;
+    const short = st => /floor/.test(st) ? 'floor' : /stationary|gradient/.test(st) ? '∇' : /cap|max|100/.test(st) ? 'cap' : st;
+    const rows = run.rows.map(r => `<tr data-current="${r.outer === current}"><td>${r.outer}</td><td>${r.n_inner} <span class="stop" title="${r.inner_status}">${short(r.inner_status)}</span></td><td>${fmtE(r.rail_residual)}</td><td class="kap">${r.kappa_after.map(x => x.toFixed(3)).join('<br>')}</td><td>${r.lam_after[j].toFixed(5)}</td><td>${r.f.toFixed(5)}</td></tr>`);
+    byId('outer-table').innerHTML = head + rows.join('');
+  }
+  function render(state) {
+    const run = record.runs[state.run]; const e = state.e; const ev = run.events[e]; const n = run.n_events; const M = record.method; const T = record.tolerances;
+    document.querySelectorAll('#runs button').forEach(b => b.dataset.active = String(b.dataset.run === state.run));
+    if (!sliderActive && !pending(state)) { for (const id of ['event', 'event-sticky']) { byId(id).max = n; byId(id).value = e; } byId('event-max').textContent = 'of ' + n; }
+    byId('sticky-event').textContent = `${run.label.split(':')[0]} · e = ${e} of ${n} · ${ev.type === 'start' ? 'start' : ev.type === 'accepted_update' ? 'joint update' : 'multiplier update'}`;
+    byId('trials').checked = !!state.trials; byId('arrow').checked = !!state.arrow; byId('closeup').checked = !!state.closeup;
+    byId('run-label').textContent = run.label + ' — ' + run.note;
+    byId('start').textContent = `q_init = ${vec(run.q_init, 3)} (${run.init_note.split(':')[0]}); q_ref = ${vec(record.q_ref, 3)}, the ready pose`;
+    const kap = ev.type === 'outer_update' ? ev.kappa_after : ev.kappa; const lam = ev.type === 'outer_update' ? ev.lam_after : ev.lam;
+    const badge = byId('badge');
+    const inclText = ev.included.length ? ev.included.map(i => `${i < 7 ? 'lower' : 'upper'} bound of q${'₁₂₃₄₅₆₇'[i % 7]} (λ = ${lam[i].toFixed(5)})`).join('; ') : 'none';
+    if (ev.type === 'start') {
+      badge.dataset.kind = 'start'; badge.textContent = `e = 0 of ${n} · START · q = q_init, κ = 0, λ = 0`;
+      byId('event-label').textContent = `e = 0 of ${n}: start`; byId('what').textContent = 'no update yet; the rail is violated by the initial distance';
+      byId('step').textContent = 'none yet'; byId('af').textContent = `f = ${fmtE(ev.f)}`; byId('kappa').textContent = vec(kap) + ' (nothing stored yet)';
+    } else if (ev.type === 'accepted_update') {
+      const nk = run.rows[ev.outer].n_inner;
+      badge.dataset.kind = 'joint'; badge.textContent = `e = ${e} of ${n} · JOINT UPDATE · outer iteration ${ev.outer}, inner step ${ev.inner} of ${nk} · κ and λ fixed`;
+      byId('event-label').textContent = `e = ${e} of ${n}: accepted joint update`;
+      byId('what').textContent = `outer iteration ${ev.outer}, inner step ${ev.inner} of ${nk} (κ frozen at ${vec(ev.kappa, 3)})`;
+      byId('step').textContent = `${fmtE(ev.step_norm)} rad · α = ${ev.alpha} · ${ev.rejected} rejected`;
+      byId('af').textContent = `A = ${fmtE(ev.A)} · f = ${fmtE(ev.f)}`; byId('kappa').textContent = vec(kap) + ' (frozen during this inner solve)';
+    } else {
+      badge.dataset.kind = 'multiplier'; badge.textContent = `e = ${e} of ${n} · MULTIPLIER UPDATE · after outer iteration ${ev.outer} · q fixed, κ ${vec(ev.kappa_before, 3)} → ${vec(ev.kappa_after, 3)}`;
+      byId('event-label').textContent = `e = ${e} of ${n}: multiplier update`;
+      byId('what').textContent = `after outer iteration ${ev.outer} (${ev.inner_steps} inner steps, ${ev.inner_status}): κ ${vec(ev.kappa_before, 4)} → ${vec(ev.kappa_after, 4)}; the arm does not move`;
+      byId('step').textContent = 'none (q fixed)'; byId('af').textContent = `f = ${fmtE(ev.f)} (A changes with the multipliers although nothing moved)`;
+      byId('kappa').textContent = vec(kap) + ' (stored by this update)';
+    }
+    byId('key-rail').innerHTML = fmtE(ev.rail_residual) + ' m<br><small>' + ev.rail_state + '</small>';
+    byId('key-f').innerHTML = ev.f.toFixed(5) + ' rad²';
+    byId('key-mult').innerHTML = `κ = ${vec(kap, 3)}<br><small>${ev.included.length ? 'λ of included rows: ' + ev.included.map(i => lam[i].toFixed(4)).join(', ') : 'no fence row included'}</small>`;
+    byId('h').textContent = vec(ev.h, 6) + ' m, ‖h‖ = ' + fmtE(ev.rail_residual) + ' m';
+    byId('rail-state').textContent = ev.rail_state === 'on the rail' ? `on the rail (max|h| < ${T.feas_h} m)` : `off the rail (max|h| ≥ ${T.feas_h} m)`;
+    const kn = Math.hypot(...ev.kappa_hat);
+    byId('kappa-hat').textContent = vec(ev.kappa_hat) + (ev.type === 'outer_update' ? ' = this update\'s value' : '') + (record.arrow.scale_m_per_unit * kn > record.arrow.clamp_m ? ' (arrow clamped)' : '');
+    byId('fences-label').innerHTML = ev.type === 'accepted_update' ? 'fence rows used by this step (g &gt; 0 or λ &gt; 0 at the previous iterate) · their λ [rad]' : ev.type === 'outer_update' ? 'fence rows included in the next inner solve (g &gt; 0 or λ &gt; 0) · their λ [rad]' : 'fence rows included (none at the start) · their λ [rad]';
+    byId('fences').textContent = inclText;
+    const lastOuter = run.events.slice(0, e + 1).filter(x => x.type === 'outer_update').at(-1);
+    if (lastOuter) {
+      const m = (v, tol) => `<span class="${v < tol ? 'pass' : 'fail'}">${fmtE(v)} ${v < tol ? '✓' : '✗'}</span>`;
+      byId('kkt').innerHTML = `${m(lastOuter.feas_h, T.feas_h)} m · ${m(lastOuter.feas_g, T.feas_g)} rad · ${m(lastOuter.stat, T.stat)} rad · ${m(lastOuter.comp, T.comp)} rad² (after update ${lastOuter.outer})`;
+      const mk = (v, tol, name) => `${name} <span class="${v < tol ? 'pass' : 'fail'}">${v < tol ? '✓' : '✗'}</span>`;
+      const marks = `${mk(lastOuter.feas_h, T.feas_h, 'max|h|')} · ${mk(lastOuter.feas_g, T.feas_g, 'max g⁺')} · ${mk(lastOuter.stat, T.stat, 'stationarity')} · ${mk(lastOuter.comp, T.comp, 'complementarity')}`;
+      byId('kkt-mini').innerHTML = `<span class="k">stopping marks (slide 25's residuals), stored by multiplier update ${lastOuter.outer}; the violation above is this iterate's:</span> ${marks}`;
+      byId('kkt-sticky').innerHTML = `after update ${lastOuter.outer}: ${marks}`;
+    } else { byId('kkt').textContent = 'no multiplier update yet'; byId('kkt-mini').innerHTML = '<span class="k">stopping marks (slide 25\'s residuals), stored by the latest multiplier update:</span> none yet'; byId('kkt-sticky').textContent = 'no multiplier update yet'; }
+    byId('hardware').textContent = ev.outside_hardware.length ? `joints ${ev.outside_hardware.join(', ')}` : 'none';
+    const fin = run.final;
+    byId('outcome').textContent = `${run.outcome} after ${run.n_outer} multiplier update${run.n_outer === 1 ? '' : 's'} and ${run.n_inner} inner steps: f* = ${fin.f.toFixed(5)} rad², ‖h‖ = ${fmtE(fin.rail_residual)} m (${fin.rail_state}), κ* = ${vec(fin.kappa)}, active bounds ${fin.active_bounds.length ? fin.active_bounds.map(i => 'q' + '₁₂₃₄₅₆₇'[i % 7] + (i < 7 ? ' lower' : ' upper') + ' (λ = ' + fin.lam[i].toFixed(5) + ')').join('; ') : 'none'}; second order: ${fin.second_order} (reduced-Hessian eigenvalues ${vec(fin.reduced_hessian_eigenvalues, 3)})` + (run.mirror ? `; the mirror branch has the same cost ${run.mirror.f.toFixed(5)}` : '');
+    const c = run.check;
+    const res4 = x => ['feas_h', 'feas_g', 'stat', 'comp'].map(k => `${fmtE(x[k])} ${x.passes && x.passes[k] ? '✓' : '✗'}`).join(' · ');
+    byId('check').innerHTML = c ? `SNOPT from q_init (${c.SNOPT.exit}): f* ${c.SNOPT.cost.toFixed(5)}, κ ${vec(c.SNOPT.kappa, 3)}, residuals ${res4(c.SNOPT)}, ${c.SNOPT.second_order}; IPOPT from q_init (${c.IPOPT.exit}): f* ${c.IPOPT.cost.toFixed(5)}, κ ${vec(c.IPOPT.kappa, 3)}, residuals ${res4(c.IPOPT)}, ${c.IPOPT.second_order}; price check on this branch: target x ± 1 mm → Δf* ${c.SNOPT.price_target_x.change.toFixed(5)} forward, ${c.SNOPT.price_target_x.change_central.toFixed(5)} central, against −κ_x δ = ${c.SNOPT.price_target_x.predicted.toFixed(5)}` + (c.SNOPT.price_bound ? `; bound of joint ${c.SNOPT.price_bound.joint} tightened by 1e-3 rad → Δf* ${c.SNOPT.price_bound.change.toFixed(5)} forward (tightening only), against λ δ = ${c.SNOPT.price_bound.predicted.toFixed(5)}` : '') + (c.SNOPT.symmetric_start ? `; SNOPT from the symmetric ready pose: f* ${c.SNOPT.symmetric_start.cost.toFixed(5)}, residuals ${res4(c.SNOPT.symmetric_start)} (${c.SNOPT.symmetric_start.kkt_point ? 'a KKT point' : 'not a KKT point'}), ${c.SNOPT.symmetric_start.second_order} (eigenvalues ${vec(c.SNOPT.symmetric_start.reduced_hessian_eigenvalues, 2)})` : '') : '—';
+    gauge(run, ev); strip(ev.q, ev.outside_hardware, ev.active_bounds);
+    outerTable(run, ev.outer);
+    const marks = run.outer_events; const j = run.gauge ? run.gauge.index : 1;
+    plot('plot-rail', run.events.map(x => x.rail_residual), e, true, marks, false);
+    plot('plot-f', run.events.map(x => x.f), e, false, marks, false);
+    plot('plot-kappa', run.events.map(x => Math.hypot(...(x.type === 'outer_update' ? x.kappa_after : x.kappa))), e, false, marks, true);
+    plot('plot-lambda', run.events.map(x => (x.type === 'outer_update' ? x.lam_after : x.lam)[j]), e, false, marks, true);
+  }
+  function receive(state) { if (state.sequence < lastSeq) return; lastSeq = state.sequence; latestState = state; render(state); }
+  async function poll() {
+    try {
+      const r = await fetch('/state', { cache: 'no-store' });
+      if (r.ok) { const state = await r.json(); byId('connection').hidden = true; receive(state); } else byId('connection').hidden = false;
+    } catch { byId('connection').hidden = false; }
+    setTimeout(poll, 200);
+  }
+  fetch('/record', { cache: 'no-store' }).then(r => r.json()).then(rec => { record = rec; buildRuns(); poll(); });
+  window.addEventListener('resize', () => { if (record && lastSeq >= 0) fetch('/state').then(r => r.json()).then(receive).catch(() => {}); });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+seed 1: 18 evaluations, largest knot deficit 0.032301563 mm
+seed 2: 12 evaluations, largest knot deficit 1.866758273 mm
+seed 3: 12 evaluations, largest knot deficit 1.866823171 mm
+seed 4: 12 evaluations, largest knot deficit 1.867771704 mm
+seed 5: 12 evaluations, largest knot deficit 1.867810974 mm
+Five seed checks passed; numerical options untouched, initialization noise retained.

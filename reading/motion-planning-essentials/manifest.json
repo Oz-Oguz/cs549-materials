@@ -1,0 +1,2402 @@
+{
+  "package": "motion-planning-essentials",
+  "documents": {
+    "chapter-03-essentials.html": {
+      "source": "lectures/04-reading-motion-planning/chapter-03-essentials.md",
+      "sha256": "aa5a6e70d07bed843b3c5ca415b62e36b23ad1ad6b0e30d63f3c703f43d6bd89"
+    }
+  },
+  "sources": {
+    "lectures/04-reading-motion-planning/code/cost_comparison.py": {
+      "source": "lectures/04-reading-motion-planning/code/cost_comparison.py",
+      "source_sha256": "dbcdd7edefcdd0a790807adf4e4867a924c0fe64646245bfb0120c4889b7346c"
+    },
+    "lectures/04-reading-motion-planning/code/check_section2.py": {
+      "source": "lectures/04-reading-motion-planning/code/check_section2.py",
+      "source_sha256": "1406f1499887650668b262e34becdb46da540dcd934db5b16a3b614acd877c6a"
+    },
+    "lectures/04-reading-motion-planning/code/check_continuation.py": {
+      "source": "lectures/04-reading-motion-planning/code/check_continuation.py",
+      "source_sha256": "b33d08d216a2bb05d51a5d2d9390bcde486abf2b64046515561a4983def112ca"
+    },
+    "lectures/04-D2-motion-planning/code/make_figures.py": {
+      "source": "lectures/04-D2-motion-planning/code/make_figures.py",
+      "source_sha256": "133e9e32e2fe1c8058a1cd960a21f87e60ad5bdd416be8b4a38853f6bfc46cd3"
+    },
+    "lectures/04-D2-motion-planning/code/make_review_figures.py": {
+      "source": "lectures/04-D2-motion-planning/code/make_review_figures.py",
+      "source_sha256": "4ef251c0402f539869ff9ec1c50ae89c8f07051a7045b03bc92d25d3d69dfa19"
+    },
+    "lectures/04-D2-motion-planning/code/rai_nlp.py": {
+      "source": "lectures/04-D2-motion-planning/code/rai_nlp.py",
+      "source_sha256": "5afe80a08746585fb20ada5b84e8a811d52417a4a6f402a7500b1bac5ccb5690"
+    },
+    "lectures/04-D2-motion-planning/code/rai_fixture.py": {
+      "source": "lectures/04-D2-motion-planning/code/rai_fixture.py",
+      "source_sha256": "1faa3f4d44cbce10e7105d8016b63e62fbe21f3aa7d5bffef8d4b9244db60eb6"
+    },
+    "modules/motion-planning/rrt_two_link.py": {
+      "source": "modules/motion-planning/rrt_two_link.py",
+      "source_sha256": "147b4463ee48b6d6423b10e8db10aad3ef0298134280ca2a3e648b2cf01bdfb7"
+    },
+    "modules/motion-planning/staged_two_link.py": {
+      "source": "modules/motion-planning/staged_two_link.py",
+      "source_sha256": "5eebe7828baedb2dc872d7d320d046e6d1314d8bfcbe1040fba783aa4cfce20b"
+    },
+    "modules/motion-planning/check_staged.py": {
+      "source": "modules/motion-planning/check_staged.py",
+      "source_sha256": "2bbf9fbc80f1cb35b4acc50bd1d7027720dbedbf79f07e725cf415ad54cc134b"
+    },
+    "modules/motion-planning/rai_bidir_rrt.py": {
+      "source": "modules/motion-planning/rai_bidir_rrt.py",
+      "source_sha256": "b0fe19d7bf60a67e131454a9a47913ba8c26ed7562e7d6d3ee693a81416e1c81"
+    },
+    "modules/motion-planning/rrtstar_reference.py": {
+      "source": "modules/motion-planning/rrtstar_reference.py",
+      "source_sha256": "d3534d706e2fe024c683e3ec58565e3f88293f533613e6f43d1b43ed7867b210"
+    },
+    "modules/motion-planning/refine_figures.py": {
+      "source": "modules/motion-planning/refine_figures.py",
+      "source_sha256": "98cd469ef37f9332d013b834dd79cd8c41de3b94342887a688ebd7b6d020228f"
+    },
+    "modules/motion-planning/stage4_komo_rai.py": {
+      "source": "modules/motion-planning/stage4_komo_rai.py",
+      "source_sha256": "5782ce28f133e784a12c6abbfd79ad29455086d098174f8e6059b68db6f6afff"
+    },
+    "modules/motion-planning/fixtures/stage4_rai.json": {
+      "source": "modules/motion-planning/fixtures/stage4_rai.json",
+      "source_sha256": "172db9ab53027aff1da380df6dd83bf1a90faf5e81f41ff7ed967562261a3090"
+    },
+    "modules/motion-planning/fixtures/stage4_seed_sweep.json": {
+      "source": "modules/motion-planning/fixtures/stage4_seed_sweep.json",
+      "source_sha256": "dd145c0b7b65ce4a6fff7007d7f57f56f646120f4daed53bf17b87f39c9cdca3"
+    },
+    "modules/opt-explorer/fixtures/refine_rai.json": {
+      "source": "modules/opt-explorer/fixtures/refine_rai.json",
+      "source_sha256": "2709ea40057f225d4d69f60971cf7eeca4e6c38e110d8f755c561d4bde740062"
+    },
+    "modules/opt-explorer/fixtures/refine_reference.json": {
+      "source": "modules/opt-explorer/fixtures/refine_reference.json",
+      "source_sha256": "3535e90cea3c5621a535dcf5705a0db28b373007ee60a93d4301509078d064d5"
+    },
+    "modules/opt-explorer/fixtures/explorer_nlp.py": {
+      "source": "modules/opt-explorer/fixtures/explorer_nlp.py",
+      "source_sha256": "26bc8dc3cfebadee318c18ff0a2419cbacc2c88451641a5905f97cea4f5b0b2a"
+    },
+    "lectures/05-motion-planning/sampling-demo/evidence/rai-stage4/run4-before-defaults.txt": {
+      "source": "lectures/05-motion-planning/sampling-demo/evidence/rai-stage4/run4-before-defaults.txt",
+      "source_sha256": "f49cb2185ad8143dca1e9be9dc3531f49eeff835c5fcbe4da66375a21e680eef"
+    },
+    "lectures/05-motion-planning/sampling-demo/evidence/rai-stage4/seed-run.txt": {
+      "source": "lectures/05-motion-planning/sampling-demo/evidence/rai-stage4/seed-run.txt",
+      "source_sha256": "2ad190f4a7e76e81b03c926c49bcb89fe89d3f23c5926f006546c1e990a95dc9"
+    },
+    "modules/motion-planning/index.html": {
+      "source": "modules/motion-planning/index.html",
+      "source_sha256": "1a1208477f2aa8ebad6f0d422b97bbaa6a4df5a837346dfcc4303e22586c2591"
+    },
+    "modules/opt-explorer/assets/Surface3D-DaqkT3Nq.js": {
+      "source": "modules/opt-explorer/dist/assets/Surface3D-DaqkT3Nq.js",
+      "source_sha256": "80c0e1a3c27045ce5941ebbe06fc1ac3eca1d244e62a86410ed4c95576e8d39e"
+    },
+    "modules/opt-explorer/assets/index-CA-W9ySt.css": {
+      "source": "modules/opt-explorer/dist/assets/index-CA-W9ySt.css",
+      "source_sha256": "8be4942d48dc7c36f55885395683ce0ea5ec46ebf096a4863be8b26d4613e5a7"
+    },
+    "modules/opt-explorer/assets/index-CwI8Tb8w.js": {
+      "source": "modules/opt-explorer/dist/assets/index-CwI8Tb8w.js",
+      "source_sha256": "269ce9b1828f9c9a65166430a3ca8c005496a188085248330af1beff621b7eec"
+    },
+    "modules/opt-explorer/index.html": {
+      "source": "modules/opt-explorer/dist/index.html",
+      "source_sha256": "c6376fba896cf240bfd3d72ece8255a31b877d8d0ee81516d59a27103c2dc35f"
+    },
+    "assets/katex/katex.min.js": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/katex.min.js",
+      "source_sha256": "a29d2961d3146de5949d78ac7c1a9d93ae54955bad22a6db4fbe836e88e8bf48"
+    },
+    "assets/katex/katex.min.css": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/katex.min.css",
+      "source_sha256": "0289a02cf451a44dd73add683a09644252363871ac11713a647b732cee8b1ee3"
+    },
+    "assets/katex/fonts/KaTeX_Typewriter-Regular.woff2": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Typewriter-Regular.woff2",
+      "source_sha256": "71d517d67827787cfabdf186914cc3358eda539e37931941f2b2fd4a21f68c0b"
+    },
+    "assets/katex/fonts/KaTeX_Main-Regular.woff": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Main-Regular.woff",
+      "source_sha256": "c6368d87e8a1a3a5d337623d83d8dc4b868f242a9ad476237d6f8d1e0f168cdc"
+    },
+    "assets/katex/fonts/KaTeX_AMS-Regular.ttf": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_AMS-Regular.ttf",
+      "source_sha256": "68534840bcfdd2bffb6f0e8deb48684dd01e7f04ea2813267577afb906de1d13"
+    },
+    "assets/katex/fonts/KaTeX_Main-BoldItalic.woff": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Main-BoldItalic.woff",
+      "source_sha256": "a6f7ec0d846ac7ad975adb8959c37ed49b94acbc4ae436db9ce9e20287e4a64c"
+    },
+    "assets/katex/fonts/KaTeX_AMS-Regular.woff2": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_AMS-Regular.woff2",
+      "source_sha256": "0cdd387c9590a1a9f9794560022dbb59654a7d86f187aa0c81495ad42d3a7308"
+    },
+    "assets/katex/fonts/KaTeX_Size3-Regular.woff2": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Size3-Regular.woff2",
+      "source_sha256": "73d591271b1604960cb10bb90fee021670af7297017e0e98480b332d11f51995"
+    },
+    "assets/katex/fonts/KaTeX_Main-Regular.woff2": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Main-Regular.woff2",
+      "source_sha256": "c2342cd8b869e01752a9321dc17213fc40d4d04c79688c1d43f2cf316abd7866"
+    },
+    "assets/katex/fonts/KaTeX_Script-Regular.ttf": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Script-Regular.ttf",
+      "source_sha256": "1c67f068fea8bb09bf099c088b1cf64bd27516a6e07f4684344873564bb66a67"
+    },
+    "assets/katex/fonts/KaTeX_Caligraphic-Bold.woff2": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Caligraphic-Bold.woff2",
+      "source_sha256": "de7701e42cf1f4cf0b766c03fb27977207eee2f4fd5d76fa82188406da43ea4c"
+    },
+    "assets/katex/fonts/KaTeX_Size3-Regular.ttf": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Size3-Regular.ttf",
+      "source_sha256": "500e04d54f0d51666332c9d2089aa803be22aa878eca539e59fa53c6e522b082"
+    },
+    "assets/katex/fonts/KaTeX_Typewriter-Regular.woff": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Typewriter-Regular.woff",
+      "source_sha256": "e14fed02b1aba7ce9f5afd5844b5d0321b22351febc720e0de8b8723527609f7"
+    },
+    "assets/katex/fonts/KaTeX_Caligraphic-Regular.woff": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Caligraphic-Regular.woff",
+      "source_sha256": "3398dd02302557a793f2863f88e02d96ce10df2abffa07c8e9fa90775116e65c"
+    },
+    "assets/katex/fonts/KaTeX_Typewriter-Regular.ttf": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Typewriter-Regular.ttf",
+      "source_sha256": "f01f3e87d9c6a61c0c081ceb577abd864eb00a612f7ac1620dd6915fad2ef5aa"
+    },
+    "assets/katex/fonts/KaTeX_Main-Italic.woff": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Main-Italic.woff",
+      "source_sha256": "f1d6ef86f3b11a528bd5185199bd2443ecb2b0dead96d88674b5a2c12be24bdf"
+    },
+    "assets/katex/fonts/KaTeX_Caligraphic-Bold.ttf": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Caligraphic-Bold.ttf",
+      "source_sha256": "07d8e303ce4fc12b4bb54f1004170dd190a1f3db45d400fe68060df3e0897268"
+    },
+    "assets/katex/fonts/KaTeX_SansSerif-Bold.woff2": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_SansSerif-Bold.woff2",
+      "source_sha256": "e99ae51144bf1232efcc1bfe5add36262c6866b0faab24fa75740e1b98577a62"
+    },
+    "assets/katex/fonts/KaTeX_Math-Italic.woff2": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Math-Italic.woff2",
+      "source_sha256": "7af58c5ec8f132a2ddde9027c6d7814decce4d3b822a11192a42a20e2e973264"
+    },
+    "assets/katex/fonts/KaTeX_Size4-Regular.woff2": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Size4-Regular.woff2",
+      "source_sha256": "a4af7d414440a1c1790825cfb700cf9cf43b0f2c4b04f0ebc523011ad9853ec0"
+    },
+    "assets/katex/fonts/KaTeX_Fraktur-Bold.woff2": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Fraktur-Bold.woff2",
+      "source_sha256": "74444efd593c005e3f4573b44524704c0af0a937fe911cca9e94068d0d140d3f"
+    },
+    "assets/katex/fonts/KaTeX_Caligraphic-Bold.woff": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Caligraphic-Bold.woff",
+      "source_sha256": "1ae6bd7475590e97e7f145a89e09ccde322f7a6bc0b91607b1c8b8ee28290fed"
+    },
+    "assets/katex/fonts/KaTeX_SansSerif-Bold.ttf": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_SansSerif-Bold.ttf",
+      "source_sha256": "1ece03f79f95277d57dc7f6b435a74e1379b0d46104a8530286b60ff49369ea0"
+    },
+    "assets/katex/fonts/KaTeX_Fraktur-Regular.woff": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Fraktur-Regular.woff",
+      "source_sha256": "5e28753be717dac97f559f49bc10be9cf3c124ddcabda6659d11cb68febc6463"
+    },
+    "assets/katex/fonts/KaTeX_Main-Bold.ttf": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Main-Bold.ttf",
+      "source_sha256": "138ac28d1663b3037e9c5f52371fa5c63d8324f4a38d22cd573e6ea3a3fd0cf8"
+    },
+    "assets/katex/fonts/KaTeX_SansSerif-Italic.woff2": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_SansSerif-Italic.woff2",
+      "source_sha256": "00b26ac825e2095056396e0553b8ac26d3f8ad158c3826e28b4c45b385c4714a"
+    },
+    "assets/katex/fonts/KaTeX_Main-Bold.woff2": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Main-Bold.woff2",
+      "source_sha256": "0f60d1b897938ec918c8ce073092411baf9438f6739465693ff18b0f9d20b021"
+    },
+    "assets/katex/fonts/KaTeX_SansSerif-Regular.woff2": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_SansSerif-Regular.woff2",
+      "source_sha256": "68e8c73ef42afd3ccec58bf0fba302cce448938e7fc020a5e31f8a952eee1342"
+    },
+    "assets/katex/fonts/KaTeX_Fraktur-Regular.ttf": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Fraktur-Regular.ttf",
+      "source_sha256": "1e6f9579e90e2cac37f8f60a597c436e075c114385652b7cbeb0dec0421291b3"
+    },
+    "assets/katex/fonts/KaTeX_Main-Regular.ttf": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Main-Regular.ttf",
+      "source_sha256": "d0332f52868370fd83ae7fa46470f90c8f2eab2fcf12bc4f88080b340c95a830"
+    },
+    "assets/katex/fonts/KaTeX_Size2-Regular.woff": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Size2-Regular.woff",
+      "source_sha256": "2014c523c3210bcc166648c4d4cc57f05b747df07a24277bf71c51e67dc79e3d"
+    },
+    "assets/katex/fonts/KaTeX_Main-BoldItalic.woff2": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Main-BoldItalic.woff2",
+      "source_sha256": "99cd42a3c072d918f2f44984a807cf7aa16e13545fd0875fc07c6c65f99e715b"
+    },
+    "assets/katex/fonts/KaTeX_Fraktur-Regular.woff2": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Fraktur-Regular.woff2",
+      "source_sha256": "51814d270d06ff0255dba0799994fa4d8c84d11f09951d47595f4abb1f3602dc"
+    },
+    "assets/katex/fonts/KaTeX_Script-Regular.woff2": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Script-Regular.woff2",
+      "source_sha256": "036d4e95149b69ff9bcc0cd55771efeb25ffa3947293e69acd78d5ac328c684b"
+    },
+    "assets/katex/fonts/KaTeX_Size4-Regular.woff": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Size4-Regular.woff",
+      "source_sha256": "99f9c6750b489c9462bf04900bd3f939df9b829339daaaaa99ef5495cdddea58"
+    },
+    "assets/katex/fonts/KaTeX_Size3-Regular.woff": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Size3-Regular.woff",
+      "source_sha256": "6ab6b62e9b62dae2c00dd90f791bd10950be0ecc3490d7d6045f51c2e8fe0949"
+    },
+    "assets/katex/fonts/KaTeX_AMS-Regular.woff": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_AMS-Regular.woff",
+      "source_sha256": "30da91e84c893f875e252689faebdc590b2871145e8adc7f9a9d4dbd8ce0b251"
+    },
+    "assets/katex/fonts/KaTeX_Main-Bold.woff": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Main-Bold.woff",
+      "source_sha256": "c76c5d696297d51b9cb1639c7da4334f0e7dec81b42b11213b5e25ef671bb822"
+    },
+    "assets/katex/fonts/KaTeX_SansSerif-Italic.ttf": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_SansSerif-Italic.ttf",
+      "source_sha256": "3931dd81faed86ba021bb2bbdc36f5bed9a38d6b4f4077aca59b265aa1b02083"
+    },
+    "assets/katex/fonts/KaTeX_Math-Italic.ttf": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Math-Italic.ttf",
+      "source_sha256": "08ce98e51b04d58945a301e639e02b6998af29fdfd61a7b8afdd07bbfc479d4a"
+    },
+    "assets/katex/fonts/KaTeX_Size1-Regular.woff": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Size1-Regular.woff",
+      "source_sha256": "c943cc986384f59e86bea5fd7dc50a9c4dfe567a7c05eb40d6790720dead97c9"
+    },
+    "assets/katex/fonts/KaTeX_SansSerif-Regular.woff": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_SansSerif-Regular.woff",
+      "source_sha256": "11e4dc8a6471ff6d6ee561d53d10fde8f7489e798257ff449c5d37c197435605"
+    },
+    "assets/katex/fonts/KaTeX_Main-Italic.ttf": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Main-Italic.ttf",
+      "source_sha256": "0d85ae7cc30f23790a7f1a58c4a112fdca8aae769b6ba11429af1d98b1b6cb3a"
+    },
+    "assets/katex/fonts/KaTeX_Math-Italic.woff": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Math-Italic.woff",
+      "source_sha256": "8a8d244581371912b8f3f5a23e2437cb2a59cd9bcaebb0346e722c05737a2571"
+    },
+    "assets/katex/fonts/KaTeX_Math-BoldItalic.woff2": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Math-BoldItalic.woff2",
+      "source_sha256": "dc47344dbb6cb5b655c8460d561f4df5f501b90c804ad3c6cec65fe322351ab1"
+    },
+    "assets/katex/fonts/KaTeX_Fraktur-Bold.ttf": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Fraktur-Bold.ttf",
+      "source_sha256": "9163df9c7122432e6495b4229fa9071cf9ae86a758ae5efc4924ec2e1a6dbce1"
+    },
+    "assets/katex/fonts/KaTeX_Size2-Regular.ttf": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Size2-Regular.ttf",
+      "source_sha256": "a6b2099fb555c60e3a0db3a08842ebf1d732c6eb4e4bf44913613bed4fc4e39b"
+    },
+    "assets/katex/fonts/KaTeX_SansSerif-Italic.woff": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_SansSerif-Italic.woff",
+      "source_sha256": "91ee67500cc0129aa0ace3ac5c61ff1692102f0f31d02b69347fba35dcb75bf2"
+    },
+    "assets/katex/fonts/KaTeX_Main-Italic.woff2": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Main-Italic.woff2",
+      "source_sha256": "97479ca6cce906abc961ecac96faa5f9ca2e61b8e7670d475826bcdee9a7c267"
+    },
+    "assets/katex/fonts/KaTeX_Size1-Regular.woff2": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Size1-Regular.woff2",
+      "source_sha256": "6b47c40166b6dbe21a5dfca7718413f2147fd2399be1ba605d8ad39cedf25dfe"
+    },
+    "assets/katex/fonts/KaTeX_Fraktur-Bold.woff": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Fraktur-Bold.woff",
+      "source_sha256": "9be7ceb88004ab8ad124082246fbfcca4091e36385d4ec6ed1df67375dad50fb"
+    },
+    "assets/katex/fonts/KaTeX_Script-Regular.woff": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Script-Regular.woff",
+      "source_sha256": "d96cdf2b3bdd4d64a8fd5f74a4c467f123a8a73931cd435889f08ffaf9bf947a"
+    },
+    "assets/katex/fonts/KaTeX_SansSerif-Regular.ttf": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_SansSerif-Regular.ttf",
+      "source_sha256": "f36ea897e19f4a2e571d1e900e4e3710e438deb05a842486045ba0a3e616a4ad"
+    },
+    "assets/katex/fonts/KaTeX_Math-BoldItalic.woff": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Math-BoldItalic.woff",
+      "source_sha256": "850c0af5c2238497febaf5e461d880bf458c341f42f4f330f1b1ab5698b1998e"
+    },
+    "assets/katex/fonts/KaTeX_Size1-Regular.ttf": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Size1-Regular.ttf",
+      "source_sha256": "95b6d2f1a50173bfedb8c63e1d1c99b10427d0a4df4201cb44513b226951a22b"
+    },
+    "assets/katex/fonts/KaTeX_Caligraphic-Regular.ttf": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Caligraphic-Regular.ttf",
+      "source_sha256": "ed0b74372feefcbb9c0666b2e210da37b7e49fa7fbbf3eeb11db5f693dacfbb7"
+    },
+    "assets/katex/fonts/KaTeX_Size4-Regular.ttf": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Size4-Regular.ttf",
+      "source_sha256": "c647367d1dd4e162468717d020e1fc0f1dc5c26ebfdffbe55261713bf88c5877"
+    },
+    "assets/katex/fonts/KaTeX_Size2-Regular.woff2": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Size2-Regular.woff2",
+      "source_sha256": "d04c54219f9eaec6d4d4fd42dfb28785975a4794d6b2fc71e566b9cd6db842dd"
+    },
+    "assets/katex/fonts/KaTeX_Caligraphic-Regular.woff2": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Caligraphic-Regular.woff2",
+      "source_sha256": "5d53e70ad607c2352162dec9e0923fb54ecdafaccbf604cd8dcf7d00facb989b"
+    },
+    "assets/katex/fonts/KaTeX_Main-BoldItalic.ttf": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Main-BoldItalic.ttf",
+      "source_sha256": "70ee1f64a20f2048c21940ef46d0144fd215baa953ca69afd1e31e98544f708f"
+    },
+    "assets/katex/fonts/KaTeX_SansSerif-Bold.woff": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_SansSerif-Bold.woff",
+      "source_sha256": "ece03cfd83e22c212cdef66feb8442d25a083beb988db3f1883f3f9738d750ba"
+    },
+    "assets/katex/fonts/KaTeX_Math-BoldItalic.ttf": {
+      "source": "modules/opt-explorer/node_modules/katex/dist/fonts/KaTeX_Math-BoldItalic.ttf",
+      "source_sha256": "f9377ab0271cda59af24bcffbd46a4d0c8a3572ffafdbb38de2ad5ea7b0d5ee5"
+    },
+    "licenses/@types__plotly.js/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@types/plotly.js/LICENSE",
+      "source_sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+    },
+    "licenses/@types__react-plotly.js/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@types/react-plotly.js/LICENSE",
+      "source_sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+    },
+    "licenses/katex/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/katex/LICENSE",
+      "source_sha256": "766ccc1f306c885aa45542a9846bbd0a505b27a0374f146778171c2254ce18e3"
+    },
+    "licenses/plotly.js-dist-min/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/plotly.js-dist-min/LICENSE",
+      "source_sha256": "8c45d9eaf50c2f72dd9c7ab9ef440788ba58a3538484b5c51c1f17d5128752e7"
+    },
+    "licenses/react-dom/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/react-dom/LICENSE",
+      "source_sha256": "52412d7bc7ce4157ea628bbaacb8829e0a9cb3c58f57f99176126bc8cf2bfc85"
+    },
+    "licenses/react-plotly.js/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/react-plotly.js/LICENSE",
+      "source_sha256": "78791e88f2d8d075d011ea3b9bf95103e11477a42e22f1654c58674fece36ff0"
+    },
+    "licenses/react/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/react/LICENSE",
+      "source_sha256": "52412d7bc7ce4157ea628bbaacb8829e0a9cb3c58f57f99176126bc8cf2bfc85"
+    },
+    "licenses/@types__react/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@types/react/LICENSE",
+      "source_sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+    },
+    "licenses/katex__node_modules__commander/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/katex/node_modules/commander/LICENSE",
+      "source_sha256": "04512a63dce4d2d506ad612dc0bd7681ccf6e3655f7b6eaef7dfac8323d1ec0b"
+    },
+    "licenses/loose-envify/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/loose-envify/LICENSE",
+      "source_sha256": "4eb7543b08d955a6d23fcc224601d43ff566e775be918805e26210d7f6eb4893"
+    },
+    "licenses/scheduler/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/scheduler/LICENSE",
+      "source_sha256": "52412d7bc7ce4157ea628bbaacb8829e0a9cb3c58f57f99176126bc8cf2bfc85"
+    },
+    "licenses/plotly.js/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/plotly.js/LICENSE",
+      "source_sha256": "8c45d9eaf50c2f72dd9c7ab9ef440788ba58a3538484b5c51c1f17d5128752e7"
+    },
+    "licenses/prop-types/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/prop-types/LICENSE",
+      "source_sha256": "f657f99d3fb9647db92628e96007aabb46e5f04f33e49999075aab8e250ca7ce"
+    },
+    "licenses/@types__prop-types/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@types/prop-types/LICENSE",
+      "source_sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+    },
+    "licenses/csstype/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/csstype/LICENSE",
+      "source_sha256": "11d55bd4541c75ee7879547ac49089c489163dae49551389713c3d026cab383e"
+    },
+    "licenses/js-tokens/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/js-tokens/LICENSE",
+      "source_sha256": "2213d91c606205c71eb051a199478cdc2adde945893404d7f1421436dd6d5cc1"
+    },
+    "licenses/@plotly__d3-sankey-circular/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@plotly/d3-sankey-circular/LICENSE",
+      "source_sha256": "793031003729acb6fc69e8e6c5ef754dd9f5be4e68ac1e70ced1cc7c1dabae94"
+    },
+    "licenses/@plotly__d3-sankey/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@plotly/d3-sankey/LICENSE",
+      "source_sha256": "2bf785e778d67a4f5266cffcd4f2cc5bb98cde73791666e7efeb8002ba32dfa5"
+    },
+    "licenses/@plotly__d3/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@plotly/d3/LICENSE",
+      "source_sha256": "e4796bd1fdc09e06a3683957a177d59b38aec4143df81b2d25472438f5763482"
+    },
+    "licenses/@plotly__mapbox-gl/LICENSE.txt": {
+      "source": "modules/opt-explorer/node_modules/@plotly/mapbox-gl/LICENSE.txt",
+      "source_sha256": "dcd8c5e27012f2c0754081a51b5e742ca71f4928d557bd204ab14447b9b76f44"
+    },
+    "licenses/@plotly__regl/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@plotly/regl/LICENSE",
+      "source_sha256": "42d997d1f47c9222dec2844468fc2a4fd144c6950d698eade460e94537ddcdd3"
+    },
+    "licenses/@turf__area/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@turf/area/LICENSE",
+      "source_sha256": "f9b32b82fd5a1d3a990526d86da97f42fb805d9f4d9f978125c4679b674fce44"
+    },
+    "licenses/@turf__bbox/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@turf/bbox/LICENSE",
+      "source_sha256": "f9b32b82fd5a1d3a990526d86da97f42fb805d9f4d9f978125c4679b674fce44"
+    },
+    "licenses/@turf__centroid/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@turf/centroid/LICENSE",
+      "source_sha256": "f9b32b82fd5a1d3a990526d86da97f42fb805d9f4d9f978125c4679b674fce44"
+    },
+    "licenses/base64-arraybuffer/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/base64-arraybuffer/LICENSE",
+      "source_sha256": "f3eca6ff762533fa5a77caf954a143e48afa204668cf97dce758c45a9e006be3"
+    },
+    "licenses/canvas-fit/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/canvas-fit/LICENSE.md",
+      "source_sha256": "435a6722c786b0a56fbe7387028f1d9d3f3a2d0fb615bb8fee118727c3f59b7b"
+    },
+    "licenses/color-parse/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/color-parse/LICENSE",
+      "source_sha256": "af45ae40c7d031f40e77e09fd33b12700e96ea861c4a73f0dff3294d47e60a81"
+    },
+    "licenses/country-regex/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/country-regex/LICENSE",
+      "source_sha256": "295a58ae617eab21d154117b48e9875ed7be5d50d246094105af2af055a79a45"
+    },
+    "licenses/d3-force/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/d3-force/LICENSE",
+      "source_sha256": "e1211892da0b0e0585b7aebe8f98c1274fba15bafe47fa1f4ee8a7a502c06304"
+    },
+    "licenses/d3-format/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/d3-format/LICENSE",
+      "source_sha256": "7eea8533ea92bd8c32a901e89ecb0305890905bb12711449565ddff96891146d"
+    },
+    "licenses/d3-geo-projection/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/d3-geo-projection/LICENSE",
+      "source_sha256": "4108a126a74cc35d4d5ae39ca5d0cc926fa7c8ec40e459a0c6d3481c69decbd8"
+    },
+    "licenses/d3-geo/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/d3-geo/LICENSE",
+      "source_sha256": "c3c9d41a75b64963748657932167ec4c56404b8fd557d4f89c9eeda6e2fdf39a"
+    },
+    "licenses/d3-hierarchy/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/d3-hierarchy/LICENSE",
+      "source_sha256": "e1211892da0b0e0585b7aebe8f98c1274fba15bafe47fa1f4ee8a7a502c06304"
+    },
+    "licenses/d3-interpolate/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/d3-interpolate/LICENSE",
+      "source_sha256": "e008c5e25a6be382593089c29bfabbc553c6378eee02895aec46ce396cc404ee"
+    },
+    "licenses/d3-time-format/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/d3-time-format/LICENSE",
+      "source_sha256": "7a3cb0e5055874e67db9aa2d5fe26de23204fa994ffbad198901ffe9c812a717"
+    },
+    "licenses/d3-time/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/d3-time/LICENSE",
+      "source_sha256": "e1211892da0b0e0585b7aebe8f98c1274fba15bafe47fa1f4ee8a7a502c06304"
+    },
+    "licenses/fast-isnumeric/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/fast-isnumeric/LICENSE",
+      "source_sha256": "71f353d5dca49bf6335eaa74ce0f92914f4b820e73a55d4277ac69a5b144a445"
+    },
+    "licenses/gl-mat4/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/gl-mat4/LICENSE.md",
+      "source_sha256": "28b772abdf0b639145dca52fb975cb322bac45ee098da1aa316d41e1d3c4493a"
+    },
+    "licenses/gl-text/license.md": {
+      "source": "modules/opt-explorer/node_modules/gl-text/license.md",
+      "source_sha256": "350454cc29b984110ff0936b4459fc8ea8f26b9b5cb7ca15664cca643577db9e"
+    },
+    "licenses/has-passive-events/license.md": {
+      "source": "modules/opt-explorer/node_modules/has-passive-events/license.md",
+      "source_sha256": "e9dd54ddece97061ebc2153110fcfeac1b0579e8556c0b07b195f004b00ff7fc"
+    },
+    "licenses/maplibre-gl/LICENSE.txt": {
+      "source": "modules/opt-explorer/node_modules/maplibre-gl/LICENSE.txt",
+      "source_sha256": "ee5fc05a0677eaf69601d2c7db0d9ecd6cc27c3abc1d0733bc9ed34707cf8ef2"
+    },
+    "licenses/mouse-change/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/mouse-change/LICENSE",
+      "source_sha256": "632d884bc3370b825072b2ba58896b727fbea1f8a81c6278babbc65d7dca4954"
+    },
+    "licenses/mouse-event-offset/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/mouse-event-offset/LICENSE.md",
+      "source_sha256": "91515553fda3d86e82454bab0eb876a2cb9a31c0dcb8be640870fed624e53697"
+    },
+    "licenses/mouse-wheel/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/mouse-wheel/LICENSE",
+      "source_sha256": "632d884bc3370b825072b2ba58896b727fbea1f8a81c6278babbc65d7dca4954"
+    },
+    "licenses/parse-svg-path/License": {
+      "source": "modules/opt-explorer/node_modules/parse-svg-path/License",
+      "source_sha256": "2d5ffdfe09268750ba687a149db8392038772e7f156db3a98b615a7de0cab76e"
+    },
+    "licenses/point-in-polygon/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/point-in-polygon/LICENSE",
+      "source_sha256": "a38ee3303e4f0cdffb18ca280b58b856dbc1bf916b0bb6018efc057ed2dcabbd"
+    },
+    "licenses/polybooljs/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/polybooljs/LICENSE",
+      "source_sha256": "6a3969e97bc3b992c17bfdcd6fcabd9b5688650cc0078235d512c014e86b716e"
+    },
+    "licenses/probe-image-size/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/probe-image-size/LICENSE",
+      "source_sha256": "95e3f7f0e81e9b4940cdfaa1956aaff5e4dfd2fb1565041e7c78eb9a606f23e3"
+    },
+    "licenses/regl-error2d/license": {
+      "source": "modules/opt-explorer/node_modules/regl-error2d/license",
+      "source_sha256": "2907ee84b30a5ca0f0fb134e24f60daf292a598bf5819e418eb2eb2b32262ed8"
+    },
+    "licenses/regl-line2d/license.md": {
+      "source": "modules/opt-explorer/node_modules/regl-line2d/license.md",
+      "source_sha256": "2907ee84b30a5ca0f0fb134e24f60daf292a598bf5819e418eb2eb2b32262ed8"
+    },
+    "licenses/regl-line2d/license": {
+      "source": "modules/opt-explorer/node_modules/regl-line2d/license",
+      "source_sha256": "2907ee84b30a5ca0f0fb134e24f60daf292a598bf5819e418eb2eb2b32262ed8"
+    },
+    "licenses/regl-scatter2d/license": {
+      "source": "modules/opt-explorer/node_modules/regl-scatter2d/license",
+      "source_sha256": "2907ee84b30a5ca0f0fb134e24f60daf292a598bf5819e418eb2eb2b32262ed8"
+    },
+    "licenses/regl-splom/license.md": {
+      "source": "modules/opt-explorer/node_modules/regl-splom/license.md",
+      "source_sha256": "350454cc29b984110ff0936b4459fc8ea8f26b9b5cb7ca15664cca643577db9e"
+    },
+    "licenses/strongly-connected-components/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/strongly-connected-components/LICENSE",
+      "source_sha256": "e67aed7df22dc8031e4fcf5338fe91cb33e3817e5c58a99a2a2802eea9069791"
+    },
+    "licenses/superscript-text/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/superscript-text/LICENSE",
+      "source_sha256": "632d884bc3370b825072b2ba58896b727fbea1f8a81c6278babbc65d7dca4954"
+    },
+    "licenses/tinycolor2/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/tinycolor2/LICENSE",
+      "source_sha256": "c6cb470a9ba0a50d57611aeec1f31da609c5aefdbee8eac7f289bcb0e30625fa"
+    },
+    "licenses/to-px/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/to-px/LICENSE",
+      "source_sha256": "632d884bc3370b825072b2ba58896b727fbea1f8a81c6278babbc65d7dca4954"
+    },
+    "licenses/topojson-client/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/topojson-client/LICENSE",
+      "source_sha256": "4c4d15b635e04e691825a76db7d33f7f2033b55669a7430011694f31e6c65999"
+    },
+    "licenses/webgl-context/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/webgl-context/LICENSE.md",
+      "source_sha256": "91515553fda3d86e82454bab0eb876a2cb9a31c0dcb8be640870fed624e53697"
+    },
+    "licenses/world-calendars/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/world-calendars/LICENSE",
+      "source_sha256": "61b072bb9553d8840cc44a3fe259b890566c3cf85b0907a043f2d73ffc802c36"
+    },
+    "licenses/object-assign/license": {
+      "source": "modules/opt-explorer/node_modules/object-assign/license",
+      "source_sha256": "6fb9754611c20f6649f68805e8c990e83261f29316e29de9e6cedae607b8634c"
+    },
+    "licenses/react-is/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/react-is/LICENSE",
+      "source_sha256": "52412d7bc7ce4157ea628bbaacb8829e0a9cb3c58f57f99176126bc8cf2bfc85"
+    },
+    "licenses/d3-array/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/d3-array/LICENSE",
+      "source_sha256": "e1211892da0b0e0585b7aebe8f98c1274fba15bafe47fa1f4ee8a7a502c06304"
+    },
+    "licenses/d3-collection/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/d3-collection/LICENSE",
+      "source_sha256": "c88423cbec18e11f2673dee760013af559a28c42704fb5471db146e5f954a476"
+    },
+    "licenses/d3-shape/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/d3-shape/LICENSE",
+      "source_sha256": "7eea8533ea92bd8c32a901e89ecb0305890905bb12711449565ddff96891146d"
+    },
+    "licenses/elementary-circuits-directed-graph/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/elementary-circuits-directed-graph/LICENSE",
+      "source_sha256": "7db11fce23faf713647e44b6c58143f7bdace4258dbc9ca800be7582782d5e2b"
+    },
+    "licenses/@mapbox__geojson-rewind/LICENSE.txt": {
+      "source": "modules/opt-explorer/node_modules/@mapbox/geojson-rewind/LICENSE.txt",
+      "source_sha256": "f69fa6a6652581ae8c6cbab9e720bacb3b335a03335c2024afd6ddc6f7cfe240"
+    },
+    "licenses/@mapbox__geojson-types/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@mapbox/geojson-types/LICENSE",
+      "source_sha256": "46323ce6756e643e3b0d2c2355d44677e53bffe288482d1f1a54375efdfbb147"
+    },
+    "licenses/@mapbox__mapbox-gl-supported/LICENSE.txt": {
+      "source": "modules/opt-explorer/node_modules/@mapbox/mapbox-gl-supported/LICENSE.txt",
+      "source_sha256": "e9e43336581d738d3d3c86e65b63bd2357dd4a945ec21e28c4eb0c4a8b522ac6"
+    },
+    "licenses/@mapbox__point-geometry/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@mapbox/point-geometry/LICENSE",
+      "source_sha256": "dd21817f71dfddadd36108266c1f19c89e2d1f24e4e27ee5b6c34743462d8310"
+    },
+    "licenses/@mapbox__tiny-sdf/LICENSE.txt": {
+      "source": "modules/opt-explorer/node_modules/@mapbox/tiny-sdf/LICENSE.txt",
+      "source_sha256": "daee818208313020b429fd7b69755232e3cd27348a10284076c4bd84e6008d83"
+    },
+    "licenses/@mapbox__vector-tile/LICENSE.txt": {
+      "source": "modules/opt-explorer/node_modules/@mapbox/vector-tile/LICENSE.txt",
+      "source_sha256": "de11b2b7d4af85d160347e7cbe734b5bc7b5beb5584281506bc1a5bc84b3aa3e"
+    },
+    "licenses/@mapbox__whoots-js/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/@mapbox/whoots-js/LICENSE.md",
+      "source_sha256": "27043d1a6a0e1985fde12660decbbd3b23c67de900b00609c90d4f0aa492f425"
+    },
+    "licenses/earcut/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/earcut/LICENSE",
+      "source_sha256": "cd661c432ea8243974e6fde6fc433ebee3e96525ca8b66321b9d9971674ede60"
+    },
+    "licenses/geojson-vt/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/geojson-vt/LICENSE",
+      "source_sha256": "828f2aed51b6526881a236758ec9b08cd69928fbfc70346d9d44a0b3a3444fe1"
+    },
+    "licenses/gl-matrix/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/gl-matrix/LICENSE.md",
+      "source_sha256": "af62d31a0cdc1bf95d5e19428c3e0de368b727d9d5b6b6cdb466f8a52e68ad06"
+    },
+    "licenses/grid-index/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/grid-index/LICENSE",
+      "source_sha256": "bdc2176275547505d0aa0c908e07053063bfcf04d285364d9032233b5c4c5a9b"
+    },
+    "licenses/pbf/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/pbf/LICENSE",
+      "source_sha256": "5d081d1d4848771dfef5e445660f918aedefd6ae9bb02058a1f7db9cee6c0902"
+    },
+    "licenses/potpack/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/potpack/LICENSE",
+      "source_sha256": "2c620eaf6c3ee3e33b07f3b6ef0dfd0a9e0a52c93a46aa4ccf7773dbb562daec"
+    },
+    "licenses/quickselect/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/quickselect/LICENSE",
+      "source_sha256": "597034cb7c11c916ad407344ea99a0b08e3c443a6b4421460f1d23c411c69707"
+    },
+    "licenses/rw/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/rw/LICENSE",
+      "source_sha256": "e273680c43c2ab5bb3b50af28de6a08000b333396834db7bf6129cd6f130c9cd"
+    },
+    "licenses/supercluster/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/supercluster/LICENSE",
+      "source_sha256": "b8878372a0d7d1c303f48659ddbd6881807cd2196e4af2f548d8da0c0f7c4d71"
+    },
+    "licenses/tinyqueue/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/tinyqueue/LICENSE",
+      "source_sha256": "780453e05abdc22307ee01c706a2e73f508d3e484fc4c804485ebf6fe0964694"
+    },
+    "licenses/vt-pbf/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/vt-pbf/LICENSE",
+      "source_sha256": "3d29e124a0236cfefe13458b82c44fde04d7dcc7b3b64b7fa4de0027953274db"
+    },
+    "licenses/@turf__helpers/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@turf/helpers/LICENSE",
+      "source_sha256": "f9b32b82fd5a1d3a990526d86da97f42fb805d9f4d9f978125c4679b674fce44"
+    },
+    "licenses/@turf__meta/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@turf/meta/LICENSE",
+      "source_sha256": "f9b32b82fd5a1d3a990526d86da97f42fb805d9f4d9f978125c4679b674fce44"
+    },
+    "licenses/@types__geojson/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@types/geojson/LICENSE",
+      "source_sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+    },
+    "licenses/tslib/LICENSE.txt": {
+      "source": "modules/opt-explorer/node_modules/tslib/LICENSE.txt",
+      "source_sha256": "210b19e543130388c68654b7497e967119ce17145f66ab7d85688fbd70f08751"
+    },
+    "licenses/element-size/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/element-size/LICENSE.md",
+      "source_sha256": "435a6722c786b0a56fbe7387028f1d9d3f3a2d0fb615bb8fee118727c3f59b7b"
+    },
+    "licenses/color-alpha__node_modules__color-parse/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/color-alpha/node_modules/color-parse/LICENSE",
+      "source_sha256": "af45ae40c7d031f40e77e09fd33b12700e96ea861c4a73f0dff3294d47e60a81"
+    },
+    "licenses/clamp/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/clamp/LICENSE.md",
+      "source_sha256": "c6db45c144aeabf87a299c54e57f0a9b68ba043012d728d560209169c91ef4bc"
+    },
+    "licenses/dtype/LICENSE-MIT": {
+      "source": "modules/opt-explorer/node_modules/dtype/LICENSE-MIT",
+      "source_sha256": "0e5d86671d8756fb5f87079c155f05c970be4d0f54d44bf93f1f234d27dd0b5f"
+    },
+    "licenses/color-name/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/color-name/LICENSE",
+      "source_sha256": "c064f7a3e353bc1bc977f3c897941c75ef763f44f41677e0a15370ca0853d6e2"
+    },
+    "licenses/color-space/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/color-space/LICENSE",
+      "source_sha256": "ca2abdf695884c77ea4b4a5b64ca7b732d9d9dbade4eebc1c2e76c53e9e3bc83"
+    },
+    "licenses/d3-dispatch/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/d3-dispatch/LICENSE",
+      "source_sha256": "e1211892da0b0e0585b7aebe8f98c1274fba15bafe47fa1f4ee8a7a502c06304"
+    },
+    "licenses/d3-quadtree/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/d3-quadtree/LICENSE",
+      "source_sha256": "e1211892da0b0e0585b7aebe8f98c1274fba15bafe47fa1f4ee8a7a502c06304"
+    },
+    "licenses/d3-timer/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/d3-timer/LICENSE",
+      "source_sha256": "e1211892da0b0e0585b7aebe8f98c1274fba15bafe47fa1f4ee8a7a502c06304"
+    },
+    "licenses/commander/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/commander/LICENSE",
+      "source_sha256": "04512a63dce4d2d506ad612dc0bd7681ccf6e3655f7b6eaef7dfac8323d1ec0b"
+    },
+    "licenses/resolve/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/resolve/LICENSE",
+      "source_sha256": "60acd7711e6c138e6041836e32d922705254cc1568a30fdf16aa8f59bb87aeaa"
+    },
+    "licenses/d3-color/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/d3-color/LICENSE",
+      "source_sha256": "faa682e3e430941f958d26180458f5934a62f58dac4d70ccdd15608c15d0f884"
+    },
+    "licenses/is-string-blank/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/is-string-blank/LICENSE",
+      "source_sha256": "4852317221de04bdbb8784b24498bac592fcc796dcb5f81dece1c6290d75cf52"
+    },
+    "licenses/bit-twiddle/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/bit-twiddle/LICENSE",
+      "source_sha256": "e67aed7df22dc8031e4fcf5338fe91cb33e3817e5c58a99a2a2802eea9069791"
+    },
+    "licenses/css-font/license.md": {
+      "source": "modules/opt-explorer/node_modules/css-font/license.md",
+      "source_sha256": "53e2988fd2e3e852161a07f5dbf2a31482f02eec07e35921c3afe9eaaa4c6124"
+    },
+    "licenses/es6-weak-map/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/es6-weak-map/LICENSE",
+      "source_sha256": "af2d033286be76e6b748da6ca99298524e03a5e2f90eff3b2e9ab653d38d198e"
+    },
+    "licenses/flatten-vertex-data/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/flatten-vertex-data/LICENSE.md",
+      "source_sha256": "fb415b6d1ed5f9dd12004f39df586bffd98cb56b2dc26ffe1016adc4c6c46f9b"
+    },
+    "licenses/font-atlas/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/font-atlas/LICENSE.md",
+      "source_sha256": "a9ecf3da3825b3e7232f29c970a2869bb1752c900bd75ba7cbabeb69b8f032b4"
+    },
+    "licenses/is-plain-obj/license": {
+      "source": "modules/opt-explorer/node_modules/is-plain-obj/license",
+      "source_sha256": "6fb9754611c20f6649f68805e8c990e83261f29316e29de9e6cedae607b8634c"
+    },
+    "licenses/parse-rect/license": {
+      "source": "modules/opt-explorer/node_modules/parse-rect/license",
+      "source_sha256": "e9dd54ddece97061ebc2153110fcfeac1b0579e8556c0b07b195f004b00ff7fc"
+    },
+    "licenses/parse-unit/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/parse-unit/LICENSE.md",
+      "source_sha256": "91515553fda3d86e82454bab0eb876a2cb9a31c0dcb8be640870fed624e53697"
+    },
+    "licenses/regl/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/regl/LICENSE",
+      "source_sha256": "42d997d1f47c9222dec2844468fc2a4fd144c6950d698eade460e94537ddcdd3"
+    },
+    "licenses/typedarray-pool/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/typedarray-pool/LICENSE",
+      "source_sha256": "e67aed7df22dc8031e4fcf5338fe91cb33e3817e5c58a99a2a2802eea9069791"
+    },
+    "licenses/is-browser/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/is-browser/LICENSE",
+      "source_sha256": "5519d0442a0d5e5e17fd32cd8ffd6d19581964509eb94c5b6ef56c363f5fbd17"
+    },
+    "licenses/maplibre-gl__node_modules__@mapbox__tiny-sdf/LICENSE.txt": {
+      "source": "modules/opt-explorer/node_modules/maplibre-gl/node_modules/@mapbox/tiny-sdf/LICENSE.txt",
+      "source_sha256": "4f78063c6c0757df950aa3440cef9a2a6bd1c552c994c32237c3acc283e72ee6"
+    },
+    "licenses/maplibre-gl__node_modules__@mapbox__unitbezier/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/maplibre-gl/node_modules/@mapbox/unitbezier/LICENSE",
+      "source_sha256": "f0dc305ad097eddbc66eebb79288c92d8a5043818ace81206383a4c1a3268fe3"
+    },
+    "licenses/@maplibre__maplibre-gl-style-spec/LICENSE.txt": {
+      "source": "modules/opt-explorer/node_modules/@maplibre/maplibre-gl-style-spec/LICENSE.txt",
+      "source_sha256": "bfd4cb919eec574e9213e1e61f880831eb5fc372d467be429fd0a8d51d1df890"
+    },
+    "licenses/@types__geojson-vt/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@types/geojson-vt/LICENSE",
+      "source_sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+    },
+    "licenses/@types__mapbox__point-geometry/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@types/mapbox__point-geometry/LICENSE",
+      "source_sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+    },
+    "licenses/@types__mapbox__vector-tile/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@types/mapbox__vector-tile/LICENSE",
+      "source_sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+    },
+    "licenses/@types__pbf/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@types/pbf/LICENSE",
+      "source_sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+    },
+    "licenses/@types__supercluster/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@types/supercluster/LICENSE",
+      "source_sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+    },
+    "licenses/maplibre-gl__node_modules__earcut/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/maplibre-gl/node_modules/earcut/LICENSE",
+      "source_sha256": "324139c19d87af03fda38afea1590e00ca354c4159bdb2ae9e9cec070cfa46a8"
+    },
+    "licenses/maplibre-gl__node_modules__geojson-vt/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/maplibre-gl/node_modules/geojson-vt/LICENSE",
+      "source_sha256": "828f2aed51b6526881a236758ec9b08cd69928fbfc70346d9d44a0b3a3444fe1"
+    },
+    "licenses/global-prefix/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/global-prefix/LICENSE",
+      "source_sha256": "e7d1fee7347ffddccc5fd03327ffdb50f8c112be0d5016d62388a92c4ae6e7a9"
+    },
+    "licenses/kdbush/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/kdbush/LICENSE",
+      "source_sha256": "597034cb7c11c916ad407344ea99a0b08e3c443a6b4421460f1d23c411c69707"
+    },
+    "licenses/maplibre-gl__node_modules__potpack/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/maplibre-gl/node_modules/potpack/LICENSE",
+      "source_sha256": "cfec0482fb785fe27e3b368a2d9e84bf7a61b275e83ec582bf288e98cd530bb0"
+    },
+    "licenses/maplibre-gl__node_modules__quickselect/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/maplibre-gl/node_modules/quickselect/LICENSE",
+      "source_sha256": "238ddb00e12a420a54e060afa19bdab4f70bf49e0e2a8ebb1a5e851f9ef447df"
+    },
+    "licenses/maplibre-gl__node_modules__supercluster/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/maplibre-gl/node_modules/supercluster/LICENSE",
+      "source_sha256": "b8878372a0d7d1c303f48659ddbd6881807cd2196e4af2f548d8da0c0f7c4d71"
+    },
+    "licenses/maplibre-gl__node_modules__tinyqueue/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/maplibre-gl/node_modules/tinyqueue/LICENSE",
+      "source_sha256": "780453e05abdc22307ee01c706a2e73f508d3e484fc4c804485ebf6fe0964694"
+    },
+    "licenses/mouse-event/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/mouse-event/LICENSE",
+      "source_sha256": "632d884bc3370b825072b2ba58896b727fbea1f8a81c6278babbc65d7dca4954"
+    },
+    "licenses/right-now/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/right-now/LICENSE.md",
+      "source_sha256": "435a6722c786b0a56fbe7387028f1d9d3f3a2d0fb615bb8fee118727c3f59b7b"
+    },
+    "licenses/signum/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/signum/LICENSE",
+      "source_sha256": "e67aed7df22dc8031e4fcf5338fe91cb33e3817e5c58a99a2a2802eea9069791"
+    },
+    "licenses/lodash.merge/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/lodash.merge/LICENSE",
+      "source_sha256": "f71e8ed126b46346494aad5486874cd8f0aafe95092ed67d2e3cb6110f939abc"
+    },
+    "licenses/needle/license.txt": {
+      "source": "modules/opt-explorer/node_modules/needle/license.txt",
+      "source_sha256": "33956869cf70ecaecf83b722d8d01e5252e9915ae6f86f07528114e62c93bb23"
+    },
+    "licenses/stream-parser/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/stream-parser/LICENSE",
+      "source_sha256": "5fe787805ffedb6cc45b0962e6de294df5dec1b62f9fdf4a5d0e121819d11edc"
+    },
+    "licenses/to-float32/license": {
+      "source": "modules/opt-explorer/node_modules/to-float32/license",
+      "source_sha256": "e9dd54ddece97061ebc2153110fcfeac1b0579e8556c0b07b195f004b00ff7fc"
+    },
+    "licenses/array-find-index/license": {
+      "source": "modules/opt-explorer/node_modules/array-find-index/license",
+      "source_sha256": "6fb9754611c20f6649f68805e8c990e83261f29316e29de9e6cedae607b8634c"
+    },
+    "licenses/@plotly__point-cluster/license.md": {
+      "source": "modules/opt-explorer/node_modules/@plotly/point-cluster/license.md",
+      "source_sha256": "2907ee84b30a5ca0f0fb134e24f60daf292a598bf5819e418eb2eb2b32262ed8"
+    },
+    "licenses/array-range/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/array-range/LICENSE.md",
+      "source_sha256": "91515553fda3d86e82454bab0eb876a2cb9a31c0dcb8be640870fed624e53697"
+    },
+    "licenses/array-rearrange/license.md": {
+      "source": "modules/opt-explorer/node_modules/array-rearrange/license.md",
+      "source_sha256": "7d73a6394617542e3f8b4e4ef7d806f2bb1af2cd438973becc3c3f8d12f7f68b"
+    },
+    "licenses/glslify/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/glslify/LICENSE.md",
+      "source_sha256": "10f1945ac47db03b7532264ae7addaccf22058af1dcb302c9e9dfed479e760c0"
+    },
+    "licenses/is-iexplorer/license": {
+      "source": "modules/opt-explorer/node_modules/is-iexplorer/license",
+      "source_sha256": "fdc43423b75a24876001d4e904946b178ab7f5546ebd50030e1d3ee3d6582eb4"
+    },
+    "licenses/raf/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/raf/LICENSE",
+      "source_sha256": "6b2194e178545b3dcde4a40a09b5f6c00bd9b5b695db0c826c14995c6c9b4ec5"
+    },
+    "licenses/get-canvas-context/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/get-canvas-context/LICENSE.md",
+      "source_sha256": "fb153e8eaf70c10aa169bc3d7401946a9d51163cafaca23458cea8e67de972f4"
+    },
+    "licenses/d3-path/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/d3-path/LICENSE",
+      "source_sha256": "b8265327ab678f554800e71188b1cc6b1ff57522e292d2b1c0be66f27cf328b6"
+    },
+    "licenses/get-stream/license": {
+      "source": "modules/opt-explorer/node_modules/get-stream/license",
+      "source_sha256": "5c932d88256b4ab958f64a856fa48e8bd1f55bc1d96b8149c65689e0c61789d3"
+    },
+    "licenses/minimist/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/minimist/LICENSE",
+      "source_sha256": "435a6722c786b0a56fbe7387028f1d9d3f3a2d0fb615bb8fee118727c3f59b7b"
+    },
+    "licenses/mapbox-gl/LICENSE.txt": {
+      "source": "modules/opt-explorer/node_modules/mapbox-gl/LICENSE.txt",
+      "source_sha256": "dcd8c5e27012f2c0754081a51b5e742ca71f4928d557bd204ab14447b9b76f44"
+    },
+    "licenses/ieee754/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/ieee754/LICENSE",
+      "source_sha256": "18d45466ba3253deae04667e267a91ea8de8548f18c1125264d1c9db28194cc1"
+    },
+    "licenses/resolve-protobuf-schema/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/resolve-protobuf-schema/LICENSE",
+      "source_sha256": "c0993ca46cd47c09710a977d3a3d51602cff96f19e8d2eb8d5887aa20a7beead"
+    },
+    "licenses/supercluster__node_modules__kdbush/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/supercluster/node_modules/kdbush/LICENSE",
+      "source_sha256": "597034cb7c11c916ad407344ea99a0b08e3c443a6b4421460f1d23c411c69707"
+    },
+    "licenses/color-normalize__node_modules__color-parse/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/color-normalize/node_modules/color-parse/LICENSE",
+      "source_sha256": "af45ae40c7d031f40e77e09fd33b12700e96ea861c4a73f0dff3294d47e60a81"
+    },
+    "licenses/is-core-module/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/is-core-module/LICENSE",
+      "source_sha256": "5c496ce5ae47eb8e5ddcaa5e29c27c446a3855b19e3a66991b52f361bed22b28"
+    },
+    "licenses/path-parse/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/path-parse/LICENSE",
+      "source_sha256": "3f4609137f65070541b9214300ea0d640af8192857de0eeb2b03403003d9228a"
+    },
+    "licenses/supports-preserve-symlinks-flag/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/supports-preserve-symlinks-flag/LICENSE",
+      "source_sha256": "0f0ca96f50793990031ebc488a38f7292ff70bce8ab6a8e5eeda674abc32ccdf"
+    },
+    "licenses/css-font-size-keywords/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/css-font-size-keywords/LICENSE",
+      "source_sha256": "03ac0b988d87f21fccdec911d13eaaea03c80a79ce650e2b2d1e5e9ed2238ec7"
+    },
+    "licenses/css-font-stretch-keywords/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/css-font-stretch-keywords/LICENSE",
+      "source_sha256": "03ac0b988d87f21fccdec911d13eaaea03c80a79ce650e2b2d1e5e9ed2238ec7"
+    },
+    "licenses/css-font-style-keywords/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/css-font-style-keywords/LICENSE",
+      "source_sha256": "03ac0b988d87f21fccdec911d13eaaea03c80a79ce650e2b2d1e5e9ed2238ec7"
+    },
+    "licenses/css-font-weight-keywords/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/css-font-weight-keywords/LICENSE",
+      "source_sha256": "03ac0b988d87f21fccdec911d13eaaea03c80a79ce650e2b2d1e5e9ed2238ec7"
+    },
+    "licenses/css-global-keywords/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/css-global-keywords/LICENSE",
+      "source_sha256": "03ac0b988d87f21fccdec911d13eaaea03c80a79ce650e2b2d1e5e9ed2238ec7"
+    },
+    "licenses/css-system-font-keywords/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/css-system-font-keywords/LICENSE",
+      "source_sha256": "03ac0b988d87f21fccdec911d13eaaea03c80a79ce650e2b2d1e5e9ed2238ec7"
+    },
+    "licenses/unquote/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/unquote/LICENSE",
+      "source_sha256": "10ce70def59838624a4da56a04784d0b743051f455311f7d6f585296ce2d5c3b"
+    },
+    "licenses/d/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/d/LICENSE",
+      "source_sha256": "77485a12d142fd84ee9f278b42968b2f029c876c8dddca7d0e13fa164ffeed34"
+    },
+    "licenses/es5-ext/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/es5-ext/LICENSE",
+      "source_sha256": "5dc6fe91750695c7a47f9bc200f7bd52f3e81c6854d431f43c34c7e7f8ae8b52"
+    },
+    "licenses/es6-iterator/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/es6-iterator/LICENSE",
+      "source_sha256": "29c6c58225baf0c91719e5600f7e1302cad616c0fd81c45b02b5e78882b9e2a9"
+    },
+    "licenses/es6-symbol/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/es6-symbol/LICENSE",
+      "source_sha256": "77485a12d142fd84ee9f278b42968b2f029c876c8dddca7d0e13fa164ffeed34"
+    },
+    "licenses/is-firefox/license": {
+      "source": "modules/opt-explorer/node_modules/is-firefox/license",
+      "source_sha256": "8949b2ba58a823c693244638c52760970e0782812df926d94c8a26c7c9016e7b"
+    },
+    "licenses/number-is-integer/license": {
+      "source": "modules/opt-explorer/node_modules/number-is-integer/license",
+      "source_sha256": "6fb9754611c20f6649f68805e8c990e83261f29316e29de9e6cedae607b8634c"
+    },
+    "licenses/dup/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/dup/LICENSE",
+      "source_sha256": "e67aed7df22dc8031e4fcf5338fe91cb33e3817e5c58a99a2a2802eea9069791"
+    },
+    "licenses/@maplibre__maplibre-gl-style-spec__node_modules__@mapbox__unitbezier/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@maplibre/maplibre-gl-style-spec/node_modules/@mapbox/unitbezier/LICENSE",
+      "source_sha256": "f0dc305ad097eddbc66eebb79288c92d8a5043818ace81206383a4c1a3268fe3"
+    },
+    "licenses/json-stringify-pretty-compact/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/json-stringify-pretty-compact/LICENSE",
+      "source_sha256": "2d51145876dda3dd13253463b852aa83b78aa598b90fca1709f39f1740ff9a2f"
+    },
+    "licenses/@maplibre__maplibre-gl-style-spec__node_modules__tinyqueue/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/@maplibre/maplibre-gl-style-spec/node_modules/tinyqueue/LICENSE",
+      "source_sha256": "780453e05abdc22307ee01c706a2e73f508d3e484fc4c804485ebf6fe0964694"
+    },
+    "licenses/ini/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/ini/LICENSE",
+      "source_sha256": "4ec3d4c66cd87f5c8d8ad911b10f99bf27cb00cdfcff82621956e379186b016b"
+    },
+    "licenses/kind-of/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/kind-of/LICENSE",
+      "source_sha256": "4cd903859549d4b20b571041f96dfae1136ed079c476126268f9d7cc1b611150"
+    },
+    "licenses/which/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/which/LICENSE",
+      "source_sha256": "4ec3d4c66cd87f5c8d8ad911b10f99bf27cb00cdfcff82621956e379186b016b"
+    },
+    "licenses/needle__node_modules__debug/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/needle/node_modules/debug/LICENSE",
+      "source_sha256": "98c970de440dcfc77471610aec2377c9d9b0db2b3be6d1add524a586e1d7f422"
+    },
+    "licenses/iconv-lite/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/iconv-lite/LICENSE",
+      "source_sha256": "ac779f7314c74f232ef847ea86e714abe25cf6eeb5cc97b69451b74e2af6492d"
+    },
+    "licenses/sax/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/sax/LICENSE.md",
+      "source_sha256": "8a1af140fdfbf5afd3df27f7e662f989c5b963a300020dfafce42033cae9e004"
+    },
+    "licenses/stream-parser__node_modules__debug/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/stream-parser/node_modules/debug/LICENSE",
+      "source_sha256": "98c970de440dcfc77471610aec2377c9d9b0db2b3be6d1add524a586e1d7f422"
+    },
+    "licenses/binary-search-bounds/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/binary-search-bounds/LICENSE",
+      "source_sha256": "f2b10f2958d2724d6df0f16b1ea25d32cd7e6333ce88ac3c5cdff37c2c4222b8"
+    },
+    "licenses/defined/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/defined/LICENSE",
+      "source_sha256": "435a6722c786b0a56fbe7387028f1d9d3f3a2d0fb615bb8fee118727c3f59b7b"
+    },
+    "licenses/is-obj/license": {
+      "source": "modules/opt-explorer/node_modules/is-obj/license",
+      "source_sha256": "6fb9754611c20f6649f68805e8c990e83261f29316e29de9e6cedae607b8634c"
+    },
+    "licenses/math-log2/license": {
+      "source": "modules/opt-explorer/node_modules/math-log2/license",
+      "source_sha256": "6fb9754611c20f6649f68805e8c990e83261f29316e29de9e6cedae607b8634c"
+    },
+    "licenses/regl-scatter2d__node_modules__color-parse/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/regl-scatter2d/node_modules/color-parse/LICENSE",
+      "source_sha256": "af45ae40c7d031f40e77e09fd33b12700e96ea861c4a73f0dff3294d47e60a81"
+    },
+    "licenses/bl/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/bl/LICENSE.md",
+      "source_sha256": "dce3625a2f461b116e324ba6b52641cc8227c87fd07aeffae3f1b57c43fe4cfe"
+    },
+    "licenses/concat-stream/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/concat-stream/LICENSE",
+      "source_sha256": "96b29c9aaa611a05349b362d48c2ffce0966fe408401a2d1a157be312c035b5f"
+    },
+    "licenses/duplexify/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/duplexify/LICENSE",
+      "source_sha256": "3fe8d55a98dbf260eace67c00cf9bc53edb46234e840098a0b93df3096b97fb6"
+    },
+    "licenses/falafel/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/falafel/LICENSE",
+      "source_sha256": "60acd7711e6c138e6041836e32d922705254cc1568a30fdf16aa8f59bb87aeaa"
+    },
+    "licenses/from2/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/from2/LICENSE.md",
+      "source_sha256": "74afb88a7aa7f8db6735c014cba3f9f7b1b1fde39d7b56ba9b2c1f1f2d5d10ec"
+    },
+    "licenses/glsl-resolve/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/glsl-resolve/LICENSE.md",
+      "source_sha256": "74afb88a7aa7f8db6735c014cba3f9f7b1b1fde39d7b56ba9b2c1f1f2d5d10ec"
+    },
+    "licenses/glsl-token-whitespace-trim/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/glsl-token-whitespace-trim/LICENSE.md",
+      "source_sha256": "82d4cd7899b219ef29e6bd30820b22d12fd8d95ca2a43a6dc675c72ea2a19cc7"
+    },
+    "licenses/glslify-bundle/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/glslify-bundle/LICENSE.md",
+      "source_sha256": "8447fa7dd83aaf0c4807084a43d65164939f8b7067fb72c47e092e5b5063059e"
+    },
+    "licenses/stack-trace/License": {
+      "source": "modules/opt-explorer/node_modules/stack-trace/License",
+      "source_sha256": "c5ece09265dbd6335030832335dec72919b9ecfd4db126cb9bb9b8d023970304"
+    },
+    "licenses/static-eval/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/static-eval/LICENSE",
+      "source_sha256": "a22b9d5763f574e5db347c30acc0b33eaf4846767c03d2e27d012e864e79a824"
+    },
+    "licenses/through2/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/through2/LICENSE.md",
+      "source_sha256": "faae57631e1c7d641c3b6f9b110c2a7a28c8b383d08d7796ac472c509f075850"
+    },
+    "licenses/xtend/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/xtend/LICENSE",
+      "source_sha256": "82e67379203d5794e7c44549847d8d64ae6904591381682360470898bd306821"
+    },
+    "licenses/performance-now/license.txt": {
+      "source": "modules/opt-explorer/node_modules/performance-now/license.txt",
+      "source_sha256": "c3af1272f30870168177e888b184c1f802e5081e75a126c794670c0b562d3783"
+    },
+    "licenses/svg-path-bounds__node_modules__normalize-svg-path/license.md": {
+      "source": "modules/opt-explorer/node_modules/svg-path-bounds/node_modules/normalize-svg-path/license.md",
+      "source_sha256": "f3257cb8f6c6b69f90b1d4cebc1ef5dd84bf3bc831a0ba72b43dfa0f1a0f5100"
+    },
+    "licenses/protocol-buffers-schema/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/protocol-buffers-schema/LICENSE",
+      "source_sha256": "3fe8d55a98dbf260eace67c00cf9bc53edb46234e840098a0b93df3096b97fb6"
+    },
+    "licenses/hasown/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/hasown/LICENSE",
+      "source_sha256": "bf9b0d665be2a689851eea667ca9f42066ea1d903b38349c51e6a44b2577680a"
+    },
+    "licenses/parenthesis/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/parenthesis/LICENSE",
+      "source_sha256": "80dd594f7950d51ed7d4315248a9866f80507f02e92ee4eabdc12b89b476a539"
+    },
+    "licenses/type/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/type/LICENSE",
+      "source_sha256": "010cd06695b486890aa0e080f938ef52b393207b7352baf7f13513b7c272d256"
+    },
+    "licenses/esniff/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/esniff/LICENSE",
+      "source_sha256": "77485a12d142fd84ee9f278b42968b2f029c876c8dddca7d0e13fa164ffeed34"
+    },
+    "licenses/next-tick/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/next-tick/LICENSE",
+      "source_sha256": "d61b7b0b7ef23fe17a4cf996c50362ba842725e9b1a0686792a9c16894a6d5c0"
+    },
+    "licenses/ext/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/ext/LICENSE",
+      "source_sha256": "2f81a49be59092e3229ed757730791b7bee7b3394d26e58a4b6ae1829437698b"
+    },
+    "licenses/is-finite/license": {
+      "source": "modules/opt-explorer/node_modules/is-finite/license",
+      "source_sha256": "48da2f39e100d4085767e94966b43f4fa95ff6a0698fba57ed460914e35f94a0"
+    },
+    "licenses/isexe/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/isexe/LICENSE.md",
+      "source_sha256": "8a1af140fdfbf5afd3df27f7e662f989c5b963a300020dfafce42033cae9e004"
+    },
+    "licenses/ms/license.md": {
+      "source": "modules/opt-explorer/node_modules/ms/license.md",
+      "source_sha256": "1662fae9b5314d11cf51284e2dcd1f006a354f7343f08712a730fcff9a359801"
+    },
+    "licenses/safer-buffer/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/safer-buffer/LICENSE",
+      "source_sha256": "4bc935e71be198c67ddf3c2b5fddb195f6edc182bfc155a96a6db61b44b494b9"
+    },
+    "licenses/stream-parser__node_modules__ms/license.md": {
+      "source": "modules/opt-explorer/node_modules/stream-parser/node_modules/ms/license.md",
+      "source_sha256": "6652830c2607c722b66f1b57de15877ab8fc5dca406cc5b335afeb365d0f32c1"
+    },
+    "licenses/readable-stream/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/readable-stream/LICENSE",
+      "source_sha256": "ec62dc96da0099b87f4511736c87309335527fb7031639493e06c95728dc8c54"
+    },
+    "licenses/safe-buffer/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/safe-buffer/LICENSE",
+      "source_sha256": "c7cc929b57080f4b9d0c6cf57669f0463fc5b39906344dfc8d3bc43426b30eac"
+    },
+    "licenses/buffer-from/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/buffer-from/LICENSE",
+      "source_sha256": "14275f5c8139d02054c5259d52a88ccbba662a86af18c30f071c8d082dc6004c"
+    },
+    "licenses/inherits/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/inherits/LICENSE",
+      "source_sha256": "5ffe28e7ade7d8f10d85d5337a73fd793dac5c462fb9a28fbf8c5046c7fbca3b"
+    },
+    "licenses/typedarray/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/typedarray/LICENSE",
+      "source_sha256": "26181ebee1063f3dc6766a3b6d05999a0da058f172eadf2ca5d15105ffd9735a"
+    },
+    "licenses/end-of-stream/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/end-of-stream/LICENSE",
+      "source_sha256": "3fe8d55a98dbf260eace67c00cf9bc53edb46234e840098a0b93df3096b97fb6"
+    },
+    "licenses/stream-shift/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/stream-shift/LICENSE",
+      "source_sha256": "6a134e51aa31496c15a741592fc5d782b2dbf8d8b6b8524e15c8520ae0cd6374"
+    },
+    "licenses/acorn/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/acorn/LICENSE",
+      "source_sha256": "cb3984acf8a000bc42bfbe319b836507bd268ef1d0d53e37363e2d5cac1137e0"
+    },
+    "licenses/isarray/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/isarray/LICENSE",
+      "source_sha256": "68f12f6e2c33688699249c01d8f9623c534da20aa71989c57b061b7bc1676d14"
+    },
+    "licenses/glsl-resolve__node_modules__resolve/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/glsl-resolve/node_modules/resolve/LICENSE",
+      "source_sha256": "435a6722c786b0a56fbe7387028f1d9d3f3a2d0fb615bb8fee118727c3f59b7b"
+    },
+    "licenses/glsl-resolve__node_modules__xtend/LICENCE": {
+      "source": "modules/opt-explorer/node_modules/glsl-resolve/node_modules/xtend/LICENCE",
+      "source_sha256": "19338d17a974d1c747b3f6c618f08975b8908fdebccbc047c0e72b09daf6ddd3"
+    },
+    "licenses/glsl-inject-defines/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/glsl-inject-defines/LICENSE.md",
+      "source_sha256": "aa084193c84505fcea25068c7dc2eb1643a2ad2a744a586a22a14bc459b0eeb1"
+    },
+    "licenses/glsl-token-defines/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/glsl-token-defines/LICENSE.md",
+      "source_sha256": "aa084193c84505fcea25068c7dc2eb1643a2ad2a744a586a22a14bc459b0eeb1"
+    },
+    "licenses/glsl-token-depth/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/glsl-token-depth/LICENSE.md",
+      "source_sha256": "aa084193c84505fcea25068c7dc2eb1643a2ad2a744a586a22a14bc459b0eeb1"
+    },
+    "licenses/glsl-token-descope/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/glsl-token-descope/LICENSE.md",
+      "source_sha256": "aa084193c84505fcea25068c7dc2eb1643a2ad2a744a586a22a14bc459b0eeb1"
+    },
+    "licenses/glsl-token-scope/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/glsl-token-scope/LICENSE.md",
+      "source_sha256": "aa084193c84505fcea25068c7dc2eb1643a2ad2a744a586a22a14bc459b0eeb1"
+    },
+    "licenses/glsl-token-string/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/glsl-token-string/LICENSE.md",
+      "source_sha256": "aa084193c84505fcea25068c7dc2eb1643a2ad2a744a586a22a14bc459b0eeb1"
+    },
+    "licenses/glsl-tokenizer/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/glsl-tokenizer/LICENSE.md",
+      "source_sha256": "d3ec8ff484cdc71fcd1a6591730d54ed55d426350e80dfaf9c01cb27952b82c9"
+    },
+    "licenses/shallow-copy/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/shallow-copy/LICENSE",
+      "source_sha256": "435a6722c786b0a56fbe7387028f1d9d3f3a2d0fb615bb8fee118727c3f59b7b"
+    },
+    "licenses/events/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/events/LICENSE",
+      "source_sha256": "631987b7616a325a5b97566c232418481ddf7dbb5ecadefb991e791876cc2599"
+    },
+    "licenses/graceful-fs/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/graceful-fs/LICENSE",
+      "source_sha256": "f65c5d9f22a317b2a10803bd1868461ce6499c2ed7217bc80c0cc772a748789c"
+    },
+    "licenses/map-limit/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/map-limit/LICENSE.md",
+      "source_sha256": "74afb88a7aa7f8db6735c014cba3f9f7b1b1fde39d7b56ba9b2c1f1f2d5d10ec"
+    },
+    "licenses/escodegen/LICENSE.BSD": {
+      "source": "modules/opt-explorer/node_modules/escodegen/LICENSE.BSD",
+      "source_sha256": "d5d62471a28a9920416c7d37d387a3bf55f32cb768590f605f84990b76aee5de"
+    },
+    "licenses/svg-arc-to-cubic-bezier/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/svg-arc-to-cubic-bezier/LICENSE.md",
+      "source_sha256": "e494c8a762141fd7b97104bd7350710dcd2ee0462c75e211bc527cd717158b0b"
+    },
+    "licenses/function-bind/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/function-bind/LICENSE",
+      "source_sha256": "773e131a7684726005a7e4688a80b4620033bc08499bc1404dd1a1eb3bca725e"
+    },
+    "licenses/event-emitter/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/event-emitter/LICENSE",
+      "source_sha256": "519bbf857c213b95460e438767e9e5600159476e3e87facbbcc19f9b2c7f8886"
+    },
+    "licenses/core-util-is/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/core-util-is/LICENSE",
+      "source_sha256": "33b734d60042d0fe0c92dd1fc1e874193a1c899ec3e276a2eb935d2d0bf5b710"
+    },
+    "licenses/process-nextick-args/license.md": {
+      "source": "modules/opt-explorer/node_modules/process-nextick-args/license.md",
+      "source_sha256": "ecdccbcf39024f624ded480c01c0b25458e1eca8f26ecf040933865ce56d9a4f"
+    },
+    "licenses/readable-stream__node_modules__safe-buffer/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/readable-stream/node_modules/safe-buffer/LICENSE",
+      "source_sha256": "c7cc929b57080f4b9d0c6cf57669f0463fc5b39906344dfc8d3bc43426b30eac"
+    },
+    "licenses/string_decoder/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/string_decoder/LICENSE",
+      "source_sha256": "11f2aafb37d06b3ee5bdaf06e9811141d0da05263c316f3d627f45c20d43261b"
+    },
+    "licenses/util-deprecate/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/util-deprecate/LICENSE",
+      "source_sha256": "0154425673db15cdfa80ecba2c9b1f1a867f7197a006764712849bfc3a93cbb7"
+    },
+    "licenses/once/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/once/LICENSE",
+      "source_sha256": "4ec3d4c66cd87f5c8d8ad911b10f99bf27cb00cdfcff82621956e379186b016b"
+    },
+    "licenses/glsl-token-inject-block/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/glsl-token-inject-block/LICENSE.md",
+      "source_sha256": "fb153e8eaf70c10aa169bc3d7401946a9d51163cafaca23458cea8e67de972f4"
+    },
+    "licenses/glsl-token-assignments/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/glsl-token-assignments/LICENSE.md",
+      "source_sha256": "aa084193c84505fcea25068c7dc2eb1643a2ad2a744a586a22a14bc459b0eeb1"
+    },
+    "licenses/glsl-token-properties/LICENSE.md": {
+      "source": "modules/opt-explorer/node_modules/glsl-token-properties/LICENSE.md",
+      "source_sha256": "aa084193c84505fcea25068c7dc2eb1643a2ad2a744a586a22a14bc459b0eeb1"
+    },
+    "licenses/glsl-tokenizer__node_modules__through2/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/glsl-tokenizer/node_modules/through2/LICENSE",
+      "source_sha256": "2cb181dde66fd7dea0dd4f728497bf41672f3b848c0278e98a67b54c53d80f00"
+    },
+    "licenses/map-limit__node_modules__once/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/map-limit/node_modules/once/LICENSE",
+      "source_sha256": "4ec3d4c66cd87f5c8d8ad911b10f99bf27cb00cdfcff82621956e379186b016b"
+    },
+    "licenses/esprima/LICENSE.BSD": {
+      "source": "modules/opt-explorer/node_modules/esprima/LICENSE.BSD",
+      "source_sha256": "94bcb9959136723aa4fb36e1a6c4d5c662a2369978cfae344dabfb83ae619e79"
+    },
+    "licenses/estraverse/LICENSE.BSD": {
+      "source": "modules/opt-explorer/node_modules/estraverse/LICENSE.BSD",
+      "source_sha256": "0e74697a68cebdcd61502c30fe80ab7f9e341d995dcd452023654d57133534b1"
+    },
+    "licenses/esutils/LICENSE.BSD": {
+      "source": "modules/opt-explorer/node_modules/esutils/LICENSE.BSD",
+      "source_sha256": "0e74697a68cebdcd61502c30fe80ab7f9e341d995dcd452023654d57133534b1"
+    },
+    "licenses/source-map/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/source-map/LICENSE",
+      "source_sha256": "6cb0631f71c7749763fd3dd1d5bee52dd1070ec17f2edc1710079ad070bd2fbd"
+    },
+    "licenses/string_decoder__node_modules__safe-buffer/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/string_decoder/node_modules/safe-buffer/LICENSE",
+      "source_sha256": "c7cc929b57080f4b9d0c6cf57669f0463fc5b39906344dfc8d3bc43426b30eac"
+    },
+    "licenses/wrappy/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/wrappy/LICENSE",
+      "source_sha256": "4ec3d4c66cd87f5c8d8ad911b10f99bf27cb00cdfcff82621956e379186b016b"
+    },
+    "licenses/glsl-tokenizer__node_modules__readable-stream/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/glsl-tokenizer/node_modules/readable-stream/LICENSE",
+      "source_sha256": "6239c6144c31e58cf925c34483606969c555574d64ffa96518ab5d7f45c75d43"
+    },
+    "licenses/glsl-tokenizer__node_modules__string_decoder/LICENSE": {
+      "source": "modules/opt-explorer/node_modules/glsl-tokenizer/node_modules/string_decoder/LICENSE",
+      "source_sha256": "21a82bbee91262a076c2e34533d51d73475d55e889f1c42cf884c86b2a0d5773"
+    },
+    "launch.py": {
+      "source": "lectures/04-reading-motion-planning/delivery/launch.py",
+      "source_sha256": "8611dafcf2bb9e096604bd1dd00d4b854aa87b059718f86b7d6fa52df86f86ec"
+    },
+    "scripts/rai_run.sh": {
+      "source": "lectures/04-reading-motion-planning/delivery/rai_run.sh",
+      "source_sha256": "3922aa51db41584a4c9e1c2a878eb7d1728a16d74c31ef32ffbb8901bf5ceb94"
+    },
+    "lectures/04-D2-motion-planning/fig/endpoints.png": {
+      "source": "lectures/04-D2-motion-planning/fig/endpoints.png",
+      "source_sha256": "e7e49f2ca1b681582e713cb916528ec10184e3ad84223ea2c2549f5f6d6c6edd"
+    },
+    "lectures/04-D2-motion-planning/fig/blocked-edge.png": {
+      "source": "lectures/04-D2-motion-planning/fig/blocked-edge.png",
+      "source_sha256": "949d3bd15ecec46d199a4cfc0d99461179cb46ccb160db1fdc64e7dde1b2f2e8"
+    },
+    "lectures/04-D2-motion-planning/fig/configuration-space.png": {
+      "source": "lectures/04-D2-motion-planning/fig/configuration-space.png",
+      "source_sha256": "1f7aed3935f6d24a285479d72074d875ff1e8fe2613659c2e87be72b5616dea4"
+    },
+    "lectures/04-reading-motion-planning/fig/cost-comparison.png": {
+      "source": "lectures/04-reading-motion-planning/fig/cost-comparison.png",
+      "source_sha256": "09c053e091463de24a3d05c0d008e2d848eca835eba684851344b65f3b178e25"
+    },
+    "lectures/04-D2-motion-planning/fig/knot-locality.png": {
+      "source": "lectures/04-D2-motion-planning/fig/knot-locality.png",
+      "source_sha256": "03db8779f1bf002b5b86fdaead919b7a22dc6b1a09b3d1e5f09cd1d89762f47d"
+    },
+    "lectures/04-D2-motion-planning/fig/komo-shapes-initial-guesses.png": {
+      "source": "lectures/04-D2-motion-planning/fig/komo-shapes-initial-guesses.png",
+      "source_sha256": "949e13b5c02378bd5ce52e0f90fc8b300cdac0f9f34c76b6f15ee1b4cf07172d"
+    },
+    "lectures/04-D2-motion-planning/fig/komo-shapes-gap.png": {
+      "source": "lectures/04-D2-motion-planning/fig/komo-shapes-gap.png",
+      "source_sha256": "f3545636310eb7ac4d158a33a19e2683aabd9609014fcab022f53ebfb5cc4498"
+    },
+    "lectures/04-D2-motion-planning/fig/prm-slide.png": {
+      "source": "lectures/04-D2-motion-planning/fig/prm-slide.png",
+      "source_sha256": "3a45966d34c8373d07e6e153697ebc7c17479e9d4b9ee47a4c44f7332808484b"
+    },
+    "lectures/04-D2-motion-planning/fig/rrt-connected-slide.png": {
+      "source": "lectures/04-D2-motion-planning/fig/rrt-connected-slide.png",
+      "source_sha256": "e194b3fed77ad7e737e78a461e4ce1d1a8703e9671f93b415e58f10de74d4187"
+    },
+    "lectures/04-D2-motion-planning/fig/bidir-route-slide.png": {
+      "source": "lectures/04-D2-motion-planning/fig/bidir-route-slide.png",
+      "source_sha256": "3174213b27524e45edff5b3e84409a34589e2c7a46ec834e8937ada7d9c340bf"
+    },
+    "lectures/04-D2-motion-planning/fig/rrtstar-rewire-slide.png": {
+      "source": "lectures/04-D2-motion-planning/fig/rrtstar-rewire-slide.png",
+      "source_sha256": "7a54c9c23110bfe0711afa2a3edf86899b22d4449849cb0d12492261704387b4"
+    },
+    "modules/motion-planning/fig/refine-34-initialize.png": {
+      "source": "modules/motion-planning/fig/refine-34-initialize.png",
+      "source_sha256": "50fa66a3f99f88e91cfdc35843bbe8afc7dd82b995f06e7117b99895c77c6658"
+    },
+    "modules/motion-planning/fig/refine-35-compare.png": {
+      "source": "modules/motion-planning/fig/refine-35-compare.png",
+      "source_sha256": "176ec9b36196cf15c193df2f5769540af0cd3bc1e872e5e5dcd8d1e339228209"
+    },
+    "modules/motion-planning/fig/refine-36-cost-clearance.png": {
+      "source": "modules/motion-planning/fig/refine-36-cost-clearance.png",
+      "source_sha256": "068663e9255644874bd07c76237a071ecf780ba503aab24d6dd9a4069d334e2f"
+    },
+    "modules/motion-planning/fig/staged-3-shortcut.png": {
+      "source": "modules/motion-planning/fig/staged-3-shortcut.png",
+      "source_sha256": "a8f60c11bfa213f55cb423e760be1b3dc7b20b3ca574a54894d1d535297c929d"
+    }
+  },
+  "build_inputs": {
+    "scripts/build_motion_planning_package.py": "370faeb9fdae94f39817e0c623c291c8d5103dcca3c3b231ffd5a9a49b4cc230",
+    "scripts/build_essentials_package.py": "0f32da6a6cf120973c1c473c9761640304b78aaf65caed8660601d0d6393e32a",
+    "scripts/export_student_repo.py": "4bfa4c5511474aa61e26f718377aef6bfbb1435ee9eec98e79283f76b8071c2e",
+    "lectures/04-reading-motion-planning/delivery/README.md": "b8a704a75fe01603be0f88d46e54ea6c37cda7284eb0223c27d7cd61af35fc88",
+    "lectures/04-reading-motion-planning/delivery/launch.py": "8611dafcf2bb9e096604bd1dd00d4b854aa87b059718f86b7d6fa52df86f86ec",
+    "lectures/04-reading-motion-planning/delivery/rai_run.sh": "3922aa51db41584a4c9e1c2a878eb7d1728a16d74c31ef32ffbb8901bf5ceb94",
+    "lectures/04-reading-motion-planning/chapter-03-essentials.md": "aa5a6e70d07bed843b3c5ca415b62e36b23ad1ad6b0e30d63f3c703f43d6bd89",
+    "lectures/04-reading-motion-planning/chapter-03-essentials.pdf": "ee0aca454e1b0bf61857a8878510f444d8a16e02a19be399328c26459d74d796",
+    "modules/opt-explorer/package.json": "fe99ec0562ed6ecf8e22435e69e65917c0196a4340a5a99858ae312953399848",
+    "modules/opt-explorer/package-lock.json": "b376859c7758951bdaa76873ec0b8334fc4d7dc1d2435bc4b9899e2b4dd68ae6",
+    "modules/opt-explorer/vite.config.ts": "c7a13d6ffcf6b2bd60e7c0220c96f421ccee1a373da39c466623d48772d8151f",
+    "modules/opt-explorer/index.html": "eb3ae5ced2391f5a142cfd50bd195a147438dfe7b4a3cda81df1d2dcf2866892",
+    "modules/opt-explorer/src/App.tsx": "69ec1b569996b248943750201dfb681450b2167535823d9a6b772fb90da0735c",
+    "modules/opt-explorer/src/Shell.tsx": "eda21e15442bf1a034affbdecef8d443f9d2edfaab5168c51884f8734ec3574a",
+    "modules/opt-explorer/src/main.tsx": "f3b87a7b45270a0cab62155c3f851f44200897dbe71bfbf14ef5f8811aad2868",
+    "modules/opt-explorer/src/IkConvergenceDialog.tsx": "38cae2117dfe1b890d9a361b108ce668b56d6d9033220e959e42a1e92edb2781",
+    "modules/opt-explorer/src/styles.css": "8f4c55da05d846c4999bc8c2dc7e06e3c2d037e1c2657f08e292398bb3ae0299",
+    "modules/opt-explorer/src/optimizer.ts": "8f8d2504bf4102677dc38eef898a82cbd2ca289389a7872e5c36eb8b9514ff51",
+    "modules/opt-explorer/src/trajectorySampling.ts": "66df17ecdc7cb7590b0318d1e212ff5eb364c838f5a555dc0ebd969b8abab0f3",
+    "modules/opt-explorer/src/ikStopping.ts": "2b42b5cd82baa1a9184f138f03562055fc7001c98df1ff0970c00331da0d4776",
+    "modules/opt-explorer/src/linkState.ts": "a5976a71b48dea870646540dc46c38ecf7e31e3d0393d97b414d7b7eb871f514",
+    "modules/opt-explorer/src/ikConvergence.ts": "1a2d780aa7af853e57ae0105b908ffb5e1fa175b24f1a659f894574468cc2be8",
+    "modules/opt-explorer/src/komoAugLag.ts": "927db02a5c93795eba6264da4dca8a41603a7cd188961a75cf02455a4ff82635",
+    "modules/opt-explorer/src/types/plotly-js-dist-min.d.ts": "35656114b20fc0cebf929f3a6808d7913d4bc891076a6fa095e245e66ee95004",
+    "modules/opt-explorer/src/concepts/ArmHeightView.tsx": "a7489feff5f066c9813e3b7fcb2b7fb7360cc3b1e384cb6fffb95d988e445229",
+    "modules/opt-explorer/src/concepts/ConstrainedSurface3D.tsx": "1f50a431906a349409b0d0db030f1a7e5788dfdcdff4373190ae004ea95c9b89",
+    "modules/opt-explorer/src/concepts/DualVarChart.tsx": "9881c4372f8f8f0a7d13684dbbbf32f79be75a72c2f8ca53812dafc87db2c6bc",
+    "modules/opt-explorer/src/concepts/constrainedProblems.ts": "681dc1ff21c3a1112d32b840a4620be7d7cb960eb12b5ff9aa44c9ea18058974",
+    "modules/opt-explorer/src/concepts/contourPlot.ts": "55c34934700cf16bb863d5052028dad25d145470be8db917d451ba871b4ab24a",
+    "modules/opt-explorer/src/concepts/ConceptsPage.tsx": "851d3306a3f7a8640bbb1ffd8074c7f0c58272c909d33d3c3dd464757b003128",
+    "modules/opt-explorer/src/concepts/testFunctions.ts": "6f5da08e9f92b9e495f9351211e9ec214e798ab902758dd370b02838ac5f869d",
+    "modules/opt-explorer/src/concepts/scalarOptimizers.ts": "e861bab9048f4fdbabdddb9f5d2dd66dae648a202220717d680098f0c003db07",
+    "modules/opt-explorer/src/concepts/constrainedOptimizers.ts": "62d8eb9dd09b48e33c8cc93b9305dfc246160f0124f5f26f26661f9771cfe936",
+    "modules/opt-explorer/src/concepts/ArmView.tsx": "6e11c2cc616b8dd4bcdd7c8a3f22ab98f31472c3dcda5089bd78635f67dcc729",
+    "modules/opt-explorer/src/concepts/ConstrainedPage.tsx": "cd23b6bd47b86c9a2a11a1e7244ccfc26cabe825e48984889229e481dac91483",
+    "modules/opt-explorer/src/concepts/UpdatePanel.tsx": "cfb3f8de568016631e511b93cc61d1486ef01691c180bb2e3eacf60d1f9b89da",
+    "modules/opt-explorer/src/concepts/Surface3D.tsx": "e4fa29cdeebff82da0eff8949d0422e0daed7778758ebf1ede133605336eaace",
+    "modules/opt-explorer/src/refine/wholeLink.ts": "99cf326886c0e9200fb6e6d694744a60279524e510dc2ef1cf4a4005a5179626",
+    "modules/opt-explorer/src/refine/RefinePage.tsx": "6a988a1dcbcaebe52f58f6e19cc37b8a757df017712a13dad0c2076f1c6543fe"
+  },
+  "links": [
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "../04-D2-motion-planning/fig/endpoints.png",
+      "package_url": "lectures/04-D2-motion-planning/fig/endpoints.png",
+      "kind": "Image",
+      "label": "Figure 1.1. The start and selected goal both satisfy the whole-link clearance requirement. The dashed ring lies 5 mm outside the disc. The smallest link clearance is 49.9 mm at the start and 100.3 mm at the goal."
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "../04-D2-motion-planning/fig/blocked-edge.png",
+      "package_url": "lectures/04-D2-motion-planning/fig/blocked-edge.png",
+      "kind": "Image",
+      "label": "Figure 1.2. Linear interpolation of the joint angles carries link 2 through the disc. The curve shows the smaller link clearance at 43 sampled postures. It first falls below the 5 mm requirement at check 9; the halfway posture, check 21, has the deepest sampled penetration."
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "../04-D2-motion-planning/fig/configuration-space.png",
+      "package_url": "lectures/04-D2-motion-planning/fig/configuration-space.png",
+      "kind": "Image",
+      "label": "Figure 1.3. Arm postures A, B and C on the left correspond to the marked points on the right. The shaded configurations violate the 5 mm requirement. The direct connection crosses that region; a three-segment detour goes around it. The inset locates this enlarged view in the full bounded chart."
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "fig/cost-comparison.png",
+      "package_url": "lectures/04-reading-motion-planning/fig/cost-comparison.png",
+      "kind": "Image",
+      "label": "Figure 2.1. Two objectives with the same start, positive-elbow goal and final rest, with the obstacle removed. The left panel plots the Euclidean size of each joint-angle step. The right panel shows the common tip route and the different tip positions at knot indices 4, 10 and 16. Squares mark the velocity-cost motion and circles the acceleration-cost motion. Markers with the same number show both motions at the same normalized time."
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "../04-D2-motion-planning/fig/knot-locality.png",
+      "package_url": "lectures/04-D2-motion-planning/fig/knot-locality.png",
+      "kind": "Image",
+      "label": "Figure 2.2. A feature of order zero uses one configuration; first and second differences use two and three neighboring configurations. These local dependencies make most blocks of the trajectory Jacobian zero."
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "../04-D2-motion-planning/fig/komo-shapes-initial-guesses.png",
+      "package_url": "lectures/04-D2-motion-planning/fig/komo-shapes-initial-guesses.png",
+      "kind": "Image",
+      "label": "Figure 2.3. Default solver options return the same knots from both initial guesses. The red square marks knot 13, where link 2 misses the required clearance by 2.0 mm. The gray region contains postures that intersect the disc; the pale band contains postures that clear it by less than 5 mm."
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "../04-D2-motion-planning/fig/komo-shapes-gap.png",
+      "package_url": "lectures/04-D2-motion-planning/fig/komo-shapes-gap.png",
+      "kind": "Image",
+      "label": "Figure 2.4. Accurate reference. Workspace close-up of link 2 at knots 12 (blue) and 13 (green), and halfway between them (red). The gray circle is the physical disc and the dashed circle lies 5 mm outside it. The cross marks the intermediate posture\u2019s nearest point, 1.84 mm inside the ring and still outside the disc."
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "https://www.kavrakilab.org/publications/kavraki-svestka1996probabilistic-roadmaps-for.html",
+      "package_url": "https://www.kavrakilab.org/publications/kavraki-svestka1996probabilistic-roadmaps-for.html",
+      "kind": "Link",
+      "label": "Kavraki, \u0160vestka, Latombe and Overmars"
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "../04-D2-motion-planning/fig/prm-slide.png",
+      "package_url": "lectures/04-D2-motion-planning/fig/prm-slide.png",
+      "kind": "Image",
+      "label": "Figure 3.1. A roadmap supplies several checked connections. Graph search selects the blue five-edge route. Matching labels identify its four intermediate postures in joint space and in the workspace."
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "https://doi.org/10.1007/BF01386390",
+      "package_url": "https://doi.org/10.1007/BF01386390",
+      "kind": "Link",
+      "label": "Dijkstra, 1959"
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "https://lavalle.pl/rrtpubs.html",
+      "package_url": "https://lavalle.pl/rrtpubs.html",
+      "kind": "Link",
+      "label": "LaValle"
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "../04-D2-motion-planning/fig/rrt-connected-slide.png",
+      "package_url": "lectures/04-D2-motion-planning/fig/rrt-connected-slide.png",
+      "kind": "Image",
+      "label": "Figure 3.2. Following parents extracts the highlighted start-to-goal route from the RRT. The workspace panel shows its arm postures; the joint-space panel also shows branches that are not part of the returned route."
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "../04-D2-motion-planning/fig/bidir-route-slide.png",
+      "package_url": "lectures/04-D2-motion-planning/fig/bidir-route-slide.png",
+      "kind": "Image",
+      "label": "Figure 3.3. Blue and green trees grow from opposite endpoints. Their parent chains form the purple route through the orange joining segment. The workspace panel shows postures along that returned route."
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "../04-D2-motion-planning/fig/rrtstar-rewire-slide.png",
+      "package_url": "lectures/04-D2-motion-planning/fig/rrtstar-rewire-slide.png",
+      "kind": "Image",
+      "label": "Figure 3.4. One RRT* insertion creates a cheaper route to the marked neighbor. Its descendants inherit the saving, including the goal. Orange marks the adopted connections. This illustration uses a 10\u00b0 neighborhood and shows one insertion, not a complete RRT* run."
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "https://arxiv.org/abs/1105.1186",
+      "package_url": "https://arxiv.org/abs/1105.1186",
+      "kind": "Link",
+      "label": "Karaman and Frazzoli"
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "../../modules/motion-planning/fig/refine-34-initialize.png",
+      "package_url": "modules/motion-planning/fig/refine-34-initialize.png",
+      "kind": "Image",
+      "label": "Figure 4.1. The sampled route supplies 21 initial configurations. Connecting successive knots can cut across an old corner. The new connection in the close-up misses the required clearance by 0.30 mm."
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "../../modules/motion-planning/fig/refine-35-compare.png",
+      "package_url": "modules/motion-planning/fig/refine-35-compare.png",
+      "kind": "Image",
+      "label": "Figure 4.2. The direct and sampled initial guesses lead to the same optimized knots in this example. The overlapping markers show agreement between the two results; they do not establish global optimality or a speed advantage."
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "../../modules/motion-planning/fig/refine-36-cost-clearance.png",
+      "package_url": "modules/motion-planning/fig/refine-36-cost-clearance.png",
+      "kind": "Image",
+      "label": "Figure 4.3. Optimization lowers the sampled acceleration cost but increases the largest scanned clearance deficit between knots. Neither cost reduction nor accurate knot constraints establish clearance along the connecting motion."
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "../04-D2-motion-planning/notes.md",
+      "package_url": "README.html#course-records",
+      "kind": "Link",
+      "label": "motion-planning lecture"
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "../04-D2-motion-planning/code/make_figures.py",
+      "package_url": "lectures/04-D2-motion-planning/code/make_figures.py",
+      "kind": "Link",
+      "label": "figure generator"
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "../../modules/motion-planning/rrt_two_link.py",
+      "package_url": "modules/motion-planning/rrt_two_link.py",
+      "kind": "Link",
+      "label": "sampling reference"
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "../../modules/motion-planning/index.html?mode=edge",
+      "package_url": "modules/motion-planning/index.html?mode=edge",
+      "kind": "Link",
+      "label": "edge demonstration"
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "code/cost_comparison.py",
+      "package_url": "lectures/04-reading-motion-planning/code/cost_comparison.py",
+      "kind": "Link",
+      "label": "cost comparison"
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "code/check_section2.py",
+      "package_url": "lectures/04-reading-motion-planning/code/check_section2.py",
+      "kind": "Link",
+      "label": "section check"
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "../../modules/motion-planning/staged_two_link.py",
+      "package_url": "modules/motion-planning/staged_two_link.py",
+      "kind": "Link",
+      "label": "whole-link implementation"
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "../04-D2-motion-planning/code/rai_nlp.py",
+      "package_url": "lectures/04-D2-motion-planning/code/rai_nlp.py",
+      "kind": "Link",
+      "label": "rai_nlp.py"
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "../../modules/motion-planning/fixtures/stage4_rai.json",
+      "package_url": "modules/motion-planning/fixtures/stage4_rai.json",
+      "kind": "Link",
+      "label": "stage4_rai.json"
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "../../modules/motion-planning/stage4_komo_rai.py",
+      "package_url": "modules/motion-planning/stage4_komo_rai.py",
+      "kind": "Link",
+      "label": "native RAI program"
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "../../docker/rai/RUNBOOK.md",
+      "package_url": "README.html#rai",
+      "kind": "Link",
+      "label": "RAI runtime guide"
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "../05-motion-planning/sampling-demo/evidence/rai-stage4/run4-before-defaults.txt",
+      "package_url": "lectures/05-motion-planning/sampling-demo/evidence/rai-stage4/run4-before-defaults.txt",
+      "kind": "Link",
+      "label": "archived run records"
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "../05-motion-planning/sampling-demo/evidence/rai-stage4/seed-run.txt",
+      "package_url": "lectures/05-motion-planning/sampling-demo/evidence/rai-stage4/seed-run.txt",
+      "kind": "Link",
+      "label": "seed-study record"
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "../../modules/motion-planning/rai_bidir_rrt.py",
+      "package_url": "modules/motion-planning/rai_bidir_rrt.py",
+      "kind": "Link",
+      "label": "Python reference"
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "../../modules/motion-planning/notes.md",
+      "package_url": "README.html#course-records",
+      "kind": "Link",
+      "label": "module notes"
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "https://lavalle.pl/papers/KufLav00.pdf",
+      "package_url": "https://lavalle.pl/papers/KufLav00.pdf",
+      "kind": "Link",
+      "label": "Kuffner and LaValle"
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "../../modules/motion-planning/staged_two_link.py",
+      "package_url": "modules/motion-planning/staged_two_link.py",
+      "kind": "Link",
+      "label": "staged_two_link.py"
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "../../modules/motion-planning/fig/staged-3-shortcut.png",
+      "package_url": "modules/motion-planning/fig/staged-3-shortcut.png",
+      "kind": "Image",
+      "label": "Figure C.1. Shortcutting reduces route length, but its passing coarse check misses a small buffer violation. The close-up shows the arm approaching the 5 mm boundary; the finer scan finds about 0.09 mm missing clearance."
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "code/check_continuation.py",
+      "package_url": "lectures/04-reading-motion-planning/code/check_continuation.py",
+      "kind": "Link",
+      "label": "chapter check"
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "../../modules/motion-planning/staged_two_link.py",
+      "package_url": "modules/motion-planning/staged_two_link.py",
+      "kind": "Link",
+      "label": "staged_two_link.py"
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "../../modules/motion-planning/rrt_two_link.py",
+      "package_url": "modules/motion-planning/rrt_two_link.py",
+      "kind": "Link",
+      "label": "rrt_two_link.py"
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "../../modules/motion-planning/rai_bidir_rrt.py",
+      "package_url": "modules/motion-planning/rai_bidir_rrt.py",
+      "kind": "Link",
+      "label": "rai_bidir_rrt.py"
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "../../modules/motion-planning/rrtstar_reference.py",
+      "package_url": "modules/motion-planning/rrtstar_reference.py",
+      "kind": "Link",
+      "label": "rrtstar_reference.py"
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "../../modules/motion-planning/staged_two_link.py",
+      "package_url": "modules/motion-planning/staged_two_link.py",
+      "kind": "Link",
+      "label": "staged_two_link.py"
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "../../modules/motion-planning/refine_figures.py",
+      "package_url": "modules/motion-planning/refine_figures.py",
+      "kind": "Link",
+      "label": "refine_figures.py"
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "../../modules/opt-explorer/fixtures/refine_rai.json",
+      "package_url": "modules/opt-explorer/fixtures/refine_rai.json",
+      "kind": "Link",
+      "label": "refine_rai.json"
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "../../modules/motion-planning/fixtures/stage4_rai.json",
+      "package_url": "modules/motion-planning/fixtures/stage4_rai.json",
+      "kind": "Link",
+      "label": "stage4_rai.json"
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "../../modules/motion-planning/index.html",
+      "package_url": "modules/motion-planning/index.html",
+      "kind": "Link",
+      "label": "sampling views"
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "../../modules/opt-explorer/index.html",
+      "package_url": "modules/opt-explorer/index.html",
+      "kind": "Link",
+      "label": "optimization explorer"
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "https://research-portal.uu.nl/en/publications/creating-high-quality-paths-for-motion-planning/",
+      "package_url": "https://research-portal.uu.nl/en/publications/creating-high-quality-paths-for-motion-planning/",
+      "kind": "Link",
+      "label": "Geraerts and Overmars"
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "https://marctoussaint.github.io/robotic/api.html",
+      "package_url": "https://marctoussaint.github.io/robotic/api.html",
+      "kind": "Link",
+      "label": "KOMO API"
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "https://marctoussaint.github.io/robotic/tutorials/botop_1_intro.html",
+      "package_url": "https://marctoussaint.github.io/robotic/tutorials/botop_1_intro.html",
+      "kind": "Link",
+      "label": "official tutorial"
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "https://marctoussaint.github.io/robotic/api.html",
+      "package_url": "https://marctoussaint.github.io/robotic/api.html",
+      "kind": "Link",
+      "label": "moveAutoTimed helper"
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "https://drake.mit.edu/doxygen_cxx/classdrake_1_1planning_1_1trajectory__optimization_1_1_kinematic_trajectory_optimization.html",
+      "package_url": "https://drake.mit.edu/doxygen_cxx/classdrake_1_1planning_1_1trajectory__optimization_1_1_kinematic_trajectory_optimization.html",
+      "kind": "Link",
+      "label": "KinematicTrajectoryOptimization"
+    },
+    {
+      "document": "chapter-03-essentials.md",
+      "source_url": "https://drake.mit.edu/doxygen_cxx/classdrake_1_1multibody_1_1_toppra.html",
+      "package_url": "https://drake.mit.edu/doxygen_cxx/classdrake_1_1multibody_1_1_toppra.html",
+      "kind": "Link",
+      "label": "Toppra"
+    }
+  ],
+  "pdf_links": [
+    {
+      "source_url": "https://www.kavrakilab.org/publications/kavraki-svestka1996probabilistic-roadmaps-for.html",
+      "package_url": "https://www.kavrakilab.org/publications/kavraki-svestka1996probabilistic-roadmaps-for.html"
+    },
+    {
+      "source_url": "https://doi.org/10.1007/BF01386390",
+      "package_url": "https://doi.org/10.1007/BF01386390"
+    },
+    {
+      "source_url": "https://doi.org/10.1007/BF01386390",
+      "package_url": "https://doi.org/10.1007/BF01386390"
+    },
+    {
+      "source_url": "https://lavalle.pl/rrtpubs.html",
+      "package_url": "https://lavalle.pl/rrtpubs.html"
+    },
+    {
+      "source_url": "https://arxiv.org/abs/1105.1186",
+      "package_url": "https://arxiv.org/abs/1105.1186"
+    },
+    {
+      "source_url": "lectures/04-D2-motion-planning/notes.md",
+      "package_url": "README.html#course-records"
+    },
+    {
+      "source_url": "lectures/04-D2-motion-planning/code/make_figures.py",
+      "package_url": "lectures/04-D2-motion-planning/code/make_figures.py"
+    },
+    {
+      "source_url": "modules/motion-planning/rrt_two_link.py",
+      "package_url": "modules/motion-planning/rrt_two_link.py"
+    },
+    {
+      "source_url": "modules/motion-planning/index.html?mode=edge",
+      "package_url": "modules/motion-planning/index.html?mode=edge"
+    },
+    {
+      "source_url": "modules/motion-planning/index.html?mode=edge",
+      "package_url": "modules/motion-planning/index.html?mode=edge"
+    },
+    {
+      "source_url": "lectures/04-reading-motion-planning/code/cost_comparison.py",
+      "package_url": "lectures/04-reading-motion-planning/code/cost_comparison.py"
+    },
+    {
+      "source_url": "lectures/04-reading-motion-planning/code/check_section2.py",
+      "package_url": "lectures/04-reading-motion-planning/code/check_section2.py"
+    },
+    {
+      "source_url": "modules/motion-planning/staged_two_link.py",
+      "package_url": "modules/motion-planning/staged_two_link.py"
+    },
+    {
+      "source_url": "lectures/04-D2-motion-planning/code/rai_nlp.py",
+      "package_url": "lectures/04-D2-motion-planning/code/rai_nlp.py"
+    },
+    {
+      "source_url": "modules/motion-planning/fixtures/stage4_rai.json",
+      "package_url": "modules/motion-planning/fixtures/stage4_rai.json"
+    },
+    {
+      "source_url": "modules/motion-planning/stage4_komo_rai.py",
+      "package_url": "modules/motion-planning/stage4_komo_rai.py"
+    },
+    {
+      "source_url": "docker/rai/RUNBOOK.md",
+      "package_url": "README.html#rai"
+    },
+    {
+      "source_url": "lectures/05-motion-planning/sampling-demo/evidence/rai-stage4/run4-before-defaults.txt",
+      "package_url": "lectures/05-motion-planning/sampling-demo/evidence/rai-stage4/run4-before-defaults.txt"
+    },
+    {
+      "source_url": "lectures/05-motion-planning/sampling-demo/evidence/rai-stage4/run4-before-defaults.txt",
+      "package_url": "lectures/05-motion-planning/sampling-demo/evidence/rai-stage4/run4-before-defaults.txt"
+    },
+    {
+      "source_url": "lectures/05-motion-planning/sampling-demo/evidence/rai-stage4/seed-run.txt",
+      "package_url": "lectures/05-motion-planning/sampling-demo/evidence/rai-stage4/seed-run.txt"
+    },
+    {
+      "source_url": "modules/motion-planning/rai_bidir_rrt.py",
+      "package_url": "modules/motion-planning/rai_bidir_rrt.py"
+    },
+    {
+      "source_url": "modules/motion-planning/rai_bidir_rrt.py",
+      "package_url": "modules/motion-planning/rai_bidir_rrt.py"
+    },
+    {
+      "source_url": "modules/motion-planning/notes.md",
+      "package_url": "README.html#course-records"
+    },
+    {
+      "source_url": "https://lavalle.pl/papers/KufLav00.pdf",
+      "package_url": "https://lavalle.pl/papers/KufLav00.pdf"
+    },
+    {
+      "source_url": "modules/motion-planning/staged_two_link.py",
+      "package_url": "modules/motion-planning/staged_two_link.py"
+    },
+    {
+      "source_url": "lectures/04-reading-motion-planning/code/check_continuation.py",
+      "package_url": "lectures/04-reading-motion-planning/code/check_continuation.py"
+    },
+    {
+      "source_url": "modules/motion-planning/staged_two_link.py",
+      "package_url": "modules/motion-planning/staged_two_link.py"
+    },
+    {
+      "source_url": "modules/motion-planning/rrt_two_link.py",
+      "package_url": "modules/motion-planning/rrt_two_link.py"
+    },
+    {
+      "source_url": "modules/motion-planning/rai_bidir_rrt.py",
+      "package_url": "modules/motion-planning/rai_bidir_rrt.py"
+    },
+    {
+      "source_url": "modules/motion-planning/rrtstar_reference.py",
+      "package_url": "modules/motion-planning/rrtstar_reference.py"
+    },
+    {
+      "source_url": "modules/motion-planning/staged_two_link.py",
+      "package_url": "modules/motion-planning/staged_two_link.py"
+    },
+    {
+      "source_url": "modules/motion-planning/refine_figures.py",
+      "package_url": "modules/motion-planning/refine_figures.py"
+    },
+    {
+      "source_url": "modules/opt-explorer/fixtures/refine_rai.json",
+      "package_url": "modules/opt-explorer/fixtures/refine_rai.json"
+    },
+    {
+      "source_url": "modules/motion-planning/fixtures/stage4_rai.json",
+      "package_url": "modules/motion-planning/fixtures/stage4_rai.json"
+    },
+    {
+      "source_url": "modules/motion-planning/index.html",
+      "package_url": "modules/motion-planning/index.html"
+    },
+    {
+      "source_url": "modules/opt-explorer/index.html",
+      "package_url": "modules/opt-explorer/index.html"
+    },
+    {
+      "source_url": "https://research-portal.uu.nl/en/publications/creating-high-quality-paths-for-motion-planning/",
+      "package_url": "https://research-portal.uu.nl/en/publications/creating-high-quality-paths-for-motion-planning/"
+    },
+    {
+      "source_url": "https://marctoussaint.github.io/robotic/api.html",
+      "package_url": "https://marctoussaint.github.io/robotic/api.html"
+    },
+    {
+      "source_url": "https://marctoussaint.github.io/robotic/tutorials/botop_1_intro.html",
+      "package_url": "https://marctoussaint.github.io/robotic/tutorials/botop_1_intro.html"
+    },
+    {
+      "source_url": "https://marctoussaint.github.io/robotic/api.html",
+      "package_url": "https://marctoussaint.github.io/robotic/api.html"
+    },
+    {
+      "source_url": "https://drake.mit.edu/doxygen_cxx/classdrake_1_1planning_1_1trajectory__optimization_1_1_kinematic_trajectory_optimization.html",
+      "package_url": "https://drake.mit.edu/doxygen_cxx/classdrake_1_1planning_1_1trajectory__optimization_1_1_kinematic_trajectory_optimization.html"
+    },
+    {
+      "source_url": "https://drake.mit.edu/doxygen_cxx/classdrake_1_1multibody_1_1_toppra.html",
+      "package_url": "https://drake.mit.edu/doxygen_cxx/classdrake_1_1multibody_1_1_toppra.html"
+    }
+  ],
+  "rendered_pdf_sha256": "ee0aca454e1b0bf61857a8878510f444d8a16e02a19be399328c26459d74d796",
+  "delivered_pdf_sha256": "5eee5479b3d3a1686a545db1bde8b7465ce01a280d7a9a51ca09786db20b9359",
+  "xref_entries": 1896,
+  "scope": "Chapter 03 companions only; no publication, assessments or instructor records.",
+  "files": {
+    "LICENSE.md": "300c8b380793f7177a514f2bfd0c791f22534bef6b53ac780f47bced08e39f92",
+    "README.html": "38994c5261e6df639225a940f9f331c192e0c3d922da82955ac5eed1ca03a164",
+    "README.md": "c22a5239154638c64e675309dc807558e0c713f0ce428e7bffdfd6650f82c983",
+    "assets/katex/fonts/KaTeX_AMS-Regular.ttf": "68534840bcfdd2bffb6f0e8deb48684dd01e7f04ea2813267577afb906de1d13",
+    "assets/katex/fonts/KaTeX_AMS-Regular.woff": "30da91e84c893f875e252689faebdc590b2871145e8adc7f9a9d4dbd8ce0b251",
+    "assets/katex/fonts/KaTeX_AMS-Regular.woff2": "0cdd387c9590a1a9f9794560022dbb59654a7d86f187aa0c81495ad42d3a7308",
+    "assets/katex/fonts/KaTeX_Caligraphic-Bold.ttf": "07d8e303ce4fc12b4bb54f1004170dd190a1f3db45d400fe68060df3e0897268",
+    "assets/katex/fonts/KaTeX_Caligraphic-Bold.woff": "1ae6bd7475590e97e7f145a89e09ccde322f7a6bc0b91607b1c8b8ee28290fed",
+    "assets/katex/fonts/KaTeX_Caligraphic-Bold.woff2": "de7701e42cf1f4cf0b766c03fb27977207eee2f4fd5d76fa82188406da43ea4c",
+    "assets/katex/fonts/KaTeX_Caligraphic-Regular.ttf": "ed0b74372feefcbb9c0666b2e210da37b7e49fa7fbbf3eeb11db5f693dacfbb7",
+    "assets/katex/fonts/KaTeX_Caligraphic-Regular.woff": "3398dd02302557a793f2863f88e02d96ce10df2abffa07c8e9fa90775116e65c",
+    "assets/katex/fonts/KaTeX_Caligraphic-Regular.woff2": "5d53e70ad607c2352162dec9e0923fb54ecdafaccbf604cd8dcf7d00facb989b",
+    "assets/katex/fonts/KaTeX_Fraktur-Bold.ttf": "9163df9c7122432e6495b4229fa9071cf9ae86a758ae5efc4924ec2e1a6dbce1",
+    "assets/katex/fonts/KaTeX_Fraktur-Bold.woff": "9be7ceb88004ab8ad124082246fbfcca4091e36385d4ec6ed1df67375dad50fb",
+    "assets/katex/fonts/KaTeX_Fraktur-Bold.woff2": "74444efd593c005e3f4573b44524704c0af0a937fe911cca9e94068d0d140d3f",
+    "assets/katex/fonts/KaTeX_Fraktur-Regular.ttf": "1e6f9579e90e2cac37f8f60a597c436e075c114385652b7cbeb0dec0421291b3",
+    "assets/katex/fonts/KaTeX_Fraktur-Regular.woff": "5e28753be717dac97f559f49bc10be9cf3c124ddcabda6659d11cb68febc6463",
+    "assets/katex/fonts/KaTeX_Fraktur-Regular.woff2": "51814d270d06ff0255dba0799994fa4d8c84d11f09951d47595f4abb1f3602dc",
+    "assets/katex/fonts/KaTeX_Main-Bold.ttf": "138ac28d1663b3037e9c5f52371fa5c63d8324f4a38d22cd573e6ea3a3fd0cf8",
+    "assets/katex/fonts/KaTeX_Main-Bold.woff": "c76c5d696297d51b9cb1639c7da4334f0e7dec81b42b11213b5e25ef671bb822",
+    "assets/katex/fonts/KaTeX_Main-Bold.woff2": "0f60d1b897938ec918c8ce073092411baf9438f6739465693ff18b0f9d20b021",
+    "assets/katex/fonts/KaTeX_Main-BoldItalic.ttf": "70ee1f64a20f2048c21940ef46d0144fd215baa953ca69afd1e31e98544f708f",
+    "assets/katex/fonts/KaTeX_Main-BoldItalic.woff": "a6f7ec0d846ac7ad975adb8959c37ed49b94acbc4ae436db9ce9e20287e4a64c",
+    "assets/katex/fonts/KaTeX_Main-BoldItalic.woff2": "99cd42a3c072d918f2f44984a807cf7aa16e13545fd0875fc07c6c65f99e715b",
+    "assets/katex/fonts/KaTeX_Main-Italic.ttf": "0d85ae7cc30f23790a7f1a58c4a112fdca8aae769b6ba11429af1d98b1b6cb3a",
+    "assets/katex/fonts/KaTeX_Main-Italic.woff": "f1d6ef86f3b11a528bd5185199bd2443ecb2b0dead96d88674b5a2c12be24bdf",
+    "assets/katex/fonts/KaTeX_Main-Italic.woff2": "97479ca6cce906abc961ecac96faa5f9ca2e61b8e7670d475826bcdee9a7c267",
+    "assets/katex/fonts/KaTeX_Main-Regular.ttf": "d0332f52868370fd83ae7fa46470f90c8f2eab2fcf12bc4f88080b340c95a830",
+    "assets/katex/fonts/KaTeX_Main-Regular.woff": "c6368d87e8a1a3a5d337623d83d8dc4b868f242a9ad476237d6f8d1e0f168cdc",
+    "assets/katex/fonts/KaTeX_Main-Regular.woff2": "c2342cd8b869e01752a9321dc17213fc40d4d04c79688c1d43f2cf316abd7866",
+    "assets/katex/fonts/KaTeX_Math-BoldItalic.ttf": "f9377ab0271cda59af24bcffbd46a4d0c8a3572ffafdbb38de2ad5ea7b0d5ee5",
+    "assets/katex/fonts/KaTeX_Math-BoldItalic.woff": "850c0af5c2238497febaf5e461d880bf458c341f42f4f330f1b1ab5698b1998e",
+    "assets/katex/fonts/KaTeX_Math-BoldItalic.woff2": "dc47344dbb6cb5b655c8460d561f4df5f501b90c804ad3c6cec65fe322351ab1",
+    "assets/katex/fonts/KaTeX_Math-Italic.ttf": "08ce98e51b04d58945a301e639e02b6998af29fdfd61a7b8afdd07bbfc479d4a",
+    "assets/katex/fonts/KaTeX_Math-Italic.woff": "8a8d244581371912b8f3f5a23e2437cb2a59cd9bcaebb0346e722c05737a2571",
+    "assets/katex/fonts/KaTeX_Math-Italic.woff2": "7af58c5ec8f132a2ddde9027c6d7814decce4d3b822a11192a42a20e2e973264",
+    "assets/katex/fonts/KaTeX_SansSerif-Bold.ttf": "1ece03f79f95277d57dc7f6b435a74e1379b0d46104a8530286b60ff49369ea0",
+    "assets/katex/fonts/KaTeX_SansSerif-Bold.woff": "ece03cfd83e22c212cdef66feb8442d25a083beb988db3f1883f3f9738d750ba",
+    "assets/katex/fonts/KaTeX_SansSerif-Bold.woff2": "e99ae51144bf1232efcc1bfe5add36262c6866b0faab24fa75740e1b98577a62",
+    "assets/katex/fonts/KaTeX_SansSerif-Italic.ttf": "3931dd81faed86ba021bb2bbdc36f5bed9a38d6b4f4077aca59b265aa1b02083",
+    "assets/katex/fonts/KaTeX_SansSerif-Italic.woff": "91ee67500cc0129aa0ace3ac5c61ff1692102f0f31d02b69347fba35dcb75bf2",
+    "assets/katex/fonts/KaTeX_SansSerif-Italic.woff2": "00b26ac825e2095056396e0553b8ac26d3f8ad158c3826e28b4c45b385c4714a",
+    "assets/katex/fonts/KaTeX_SansSerif-Regular.ttf": "f36ea897e19f4a2e571d1e900e4e3710e438deb05a842486045ba0a3e616a4ad",
+    "assets/katex/fonts/KaTeX_SansSerif-Regular.woff": "11e4dc8a6471ff6d6ee561d53d10fde8f7489e798257ff449c5d37c197435605",
+    "assets/katex/fonts/KaTeX_SansSerif-Regular.woff2": "68e8c73ef42afd3ccec58bf0fba302cce448938e7fc020a5e31f8a952eee1342",
+    "assets/katex/fonts/KaTeX_Script-Regular.ttf": "1c67f068fea8bb09bf099c088b1cf64bd27516a6e07f4684344873564bb66a67",
+    "assets/katex/fonts/KaTeX_Script-Regular.woff": "d96cdf2b3bdd4d64a8fd5f74a4c467f123a8a73931cd435889f08ffaf9bf947a",
+    "assets/katex/fonts/KaTeX_Script-Regular.woff2": "036d4e95149b69ff9bcc0cd55771efeb25ffa3947293e69acd78d5ac328c684b",
+    "assets/katex/fonts/KaTeX_Size1-Regular.ttf": "95b6d2f1a50173bfedb8c63e1d1c99b10427d0a4df4201cb44513b226951a22b",
+    "assets/katex/fonts/KaTeX_Size1-Regular.woff": "c943cc986384f59e86bea5fd7dc50a9c4dfe567a7c05eb40d6790720dead97c9",
+    "assets/katex/fonts/KaTeX_Size1-Regular.woff2": "6b47c40166b6dbe21a5dfca7718413f2147fd2399be1ba605d8ad39cedf25dfe",
+    "assets/katex/fonts/KaTeX_Size2-Regular.ttf": "a6b2099fb555c60e3a0db3a08842ebf1d732c6eb4e4bf44913613bed4fc4e39b",
+    "assets/katex/fonts/KaTeX_Size2-Regular.woff": "2014c523c3210bcc166648c4d4cc57f05b747df07a24277bf71c51e67dc79e3d",
+    "assets/katex/fonts/KaTeX_Size2-Regular.woff2": "d04c54219f9eaec6d4d4fd42dfb28785975a4794d6b2fc71e566b9cd6db842dd",
+    "assets/katex/fonts/KaTeX_Size3-Regular.ttf": "500e04d54f0d51666332c9d2089aa803be22aa878eca539e59fa53c6e522b082",
+    "assets/katex/fonts/KaTeX_Size3-Regular.woff": "6ab6b62e9b62dae2c00dd90f791bd10950be0ecc3490d7d6045f51c2e8fe0949",
+    "assets/katex/fonts/KaTeX_Size3-Regular.woff2": "73d591271b1604960cb10bb90fee021670af7297017e0e98480b332d11f51995",
+    "assets/katex/fonts/KaTeX_Size4-Regular.ttf": "c647367d1dd4e162468717d020e1fc0f1dc5c26ebfdffbe55261713bf88c5877",
+    "assets/katex/fonts/KaTeX_Size4-Regular.woff": "99f9c6750b489c9462bf04900bd3f939df9b829339daaaaa99ef5495cdddea58",
+    "assets/katex/fonts/KaTeX_Size4-Regular.woff2": "a4af7d414440a1c1790825cfb700cf9cf43b0f2c4b04f0ebc523011ad9853ec0",
+    "assets/katex/fonts/KaTeX_Typewriter-Regular.ttf": "f01f3e87d9c6a61c0c081ceb577abd864eb00a612f7ac1620dd6915fad2ef5aa",
+    "assets/katex/fonts/KaTeX_Typewriter-Regular.woff": "e14fed02b1aba7ce9f5afd5844b5d0321b22351febc720e0de8b8723527609f7",
+    "assets/katex/fonts/KaTeX_Typewriter-Regular.woff2": "71d517d67827787cfabdf186914cc3358eda539e37931941f2b2fd4a21f68c0b",
+    "assets/katex/katex.min.css": "0289a02cf451a44dd73add683a09644252363871ac11713a647b732cee8b1ee3",
+    "assets/katex/katex.min.js": "a29d2961d3146de5949d78ac7c1a9d93ae54955bad22a6db4fbe836e88e8bf48",
+    "chapter-03-essentials.html": "bb187da7767997401ef8c866e683f03c658f3e98f2c4ade6685a4931531cfbfa",
+    "chapter-03-essentials.pdf": "5eee5479b3d3a1686a545db1bde8b7465ce01a280d7a9a51ca09786db20b9359",
+    "launch.py": "8611dafcf2bb9e096604bd1dd00d4b854aa87b059718f86b7d6fa52df86f86ec",
+    "lectures/04-D2-motion-planning/code/make_figures.py": "133e9e32e2fe1c8058a1cd960a21f87e60ad5bdd416be8b4a38853f6bfc46cd3",
+    "lectures/04-D2-motion-planning/code/make_review_figures.py": "4ef251c0402f539869ff9ec1c50ae89c8f07051a7045b03bc92d25d3d69dfa19",
+    "lectures/04-D2-motion-planning/code/rai_fixture.py": "1faa3f4d44cbce10e7105d8016b63e62fbe21f3aa7d5bffef8d4b9244db60eb6",
+    "lectures/04-D2-motion-planning/code/rai_nlp.py": "5afe80a08746585fb20ada5b84e8a811d52417a4a6f402a7500b1bac5ccb5690",
+    "lectures/04-D2-motion-planning/fig/bidir-route-slide.png": "3174213b27524e45edff5b3e84409a34589e2c7a46ec834e8937ada7d9c340bf",
+    "lectures/04-D2-motion-planning/fig/blocked-edge.png": "949d3bd15ecec46d199a4cfc0d99461179cb46ccb160db1fdc64e7dde1b2f2e8",
+    "lectures/04-D2-motion-planning/fig/configuration-space.png": "1f7aed3935f6d24a285479d72074d875ff1e8fe2613659c2e87be72b5616dea4",
+    "lectures/04-D2-motion-planning/fig/endpoints.png": "e7e49f2ca1b681582e713cb916528ec10184e3ad84223ea2c2549f5f6d6c6edd",
+    "lectures/04-D2-motion-planning/fig/knot-locality.png": "03db8779f1bf002b5b86fdaead919b7a22dc6b1a09b3d1e5f09cd1d89762f47d",
+    "lectures/04-D2-motion-planning/fig/komo-shapes-gap.png": "f3545636310eb7ac4d158a33a19e2683aabd9609014fcab022f53ebfb5cc4498",
+    "lectures/04-D2-motion-planning/fig/komo-shapes-initial-guesses.png": "949e13b5c02378bd5ce52e0f90fc8b300cdac0f9f34c76b6f15ee1b4cf07172d",
+    "lectures/04-D2-motion-planning/fig/prm-slide.png": "3a45966d34c8373d07e6e153697ebc7c17479e9d4b9ee47a4c44f7332808484b",
+    "lectures/04-D2-motion-planning/fig/rrt-connected-slide.png": "e194b3fed77ad7e737e78a461e4ce1d1a8703e9671f93b415e58f10de74d4187",
+    "lectures/04-D2-motion-planning/fig/rrtstar-rewire-slide.png": "7a54c9c23110bfe0711afa2a3edf86899b22d4449849cb0d12492261704387b4",
+    "lectures/04-reading-motion-planning/code/check_continuation.py": "b33d08d216a2bb05d51a5d2d9390bcde486abf2b64046515561a4983def112ca",
+    "lectures/04-reading-motion-planning/code/check_section2.py": "1406f1499887650668b262e34becdb46da540dcd934db5b16a3b614acd877c6a",
+    "lectures/04-reading-motion-planning/code/cost_comparison.py": "dbcdd7edefcdd0a790807adf4e4867a924c0fe64646245bfb0120c4889b7346c",
+    "lectures/04-reading-motion-planning/fig/cost-comparison.png": "09c053e091463de24a3d05c0d008e2d848eca835eba684851344b65f3b178e25",
+    "lectures/05-motion-planning/sampling-demo/evidence/rai-stage4/run4-before-defaults.txt": "f49cb2185ad8143dca1e9be9dc3531f49eeff835c5fcbe4da66375a21e680eef",
+    "lectures/05-motion-planning/sampling-demo/evidence/rai-stage4/seed-run.txt": "2ad190f4a7e76e81b03c926c49bcb89fe89d3f23c5926f006546c1e990a95dc9",
+    "licenses/@mapbox__geojson-rewind/LICENSE.txt": "f69fa6a6652581ae8c6cbab9e720bacb3b335a03335c2024afd6ddc6f7cfe240",
+    "licenses/@mapbox__geojson-types/LICENSE": "46323ce6756e643e3b0d2c2355d44677e53bffe288482d1f1a54375efdfbb147",
+    "licenses/@mapbox__mapbox-gl-supported/LICENSE.txt": "e9e43336581d738d3d3c86e65b63bd2357dd4a945ec21e28c4eb0c4a8b522ac6",
+    "licenses/@mapbox__point-geometry/LICENSE": "dd21817f71dfddadd36108266c1f19c89e2d1f24e4e27ee5b6c34743462d8310",
+    "licenses/@mapbox__tiny-sdf/LICENSE.txt": "daee818208313020b429fd7b69755232e3cd27348a10284076c4bd84e6008d83",
+    "licenses/@mapbox__vector-tile/LICENSE.txt": "de11b2b7d4af85d160347e7cbe734b5bc7b5beb5584281506bc1a5bc84b3aa3e",
+    "licenses/@mapbox__whoots-js/LICENSE.md": "27043d1a6a0e1985fde12660decbbd3b23c67de900b00609c90d4f0aa492f425",
+    "licenses/@maplibre__maplibre-gl-style-spec/LICENSE.txt": "bfd4cb919eec574e9213e1e61f880831eb5fc372d467be429fd0a8d51d1df890",
+    "licenses/@maplibre__maplibre-gl-style-spec__node_modules__@mapbox__unitbezier/LICENSE": "f0dc305ad097eddbc66eebb79288c92d8a5043818ace81206383a4c1a3268fe3",
+    "licenses/@maplibre__maplibre-gl-style-spec__node_modules__tinyqueue/LICENSE": "780453e05abdc22307ee01c706a2e73f508d3e484fc4c804485ebf6fe0964694",
+    "licenses/@plotly__d3/LICENSE": "e4796bd1fdc09e06a3683957a177d59b38aec4143df81b2d25472438f5763482",
+    "licenses/@plotly__d3-sankey/LICENSE": "2bf785e778d67a4f5266cffcd4f2cc5bb98cde73791666e7efeb8002ba32dfa5",
+    "licenses/@plotly__d3-sankey-circular/LICENSE": "793031003729acb6fc69e8e6c5ef754dd9f5be4e68ac1e70ced1cc7c1dabae94",
+    "licenses/@plotly__mapbox-gl/LICENSE.txt": "dcd8c5e27012f2c0754081a51b5e742ca71f4928d557bd204ab14447b9b76f44",
+    "licenses/@plotly__point-cluster/license.md": "2907ee84b30a5ca0f0fb134e24f60daf292a598bf5819e418eb2eb2b32262ed8",
+    "licenses/@plotly__regl/LICENSE": "42d997d1f47c9222dec2844468fc2a4fd144c6950d698eade460e94537ddcdd3",
+    "licenses/@turf__area/LICENSE": "f9b32b82fd5a1d3a990526d86da97f42fb805d9f4d9f978125c4679b674fce44",
+    "licenses/@turf__bbox/LICENSE": "f9b32b82fd5a1d3a990526d86da97f42fb805d9f4d9f978125c4679b674fce44",
+    "licenses/@turf__centroid/LICENSE": "f9b32b82fd5a1d3a990526d86da97f42fb805d9f4d9f978125c4679b674fce44",
+    "licenses/@turf__helpers/LICENSE": "f9b32b82fd5a1d3a990526d86da97f42fb805d9f4d9f978125c4679b674fce44",
+    "licenses/@turf__meta/LICENSE": "f9b32b82fd5a1d3a990526d86da97f42fb805d9f4d9f978125c4679b674fce44",
+    "licenses/@types__geojson/LICENSE": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383",
+    "licenses/@types__geojson-vt/LICENSE": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383",
+    "licenses/@types__mapbox__point-geometry/LICENSE": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383",
+    "licenses/@types__mapbox__vector-tile/LICENSE": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383",
+    "licenses/@types__pbf/LICENSE": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383",
+    "licenses/@types__plotly.js/LICENSE": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383",
+    "licenses/@types__prop-types/LICENSE": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383",
+    "licenses/@types__react/LICENSE": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383",
+    "licenses/@types__react-plotly.js/LICENSE": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383",
+    "licenses/@types__supercluster/LICENSE": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383",
+    "licenses/acorn/LICENSE": "cb3984acf8a000bc42bfbe319b836507bd268ef1d0d53e37363e2d5cac1137e0",
+    "licenses/array-find-index/license": "6fb9754611c20f6649f68805e8c990e83261f29316e29de9e6cedae607b8634c",
+    "licenses/array-range/LICENSE.md": "91515553fda3d86e82454bab0eb876a2cb9a31c0dcb8be640870fed624e53697",
+    "licenses/array-rearrange/license.md": "7d73a6394617542e3f8b4e4ef7d806f2bb1af2cd438973becc3c3f8d12f7f68b",
+    "licenses/base64-arraybuffer/LICENSE": "f3eca6ff762533fa5a77caf954a143e48afa204668cf97dce758c45a9e006be3",
+    "licenses/binary-search-bounds/LICENSE": "f2b10f2958d2724d6df0f16b1ea25d32cd7e6333ce88ac3c5cdff37c2c4222b8",
+    "licenses/bit-twiddle/LICENSE": "e67aed7df22dc8031e4fcf5338fe91cb33e3817e5c58a99a2a2802eea9069791",
+    "licenses/bl/LICENSE.md": "dce3625a2f461b116e324ba6b52641cc8227c87fd07aeffae3f1b57c43fe4cfe",
+    "licenses/buffer-from/LICENSE": "14275f5c8139d02054c5259d52a88ccbba662a86af18c30f071c8d082dc6004c",
+    "licenses/canvas-fit/LICENSE.md": "435a6722c786b0a56fbe7387028f1d9d3f3a2d0fb615bb8fee118727c3f59b7b",
+    "licenses/clamp/LICENSE.md": "c6db45c144aeabf87a299c54e57f0a9b68ba043012d728d560209169c91ef4bc",
+    "licenses/color-alpha__node_modules__color-parse/LICENSE": "af45ae40c7d031f40e77e09fd33b12700e96ea861c4a73f0dff3294d47e60a81",
+    "licenses/color-name/LICENSE": "c064f7a3e353bc1bc977f3c897941c75ef763f44f41677e0a15370ca0853d6e2",
+    "licenses/color-normalize__node_modules__color-parse/LICENSE": "af45ae40c7d031f40e77e09fd33b12700e96ea861c4a73f0dff3294d47e60a81",
+    "licenses/color-parse/LICENSE": "af45ae40c7d031f40e77e09fd33b12700e96ea861c4a73f0dff3294d47e60a81",
+    "licenses/color-space/LICENSE": "ca2abdf695884c77ea4b4a5b64ca7b732d9d9dbade4eebc1c2e76c53e9e3bc83",
+    "licenses/commander/LICENSE": "04512a63dce4d2d506ad612dc0bd7681ccf6e3655f7b6eaef7dfac8323d1ec0b",
+    "licenses/concat-stream/LICENSE": "96b29c9aaa611a05349b362d48c2ffce0966fe408401a2d1a157be312c035b5f",
+    "licenses/core-util-is/LICENSE": "33b734d60042d0fe0c92dd1fc1e874193a1c899ec3e276a2eb935d2d0bf5b710",
+    "licenses/country-regex/LICENSE": "295a58ae617eab21d154117b48e9875ed7be5d50d246094105af2af055a79a45",
+    "licenses/css-font/license.md": "53e2988fd2e3e852161a07f5dbf2a31482f02eec07e35921c3afe9eaaa4c6124",
+    "licenses/css-font-size-keywords/LICENSE": "03ac0b988d87f21fccdec911d13eaaea03c80a79ce650e2b2d1e5e9ed2238ec7",
+    "licenses/css-font-stretch-keywords/LICENSE": "03ac0b988d87f21fccdec911d13eaaea03c80a79ce650e2b2d1e5e9ed2238ec7",
+    "licenses/css-font-style-keywords/LICENSE": "03ac0b988d87f21fccdec911d13eaaea03c80a79ce650e2b2d1e5e9ed2238ec7",
+    "licenses/css-font-weight-keywords/LICENSE": "03ac0b988d87f21fccdec911d13eaaea03c80a79ce650e2b2d1e5e9ed2238ec7",
+    "licenses/css-global-keywords/LICENSE": "03ac0b988d87f21fccdec911d13eaaea03c80a79ce650e2b2d1e5e9ed2238ec7",
+    "licenses/css-system-font-keywords/LICENSE": "03ac0b988d87f21fccdec911d13eaaea03c80a79ce650e2b2d1e5e9ed2238ec7",
+    "licenses/csstype/LICENSE": "11d55bd4541c75ee7879547ac49089c489163dae49551389713c3d026cab383e",
+    "licenses/d/LICENSE": "77485a12d142fd84ee9f278b42968b2f029c876c8dddca7d0e13fa164ffeed34",
+    "licenses/d3-array/LICENSE": "e1211892da0b0e0585b7aebe8f98c1274fba15bafe47fa1f4ee8a7a502c06304",
+    "licenses/d3-collection/LICENSE": "c88423cbec18e11f2673dee760013af559a28c42704fb5471db146e5f954a476",
+    "licenses/d3-color/LICENSE": "faa682e3e430941f958d26180458f5934a62f58dac4d70ccdd15608c15d0f884",
+    "licenses/d3-dispatch/LICENSE": "e1211892da0b0e0585b7aebe8f98c1274fba15bafe47fa1f4ee8a7a502c06304",
+    "licenses/d3-force/LICENSE": "e1211892da0b0e0585b7aebe8f98c1274fba15bafe47fa1f4ee8a7a502c06304",
+    "licenses/d3-format/LICENSE": "7eea8533ea92bd8c32a901e89ecb0305890905bb12711449565ddff96891146d",
+    "licenses/d3-geo/LICENSE": "c3c9d41a75b64963748657932167ec4c56404b8fd557d4f89c9eeda6e2fdf39a",
+    "licenses/d3-geo-projection/LICENSE": "4108a126a74cc35d4d5ae39ca5d0cc926fa7c8ec40e459a0c6d3481c69decbd8",
+    "licenses/d3-hierarchy/LICENSE": "e1211892da0b0e0585b7aebe8f98c1274fba15bafe47fa1f4ee8a7a502c06304",
+    "licenses/d3-interpolate/LICENSE": "e008c5e25a6be382593089c29bfabbc553c6378eee02895aec46ce396cc404ee",
+    "licenses/d3-path/LICENSE": "b8265327ab678f554800e71188b1cc6b1ff57522e292d2b1c0be66f27cf328b6",
+    "licenses/d3-quadtree/LICENSE": "e1211892da0b0e0585b7aebe8f98c1274fba15bafe47fa1f4ee8a7a502c06304",
+    "licenses/d3-shape/LICENSE": "7eea8533ea92bd8c32a901e89ecb0305890905bb12711449565ddff96891146d",
+    "licenses/d3-time/LICENSE": "e1211892da0b0e0585b7aebe8f98c1274fba15bafe47fa1f4ee8a7a502c06304",
+    "licenses/d3-time-format/LICENSE": "7a3cb0e5055874e67db9aa2d5fe26de23204fa994ffbad198901ffe9c812a717",
+    "licenses/d3-timer/LICENSE": "e1211892da0b0e0585b7aebe8f98c1274fba15bafe47fa1f4ee8a7a502c06304",
+    "licenses/defined/LICENSE": "435a6722c786b0a56fbe7387028f1d9d3f3a2d0fb615bb8fee118727c3f59b7b",
+    "licenses/dtype/LICENSE-MIT": "0e5d86671d8756fb5f87079c155f05c970be4d0f54d44bf93f1f234d27dd0b5f",
+    "licenses/dup/LICENSE": "e67aed7df22dc8031e4fcf5338fe91cb33e3817e5c58a99a2a2802eea9069791",
+    "licenses/duplexify/LICENSE": "3fe8d55a98dbf260eace67c00cf9bc53edb46234e840098a0b93df3096b97fb6",
+    "licenses/earcut/LICENSE": "cd661c432ea8243974e6fde6fc433ebee3e96525ca8b66321b9d9971674ede60",
+    "licenses/element-size/LICENSE.md": "435a6722c786b0a56fbe7387028f1d9d3f3a2d0fb615bb8fee118727c3f59b7b",
+    "licenses/elementary-circuits-directed-graph/LICENSE": "7db11fce23faf713647e44b6c58143f7bdace4258dbc9ca800be7582782d5e2b",
+    "licenses/end-of-stream/LICENSE": "3fe8d55a98dbf260eace67c00cf9bc53edb46234e840098a0b93df3096b97fb6",
+    "licenses/es5-ext/LICENSE": "5dc6fe91750695c7a47f9bc200f7bd52f3e81c6854d431f43c34c7e7f8ae8b52",
+    "licenses/es6-iterator/LICENSE": "29c6c58225baf0c91719e5600f7e1302cad616c0fd81c45b02b5e78882b9e2a9",
+    "licenses/es6-symbol/LICENSE": "77485a12d142fd84ee9f278b42968b2f029c876c8dddca7d0e13fa164ffeed34",
+    "licenses/es6-weak-map/LICENSE": "af2d033286be76e6b748da6ca99298524e03a5e2f90eff3b2e9ab653d38d198e",
+    "licenses/escodegen/LICENSE.BSD": "d5d62471a28a9920416c7d37d387a3bf55f32cb768590f605f84990b76aee5de",
+    "licenses/esniff/LICENSE": "77485a12d142fd84ee9f278b42968b2f029c876c8dddca7d0e13fa164ffeed34",
+    "licenses/esprima/LICENSE.BSD": "94bcb9959136723aa4fb36e1a6c4d5c662a2369978cfae344dabfb83ae619e79",
+    "licenses/estraverse/LICENSE.BSD": "0e74697a68cebdcd61502c30fe80ab7f9e341d995dcd452023654d57133534b1",
+    "licenses/esutils/LICENSE.BSD": "0e74697a68cebdcd61502c30fe80ab7f9e341d995dcd452023654d57133534b1",
+    "licenses/event-emitter/LICENSE": "519bbf857c213b95460e438767e9e5600159476e3e87facbbcc19f9b2c7f8886",
+    "licenses/events/LICENSE": "631987b7616a325a5b97566c232418481ddf7dbb5ecadefb991e791876cc2599",
+    "licenses/ext/LICENSE": "2f81a49be59092e3229ed757730791b7bee7b3394d26e58a4b6ae1829437698b",
+    "licenses/falafel/LICENSE": "60acd7711e6c138e6041836e32d922705254cc1568a30fdf16aa8f59bb87aeaa",
+    "licenses/fast-isnumeric/LICENSE": "71f353d5dca49bf6335eaa74ce0f92914f4b820e73a55d4277ac69a5b144a445",
+    "licenses/flatten-vertex-data/LICENSE.md": "fb415b6d1ed5f9dd12004f39df586bffd98cb56b2dc26ffe1016adc4c6c46f9b",
+    "licenses/font-atlas/LICENSE.md": "a9ecf3da3825b3e7232f29c970a2869bb1752c900bd75ba7cbabeb69b8f032b4",
+    "licenses/from2/LICENSE.md": "74afb88a7aa7f8db6735c014cba3f9f7b1b1fde39d7b56ba9b2c1f1f2d5d10ec",
+    "licenses/function-bind/LICENSE": "773e131a7684726005a7e4688a80b4620033bc08499bc1404dd1a1eb3bca725e",
+    "licenses/geojson-vt/LICENSE": "828f2aed51b6526881a236758ec9b08cd69928fbfc70346d9d44a0b3a3444fe1",
+    "licenses/get-canvas-context/LICENSE.md": "fb153e8eaf70c10aa169bc3d7401946a9d51163cafaca23458cea8e67de972f4",
+    "licenses/get-stream/license": "5c932d88256b4ab958f64a856fa48e8bd1f55bc1d96b8149c65689e0c61789d3",
+    "licenses/gl-mat4/LICENSE.md": "28b772abdf0b639145dca52fb975cb322bac45ee098da1aa316d41e1d3c4493a",
+    "licenses/gl-matrix/LICENSE.md": "af62d31a0cdc1bf95d5e19428c3e0de368b727d9d5b6b6cdb466f8a52e68ad06",
+    "licenses/gl-text/license.md": "350454cc29b984110ff0936b4459fc8ea8f26b9b5cb7ca15664cca643577db9e",
+    "licenses/global-prefix/LICENSE": "e7d1fee7347ffddccc5fd03327ffdb50f8c112be0d5016d62388a92c4ae6e7a9",
+    "licenses/glsl-inject-defines/LICENSE.md": "aa084193c84505fcea25068c7dc2eb1643a2ad2a744a586a22a14bc459b0eeb1",
+    "licenses/glsl-resolve/LICENSE.md": "74afb88a7aa7f8db6735c014cba3f9f7b1b1fde39d7b56ba9b2c1f1f2d5d10ec",
+    "licenses/glsl-resolve__node_modules__resolve/LICENSE": "435a6722c786b0a56fbe7387028f1d9d3f3a2d0fb615bb8fee118727c3f59b7b",
+    "licenses/glsl-resolve__node_modules__xtend/LICENCE": "19338d17a974d1c747b3f6c618f08975b8908fdebccbc047c0e72b09daf6ddd3",
+    "licenses/glsl-token-assignments/LICENSE.md": "aa084193c84505fcea25068c7dc2eb1643a2ad2a744a586a22a14bc459b0eeb1",
+    "licenses/glsl-token-defines/LICENSE.md": "aa084193c84505fcea25068c7dc2eb1643a2ad2a744a586a22a14bc459b0eeb1",
+    "licenses/glsl-token-depth/LICENSE.md": "aa084193c84505fcea25068c7dc2eb1643a2ad2a744a586a22a14bc459b0eeb1",
+    "licenses/glsl-token-descope/LICENSE.md": "aa084193c84505fcea25068c7dc2eb1643a2ad2a744a586a22a14bc459b0eeb1",
+    "licenses/glsl-token-inject-block/LICENSE.md": "fb153e8eaf70c10aa169bc3d7401946a9d51163cafaca23458cea8e67de972f4",
+    "licenses/glsl-token-properties/LICENSE.md": "aa084193c84505fcea25068c7dc2eb1643a2ad2a744a586a22a14bc459b0eeb1",
+    "licenses/glsl-token-scope/LICENSE.md": "aa084193c84505fcea25068c7dc2eb1643a2ad2a744a586a22a14bc459b0eeb1",
+    "licenses/glsl-token-string/LICENSE.md": "aa084193c84505fcea25068c7dc2eb1643a2ad2a744a586a22a14bc459b0eeb1",
+    "licenses/glsl-token-whitespace-trim/LICENSE.md": "82d4cd7899b219ef29e6bd30820b22d12fd8d95ca2a43a6dc675c72ea2a19cc7",
+    "licenses/glsl-tokenizer/LICENSE.md": "d3ec8ff484cdc71fcd1a6591730d54ed55d426350e80dfaf9c01cb27952b82c9",
+    "licenses/glsl-tokenizer__node_modules__readable-stream/LICENSE": "6239c6144c31e58cf925c34483606969c555574d64ffa96518ab5d7f45c75d43",
+    "licenses/glsl-tokenizer__node_modules__string_decoder/LICENSE": "21a82bbee91262a076c2e34533d51d73475d55e889f1c42cf884c86b2a0d5773",
+    "licenses/glsl-tokenizer__node_modules__through2/LICENSE": "2cb181dde66fd7dea0dd4f728497bf41672f3b848c0278e98a67b54c53d80f00",
+    "licenses/glslify/LICENSE.md": "10f1945ac47db03b7532264ae7addaccf22058af1dcb302c9e9dfed479e760c0",
+    "licenses/glslify-bundle/LICENSE.md": "8447fa7dd83aaf0c4807084a43d65164939f8b7067fb72c47e092e5b5063059e",
+    "licenses/graceful-fs/LICENSE": "f65c5d9f22a317b2a10803bd1868461ce6499c2ed7217bc80c0cc772a748789c",
+    "licenses/grid-index/LICENSE": "bdc2176275547505d0aa0c908e07053063bfcf04d285364d9032233b5c4c5a9b",
+    "licenses/has-passive-events/license.md": "e9dd54ddece97061ebc2153110fcfeac1b0579e8556c0b07b195f004b00ff7fc",
+    "licenses/hasown/LICENSE": "bf9b0d665be2a689851eea667ca9f42066ea1d903b38349c51e6a44b2577680a",
+    "licenses/iconv-lite/LICENSE": "ac779f7314c74f232ef847ea86e714abe25cf6eeb5cc97b69451b74e2af6492d",
+    "licenses/ieee754/LICENSE": "18d45466ba3253deae04667e267a91ea8de8548f18c1125264d1c9db28194cc1",
+    "licenses/inherits/LICENSE": "5ffe28e7ade7d8f10d85d5337a73fd793dac5c462fb9a28fbf8c5046c7fbca3b",
+    "licenses/ini/LICENSE": "4ec3d4c66cd87f5c8d8ad911b10f99bf27cb00cdfcff82621956e379186b016b",
+    "licenses/is-browser/LICENSE": "5519d0442a0d5e5e17fd32cd8ffd6d19581964509eb94c5b6ef56c363f5fbd17",
+    "licenses/is-core-module/LICENSE": "5c496ce5ae47eb8e5ddcaa5e29c27c446a3855b19e3a66991b52f361bed22b28",
+    "licenses/is-finite/license": "48da2f39e100d4085767e94966b43f4fa95ff6a0698fba57ed460914e35f94a0",
+    "licenses/is-firefox/license": "8949b2ba58a823c693244638c52760970e0782812df926d94c8a26c7c9016e7b",
+    "licenses/is-iexplorer/license": "fdc43423b75a24876001d4e904946b178ab7f5546ebd50030e1d3ee3d6582eb4",
+    "licenses/is-obj/license": "6fb9754611c20f6649f68805e8c990e83261f29316e29de9e6cedae607b8634c",
+    "licenses/is-plain-obj/license": "6fb9754611c20f6649f68805e8c990e83261f29316e29de9e6cedae607b8634c",
+    "licenses/is-string-blank/LICENSE": "4852317221de04bdbb8784b24498bac592fcc796dcb5f81dece1c6290d75cf52",
+    "licenses/isarray/LICENSE": "68f12f6e2c33688699249c01d8f9623c534da20aa71989c57b061b7bc1676d14",
+    "licenses/isexe/LICENSE.md": "8a1af140fdfbf5afd3df27f7e662f989c5b963a300020dfafce42033cae9e004",
+    "licenses/js-tokens/LICENSE": "2213d91c606205c71eb051a199478cdc2adde945893404d7f1421436dd6d5cc1",
+    "licenses/json-stringify-pretty-compact/LICENSE": "2d51145876dda3dd13253463b852aa83b78aa598b90fca1709f39f1740ff9a2f",
+    "licenses/katex/LICENSE": "766ccc1f306c885aa45542a9846bbd0a505b27a0374f146778171c2254ce18e3",
+    "licenses/katex__node_modules__commander/LICENSE": "04512a63dce4d2d506ad612dc0bd7681ccf6e3655f7b6eaef7dfac8323d1ec0b",
+    "licenses/kdbush/LICENSE": "597034cb7c11c916ad407344ea99a0b08e3c443a6b4421460f1d23c411c69707",
+    "licenses/kind-of/LICENSE": "4cd903859549d4b20b571041f96dfae1136ed079c476126268f9d7cc1b611150",
+    "licenses/lodash.merge/LICENSE": "f71e8ed126b46346494aad5486874cd8f0aafe95092ed67d2e3cb6110f939abc",
+    "licenses/loose-envify/LICENSE": "4eb7543b08d955a6d23fcc224601d43ff566e775be918805e26210d7f6eb4893",
+    "licenses/map-limit/LICENSE.md": "74afb88a7aa7f8db6735c014cba3f9f7b1b1fde39d7b56ba9b2c1f1f2d5d10ec",
+    "licenses/map-limit__node_modules__once/LICENSE": "4ec3d4c66cd87f5c8d8ad911b10f99bf27cb00cdfcff82621956e379186b016b",
+    "licenses/mapbox-gl/LICENSE.txt": "dcd8c5e27012f2c0754081a51b5e742ca71f4928d557bd204ab14447b9b76f44",
+    "licenses/maplibre-gl/LICENSE.txt": "ee5fc05a0677eaf69601d2c7db0d9ecd6cc27c3abc1d0733bc9ed34707cf8ef2",
+    "licenses/maplibre-gl__node_modules__@mapbox__tiny-sdf/LICENSE.txt": "4f78063c6c0757df950aa3440cef9a2a6bd1c552c994c32237c3acc283e72ee6",
+    "licenses/maplibre-gl__node_modules__@mapbox__unitbezier/LICENSE": "f0dc305ad097eddbc66eebb79288c92d8a5043818ace81206383a4c1a3268fe3",
+    "licenses/maplibre-gl__node_modules__earcut/LICENSE": "324139c19d87af03fda38afea1590e00ca354c4159bdb2ae9e9cec070cfa46a8",
+    "licenses/maplibre-gl__node_modules__geojson-vt/LICENSE": "828f2aed51b6526881a236758ec9b08cd69928fbfc70346d9d44a0b3a3444fe1",
+    "licenses/maplibre-gl__node_modules__potpack/LICENSE": "cfec0482fb785fe27e3b368a2d9e84bf7a61b275e83ec582bf288e98cd530bb0",
+    "licenses/maplibre-gl__node_modules__quickselect/LICENSE": "238ddb00e12a420a54e060afa19bdab4f70bf49e0e2a8ebb1a5e851f9ef447df",
+    "licenses/maplibre-gl__node_modules__supercluster/LICENSE": "b8878372a0d7d1c303f48659ddbd6881807cd2196e4af2f548d8da0c0f7c4d71",
+    "licenses/maplibre-gl__node_modules__tinyqueue/LICENSE": "780453e05abdc22307ee01c706a2e73f508d3e484fc4c804485ebf6fe0964694",
+    "licenses/math-log2/license": "6fb9754611c20f6649f68805e8c990e83261f29316e29de9e6cedae607b8634c",
+    "licenses/minimist/LICENSE": "435a6722c786b0a56fbe7387028f1d9d3f3a2d0fb615bb8fee118727c3f59b7b",
+    "licenses/mouse-change/LICENSE": "632d884bc3370b825072b2ba58896b727fbea1f8a81c6278babbc65d7dca4954",
+    "licenses/mouse-event/LICENSE": "632d884bc3370b825072b2ba58896b727fbea1f8a81c6278babbc65d7dca4954",
+    "licenses/mouse-event-offset/LICENSE.md": "91515553fda3d86e82454bab0eb876a2cb9a31c0dcb8be640870fed624e53697",
+    "licenses/mouse-wheel/LICENSE": "632d884bc3370b825072b2ba58896b727fbea1f8a81c6278babbc65d7dca4954",
+    "licenses/ms/license.md": "1662fae9b5314d11cf51284e2dcd1f006a354f7343f08712a730fcff9a359801",
+    "licenses/needle/license.txt": "33956869cf70ecaecf83b722d8d01e5252e9915ae6f86f07528114e62c93bb23",
+    "licenses/needle__node_modules__debug/LICENSE": "98c970de440dcfc77471610aec2377c9d9b0db2b3be6d1add524a586e1d7f422",
+    "licenses/next-tick/LICENSE": "d61b7b0b7ef23fe17a4cf996c50362ba842725e9b1a0686792a9c16894a6d5c0",
+    "licenses/number-is-integer/license": "6fb9754611c20f6649f68805e8c990e83261f29316e29de9e6cedae607b8634c",
+    "licenses/object-assign/license": "6fb9754611c20f6649f68805e8c990e83261f29316e29de9e6cedae607b8634c",
+    "licenses/once/LICENSE": "4ec3d4c66cd87f5c8d8ad911b10f99bf27cb00cdfcff82621956e379186b016b",
+    "licenses/parenthesis/LICENSE": "80dd594f7950d51ed7d4315248a9866f80507f02e92ee4eabdc12b89b476a539",
+    "licenses/parse-rect/license": "e9dd54ddece97061ebc2153110fcfeac1b0579e8556c0b07b195f004b00ff7fc",
+    "licenses/parse-svg-path/License": "2d5ffdfe09268750ba687a149db8392038772e7f156db3a98b615a7de0cab76e",
+    "licenses/parse-unit/LICENSE.md": "91515553fda3d86e82454bab0eb876a2cb9a31c0dcb8be640870fed624e53697",
+    "licenses/path-parse/LICENSE": "3f4609137f65070541b9214300ea0d640af8192857de0eeb2b03403003d9228a",
+    "licenses/pbf/LICENSE": "5d081d1d4848771dfef5e445660f918aedefd6ae9bb02058a1f7db9cee6c0902",
+    "licenses/performance-now/license.txt": "c3af1272f30870168177e888b184c1f802e5081e75a126c794670c0b562d3783",
+    "licenses/plotly.js/LICENSE": "8c45d9eaf50c2f72dd9c7ab9ef440788ba58a3538484b5c51c1f17d5128752e7",
+    "licenses/plotly.js-dist-min/LICENSE": "8c45d9eaf50c2f72dd9c7ab9ef440788ba58a3538484b5c51c1f17d5128752e7",
+    "licenses/point-in-polygon/LICENSE": "a38ee3303e4f0cdffb18ca280b58b856dbc1bf916b0bb6018efc057ed2dcabbd",
+    "licenses/polybooljs/LICENSE": "6a3969e97bc3b992c17bfdcd6fcabd9b5688650cc0078235d512c014e86b716e",
+    "licenses/potpack/LICENSE": "2c620eaf6c3ee3e33b07f3b6ef0dfd0a9e0a52c93a46aa4ccf7773dbb562daec",
+    "licenses/probe-image-size/LICENSE": "95e3f7f0e81e9b4940cdfaa1956aaff5e4dfd2fb1565041e7c78eb9a606f23e3",
+    "licenses/process-nextick-args/license.md": "ecdccbcf39024f624ded480c01c0b25458e1eca8f26ecf040933865ce56d9a4f",
+    "licenses/prop-types/LICENSE": "f657f99d3fb9647db92628e96007aabb46e5f04f33e49999075aab8e250ca7ce",
+    "licenses/protocol-buffers-schema/LICENSE": "3fe8d55a98dbf260eace67c00cf9bc53edb46234e840098a0b93df3096b97fb6",
+    "licenses/quickselect/LICENSE": "597034cb7c11c916ad407344ea99a0b08e3c443a6b4421460f1d23c411c69707",
+    "licenses/raf/LICENSE": "6b2194e178545b3dcde4a40a09b5f6c00bd9b5b695db0c826c14995c6c9b4ec5",
+    "licenses/react/LICENSE": "52412d7bc7ce4157ea628bbaacb8829e0a9cb3c58f57f99176126bc8cf2bfc85",
+    "licenses/react-dom/LICENSE": "52412d7bc7ce4157ea628bbaacb8829e0a9cb3c58f57f99176126bc8cf2bfc85",
+    "licenses/react-is/LICENSE": "52412d7bc7ce4157ea628bbaacb8829e0a9cb3c58f57f99176126bc8cf2bfc85",
+    "licenses/react-plotly.js/LICENSE": "78791e88f2d8d075d011ea3b9bf95103e11477a42e22f1654c58674fece36ff0",
+    "licenses/readable-stream/LICENSE": "ec62dc96da0099b87f4511736c87309335527fb7031639493e06c95728dc8c54",
+    "licenses/readable-stream__node_modules__safe-buffer/LICENSE": "c7cc929b57080f4b9d0c6cf57669f0463fc5b39906344dfc8d3bc43426b30eac",
+    "licenses/regl/LICENSE": "42d997d1f47c9222dec2844468fc2a4fd144c6950d698eade460e94537ddcdd3",
+    "licenses/regl-error2d/license": "2907ee84b30a5ca0f0fb134e24f60daf292a598bf5819e418eb2eb2b32262ed8",
+    "licenses/regl-line2d/license": "2907ee84b30a5ca0f0fb134e24f60daf292a598bf5819e418eb2eb2b32262ed8",
+    "licenses/regl-line2d/license.md": "2907ee84b30a5ca0f0fb134e24f60daf292a598bf5819e418eb2eb2b32262ed8",
+    "licenses/regl-scatter2d/license": "2907ee84b30a5ca0f0fb134e24f60daf292a598bf5819e418eb2eb2b32262ed8",
+    "licenses/regl-scatter2d__node_modules__color-parse/LICENSE": "af45ae40c7d031f40e77e09fd33b12700e96ea861c4a73f0dff3294d47e60a81",
+    "licenses/regl-splom/license.md": "350454cc29b984110ff0936b4459fc8ea8f26b9b5cb7ca15664cca643577db9e",
+    "licenses/resolve/LICENSE": "60acd7711e6c138e6041836e32d922705254cc1568a30fdf16aa8f59bb87aeaa",
+    "licenses/resolve-protobuf-schema/LICENSE": "c0993ca46cd47c09710a977d3a3d51602cff96f19e8d2eb8d5887aa20a7beead",
+    "licenses/right-now/LICENSE.md": "435a6722c786b0a56fbe7387028f1d9d3f3a2d0fb615bb8fee118727c3f59b7b",
+    "licenses/rw/LICENSE": "e273680c43c2ab5bb3b50af28de6a08000b333396834db7bf6129cd6f130c9cd",
+    "licenses/safe-buffer/LICENSE": "c7cc929b57080f4b9d0c6cf57669f0463fc5b39906344dfc8d3bc43426b30eac",
+    "licenses/safer-buffer/LICENSE": "4bc935e71be198c67ddf3c2b5fddb195f6edc182bfc155a96a6db61b44b494b9",
+    "licenses/sax/LICENSE.md": "8a1af140fdfbf5afd3df27f7e662f989c5b963a300020dfafce42033cae9e004",
+    "licenses/scheduler/LICENSE": "52412d7bc7ce4157ea628bbaacb8829e0a9cb3c58f57f99176126bc8cf2bfc85",
+    "licenses/shallow-copy/LICENSE": "435a6722c786b0a56fbe7387028f1d9d3f3a2d0fb615bb8fee118727c3f59b7b",
+    "licenses/signum/LICENSE": "e67aed7df22dc8031e4fcf5338fe91cb33e3817e5c58a99a2a2802eea9069791",
+    "licenses/source-map/LICENSE": "6cb0631f71c7749763fd3dd1d5bee52dd1070ec17f2edc1710079ad070bd2fbd",
+    "licenses/stack-trace/License": "c5ece09265dbd6335030832335dec72919b9ecfd4db126cb9bb9b8d023970304",
+    "licenses/static-eval/LICENSE": "a22b9d5763f574e5db347c30acc0b33eaf4846767c03d2e27d012e864e79a824",
+    "licenses/stream-parser/LICENSE": "5fe787805ffedb6cc45b0962e6de294df5dec1b62f9fdf4a5d0e121819d11edc",
+    "licenses/stream-parser__node_modules__debug/LICENSE": "98c970de440dcfc77471610aec2377c9d9b0db2b3be6d1add524a586e1d7f422",
+    "licenses/stream-parser__node_modules__ms/license.md": "6652830c2607c722b66f1b57de15877ab8fc5dca406cc5b335afeb365d0f32c1",
+    "licenses/stream-shift/LICENSE": "6a134e51aa31496c15a741592fc5d782b2dbf8d8b6b8524e15c8520ae0cd6374",
+    "licenses/string_decoder/LICENSE": "11f2aafb37d06b3ee5bdaf06e9811141d0da05263c316f3d627f45c20d43261b",
+    "licenses/string_decoder__node_modules__safe-buffer/LICENSE": "c7cc929b57080f4b9d0c6cf57669f0463fc5b39906344dfc8d3bc43426b30eac",
+    "licenses/strongly-connected-components/LICENSE": "e67aed7df22dc8031e4fcf5338fe91cb33e3817e5c58a99a2a2802eea9069791",
+    "licenses/supercluster/LICENSE": "b8878372a0d7d1c303f48659ddbd6881807cd2196e4af2f548d8da0c0f7c4d71",
+    "licenses/supercluster__node_modules__kdbush/LICENSE": "597034cb7c11c916ad407344ea99a0b08e3c443a6b4421460f1d23c411c69707",
+    "licenses/superscript-text/LICENSE": "632d884bc3370b825072b2ba58896b727fbea1f8a81c6278babbc65d7dca4954",
+    "licenses/supports-preserve-symlinks-flag/LICENSE": "0f0ca96f50793990031ebc488a38f7292ff70bce8ab6a8e5eeda674abc32ccdf",
+    "licenses/svg-arc-to-cubic-bezier/LICENSE.md": "e494c8a762141fd7b97104bd7350710dcd2ee0462c75e211bc527cd717158b0b",
+    "licenses/svg-path-bounds__node_modules__normalize-svg-path/license.md": "f3257cb8f6c6b69f90b1d4cebc1ef5dd84bf3bc831a0ba72b43dfa0f1a0f5100",
+    "licenses/through2/LICENSE.md": "faae57631e1c7d641c3b6f9b110c2a7a28c8b383d08d7796ac472c509f075850",
+    "licenses/tinycolor2/LICENSE": "c6cb470a9ba0a50d57611aeec1f31da609c5aefdbee8eac7f289bcb0e30625fa",
+    "licenses/tinyqueue/LICENSE": "780453e05abdc22307ee01c706a2e73f508d3e484fc4c804485ebf6fe0964694",
+    "licenses/to-float32/license": "e9dd54ddece97061ebc2153110fcfeac1b0579e8556c0b07b195f004b00ff7fc",
+    "licenses/to-px/LICENSE": "632d884bc3370b825072b2ba58896b727fbea1f8a81c6278babbc65d7dca4954",
+    "licenses/topojson-client/LICENSE": "4c4d15b635e04e691825a76db7d33f7f2033b55669a7430011694f31e6c65999",
+    "licenses/tslib/LICENSE.txt": "210b19e543130388c68654b7497e967119ce17145f66ab7d85688fbd70f08751",
+    "licenses/type/LICENSE": "010cd06695b486890aa0e080f938ef52b393207b7352baf7f13513b7c272d256",
+    "licenses/typedarray/LICENSE": "26181ebee1063f3dc6766a3b6d05999a0da058f172eadf2ca5d15105ffd9735a",
+    "licenses/typedarray-pool/LICENSE": "e67aed7df22dc8031e4fcf5338fe91cb33e3817e5c58a99a2a2802eea9069791",
+    "licenses/unquote/LICENSE": "10ce70def59838624a4da56a04784d0b743051f455311f7d6f585296ce2d5c3b",
+    "licenses/util-deprecate/LICENSE": "0154425673db15cdfa80ecba2c9b1f1a867f7197a006764712849bfc3a93cbb7",
+    "licenses/vt-pbf/LICENSE": "3d29e124a0236cfefe13458b82c44fde04d7dcc7b3b64b7fa4de0027953274db",
+    "licenses/webgl-context/LICENSE.md": "91515553fda3d86e82454bab0eb876a2cb9a31c0dcb8be640870fed624e53697",
+    "licenses/which/LICENSE": "4ec3d4c66cd87f5c8d8ad911b10f99bf27cb00cdfcff82621956e379186b016b",
+    "licenses/world-calendars/LICENSE": "61b072bb9553d8840cc44a3fe259b890566c3cf85b0907a043f2d73ffc802c36",
+    "licenses/wrappy/LICENSE": "4ec3d4c66cd87f5c8d8ad911b10f99bf27cb00cdfcff82621956e379186b016b",
+    "licenses/xtend/LICENSE": "82e67379203d5794e7c44549847d8d64ae6904591381682360470898bd306821",
+    "modules/motion-planning/check_staged.py": "2bbf9fbc80f1cb35b4acc50bd1d7027720dbedbf79f07e725cf415ad54cc134b",
+    "modules/motion-planning/fig/refine-34-initialize.png": "50fa66a3f99f88e91cfdc35843bbe8afc7dd82b995f06e7117b99895c77c6658",
+    "modules/motion-planning/fig/refine-35-compare.png": "176ec9b36196cf15c193df2f5769540af0cd3bc1e872e5e5dcd8d1e339228209",
+    "modules/motion-planning/fig/refine-36-cost-clearance.png": "068663e9255644874bd07c76237a071ecf780ba503aab24d6dd9a4069d334e2f",
+    "modules/motion-planning/fig/staged-3-shortcut.png": "a8f60c11bfa213f55cb423e760be1b3dc7b20b3ca574a54894d1d535297c929d",
+    "modules/motion-planning/fixtures/stage4_rai.json": "172db9ab53027aff1da380df6dd83bf1a90faf5e81f41ff7ed967562261a3090",
+    "modules/motion-planning/fixtures/stage4_seed_sweep.json": "dd145c0b7b65ce4a6fff7007d7f57f56f646120f4daed53bf17b87f39c9cdca3",
+    "modules/motion-planning/index.html": "1a1208477f2aa8ebad6f0d422b97bbaa6a4df5a837346dfcc4303e22586c2591",
+    "modules/motion-planning/rai_bidir_rrt.py": "b0fe19d7bf60a67e131454a9a47913ba8c26ed7562e7d6d3ee693a81416e1c81",
+    "modules/motion-planning/refine_figures.py": "98cd469ef37f9332d013b834dd79cd8c41de3b94342887a688ebd7b6d020228f",
+    "modules/motion-planning/rrt_two_link.py": "147b4463ee48b6d6423b10e8db10aad3ef0298134280ca2a3e648b2cf01bdfb7",
+    "modules/motion-planning/rrtstar_reference.py": "d3534d706e2fe024c683e3ec58565e3f88293f533613e6f43d1b43ed7867b210",
+    "modules/motion-planning/stage4_komo_rai.py": "5782ce28f133e784a12c6abbfd79ad29455086d098174f8e6059b68db6f6afff",
+    "modules/motion-planning/staged_two_link.py": "5eebe7828baedb2dc872d7d320d046e6d1314d8bfcbe1040fba783aa4cfce20b",
+    "modules/opt-explorer/assets/Surface3D-DaqkT3Nq.js": "80c0e1a3c27045ce5941ebbe06fc1ac3eca1d244e62a86410ed4c95576e8d39e",
+    "modules/opt-explorer/assets/index-CA-W9ySt.css": "8be4942d48dc7c36f55885395683ce0ea5ec46ebf096a4863be8b26d4613e5a7",
+    "modules/opt-explorer/assets/index-CwI8Tb8w.js": "269ce9b1828f9c9a65166430a3ca8c005496a188085248330af1beff621b7eec",
+    "modules/opt-explorer/fixtures/explorer_nlp.py": "26bc8dc3cfebadee318c18ff0a2419cbacc2c88451641a5905f97cea4f5b0b2a",
+    "modules/opt-explorer/fixtures/refine_rai.json": "2709ea40057f225d4d69f60971cf7eeca4e6c38e110d8f755c561d4bde740062",
+    "modules/opt-explorer/fixtures/refine_reference.json": "3535e90cea3c5621a535dcf5705a0db28b373007ee60a93d4301509078d064d5",
+    "modules/opt-explorer/index.html": "c6376fba896cf240bfd3d72ece8255a31b877d8d0ee81516d59a27103c2dc35f",
+    "requirements.txt": "6d4cdf924e8b6fe2cf827f647ca740148e2e8b4c44ea31578dbea46cbd403417",
+    "scripts/rai_run.sh": "3922aa51db41584a4c9e1c2a878eb7d1728a16d74c31ef32ffbb8901bf5ceb94"
+  }
+}

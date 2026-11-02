@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hold the fingertip position · Franka Panda</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #20262d;
+      --muted: #5b6470;
+      --line: #dce1e6;
+      --paper: #fff;
+      --soft: #f4f6f8;
+      --accent: #8b1946;
+      --error: #982c24;
+      --ok: #257040;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+      font-size: 17px;
+      line-height: 1.35;
+    }
+    button, summary, a { -webkit-tap-highlight-color: transparent; }
+    button {
+      font: inherit;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--ink);
+      background: #fff;
+      border: 1px solid #b8c0c9;
+      border-radius: 6px;
+      padding: 8px 12px;
+      cursor: pointer;
+      min-height: 38px;
+    }
+    button:hover { background: var(--soft); }
+    button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+    button:focus-visible, summary:focus-visible, a:focus-visible {
+      outline: 3px solid #2166bf;
+      outline-offset: 3px;
+    }
+    .app { height: 100%; display: flex; flex-direction: column; }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px 18px;
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--line);
+      flex: 0 0 auto;
+    }
+    .title { flex: 1 1 300px; }
+    h1 { margin: 0; font-size: 21px; line-height: 1.2; font-weight: 650; }
+    .subtitle { margin: 3px 0 0; color: var(--muted); font-size: 14px; }
+    .toolbar-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 400px;
+      flex: 1 1 auto;
+      min-height: 0;
+      position: relative;
+      isolation: isolate;
+    }
+    .robot-view { min-height: 0; min-width: 0; position: relative; background: #fafafa; }
+    iframe { display: block; width: 100%; height: 100%; border: 0; background: #fafafa; }
+    .viewer-note {
+      position: absolute;
+      left: 16px;
+      bottom: 14px;
+      max-width: min(540px, calc(100% - 32px));
+      background: rgba(255, 255, 255, .94);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 8px 11px;
+      font-size: 14px;
+      color: var(--muted);
+      pointer-events: none;
+    }
+    .connection-warning {
+      position: absolute;
+      z-index: 3;
+      top: 16px;
+      left: 16px;
+      max-width: min(600px, calc(100% - 32px));
+      background: #fff7ed;
+      color: #78351b;
+      border: 1px solid #dcab80;
+      border-radius: 7px;
+      padding: 11px 14px;
+      font-size: 16px;
+      box-shadow: 0 2px 10px #0000000d;
+      pointer-events: none;
+    }
+    .connection-warning[hidden] { display: none; }
+    .panel {
+      min-height: 0;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      background: var(--paper);
+      border-left: 1px solid var(--line);
+      padding: 17px 20px 22px;
+      scrollbar-gutter: stable;
+    }
+    .panel[hidden] { display: none; }
+    .panel-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    h2 { margin: 0; font-size: 20px; font-weight: 650; }
+    .connection {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #78351b;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+    .connection::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+    .connection[data-kind="live"] { color: var(--ok); }
+    .task-note { font-size: 14px; color: var(--muted); margin: 7px 0 14px; }
+    .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+    .metric { background: var(--soft); border-radius: 7px; padding: 10px 12px; min-width: 0; }
+    .metric-label { display: block; font-size: 14px; color: var(--muted); }
+    .metric-number { font-size: 29px; line-height: 1.25; letter-spacing: -.03em; font-weight: 650; }
+    .metric-unit { color: var(--muted); font-size: 17px; margin-left: 3px; }
+    .metric-definition { margin: 7px 0 14px; color: var(--muted); font-size: 12px; }
+    .action-status {
+      padding: 9px 11px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      margin: 11px 0 15px;
+      font-size: 14px;
+      overflow-wrap: anywhere;
+    }
+    .action-status[data-status="refused"] { border-color: #d29892; background: #fff4f2; color: var(--error); }
+    .action-status strong { display: block; font-size: 14px; margin-bottom: 2px; }
+    .action-status p { margin: 0; }
+    .refusal-note { font-size: 12px; margin-top: 5px !important; }
+    .section-label { margin: 16px 0 5px; font-size: 16px; font-weight: 650; }
+    table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+    th { font-size: 13px; color: var(--muted); font-weight: 500; }
+    th, td { text-align: right; padding: 5px 3px; border-bottom: 1px solid #edf0f3; }
+    th:first-child, td:first-child { text-align: left; }
+    tr:last-child td { border-bottom: 0; }
+    .position-table { font-size: 15px; }
+    .position-table th:first-child { width: 19%; }
+    .joint-table { font-size: 19px; }
+    .joint-table th:first-child { width: 35%; }
+    .joint-table tbody th { color: var(--ink); font-size: 16px; }
+    .joint-name { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+    .swatch { display: inline-block; width: 9px; height: 19px; border-radius: 2px; background: var(--joint-color); flex: 0 0 auto; }
+    .joint-table tr[data-commanded="true"] { background: #edf3fb; }
+    .joint-table tr[data-commanded="true"] td:first-child { font-weight: 700; }
+    .change { color: var(--muted); }
+    .table-note { font-size: 12px; margin: 6px 0 0; color: var(--muted); }
+    .dimension-readout {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 13px;
+      margin: 15px 0 4px;
+      font-size: 15px;
+    }
+    .dimension-readout span { white-space: nowrap; }
+    .dimension-readout strong { font-size: 19px; font-weight: 650; }
+    details { margin-top: 13px; border-top: 1px solid var(--line); }
+    summary { padding: 11px 0 7px; font-size: 15px; font-weight: 600; cursor: pointer; }
+    details p { font-size: 13px; margin: 4px 0 10px; color: var(--muted); }
+    .advanced-table { font-size: 14px; }
+    .advanced-table th { font-size: 11px; }
+    .advanced-table tr[data-commanded="true"] { background: #edf3fb; }
+    .advanced-table tr[data-commanded="true"] th { color: var(--ink); font-weight: 700; }
+    .advanced-table .swatch { height: 14px; width: 7px; }
+    .advanced-table .joint-name { gap: 5px; }
+    .range { white-space: nowrap; }
+    .range-note { border-left: 3px solid #aeb7c1; padding-left: 8px; }
+    .range-note[data-current="false"] { border-left-color: #bc7a23; }
+    .matrix-scroll { overflow-x: auto; }
+    .matrix-table { min-width: 345px; font-size: 12px; }
+    .matrix-table th, .matrix-table td { padding: 6px 3px; }
+    .matrix-table .swatch { width: 6px; height: 10px; vertical-align: -1px; margin-right: 3px; }
+    .control-help ul { padding-left: 17px; margin: 5px 0 0; font-size: 13px; color: var(--muted); }
+    .control-help li { margin: 5px 0; }
+    .control-help strong { color: var(--ink); font-weight: 550; }
+    .workspace[data-panel-hidden="true"], .workspace[data-mode="overlay"] { grid-template-columns: minmax(0, 1fr); }
+    .workspace[data-mode="overlay"] .panel {
+      position: absolute;
+      z-index: 2;
+      top: 16px;
+      left: 16px;
+      width: 350px;
+      max-width: calc(100% - 32px);
+      max-height: calc(100% - 78px);
+      border: 1px solid #c7cfd7;
+      border-radius: 9px;
+      box-shadow: 0 4px 20px #00000015;
+      padding: 13px 16px 17px;
+    }
+    .workspace[data-mode="overlay"] .panel-heading h2 { font-size: 18px; }
+    .workspace[data-mode="overlay"] .task-note { margin-bottom: 9px; font-size: 12px; }
+    .workspace[data-mode="overlay"] .metric { padding: 8px 10px; }
+    .workspace[data-mode="overlay"] .metric-number { font-size: 25px; }
+    .workspace[data-mode="overlay"] .joint-table { font-size: 17px; }
+    .workspace[data-mode="overlay"] th, .workspace[data-mode="overlay"] td { padding-top: 3px; padding-bottom: 3px; }
+    .workspace[data-mode="overlay"] .position-table { font-size: 13px; }
+    .workspace[data-mode="overlay"] .connection-warning { left: auto; right: 16px; max-width: min(440px, calc(100% - 32px)); }
+    .workspace[data-mode="overlay"][data-panel-hidden="true"] .connection-warning { left: 16px; right: auto; }
+    @media (min-width: 1600px) {
+      .workspace { grid-template-columns: minmax(0, 1fr) 440px; }
+      .panel { padding: 20px 25px; }
+      body { font-size: 19px; }
+      .joint-table { font-size: 22px; }
+      .position-table { font-size: 17px; }
+      .metric-number { font-size: 34px; }
+      .task-note, summary { font-size: 16px; }
+    }
+    @media (min-width: 901px) and (max-height: 850px) {
+      .panel { padding: 12px 16px 18px; }
+      .task-note { margin: 5px 0 9px; }
+      .metric { padding: 8px 10px; }
+      .metric-definition { margin: 5px 0 9px; }
+      .action-status { margin: 8px 0 10px; padding: 8px 10px; }
+      .section-label { margin: 11px 0 4px; }
+      th, td { padding-top: 3px; padding-bottom: 3px; }
+      .dimension-readout { margin-top: 10px; }
+    }
+    @media (max-width: 900px) {
+      html, body { height: auto; min-height: 100%; }
+      .app { min-height: 100vh; height: auto; }
+      .workspace { display: flex; flex-direction: column; flex: 1; }
+      .robot-view { height: max(380px, 60vh); flex: 0 0 auto; }
+      .panel { border-left: 0; border-top: 1px solid var(--line); overflow-y: visible; }
+      .workspace[data-panel-hidden="true"] .robot-view { height: calc(100vh - 88px); min-height: 380px; }
+      .workspace[data-mode="overlay"] { display: block; }
+      .workspace[data-mode="overlay"] .robot-view { height: calc(100vh - 88px); min-height: 540px; }
+      .workspace[data-mode="overlay"] .panel { overflow-y: auto; max-height: calc(100% - 82px); }
+      .workspace[data-mode="overlay"] .connection-warning { left: 16px; right: auto; top: auto; bottom: 64px; }
+      .position-table, .joint-table { max-width: 560px; }
+    }
+    @media (max-width: 480px) {
+      .toolbar { padding: 10px 12px; }
+      h1 { font-size: 19px; }
+      .toolbar button { font-size: 13px; padding: 7px 10px; }
+      .panel { padding: 15px 17px; }
+      .viewer-note { font-size: 12px; }
+      .workspace[data-mode="overlay"] .panel { left: 10px; top: 10px; max-width: calc(100% - 20px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="toolbar">
+      <div class="title">
+        <h1>Hold the fingertip position</h1>
+        <p class="subtitle">Franka Panda · 7 joints · gripper rotation is free</p>
+      </div>
+      <div class="toolbar-actions" aria-label="Panel view">
+        <button id="mode-button" type="button" aria-pressed="false" aria-controls="live-panel">Compact overlay</button>
+        <button id="panel-button" type="button" aria-expanded="true" aria-controls="live-panel">Hide panel</button>
+      </div>
+    </header>
+    <main class="workspace" id="workspace" data-mode="docked" data-panel-hidden="false">
+      <section class="robot-view" aria-label="Interactive robot">
+        <iframe id="meshcat-view" src="__MESHCAT_URL__" title="Franka Panda in Meshcat with native joint sliders and controls" allow="fullscreen"></iframe>
+        <div class="viewer-note">Choose <strong>Open Controls</strong> in the robot view. Joint sliders use degrees.</div>
+        <div class="connection-warning" id="connection-warning" role="status">Waiting for live state. Numerical readouts are unavailable.</div>
+      </section>
+      <aside class="panel" id="live-panel" aria-label="Live robot readouts">
+        <div class="panel-heading">
+          <h2>Live readouts</h2>
+          <span class="connection" id="connection" data-kind="waiting">Connecting</span>
+        </div>
+        <p class="task-note">The point between the fingertips stays fixed.</p>
+        <div class="metrics">
+          <div class="metric">
+            <span class="metric-label">Fingertip error</span>
+            <span class="metric-number" id="tip-error">—</span><span class="metric-unit" id="tip-error-unit"></span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Gripper tilt</span>
+            <span class="metric-number" id="tilt">—</span><span class="metric-unit">°</span>
+          </div>
+        </div>
+        <p class="metric-definition">Tilt compares the flange z axis with world down.</p>
+        <div class="action-status" id="action-status" data-status="unavailable">
+          <strong id="action-title">Waiting for state</strong>
+          <p id="action-message">The readouts will appear when the demo connects.</p>
+          <p class="refusal-note" id="refusal-note" hidden>The displayed pose was retained. Its fingertip error is shown above.</p>
+        </div>
+        <h3 class="section-label">Fingertip position in world (m)</h3>
+        <table class="position-table" aria-label="Current and target fingertip world position in meters">
+          <thead><tr><th scope="col">Point</th><th scope="col">x</th><th scope="col">y</th><th scope="col">z</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Current</th><td id="tip-x">—</td><td id="tip-y">—</td><td id="tip-z">—</td></tr>
+            <tr><th scope="row">Target</th><td id="target-x">—</td><td id="target-y">—</td><td id="target-z">—</td></tr>
+          </tbody>
+        </table>
+        <h3 class="section-label">Joint angles and changes</h3>
+        <table class="joint-table" aria-describedby="joint-note">
+          <thead><tr><th scope="col">Joint</th><th scope="col">Angle (°)</th><th scope="col">Change (°)</th></tr></thead>
+          <tbody id="joint-rows"></tbody>
+        </table>
+        <p class="table-note" id="joint-note">Changes are measured from the elbow-up start. Colors match the joint axes and Jacobian arrows.</p>
+        <div class="dimension-readout">
+          <span>7 joints</span><span>3 position components</span>
+          <span>Rank <strong id="rank">—</strong></span><span>Nullity <strong id="nullity">—</strong></span>
+        </div>
+        <p class="table-note">Nullity counts independent joint directions with zero instantaneous position effect. It follows the measured rank at this pose.</p>
+        <details id="advanced-details">
+          <summary>Joint gains and scan ranges</summary>
+          <p>Tip gain is the column length for one joint. Compensation is the Euclidean norm of the other six joints' corrective motion per unit motion of that joint.</p>
+          <table class="advanced-table" aria-label="Current joint gains and approximate scanned command ranges" aria-describedby="range-note">
+            <thead><tr><th scope="col">Joint</th><th scope="col">Tip gain<br>m/rad</th><th scope="col">Compensation<br>rad/rad</th><th scope="col">Scan range<br>°</th></tr></thead>
+            <tbody id="advanced-rows"></tbody>
+          </table>
+          <p class="range-note" id="range-note" data-current="false">No range scan is available yet.</p>
+          <p>Ranges are approximate continuation scans in 2° steps, last computed at rest. They are not guaranteed feasible intervals for every path.</p>
+        </details>
+        <details id="jacobian-details">
+          <summary>Position Jacobian matrix</summary>
+          <p>The rows are world x, y, and z. Each column gives fingertip displacement per radian of one joint, in m/rad.</p>
+          <div class="matrix-scroll" tabindex="0" aria-label="Scrollable position Jacobian table">
+            <table class="matrix-table" aria-label="Position Jacobian, 3 rows and 7 columns, in meters per radian">
+              <thead><tr id="matrix-head"><th scope="col">Axis</th></tr></thead>
+              <tbody id="matrix-rows"></tbody>
+            </table>
+          </div>
+        </details>
+        <details class="control-help">
+          <summary>How to use the robot</summary>
+          <p>Choose <strong>Open Controls</strong> in Meshcat. Drag one joint slider, in degrees, and watch the other six compensate.</p>
+          <p>The held point is 0.1034 m beyond the flange along its z axis, between the fingertips. The flange can move, and gripper rotation is free. Fingertip error is measured at the displayed pose.</p>
+          <ul>
+            <li><strong>Random pose, same tip</strong> finds another posture.</li>
+            <li><strong>Play / pause wander</strong> starts or pauses continuous motion.</li>
+            <li><strong>Reset (elbow up)</strong> restores the starting posture.</li>
+            <li><strong>Show / hide wrist trail</strong> shows where the flange has moved.</li>
+            <li><strong>Show / hide Jacobian columns</strong> toggles the seven position columns.</li>
+            <li><strong>Stop</strong> ends the demo.</li>
+          </ul>
+        </details>
+      </aside>
+    </main>
+  </div>
+  <script>
+    (() => {
+      'use strict';
+      const AXIS_COLOURS = ['#d63126', '#2166bf', '#2b994a', '#8c4db8', '#f29912', '#1a9e9e', '#e04099'];
+      const POLL_MS = 200;
+      const STALE_MS = 3000;
+      const FETCH_TIMEOUT_MS = 1800;
+      const byId = id => document.getElementById(id);
+      const workspace = byId('workspace');
+      const panel = byId('live-panel');
+      const modeButton = byId('mode-button');
+      const panelButton = byId('panel-button');
+      const jointCells = [];
+      const advancedCells = [];
+      const matrixCells = [];
+      const valueElements = [];
+      let lastState = null;
+      let lastResponseAt = 0;
+      let connectionKind = 'waiting';
+
+      function cell(row, tag, text) {
+        const element = document.createElement(tag);
+        element.textContent = text;
+        row.appendChild(element);
+        return element;
+      }
+
+      function jointName(element, index, short = false) {
+        const label = document.createElement('span');
+        label.className = 'joint-name';
+        const swatch = document.createElement('span');
+        swatch.className = 'swatch';
+        swatch.style.setProperty('--joint-color', AXIS_COLOURS[index]);
+        swatch.setAttribute('aria-hidden', 'true');
+        label.append(swatch, document.createTextNode(`${short ? '' : 'Joint '}${index + 1}`));
+        element.appendChild(label);
+      }
+
+      for (let joint = 0; joint < 7; joint += 1) {
+        const row = document.createElement('tr');
+        const name = cell(row, 'th', '');
+        name.scope = 'row';
+        jointName(name, joint);
+        const angle = cell(row, 'td', '—');
+        const change = cell(row, 'td', '—');
+        change.className = 'change';
+        byId('joint-rows').appendChild(row);
+        jointCells.push({ row, angle, change });
+        valueElements.push(angle, change);
+
+        const advancedRow = document.createElement('tr');
+        const advancedName = cell(advancedRow, 'th', '');
+        advancedName.scope = 'row';
+        jointName(advancedName, joint, true);
+        const gain = cell(advancedRow, 'td', '—');
+        const compensation = cell(advancedRow, 'td', '—');
+        const range = cell(advancedRow, 'td', '—');
+        range.className = 'range';
+        byId('advanced-rows').appendChild(advancedRow);
+        advancedCells.push({ row: advancedRow, gain, compensation, range });
+        valueElements.push(gain, compensation, range);
+
+        const head = cell(byId('matrix-head'), 'th', '');
+        head.scope = 'col';
+        jointName(head, joint, true);
+      }
+
+      for (const axis of ['x', 'y', 'z']) {
+        const row = document.createElement('tr');
+        const name = cell(row, 'th', axis);
+        name.scope = 'row';
+        const values = Array.from({ length: 7 }, () => cell(row, 'td', '—'));
+        byId('matrix-rows').appendChild(row);
+        matrixCells.push(values);
+        valueElements.push(...values);
+      }
+      for (const id of ['tip-error', 'tilt', 'tip-x', 'tip-y', 'tip-z', 'target-x', 'target-y', 'target-z', 'rank', 'nullity']) {
+        valueElements.push(byId(id));
+      }
+
+      modeButton.addEventListener('click', () => {
+        const overlay = workspace.dataset.mode !== 'overlay';
+        workspace.dataset.mode = overlay ? 'overlay' : 'docked';
+        modeButton.setAttribute('aria-pressed', String(overlay));
+        modeButton.textContent = overlay ? 'Dock panel' : 'Compact overlay';
+      });
+      panelButton.addEventListener('click', () => {
+        panel.hidden = !panel.hidden;
+        workspace.dataset.panelHidden = String(panel.hidden);
+        panelButton.setAttribute('aria-expanded', String(!panel.hidden));
+        panelButton.textContent = panel.hidden ? 'Show panel' : 'Hide panel';
+      });
+
+      function number(value, decimals) {
+        // Remove signed zero after rounding, while preserving small Jacobian columns.
+        const rounded = value.toFixed(decimals);
+        return Number(rounded) === 0 ? (0).toFixed(decimals) : rounded;
+      }
+      function signed(value, decimals) {
+        const result = number(value, decimals);
+        return Number(result) > 0 ? `+${result}` : result;
+      }
+      function errorReadout(meters) {
+        if (meters < 0.001) return [number(meters * 1e6, 1), 'µm'];
+        if (meters < 1) return [number(meters * 1000, 2), 'mm'];
+        return [number(meters, 3), 'm'];
+      }
+      function numericArray(value, length) {
+        return Array.isArray(value) && value.length === length && value.every(Number.isFinite);
+      }
+      function validState(state) {
+        return state && typeof state === 'object'
+          && Number.isInteger(state.sequence) && Number.isFinite(state.updated_at)
+          && typeof state.playing === 'boolean'
+          && ['ready', 'moving', 'refused'].includes(state.status)
+          && typeof state.message === 'string' && typeof state.last_action === 'string'
+          && (state.commanded_joint === null || (Number.isInteger(state.commanded_joint) && state.commanded_joint >= 1 && state.commanded_joint <= 7))
+          && numericArray(state.tip_position_m, 3) && numericArray(state.target_position_m, 3)
+          && Number.isFinite(state.tip_error_m) && state.tip_error_m >= 0
+          && Number.isFinite(state.tilt_deg)
+          && numericArray(state.joints_deg, 7) && numericArray(state.joint_change_deg, 7)
+          && Number.isInteger(state.jacobian_rank) && state.jacobian_rank >= 0 && state.jacobian_rank <= 3
+          && Number.isInteger(state.nullity) && state.nullity === 7 - state.jacobian_rank
+          && Array.isArray(state.jacobian_pos) && state.jacobian_pos.length === 3 && state.jacobian_pos.every(row => numericArray(row, 7))
+          && numericArray(state.column_norms_m_per_rad, 7) && numericArray(state.compensation_norms_rad_per_rad, 7)
+          && typeof state.ranges_current === 'boolean'
+          && (state.range_estimates_deg === null || (Array.isArray(state.range_estimates_deg) && state.range_estimates_deg.length === 7 && state.range_estimates_deg.every(range => numericArray(range, 2))));
+      }
+      function stateIsStale(state) {
+        return Date.now() - state.updated_at * 1000 > STALE_MS;
+      }
+
+      function clearReadouts() {
+        for (const element of valueElements) element.textContent = '—';
+        byId('tip-error-unit').textContent = '';
+        for (const joint of jointCells) joint.row.dataset.commanded = 'false';
+        for (const joint of advancedCells) joint.row.dataset.commanded = 'false';
+        byId('range-note').textContent = 'Range readouts are unavailable while the state feed is disconnected.';
+        byId('range-note').dataset.current = 'false';
+        byId('refusal-note').hidden = true;
+      }
+      function unavailable(kind, message) {
+        if (connectionKind !== kind) clearReadouts();
+        connectionKind = kind;
+        byId('connection').dataset.kind = kind;
+        byId('connection').textContent = kind === 'stale' ? 'State is stale' : 'Disconnected';
+        byId('connection-warning').hidden = false;
+        byId('connection-warning').textContent = message;
+        byId('action-status').dataset.status = 'unavailable';
+        byId('action-title').textContent = kind === 'stale' ? 'Live state is stale' : 'Live state is unavailable';
+        byId('action-message').textContent = 'Numerical readouts are cleared. The page will reconnect automatically.';
+      }
+
+      function render(state) {
+        connectionKind = 'live';
+        byId('connection').dataset.kind = 'live';
+        byId('connection').textContent = 'Live';
+        byId('connection-warning').hidden = true;
+        const [error, unit] = errorReadout(state.tip_error_m);
+        byId('tip-error').textContent = error;
+        byId('tip-error-unit').textContent = unit;
+        byId('tilt').textContent = number(state.tilt_deg, 1);
+        for (let axis = 0; axis < 3; axis += 1) {
+          const name = ['x', 'y', 'z'][axis];
+          byId(`tip-${name}`).textContent = number(state.tip_position_m[axis], 5);
+          byId(`target-${name}`).textContent = number(state.target_position_m[axis], 5);
+          for (let joint = 0; joint < 7; joint += 1) {
+            matrixCells[axis][joint].textContent = number(state.jacobian_pos[axis][joint], 3);
+          }
+        }
+        for (let joint = 0; joint < 7; joint += 1) {
+          jointCells[joint].angle.textContent = number(state.joints_deg[joint], 1);
+          jointCells[joint].change.textContent = signed(state.joint_change_deg[joint], 1);
+          jointCells[joint].row.dataset.commanded = String(state.commanded_joint === joint + 1);
+          advancedCells[joint].row.dataset.commanded = String(state.commanded_joint === joint + 1);
+          advancedCells[joint].gain.textContent = number(state.column_norms_m_per_rad[joint], 3);
+          advancedCells[joint].compensation.textContent = number(state.compensation_norms_rad_per_rad[joint], 2);
+          advancedCells[joint].range.textContent = state.range_estimates_deg
+            ? `${number(state.range_estimates_deg[joint][0], 1)} to ${number(state.range_estimates_deg[joint][1], 1)}`
+            : '—';
+        }
+        byId('rank').textContent = String(state.jacobian_rank);
+        byId('nullity').textContent = String(state.nullity);
+        byId('range-note').dataset.current = String(state.ranges_current);
+        byId('range-note').textContent = !state.range_estimates_deg ? 'No range scan is available yet.'
+          : state.ranges_current ? 'The latest scan starts at the displayed resting pose.'
+            : 'These ranges were scanned from an earlier resting pose. They do not describe the current pose.';
+        byId('action-status').dataset.status = state.status;
+        let title = state.status === 'refused' ? 'Command refused'
+          : state.playing ? 'Wandering' : state.status === 'moving' ? 'Moving' : 'At rest';
+        if (state.commanded_joint !== null && !state.playing) title += ` · joint ${state.commanded_joint}`;
+        byId('action-title').textContent = title;
+        byId('action-message').textContent = state.message || (state.playing ? 'The other joints move while the fingertip position stays fixed.' : 'Drag one native joint slider to command a joint.');
+        byId('refusal-note').hidden = state.status !== 'refused';
+      }
+
+      async function poll() {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+        try {
+          const response = await fetch('/state', { cache: 'no-store', signal: controller.signal });
+          if (!response.ok) throw new Error('state request failed');
+          const state = await response.json();
+          if (!validState(state)) throw new Error('invalid state');
+          lastResponseAt = performance.now();
+          lastState = state;
+          if (stateIsStale(state)) {
+            unavailable('stale', 'Live state has stopped updating. Numerical readouts are unavailable.');
+          } else {
+            render(state);
+          }
+        } catch (error) {
+          unavailable('lost', 'The live state feed is disconnected. The robot view may show its last pose.');
+        } finally {
+          clearTimeout(timeout);
+          setTimeout(poll, POLL_MS);
+        }
+      }
+      // Detect a stopped server even while a request is pending or a tab is resumed.
+      function checkFreshness() {
+        if (connectionKind === 'live' && lastState
+          && (stateIsStale(lastState) || performance.now() - lastResponseAt > STALE_MS)) {
+          unavailable('stale', 'Live state has stopped updating. Numerical readouts are unavailable.');
+        }
+      }
+      setInterval(checkFreshness, 250);
+      document.addEventListener('visibilitychange', checkFreshness);
+      poll();
+    })();
+  </script>
+</body>
+</html>
