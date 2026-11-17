@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="620" height="430" viewBox="0 0 620 430" role="img" aria-labelledby="title desc">
+<title id="title">The same pair spans two objects</title><desc id="desc">Schematic of the separated scene. Contact sample C1 is on the red target's outer left face; C2 is on the blue other object's outer right face. Selecting the red object excludes C2 without moving either sample.</desc>
+<rect width="620" height="430" fill="white"/>
+<g font-family="Arial, sans-serif" fill="#19364b" text-anchor="middle">
+<text x="180" y="48" font-size="28">Target object</text><text x="420" y="48" font-size="28">Other object</text>
+<rect x="90" y="80" width="180" height="220" rx="2" fill="#fae4df" stroke="#bd5744" stroke-width="3"/>
+<rect x="330" y="80" width="180" height="220" rx="2" fill="#e3eef6" stroke="#487da4" stroke-width="3"/>
+<path d="M90 190H510" stroke="#728a99" stroke-width="3" stroke-dasharray="8 7"/>
+<circle cx="90" cy="190" r="8" fill="#267951" stroke="white" stroke-width="3"/>
+<circle cx="510" cy="190" r="8" fill="#b44837" stroke="white" stroke-width="3"/>
+<text x="52" y="198" font-size="28" fill="#267951">C₁</text><text x="550" y="198" font-size="28" fill="#b44837">C₂</text>
+<text x="180" y="344" font-size="26" fill="#267951">On the target</text><text x="420" y="344" font-size="26" fill="#b44837">Outside the target</text>
+<text x="310" y="403" font-size="23" fill="#64798a">Same two samples · schematic</text>
+</g></svg>

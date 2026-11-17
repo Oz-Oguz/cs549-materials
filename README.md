@@ -11,6 +11,9 @@ Everything else about the course (assignments, announcements, grades) is on Mood
 - `slides/03-D1-optimization-1.pdf`
 - `slides/04-D1-constrained-optimization.pdf`
 - `slides/04-D2-motion-planning.pdf`
+  <!-- sections:begin -->
+- `slides/05-statics-and-grasp-selection.pdf` ([in the browser](https://oz-oguz.github.io/cs549-materials/slides/statics-and-grasp-selection/), [its demonstrations](https://oz-oguz.github.io/cs549-demos/statics-and-grasp-selection/))
+  <!-- sections:end -->
 
 The slides' "run it live" buttons open the demonstrations. A button for a browser module opens that module on
 the published site, already set to the slide's example. A button for a Drake demonstration opens the guide in
