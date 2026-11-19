@@ -10,5 +10,5 @@
 <circle cx="510" cy="190" r="8" fill="#b44837" stroke="white" stroke-width="3"/>
 <text x="52" y="198" font-size="28" fill="#267951">C₁</text><text x="550" y="198" font-size="28" fill="#b44837">C₂</text>
 <text x="180" y="344" font-size="26" fill="#267951">On the target</text><text x="420" y="344" font-size="26" fill="#b44837">Outside the target</text>
-<text x="310" y="403" font-size="23" fill="#64798a">Same two samples · schematic</text>
+<text x="310" y="394" font-size="20" fill="#64798a">Schematic</text>
 </g></svg>

@@ -5,6 +5,6 @@
   "slides/statics-and-grasp-selection/",
   "sections/statics-and-grasp-selection.json"
  ],
- "html": "<li><a href=\"slides/05-statics-and-grasp-selection.pdf\">05-statics-and-grasp-selection</a> · <a href=\"slides/statics-and-grasp-selection/\">in the browser</a> · <a href=\"https://oz-oguz.github.io/cs549-demos/statics-and-grasp-selection/\">its demonstrations</a></li>",
- "markdown": "- `slides/05-statics-and-grasp-selection.pdf` ([in the browser](https://oz-oguz.github.io/cs549-materials/slides/statics-and-grasp-selection/), [its demonstrations](https://oz-oguz.github.io/cs549-demos/statics-and-grasp-selection/))"
+ "html": "<li><a href=\"slides/05-statics-and-grasp-selection.pdf\">05-statics-and-grasp-selection</a> · <a href=\"slides/statics-and-grasp-selection/\">in the browser</a> · <a href=\"https://oz-oguz.github.io/cs549-demos/statics-and-grasp-selection/\">its demonstrations</a> (browser demonstrations and recorded Drake simulations; nothing to install)</li>",
+ "markdown": "- `slides/05-statics-and-grasp-selection.pdf` ([in the browser](https://oz-oguz.github.io/cs549-materials/slides/statics-and-grasp-selection/), [its demonstrations](https://oz-oguz.github.io/cs549-demos/statics-and-grasp-selection/): browser demonstrations and recorded Drake simulations; nothing to install)"
 }
