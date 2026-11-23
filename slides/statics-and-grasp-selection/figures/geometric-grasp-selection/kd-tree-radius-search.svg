@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 398" width="880" height="398" role="img">
+  <title>One k-d tree split in the S49 box</title>
+  <desc>Two illustrative radius queries in the same x-z slice. A radius of 25 mm cannot cross the split at x=0; 65 mm reaches the opposite face 60 mm away.</desc>
+  <rect width="100%" height="100%" fill="white"/>
+  <g font-family="Arial,Helvetica,sans-serif">
+    <text x="215" y="28" text-anchor="middle" font-size="20" fill="#17334a" font-weight="bold">25 mm search radius</text>
+    <rect x="257.0" y="65" width="151" height="250" fill="#f0f1f2"/>
+    <text x="265.75" y="299" text-anchor="start" font-size="13" fill="#586875" font-weight="normal">Skipped branch</text>
+    <circle cx="204.5" cy="199.0" r="43.75" fill="#ddf0eb" fill-opacity=".72" stroke="#127660" stroke-width="2"/>
+    <rect x="204.5" y="129.0" width="105.0" height="140.0" fill="none" stroke="#a0adb6" stroke-width="1.5"/>
+    <line x1="257.0" y1="62" x2="257.0" y2="315" stroke="#516980" stroke-width="1.5" stroke-dasharray="5 4"/>
+    <text x="257.0" y="55" text-anchor="middle" font-size="13" fill="#405a70" font-weight="normal">tree split at x = 0</text>
+    <circle cx="204.5" cy="269.0" r="4.5" fill="#8698a7" stroke="white" stroke-width="1"/>
+    <circle cx="204.5" cy="251.5" r="4.5" fill="#8698a7" stroke="white" stroke-width="1"/>
+    <circle cx="204.5" cy="234.0" r="4.5" fill="#127660" stroke="white" stroke-width="1"/>
+    <circle cx="204.5" cy="216.5" r="4.5" fill="#127660" stroke="white" stroke-width="1"/>
+    <circle cx="204.5" cy="199.0" r="4.5" fill="#127660" stroke="white" stroke-width="1"/>
+    <circle cx="204.5" cy="181.5" r="4.5" fill="#127660" stroke="white" stroke-width="1"/>
+    <circle cx="204.5" cy="164.0" r="4.5" fill="#127660" stroke="white" stroke-width="1"/>
+    <circle cx="204.5" cy="146.5" r="4.5" fill="#8698a7" stroke="white" stroke-width="1"/>
+    <circle cx="204.5" cy="129.0" r="4.5" fill="#8698a7" stroke="white" stroke-width="1"/>
+    <circle cx="222.0" cy="129.0" r="4.5" fill="#8698a7" stroke="white" stroke-width="1"/>
+    <circle cx="239.5" cy="129.0" r="4.5" fill="#8698a7" stroke="white" stroke-width="1"/>
+    <circle cx="257.0" cy="129.0" r="4.5" fill="#8698a7" stroke="white" stroke-width="1"/>
+    <circle cx="274.5" cy="129.0" r="4.5" fill="#8698a7" stroke="white" stroke-width="1"/>
+    <circle cx="292.0" cy="129.0" r="4.5" fill="#8698a7" stroke="white" stroke-width="1"/>
+    <circle cx="309.5" cy="269.0" r="4.5" fill="#8698a7" stroke="white" stroke-width="1"/>
+    <circle cx="309.5" cy="251.5" r="4.5" fill="#8698a7" stroke="white" stroke-width="1"/>
+    <circle cx="309.5" cy="234.0" r="4.5" fill="#8698a7" stroke="white" stroke-width="1"/>
+    <circle cx="309.5" cy="216.5" r="4.5" fill="#8698a7" stroke="white" stroke-width="1"/>
+    <circle cx="309.5" cy="199.0" r="4.5" fill="#8698a7" stroke="white" stroke-width="1"/>
+    <circle cx="309.5" cy="181.5" r="4.5" fill="#8698a7" stroke="white" stroke-width="1"/>
+    <circle cx="309.5" cy="164.0" r="4.5" fill="#8698a7" stroke="white" stroke-width="1"/>
+    <circle cx="309.5" cy="146.5" r="4.5" fill="#8698a7" stroke="white" stroke-width="1"/>
+    <circle cx="309.5" cy="129.0" r="4.5" fill="#8698a7" stroke="white" stroke-width="1"/>
+    <line x1="204.5" y1="199.0" x2="309.5" y2="199.0" stroke="#687888" stroke-width="1.5" stroke-dasharray="3 4"/>
+    <circle cx="204.5" cy="199.0" r="6.3" fill="#be513b" stroke="white" stroke-width="1"/>
+    <text x="195.5" y="193.0" text-anchor="end" font-size="17" fill="#9e3b2c" font-weight="bold">p₁</text>
+    <text x="257.0" y="218.0" text-anchor="middle" font-size="14" fill="#17334a" font-weight="normal">60 mm</text>
+    <text x="215" y="344" text-anchor="middle" font-size="15" fill="#17334a" font-weight="bold">Skip the entire right branch.</text>
+    <text x="655" y="28" text-anchor="middle" font-size="20" fill="#17334a" font-weight="bold">65 mm search radius</text>
+    <circle cx="644.5" cy="199.0" r="113.75" fill="#ddf0eb" fill-opacity=".72" stroke="#127660" stroke-width="2"/>
+    <rect x="644.5" y="129.0" width="105.0" height="140.0" fill="none" stroke="#a0adb6" stroke-width="1.5"/>
+    <line x1="697.0" y1="62" x2="697.0" y2="315" stroke="#516980" stroke-width="1.5" stroke-dasharray="5 4"/>
+    <text x="697.0" y="55" text-anchor="middle" font-size="13" fill="#405a70" font-weight="normal">tree split at x = 0</text>
+    <circle cx="644.5" cy="269.0" r="4.5" fill="#127660" stroke="white" stroke-width="1"/>
+    <circle cx="644.5" cy="251.5" r="4.5" fill="#127660" stroke="white" stroke-width="1"/>
+    <circle cx="644.5" cy="234.0" r="4.5" fill="#127660" stroke="white" stroke-width="1"/>
+    <circle cx="644.5" cy="216.5" r="4.5" fill="#127660" stroke="white" stroke-width="1"/>
+    <circle cx="644.5" cy="199.0" r="4.5" fill="#127660" stroke="white" stroke-width="1"/>
+    <circle cx="644.5" cy="181.5" r="4.5" fill="#127660" stroke="white" stroke-width="1"/>
+    <circle cx="644.5" cy="164.0" r="4.5" fill="#127660" stroke="white" stroke-width="1"/>
+    <circle cx="644.5" cy="146.5" r="4.5" fill="#127660" stroke="white" stroke-width="1"/>
+    <circle cx="644.5" cy="129.0" r="4.5" fill="#127660" stroke="white" stroke-width="1"/>
+    <circle cx="662.0" cy="129.0" r="4.5" fill="#127660" stroke="white" stroke-width="1"/>
+    <circle cx="679.5" cy="129.0" r="4.5" fill="#127660" stroke="white" stroke-width="1"/>
+    <circle cx="697.0" cy="129.0" r="4.5" fill="#127660" stroke="white" stroke-width="1"/>
+    <circle cx="714.5" cy="129.0" r="4.5" fill="#127660" stroke="white" stroke-width="1"/>
+    <circle cx="732.0" cy="129.0" r="4.5" fill="#127660" stroke="white" stroke-width="1"/>
+    <circle cx="749.5" cy="269.0" r="4.5" fill="#8698a7" stroke="white" stroke-width="1"/>
+    <circle cx="749.5" cy="251.5" r="4.5" fill="#8698a7" stroke="white" stroke-width="1"/>
+    <circle cx="749.5" cy="234.0" r="4.5" fill="#127660" stroke="white" stroke-width="1"/>
+    <circle cx="749.5" cy="216.5" r="4.5" fill="#127660" stroke="white" stroke-width="1"/>
+    <circle cx="749.5" cy="199.0" r="4.5" fill="#127660" stroke="white" stroke-width="1"/>
+    <circle cx="749.5" cy="181.5" r="4.5" fill="#127660" stroke="white" stroke-width="1"/>
+    <circle cx="749.5" cy="164.0" r="4.5" fill="#127660" stroke="white" stroke-width="1"/>
+    <circle cx="749.5" cy="146.5" r="4.5" fill="#8698a7" stroke="white" stroke-width="1"/>
+    <circle cx="749.5" cy="129.0" r="4.5" fill="#8698a7" stroke="white" stroke-width="1"/>
+    <line x1="644.5" y1="199.0" x2="749.5" y2="199.0" stroke="#687888" stroke-width="1.5" stroke-dasharray="3 4"/>
+    <circle cx="644.5" cy="199.0" r="6.3" fill="#be513b" stroke="white" stroke-width="1"/>
+    <text x="635.5" y="193.0" text-anchor="end" font-size="17" fill="#9e3b2c" font-weight="bold">p₁</text>
+    <text x="697.0" y="218.0" text-anchor="middle" font-size="14" fill="#17334a" font-weight="normal">60 mm</text>
+    <text x="760.5" y="194.0" text-anchor="start" font-size="17" fill="#127660" font-weight="bold">p₂</text>
+    <text x="655" y="344" text-anchor="middle" font-size="15" fill="#17334a" font-weight="bold">Search both branches and test point distances.</text>
+    <line x1="440" y1="55" x2="440" y2="350" stroke="#dbe2e7" stroke-width="1.5"/>
+    <circle cx="95" cy="378" r="5" fill="#127660" stroke="white" stroke-width="1"/>
+    <text x="108" y="383" text-anchor="start" font-size="14" fill="#17334a" font-weight="normal">within search radius</text>
+    <circle cx="300" cy="378" r="5" fill="#8698a7" stroke="white" stroke-width="1"/>
+    <text x="313" y="383" text-anchor="start" font-size="14" fill="#17334a" font-weight="normal">outside search radius</text>
+    <text x="849" y="383" text-anchor="end" font-size="14" fill="#536876" font-weight="normal">Illustrative x–z slice · same box and first point</text>
+  </g>
+</svg>
