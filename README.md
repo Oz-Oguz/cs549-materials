@@ -5,12 +5,12 @@ Everything else about the course (assignments, announcements, grades) is on Mood
 
 ## Slides
 
-- `slides/01-D1-intro-and-the-stack.pdf`
-- `slides/02-D1-learning-overlay-and-frames.pdf`
-- `slides/02-D2-transforms-fk-jacobian.pdf`
-- `slides/03-D1-optimization-1.pdf`
-- `slides/04-D1-constrained-optimization.pdf`
-- `slides/04-D2-motion-planning.pdf`
+- `slides/01-intro-and-the-stack.pdf`
+- `slides/02-learning-overlay-and-frames.pdf`
+- `slides/03-transforms-fk-jacobian.pdf`
+- `slides/04-optimization-1.pdf`
+- `slides/05-constrained-optimization.pdf`
+- `slides/06-motion-planning.pdf`
   <!-- sections:begin -->
 - `slides/05-statics-and-grasp-selection.pdf` ([in the browser](https://oz-oguz.github.io/cs549-materials/slides/statics-and-grasp-selection/), [its demonstrations](https://oz-oguz.github.io/cs549-demos/statics-and-grasp-selection/): browser demonstrations and recorded Drake simulations; nothing to install)
   <!-- sections:end -->
@@ -56,4 +56,4 @@ folder and open `http://localhost:8000/modules/opt-explorer/`.
 `demos/README.md` as their setup guide (also at https://oz-oguz.github.io/cs549-materials/demos/). They run in Python on Linux, on Apple-silicon
 Macs and under WSL on Windows, and they are optional: the slides carry their results.
 
-Updated 2026-11-01. © 2026 Özgür S. Öğüz, Bilkent University. Licensed under CC BY 4.0: use and adapt these materials freely, but credit the source as described in `LICENSE.md`. The FR3 robot model inside the reading package keeps its own Apache 2.0 license and notice.
+Updated 2026-11-23. © 2026 Özgür S. Öğüz, Bilkent University. Licensed under CC BY 4.0: use and adapt these materials freely, but credit the source as described in `LICENSE.md`. The FR3 robot model inside the reading package keeps its own Apache 2.0 license and notice.

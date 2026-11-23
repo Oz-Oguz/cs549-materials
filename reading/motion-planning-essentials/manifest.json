@@ -1447,8 +1447,8 @@
   "build_inputs": {
     "scripts/build_motion_planning_package.py": "370faeb9fdae94f39817e0c623c291c8d5103dcca3c3b231ffd5a9a49b4cc230",
     "scripts/build_essentials_package.py": "0f32da6a6cf120973c1c473c9761640304b78aaf65caed8660601d0d6393e32a",
-    "scripts/export_student_repo.py": "4bfa4c5511474aa61e26f718377aef6bfbb1435ee9eec98e79283f76b8071c2e",
-    "lectures/04-reading-motion-planning/delivery/README.md": "b8a704a75fe01603be0f88d46e54ea6c37cda7284eb0223c27d7cd61af35fc88",
+    "scripts/export_student_repo.py": "3a4fb902a755d9632c320810633f017111c5dad398ba50acda07b53c32544f80",
+    "lectures/04-reading-motion-planning/delivery/README.md": "bb30429b77f7138858484cf7643c8976e54d10ee54e942ffab8f11b5b08a1a85",
     "lectures/04-reading-motion-planning/delivery/launch.py": "8611dafcf2bb9e096604bd1dd00d4b854aa87b059718f86b7d6fa52df86f86ec",
     "lectures/04-reading-motion-planning/delivery/rai_run.sh": "3922aa51db41584a4c9e1c2a878eb7d1728a16d74c31ef32ffbb8901bf5ceb94",
     "lectures/04-reading-motion-planning/chapter-03-essentials.md": "aa5a6e70d07bed843b3c5ca415b62e36b23ad1ad6b0e30d63f3c703f43d6bd89",
@@ -2034,8 +2034,8 @@
   "scope": "Chapter 03 companions only; no publication, assessments or instructor records.",
   "files": {
     "LICENSE.md": "300c8b380793f7177a514f2bfd0c791f22534bef6b53ac780f47bced08e39f92",
-    "README.html": "38994c5261e6df639225a940f9f331c192e0c3d922da82955ac5eed1ca03a164",
-    "README.md": "c22a5239154638c64e675309dc807558e0c713f0ce428e7bffdfd6650f82c983",
+    "README.html": "0de13742c1d4a7739fb5a51722324db9781316543d9db056bca2af1480f4e94c",
+    "README.md": "83a345cdf9e97dd1a2b93652fe42fa6d1e92edb239b8eb107afd9a1cd9916c9f",
     "assets/katex/fonts/KaTeX_AMS-Regular.ttf": "68534840bcfdd2bffb6f0e8deb48684dd01e7f04ea2813267577afb906de1d13",
     "assets/katex/fonts/KaTeX_AMS-Regular.woff": "30da91e84c893f875e252689faebdc590b2871145e8adc7f9a9d4dbd8ce0b251",
     "assets/katex/fonts/KaTeX_AMS-Regular.woff2": "0cdd387c9590a1a9f9794560022dbb59654a7d86f187aa0c81495ad42d3a7308",

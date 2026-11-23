@@ -93,7 +93,7 @@ package. The module notes are written for the instructor, and their replay
 evidence is summarized in Appendix C.1. The Python reference
 `modules/motion-planning/rai_bidir_rrt.py` contains the replay code itself.
 The lecture whose figures Appendix A reuses is Deck 06; its
-[slides](https://oz-oguz.github.io/cs549-materials/slides/04-D2-motion-planning.pdf)
+[slides](https://oz-oguz.github.io/cs549-materials/slides/06-motion-planning.pdf)
 on the course site carry the same figures.
 
 ## License

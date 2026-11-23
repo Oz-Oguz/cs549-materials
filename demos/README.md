@@ -44,7 +44,7 @@ Running a script without its flag prints the numbers that appear on the slide, t
 
 ### Contact changes the map
 
-Slides: `slides/02-D1-learning-overlay-and-frames.pdf`, page 8 (Computed: how much the mug moves per joint).
+Slides: `slides/02-learning-overlay-and-frames.pdf`, page 8 (Computed: how much the mug moves per joint).
 
 ```bash
 python drake/00-contact-changes-the-map/contact_demo.py --meshcat
@@ -54,7 +54,7 @@ Seven joint sliders and a "Grasp / release" button in the browser. Before the gr
 
 ### When the map is wrong
 
-Slides: `slides/02-D1-learning-overlay-and-frames.pdf`, page 9 (Challenge 2: state estimation).
+Slides: `slides/02-learning-overlay-and-frames.pdf`, page 9 (Challenge 2: state estimation).
 
 ```bash
 python drake/00b-when-the-map-is-wrong/map_error_demo.py --meshcat
@@ -64,7 +64,7 @@ Sliders set the error of the estimated mug position in centimetres. "Plan on the
 
 ### The FR3 transform chain
 
-Slides: `slides/02-D2-transforms-fk-jacobian.pdf`, page 19 (The FR3 uses the same transform chain).
+Slides: `slides/03-transforms-fk-jacobian.pdf`, page 19 (The FR3 uses the same transform chain).
 
 ```bash
 python drake/01c-fr3-grasp-chain/fr3_grasp_chain.py --meshcat
@@ -74,7 +74,7 @@ The Franka Research 3 model in its ready pose. Buttons step through the chain fr
 
 ### Forward kinematics and the Jacobian on the Panda
 
-Slides: `slides/02-D2-transforms-fk-jacobian.pdf`, page 25 (Live demo: the Panda's 7-joint arm in Drake); `slides/02-D2-transforms-fk-jacobian.pdf`, page 57 (Backup: the Panda's zero configuration is singular).
+Slides: `slides/03-transforms-fk-jacobian.pdf`, page 25 (Live demo: the Panda's 7-joint arm in Drake); `slides/03-transforms-fk-jacobian.pdf`, page 57 (Backup: the Panda's zero configuration is singular).
 
 ```bash
 python drake/01-fk-jacobian/fk_jacobian_demo.py --meshcat
@@ -84,7 +84,7 @@ The Panda with seven joint sliders. The terminal prints the end-effector positio
 
 ### Redundancy: the elbow swings, the hand stays
 
-Slides: `slides/02-D2-transforms-fk-jacobian.pdf`, page 42 (Live demo: redundancy, the elbow swings, the hand stays).
+Slides: `slides/03-transforms-fk-jacobian.pdf`, page 42 (Live demo: redundancy, the elbow swings, the hand stays).
 
 ```bash
 python drake/01b-redundancy-self-motion/self_motion_panda.py --meshcat
@@ -94,7 +94,7 @@ The gripper stays on the mug while one slider moves the elbow along the curve of
 
 ### Only the fingertip position fixed
 
-Slides: `slides/02-D2-transforms-fk-jacobian.pdf`, page 43 (Same demo, only the fingertip position fixed).
+Slides: `slides/03-transforms-fk-jacobian.pdf`, page 43 (Same demo, only the fingertip position fixed).
 
 ```bash
 python drake/01b-redundancy-self-motion/tip_only_panda.py --app
@@ -104,7 +104,7 @@ A web page with the scene and a readable panel. Only the fingertip position is f
 
 ### Gauss-Newton inverse kinematics, step by step
 
-Slides: `slides/03-D1-optimization-1.pdf`, page 31 (A real arm: the Panda in Drake).
+Slides: `slides/04-optimization-1.pdf`, page 31 (A real arm: the Panda in Drake).
 
 ```bash
 python drake/02-gauss-newton-ik/gn_ik_panda.py --replay --app
@@ -114,7 +114,7 @@ A web page, paused at the start. Step, Back and the slider walk through the Gaus
 
 ### Inverse kinematics as a nonlinear program
 
-Slides: `slides/04-D1-constrained-optimization.pdf`, page 18 (Live demo: IK as a nonlinear program on the Panda).
+Slides: `slides/05-constrained-optimization.pdf`, page 18 (Live demo: IK as a nonlinear program on the Panda).
 
 ```bash
 python drake/03-ik-as-nlp/ik_nlp_panda.py --app
@@ -124,7 +124,7 @@ Target sliders in the browser. After each move, the arm re-solves inverse kinema
 
 ### Constrained inverse kinematics: the multiplier is learned
 
-Slides: `slides/04-D1-constrained-optimization.pdf`, page 24 (The augmented Lagrangian learns the multiplier).
+Slides: `slides/05-constrained-optimization.pdf`, page 24 (The augmented Lagrangian learns the multiplier).
 
 ```bash
 python drake/04-constrained-ik-al/constrained_ik_panda.py --replay --app
@@ -134,7 +134,7 @@ A web page, paused at the start. Step through the augmented-Lagrangian loop with
 
 ### The target is a constraint; posture is the cost
 
-Slides: `slides/04-D1-constrained-optimization.pdf`, page 27 (The target is a constraint; posture is the cost).
+Slides: `slides/05-constrained-optimization.pdf`, page 27 (The target is a constraint; posture is the cost).
 
 ```bash
 python drake/05-ik-nlp-al/ik_nlp_al_panda.py --replay --app
